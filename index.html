@@ -1,0 +1,716 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rubén Rivera — Motion Graphics & Video para Marcas Deportivas</title>
+<meta name="description" content="Motion graphics 2D/3D, edición de video deportiva y diseño web UI/UX. 9 años de experiencia en agencias. Querétaro, México.">
+
+<meta property="og:title" content="Rubén Rivera — Motion Graphics & Video para Marcas Deportivas">
+<meta property="og:description" content="Motion graphics 2D/3D, edición de video deportiva y diseño web UI/UX para clubes, agencias y representantes de atletas.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://notmanrivera.com">
+
+<link rel="icon" type="image/png" href="/assets/favicon.png">
+<link rel="apple-touch-icon" href="/assets/favicon.png">
+<meta property="og:image" content="https://notmanrivera.com/assets/logo-lg.webp">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --ink:#0b0410;
+    --ink-2:#150827;
+    --violet:#8B3FFF;
+    --violet-hi:#A96BFF;
+    --violet-deep:#4A1391;
+    --magenta:#FF2E88;
+    --paper:#F6F1FF;
+    --muted:#9D8FB8;
+    --line:#2c1a45;
+    --max:1180px;
+    --disp:"Anton",Impact,"Haettenschweiler","Arial Narrow Bold",sans-serif;
+    --body:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  }
+
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+
+  body{
+    background:var(--ink);
+    color:var(--paper);
+    font-family:var(--body);
+    line-height:1.62;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+
+  .wrap{max-width:var(--max);margin:0 auto;padding:0 24px;position:relative;z-index:2}
+
+  /* ===== halftone utility ===== */
+  .halftone{
+    position:absolute;inset:0;pointer-events:none;
+    background-image:radial-gradient(circle, rgba(255,255,255,.16) 1.1px, transparent 1.1px);
+    background-size:7px 7px;
+    mask-image:linear-gradient(160deg,#000 0%,transparent 62%);
+    -webkit-mask-image:linear-gradient(160deg,#000 0%,transparent 62%);
+  }
+
+  /* ===== NAV ===== */
+  nav{
+    position:fixed;top:0;left:0;right:0;z-index:100;
+    background:rgba(11,4,16,.82);backdrop-filter:blur(12px);
+    border-bottom:2px solid transparent;transition:border-color .3s;
+  }
+  nav.scrolled{border-bottom-color:var(--violet)}
+  .nav-in{
+    max-width:var(--max);margin:0 auto;padding:14px 24px;
+    display:flex;align-items:center;justify-content:space-between;gap:16px;
+  }
+  .logo{
+    display:flex;align-items:center;gap:12px;text-decoration:none;
+    transition:transform .18s;
+  }
+  .logo:hover{transform:translateY(-2px)}
+  .logo img{
+    height:58px;width:auto;display:block;
+    filter:drop-shadow(0 0 18px rgba(169,107,255,.55));
+  }
+  @media(max-width:520px){.logo img{height:46px}}
+  .logo em{
+    font-family:var(--disp);font-style:normal;font-size:1.02rem;
+    letter-spacing:.05em;text-transform:uppercase;color:var(--paper);
+    transform:skewX(-8deg);display:inline-block;
+    padding-left:12px;border-left:2px solid var(--violet);
+  }
+  @media(max-width:520px){.logo em{display:none}}
+  .nav-links{display:flex;align-items:center;gap:26px}
+  .nav-links a{
+    font-family:var(--disp);font-size:.95rem;letter-spacing:.04em;
+    text-transform:uppercase;color:var(--muted);text-decoration:none;
+    transform:skewX(-8deg);display:inline-block;transition:color .18s,transform .18s;
+  }
+  .nav-links a:hover{color:var(--violet-hi);transform:skewX(-8deg) translateY(-2px)}
+  .lang{
+    font-family:var(--disp);background:var(--violet);border:0;color:#fff;
+    padding:7px 15px;font-size:.85rem;letter-spacing:.06em;cursor:pointer;
+    transform:skewX(-8deg);transition:background .18s,transform .18s;
+  }
+  .lang:hover{background:var(--magenta);transform:skewX(-8deg) translateY(-2px)}
+  @media(max-width:780px){.nav-links a{display:none}}
+
+  /* ===== HERO ===== */
+  header{
+    position:relative;min-height:100svh;display:flex;align-items:center;
+    padding:150px 0 90px;overflow:hidden;
+    background:
+      radial-gradient(1000px 620px at 80% 12%, rgba(139,63,255,.30), transparent 62%),
+      radial-gradient(760px 520px at 8% 92%, rgba(255,46,136,.18), transparent 60%),
+      var(--ink);
+  }
+  /* diagonal violet slab behind hero */
+  .slab{
+    position:absolute;z-index:0;pointer-events:none;
+    background:var(--violet-deep);
+  }
+  .slab-a{
+    top:-14%;right:-16%;width:74%;height:132%;
+    transform:rotate(13deg);
+    background:linear-gradient(200deg,var(--violet) 0%,var(--violet-deep) 78%);
+    opacity:.42;
+  }
+  .slab-b{
+    bottom:-24%;left:-12%;width:52%;height:64%;
+    transform:rotate(-9deg);background:var(--magenta);opacity:.14;
+  }
+
+  /* marca de agua del logo, atras de todo */
+  .watermark{
+    position:absolute;z-index:0;pointer-events:none;user-select:none;
+    right:-4%;top:10%;width:min(56%,700px);
+    opacity:.34;transform:rotate(-7deg);
+    mix-blend-mode:screen;   /* plata sobre violeta: screen lo hace brillar */
+    filter:drop-shadow(0 0 46px rgba(169,107,255,.75));
+  }
+  .watermark img{width:100%;height:auto;display:block}
+  @media(max-width:820px){.watermark{width:88%;right:-14%;top:7%;opacity:.2}}
+
+  .kicker{
+    display:inline-block;font-family:var(--disp);text-transform:uppercase;
+    font-size:.82rem;letter-spacing:.2em;color:#fff;background:var(--magenta);
+    padding:7px 16px;transform:skewX(-11deg);margin-bottom:30px;
+  }
+
+  h1{
+    font-family:var(--disp);font-weight:400;text-transform:uppercase;
+    line-height:.86;letter-spacing:.005em;margin-bottom:34px;
+  }
+  h1 .l{
+    display:block;transform-origin:left center;
+  }
+  h1 .l1{font-size:clamp(2.7rem,9.4vw,7.4rem);transform:skewX(-10deg) rotate(-2.4deg)}
+  h1 .l2{
+    font-size:clamp(3.3rem,12.6vw,10rem);transform:skewX(-10deg) rotate(-1.1deg);
+    margin-left:.06em;color:transparent;
+    -webkit-text-stroke:2.5px var(--violet-hi);
+  }
+  h1 .l3{
+    font-size:clamp(2.9rem,10.4vw,8.2rem);transform:skewX(-10deg) rotate(1.5deg);
+    margin-left:.16em;color:var(--violet-hi);
+  }
+
+  .lede{
+    position:relative;font-size:clamp(1rem,1.9vw,1.2rem);color:#d8cdf0;
+    max-width:54ch;margin-bottom:38px;padding-left:20px;
+  }
+  /* la barra magenta ahora es pseudo-elemento para poder animarla */
+  .lede::before{
+    content:"";position:absolute;left:0;top:0;bottom:0;width:4px;
+    background:var(--magenta);transform:scaleY(0);transform-origin:top;
+  }
+  .lede.go::before{animation:barGrow .46s cubic-bezier(.2,1.3,.35,1) both}
+  @keyframes barGrow{to{transform:scaleY(1)}}
+
+  .cta-row{display:flex;flex-wrap:wrap;gap:14px}
+  .btn{
+    font-family:var(--disp);text-transform:uppercase;letter-spacing:.05em;
+    font-size:1rem;text-decoration:none;padding:15px 30px;
+    transform:skewX(-10deg);display:inline-block;
+    transition:transform .18s,background .18s,color .18s;
+  }
+  .btn i{display:inline-block;transform:skewX(10deg);font-style:normal}
+  .btn-1{background:var(--violet);color:#fff}
+  .btn-1:hover{background:var(--magenta);transform:skewX(-10deg) translate(-3px,-3px)}
+  .btn-2{background:transparent;color:var(--paper);box-shadow:inset 0 0 0 2px var(--violet-hi)}
+  .btn-2:hover{background:var(--violet-hi);color:var(--ink);transform:skewX(-10deg) translate(-3px,-3px)}
+
+  .stats{
+    position:relative;display:flex;flex-wrap:wrap;gap:40px;margin-top:70px;padding-top:30px;
+  }
+  /* la linea divisoria se dibuja de izquierda a derecha */
+  .stats::before{
+    content:"";position:absolute;top:0;left:0;right:0;height:2px;
+    background:var(--line);transform:scaleX(0);transform-origin:left;
+  }
+  .stats.go::before{animation:lineDraw .58s cubic-bezier(.4,0,.2,1) both}
+  @keyframes lineDraw{to{transform:scaleX(1)}}
+  .stat{opacity:0}
+  .stats.go .stat{
+    animation:statIn .40s cubic-bezier(.15,1.6,.36,1) both;
+    animation-delay:calc(260ms + var(--i,0) * 90ms);
+  }
+  @keyframes statIn{
+    0%  {opacity:0;transform:translateY(16px) scale(.8)}
+    100%{opacity:1;transform:translateY(0) scale(1)}
+  }
+  .stat b{
+    display:block;font-family:var(--disp);font-weight:400;
+    font-size:2.1rem;line-height:1;color:var(--violet-hi);
+    transform:skewX(-8deg);transform-origin:left;
+  }
+  .stat span{font-size:.8rem;color:var(--muted);text-transform:uppercase;letter-spacing:.1em}
+
+  /* ===== SECTIONS ===== */
+  section{position:relative;padding:120px 0;overflow:hidden}
+  section + section{border-top:2px solid var(--line)}
+
+  .sec-head{margin-bottom:58px;position:relative}
+  .sec-num{
+    position:absolute;top:-46px;right:0;font-family:var(--disp);
+    font-size:clamp(6rem,17vw,13rem);line-height:.8;color:transparent;
+    -webkit-text-stroke:2px rgba(139,63,255,.30);
+    transform:skewX(-10deg);pointer-events:none;z-index:0;user-select:none;
+  }
+  .sec-tag{
+    display:inline-block;font-family:var(--disp);text-transform:uppercase;
+    font-size:.78rem;letter-spacing:.2em;background:var(--violet);color:#fff;
+    padding:6px 14px;transform:skewX(-11deg);margin-bottom:18px;
+  }
+  h2{
+    font-family:var(--disp);font-weight:400;text-transform:uppercase;
+    font-size:clamp(2.1rem,6vw,4.2rem);line-height:.92;letter-spacing:.01em;
+    transform:skewX(-9deg);transform-origin:left;margin-bottom:16px;position:relative;z-index:1;
+  }
+  h2 em{font-style:normal;color:var(--violet-hi)}
+  .sec-head p{color:var(--muted);max-width:56ch;position:relative;z-index:1}
+
+  /* ===== WORK ===== */
+  .work-grid{display:grid;gap:28px;grid-template-columns:repeat(auto-fit,minmax(320px,1fr))}
+  .card{
+    background:var(--ink-2);border:2px solid var(--line);position:relative;
+    transition:border-color .22s,transform .22s;
+  }
+  .card:hover{border-color:var(--violet);transform:translate(-4px,-4px)}
+  .card::after{
+    content:"";position:absolute;inset:0;pointer-events:none;
+    box-shadow:8px 8px 0 rgba(139,63,255,0);transition:box-shadow .22s;
+  }
+  .card:hover::after{box-shadow:8px 8px 0 var(--violet)}
+  .frame{position:relative;width:100%;aspect-ratio:16/9;background:#000;border-bottom:2px solid var(--line)}
+  .frame iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+  .card-body{padding:22px 24px 26px}
+  .card-body h3{
+    font-family:var(--disp);font-weight:400;text-transform:uppercase;
+    font-size:1.3rem;letter-spacing:.02em;transform:skewX(-8deg);
+    transform-origin:left;margin-bottom:9px;
+  }
+  .card-body p{color:var(--muted);font-size:.9rem}
+
+  /* ===== SERVICES ===== */
+  .svc-list{display:grid;gap:18px}
+  .svc{
+    position:relative;background:var(--ink-2);border-left:6px solid var(--violet);
+    padding:30px 32px 30px 36px;overflow:hidden;
+    transition:transform .22s,border-color .22s,background .22s;
+  }
+  .svc:hover{transform:translateX(9px);border-left-color:var(--magenta);background:#1c0b33}
+  .svc-bignum{
+    position:absolute;right:14px;top:50%;translate:0 -50%;
+    font-family:var(--disp);font-size:5.4rem;line-height:1;
+    color:transparent;-webkit-text-stroke:2px rgba(169,107,255,.24);
+    transform:skewX(-10deg);pointer-events:none;user-select:none;
+  }
+  .svc h3{
+    font-family:var(--disp);font-weight:400;text-transform:uppercase;
+    font-size:clamp(1.25rem,3vw,1.75rem);letter-spacing:.02em;
+    transform:skewX(-8deg);transform-origin:left;margin-bottom:9px;
+  }
+  .svc p{color:var(--muted);font-size:.95rem;max-width:62ch;position:relative;z-index:1}
+
+  /* ===== EXPERIENCE ===== */
+  .creds{display:grid;gap:24px;grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+  .cred{position:relative;padding:24px 22px;background:var(--ink-2);border:2px solid var(--line)}
+  .cred::before{
+    content:"";position:absolute;top:-2px;left:-2px;width:46px;height:6px;background:var(--magenta);
+  }
+  .cred h3{
+    font-family:var(--disp);font-weight:400;text-transform:uppercase;font-size:1.12rem;
+    letter-spacing:.02em;margin-bottom:9px;transform:skewX(-8deg);transform-origin:left;
+    color:var(--violet-hi);
+  }
+  .cred p{color:var(--muted);font-size:.9rem}
+
+  /* ===== CONTACT ===== */
+  #contacto{
+    background:
+      radial-gradient(760px 460px at 50% 20%, rgba(139,63,255,.28), transparent 64%),
+      var(--ink);
+    text-align:center;
+  }
+  #contacto .wrap{max-width:760px}
+  .mail{
+    display:inline-block;font-family:var(--disp);text-transform:uppercase;
+    font-size:clamp(1.15rem,4.4vw,2.6rem);letter-spacing:.01em;
+    color:var(--paper);text-decoration:none;background:var(--violet);
+    padding:14px 30px;transform:skewX(-10deg);margin-top:12px;
+    transition:background .18s,transform .18s;word-break:break-all;
+  }
+  .mail span{display:inline-block;transform:skewX(10deg)}
+  .mail:hover{background:var(--magenta);transform:skewX(-10deg) translate(-4px,-4px)}
+
+  footer{
+    border-top:2px solid var(--line);padding:34px 0;color:var(--muted);font-size:.82rem;
+  }
+  .foot-in{display:flex;flex-wrap:wrap;gap:14px;justify-content:space-between}
+
+  /* ===== REVEAL (snap-in, estilo Persona) ===== */
+  .rv{opacity:0;transform:translate(-26px,14px) skewX(-6deg)}
+  .rv.in{
+    opacity:1;transform:none;
+    transition:opacity .42s ease-out, transform .58s cubic-bezier(.18,1.35,.36,1);
+  }
+
+  /* ===== SLAM: cada palabra entra de golpe y rebota ===== */
+  .slam .wd{
+    display:inline-block;opacity:0;
+    transform:translateX(-.5em) skewX(-30deg) scaleX(1.45);
+    transform-origin:left center;
+  }
+  .slam.go .wd{
+    animation:slamIn .40s cubic-bezier(.12,1.55,.32,1) both;
+    animation-delay:calc(var(--i,0) * 52ms);
+  }
+  @keyframes slamIn{
+    0%  {opacity:0;transform:translateX(-.5em) skewX(-30deg) scaleX(1.45)}
+    55% {opacity:1}
+    100%{opacity:1;transform:translateX(0) skewX(0) scaleX(1)}
+  }
+
+  /* barrido magenta que cruza los titulos al entrar */
+  /* padding+margin negativo: evita que overflow:hidden recorte el texto inclinado */
+  .swipe{position:relative;overflow:hidden;padding:.10em .14em;margin:-.10em -.14em}
+  .swipe::after{
+    content:"";position:absolute;inset:-8% -4%;background:var(--magenta);
+    transform:translateX(-108%) skewX(-14deg);pointer-events:none;
+  }
+  .swipe.go::after{animation:swipeBy .62s cubic-bezier(.5,0,.2,1) .06s both}
+  @keyframes swipeBy{
+    0%  {transform:translateX(-108%) skewX(-14deg)}
+    100%{transform:translateX(112%)  skewX(-14deg)}
+  }
+
+  /* etiquetas y botones: golpe seco con sobre-escala */
+  .pop{opacity:0}
+  .pop.go{animation:popIn .34s cubic-bezier(.15,1.7,.4,1) both}
+  @keyframes popIn{
+    0%  {opacity:0;transform:skewX(-11deg) scale(.62) translateY(10px)}
+    100%{opacity:1;transform:skewX(-11deg) scale(1) translateY(0)}
+  }
+  .kicker.pop.go, .sec-tag.pop.go{animation-name:popIn}
+
+  /* ===== texto corrido: entra suave pero con desplazamiento ===== */
+  .fade{opacity:0}
+  .fade.go{animation:fadeUp .52s cubic-bezier(.2,1.15,.35,1) both}
+  @keyframes fadeUp{
+    0%  {opacity:0;transform:translateY(18px)}
+    100%{opacity:1;transform:translateY(0)}
+  }
+
+  /* ===== BROCHAZO DE HOVER (menu de Persona) ===== */
+  .brush{position:relative;isolation:isolate}
+  .brush::before{
+    content:"";position:absolute;inset:-30% -14%;z-index:-1;
+    background:var(--magenta);
+    /* bordes irregulares: simula una pincelada, no un rectangulo */
+    clip-path:polygon(
+      0% 40%,  5% 12%, 30% 22%, 55% 8%,  80% 20%, 97% 10%, 100% 44%,
+      98% 72%, 94% 94%, 70% 80%, 45% 95%, 22% 78%, 4% 92%
+    );
+    transform:scaleX(0) skewX(-12deg);transform-origin:left center;
+    transition:transform .28s cubic-bezier(.25,1.5,.4,1);
+  }
+  .brush:hover::before,.brush:focus-visible::before{transform:scaleX(1) skewX(-12deg)}
+  .nav-links a.brush:hover{color:#fff}
+
+  /* En servicios el brochazo tacha el titulo al pasar sobre toda la fila,
+     igual que el item seleccionado del menu de Persona. */
+  .svc h3{position:relative;isolation:isolate;display:inline-block}
+  .svc h3::before{
+    content:"";position:absolute;inset:-26% -8%;z-index:-1;background:var(--magenta);
+    clip-path:polygon(
+      0% 40%,  5% 12%, 30% 22%, 55% 8%,  80% 20%, 97% 10%, 100% 44%,
+      98% 72%, 94% 94%, 70% 80%, 45% 95%, 22% 78%, 4% 92%
+    );
+    transform:scaleX(0) skewX(-12deg);transform-origin:left center;
+    transition:transform .28s cubic-bezier(.25,1.5,.4,1);
+  }
+  .svc:hover h3::before{transform:scaleX(1) skewX(-12deg)}
+  .svc h3{transition:color .2s}
+  .svc:hover h3{color:#fff}
+
+  @media(prefers-reduced-motion:reduce){
+    .fade,.fade.go{opacity:1;animation:none;transform:none}
+    .lede::before,.lede.go::before{transform:scaleY(1);animation:none}
+    .stats::before,.stats.go::before{transform:scaleX(1);animation:none}
+    .stat,.stats.go .stat{opacity:1;animation:none;transform:none}
+    .brush::before{display:none}
+    .rv,.rv.in{opacity:1;transform:none;transition:none}
+    .slam .wd,.slam.go .wd{opacity:1;transform:none;animation:none}
+    .pop,.pop.go{opacity:1;animation:none;transform:skewX(-11deg)}
+    .swipe::after,.swipe.go::after{display:none;animation:none}
+    html{scroll-behavior:auto}
+    .btn:hover,.card:hover,.svc:hover,.mail:hover,.nav-links a:hover,.lang:hover,.logo:hover{transform:none}
+  }
+</style>
+</head>
+<body>
+
+<nav id="nav">
+  <div class="nav-in">
+    <a href="#" class="logo" aria-label="NotMan · Rubén Rivera">
+      <picture>
+        <source srcset="/assets/logo.webp" type="image/webp">
+        <img src="/assets/logo.png" alt="NotMan" width="440" height="247">
+      </picture>
+      <em>Rubén Rivera</em>
+    </a>
+    <div class="nav-links">
+      <a href="#trabajo" data-es="Trabajo" data-en="Work">Trabajo</a>
+      <a href="#servicios" data-es="Servicios" data-en="Services">Servicios</a>
+      <a href="#experiencia" data-es="Experiencia" data-en="Experience">Experiencia</a>
+      <a href="#contacto" data-es="Contacto" data-en="Contact">Contacto</a>
+    </div>
+    <button class="lang" id="langBtn">EN</button>
+  </div>
+</nav>
+
+<header>
+  <div class="slab slab-a"></div>
+  <div class="slab slab-b"></div>
+  <div class="watermark" aria-hidden="true"><img src="/assets/logo-lg.webp" alt="" width="1200" height="675" loading="lazy"></div>
+  <div class="halftone"></div>
+
+  <div class="wrap">
+    <span class="kicker" data-es="Rubén Rivera · Querétaro, México" data-en="Rubén Rivera · Querétaro, Mexico">Rubén Rivera · Querétaro, México</span>
+
+    <h1>
+      <span class="l l1" data-es="Motion graphics" data-en="Motion graphics">Motion graphics</span>
+      <span class="l l2" data-es="y video para" data-en="and video for">y video para</span>
+      <span class="l l3" data-es="marcas deportivas" data-en="sports brands">marcas deportivas</span>
+    </h1>
+
+    <p class="lede" data-es="Nueve años diseñando y animando para agencias, clubes y representantes de atletas. Reels de matchday, intros de jugadores, video case studies y sitios que comunican el valor real de un patrocinio." data-en="Nine years designing and animating for agencies, clubs and athlete representatives. Matchday reels, player intros, video case studies and sites that communicate what a sponsorship is actually worth.">Nueve años diseñando y animando para agencias, clubes y representantes de atletas. Reels de matchday, intros de jugadores, video case studies y sitios que comunican el valor real de un patrocinio.</p>
+
+    <div class="cta-row">
+      <a href="#trabajo" class="btn btn-1"><i data-es="Ver mi trabajo" data-en="See my work">Ver mi trabajo</i></a>
+      <a href="#contacto" class="btn btn-2"><i data-es="Trabajemos juntos" data-en="Let's work together">Trabajemos juntos</i></a>
+    </div>
+
+    <div class="stats">
+      <div class="stat"><b>9+</b><span data-es="años en agencias" data-en="years in agencies">años en agencias</span></div>
+      <div class="stat"><b>2D / 3D</b><span data-es="motion graphics" data-en="motion graphics">motion graphics</span></div>
+      <div class="stat"><b>MX · ES · MENA</b><span data-es="mercados" data-en="markets">mercados</span></div>
+    </div>
+  </div>
+</header>
+
+<section id="trabajo">
+  <div class="halftone"></div>
+  <div class="wrap">
+    <div class="sec-head rv">
+      <span class="sec-num">01</span>
+      <span class="sec-tag" data-es="Portafolio" data-en="Portfolio">Portafolio</span>
+      <h2 data-es="Reel y <em>casos</em>" data-en="Reel and <em>case work</em>">Reel y <em>casos</em></h2>
+      <p data-es="Animación, edición deportiva y diseño de interfaz. Dale play." data-en="Animation, sports editing and interface design. Hit play.">Animación, edición deportiva y diseño de interfaz. Dale play.</p>
+    </div>
+
+    <div class="work-grid">
+      <article class="card rv">
+        <div class="frame"><iframe src="https://drive.google.com/file/d/1siqcAjyDYzRYeVd0EKn1E4dbUBghV-18/preview" allow="autoplay" allowfullscreen title="Animation Reel"></iframe></div>
+        <div class="card-body">
+          <h3 data-es="Reel de animación" data-en="Animation reel">Reel de animación</h3>
+          <p data-es="Motion graphics 2D y 3D: intros, transiciones, piezas para redes y anuncios animados." data-en="2D and 3D motion graphics: intros, transitions, social pieces and animated ads.">Motion graphics 2D y 3D: intros, transiciones, piezas para redes y anuncios animados.</p>
+        </div>
+      </article>
+
+      <article class="card rv">
+        <div class="frame"><iframe src="https://drive.google.com/file/d/1okc8-yI_boWTaEM98IsDNFdwr1e4IDEH/preview" allow="autoplay" allowfullscreen title="Sports Portfolio"></iframe></div>
+        <div class="card-body">
+          <h3 data-es="Portafolio deportivo" data-en="Sports portfolio">Portafolio deportivo</h3>
+          <p data-es="Highlights de atletas, contenido de matchday y material para campañas de patrocinio." data-en="Athlete highlights, matchday content and sponsorship campaign material.">Highlights de atletas, contenido de matchday y material para campañas de patrocinio.</p>
+        </div>
+      </article>
+
+      <article class="card rv">
+        <div class="frame"><iframe src="https://drive.google.com/file/d/14RnxxzYF4hV2xXDBEVEcAPKvAPnMPmZ1/preview" allow="autoplay" allowfullscreen title="Web Portfolio"></iframe></div>
+        <div class="card-body">
+          <h3 data-es="Portafolio web (UI/UX)" data-en="Web portfolio (UI/UX)">Portafolio web (UI/UX)</h3>
+          <p data-es="Landing pages interactivas, media kits modernizados e interfaces con micro-animaciones." data-en="Interactive landing pages, modernized media kits and interfaces with micro-animations.">Landing pages interactivas, media kits modernizados e interfaces con micro-animaciones.</p>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section id="servicios">
+  <div class="halftone"></div>
+  <div class="wrap">
+    <div class="sec-head rv">
+      <span class="sec-num">02</span>
+      <span class="sec-tag" data-es="Qué hago" data-en="What I do">Qué hago</span>
+      <h2 data-es="Cuatro formas de <em>trabajar juntos</em>" data-en="Four ways to <em>work together</em>">Cuatro formas de <em>trabajar juntos</em></h2>
+    </div>
+
+    <div class="svc-list">
+      <div class="svc rv">
+        <span class="svc-bignum">01</span>
+        <h3 data-es="Motion graphics 2D/3D" data-en="2D/3D motion graphics">Motion graphics 2D/3D</h3>
+        <p data-es="Anuncios animados, intros de jugadores, paquetes gráficos para transmisión y piezas verticales optimizadas para Reels y TikTok." data-en="Animated ads, player intros, broadcast graphics packages and vertical pieces optimized for Reels and TikTok.">Anuncios animados, intros de jugadores, paquetes gráficos para transmisión y piezas verticales optimizadas para Reels y TikTok.</p>
+      </div>
+      <div class="svc rv">
+        <span class="svc-bignum">02</span>
+        <h3 data-es="Edición de video deportiva" data-en="Sports video editing">Edición de video deportiva</h3>
+        <p data-es="Reels publicitarios, contenido de matchday, highlights de atletas y video case studies que traducen resultados en historia." data-en="Ad reels, matchday content, athlete highlights and video case studies that turn results into a story.">Reels publicitarios, contenido de matchday, highlights de atletas y video case studies que traducen resultados en historia.</p>
+      </div>
+      <div class="svc rv">
+        <span class="svc-bignum">03</span>
+        <h3 data-es="Diseño web UI/UX" data-en="Web design UI/UX">Diseño web UI/UX</h3>
+        <p data-es="Landing pages interactivas y modernización de media kits, para que la presencia digital esté a la altura del talento que representas." data-en="Interactive landing pages and media kit modernization, so the digital presence matches the talent you represent.">Landing pages interactivas y modernización de media kits, para que la presencia digital esté a la altura del talento que representas.</p>
+      </div>
+      <div class="svc rv">
+        <span class="svc-bignum">04</span>
+        <h3 data-es="Soporte marca blanca" data-en="White-label support">Soporte marca blanca</h3>
+        <p data-es="Aliado externo para agencias: absorbo picos de trabajo sin que tengas que elevar costos fijos ni contratar de más." data-en="External ally for agencies: I absorb workload peaks without you raising fixed costs or over-hiring.">Aliado externo para agencias: absorbo picos de trabajo sin que tengas que elevar costos fijos ni contratar de más.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="experiencia">
+  <div class="halftone"></div>
+  <div class="wrap">
+    <div class="sec-head rv">
+      <span class="sec-num">03</span>
+      <span class="sec-tag" data-es="Trayectoria" data-en="Track record">Trayectoria</span>
+      <h2 data-es="Dónde he <em>trabajado</em>" data-en="Where I've <em>worked</em>">Dónde he <em>trabajado</em></h2>
+    </div>
+
+    <div class="creds">
+      <div class="cred rv">
+        <h3>Victorem Sports Marketing</h3>
+        <p data-es="Nueve años de experiencia en agencia, con especialización en el sector deportivo." data-en="Nine years of agency experience, specialized in the sports sector.">Nueve años de experiencia en agencia, con especialización en el sector deportivo.</p>
+      </div>
+      <div class="cred rv">
+        <h3>Hugo González · Mazatlán FC</h3>
+        <p data-es="Branding e imagen digital para el arquero profesional durante su etapa en el club." data-en="Branding and digital image for the professional goalkeeper during his time at the club.">Branding e imagen digital para el arquero profesional durante su etapa en el club.</p>
+      </div>
+      <div class="cred rv">
+        <h3>Al-Arabi SC Volleyball · Catar</h3>
+        <p data-es="Diseño visual y piezas gráficas para una propiedad deportiva internacional en Doha." data-en="Visual design and graphic assets for an international sports property in Doha.">Diseño visual y piezas gráficas para una propiedad deportiva internacional en Doha.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="contacto">
+  <div class="halftone"></div>
+  <div class="wrap rv">
+    <span class="sec-tag" data-es="Contacto" data-en="Contact">Contacto</span>
+    <h2 style="transform:skewX(-9deg)" data-es="¿Tienes un <em>proyecto</em> en mente?" data-en="Got a <em>project</em> in mind?">¿Tienes un <em>proyecto</em> en mente?</h2>
+    <p style="color:var(--muted);margin-bottom:22px" data-es="Cuéntame qué necesitas y te respondo el mismo día. Si prefieres, agendamos 15 minutos y te muestro ideas concretas para tu marca." data-en="Tell me what you need and I'll reply the same day. If you prefer, we can book 15 minutes and I'll show you concrete ideas for your brand.">Cuéntame qué necesitas y te respondo el mismo día. Si prefieres, agendamos 15 minutos y te muestro ideas concretas para tu marca.</p>
+    <a href="mailto:hola@notmanrivera.com" class="mail"><span>hola@notmanrivera.com</span></a>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap foot-in">
+    <span style="display:flex;align-items:center;gap:10px">
+      <picture>
+        <source srcset="/assets/logo.webp" type="image/webp">
+        <img src="/assets/logo.png" alt="NotMan" style="height:26px;width:auto;opacity:.7" width="440" height="247" loading="lazy">
+      </picture>
+      © <span id="yr"></span> Rubén Rivera
+    </span>
+    <span data-es="Diseño y animación deportiva · Querétaro, México" data-en="Sports design and animation · Querétaro, Mexico">Diseño y animación deportiva · Querétaro, México</span>
+  </div>
+</footer>
+
+<script>
+  document.getElementById('yr').textContent = new Date().getFullYear();
+
+  const nav = document.getElementById('nav');
+  const onScroll = () => nav.classList.toggle('scrolled', window.scrollY > 8);
+  onScroll();
+  addEventListener('scroll', onScroll, {passive:true});
+
+  // Snap-in reveal, escalonado dentro de cada grupo
+  const io = new IntersectionObserver((es) => {
+    es.forEach((e, i) => {
+      if (!e.isIntersecting) return;
+      e.target.style.transitionDelay = (i * 70) + 'ms';
+      e.target.classList.add('in');
+      io.unobserve(e.target);
+    });
+  }, {threshold:.12, rootMargin:'0px 0px -50px 0px'});
+  document.querySelectorAll('.rv').forEach(el => io.observe(el));
+
+  /* ===== Animacion de texto estilo Persona ===== */
+  const SLAM = 'header h1 .l, h2, .svc h3, .card-body h3, .cred h3';
+  const POP  = '.kicker, .sec-tag, .btn, .mail';
+  const FADE = '.sec-head p, .svc p, .card-body p, .cred p, #contacto .wrap > p, .foot-in > span';
+  const SOLO = '.lede, .stats';           // traen animacion propia, solo piden .go
+  const TODO = [SLAM, POP, FADE, SOLO].join(', ');
+
+  // brochazo de hover en los enlaces del menu
+  document.querySelectorAll('.nav-links a').forEach(a => a.classList.add('brush'));
+  // indices para escalonar las estadisticas
+  document.querySelectorAll('.stats .stat').forEach((el,i) => el.style.setProperty('--i', i));
+
+  // Parte el texto en palabras conservando etiquetas internas como <em>
+  function splitWords(el){
+    const piezas = [];
+    el.childNodes.forEach(n => {
+      if (n.nodeType === 3){
+        n.textContent.split(/(\s+)/).forEach(t => {
+          piezas.push(t.trim() ? `<span class="wd">${t}</span>` : t);
+        });
+      } else if (n.nodeType === 1){
+        const tag = n.tagName.toLowerCase();
+        const dentro = n.textContent.split(/(\s+)/)
+          .map(t => t.trim() ? `<span class="wd">${t}</span>` : t).join('');
+        piezas.push(`<${tag}>${dentro}</${tag}>`);
+      }
+    });
+    el.innerHTML = piezas.join('');
+    el.querySelectorAll('.wd').forEach((s,i) => s.style.setProperty('--i', i));
+  }
+
+  function prepararTexto(raiz = document){
+    raiz.querySelectorAll(SLAM).forEach(el => {
+      el.classList.add('slam');
+      if (el.tagName === 'H2') el.classList.add('swipe');
+      splitWords(el);
+    });
+    raiz.querySelectorAll(POP).forEach(el => el.classList.add('pop'));
+    raiz.querySelectorAll(FADE).forEach(el => el.classList.add('fade'));
+  }
+
+  function dispararTexto(el){ el.classList.add('go'); }
+
+  prepararTexto();
+
+  // Lo del hero entra solo al cargar; lo demas al llegar con el scroll
+  const enHero = el => el.closest('header') !== null;
+  const ioTexto = new IntersectionObserver((es) => {
+    es.forEach(e => {
+      if (!e.isIntersecting) return;
+      dispararTexto(e.target);
+      ioTexto.unobserve(e.target);
+    });
+  }, {threshold:.25, rootMargin:'0px 0px -40px 0px'});
+
+  document.querySelectorAll(TODO).forEach(el => {
+    if (enHero(el)) return;
+    ioTexto.observe(el);
+  });
+
+  // Entrada del hero, escalonada: kicker -> 3 lineas del titulo -> lede -> botones -> stats
+  function entradaHero(){
+    const orden = [
+      ...document.querySelectorAll('header .kicker'),
+      ...document.querySelectorAll('header h1 .l'),
+      ...document.querySelectorAll('header .lede'),
+      ...document.querySelectorAll('header .btn'),
+      ...document.querySelectorAll('header .stats'),
+    ];
+    orden.forEach((el, i) => setTimeout(() => dispararTexto(el), 90 + i * 105));
+  }
+  if (document.readyState === 'complete') entradaHero();
+  else addEventListener('load', entradaHero);
+
+  // Parallax suave de los bloques diagonales
+  const slabA = document.querySelector('.slab-a');
+  const slabB = document.querySelector('.slab-b');
+  if (slabA && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    addEventListener('scroll', () => {
+      const y = window.scrollY;
+      slabA.style.transform = `rotate(13deg) translateY(${y * 0.06}px)`;
+      slabB.style.transform = `rotate(-9deg) translateY(${y * -0.04}px)`;
+    }, {passive:true});
+  }
+
+  // Toggle de idioma
+  let lang = 'es';
+  const btn = document.getElementById('langBtn');
+  btn.addEventListener('click', () => {
+    lang = lang === 'es' ? 'en' : 'es';
+    btn.textContent = lang === 'es' ? 'EN' : 'ES';
+    document.documentElement.lang = lang;
+
+    // Reemplazar el texto borra los <span class="wd">, hay que volver a partirlo
+    document.querySelectorAll('[data-es][data-en]').forEach(el => {
+      el.innerHTML = el.getAttribute('data-' + lang);
+      if (el.classList.contains('slam')){
+        el.classList.remove('go');
+        splitWords(el);
+        void el.offsetWidth;          // reinicia la animacion
+        requestAnimationFrame(() => el.classList.add('go'));
+      }
+    });
+  });
+</script>
+
+</body>
+</html>
