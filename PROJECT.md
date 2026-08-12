@@ -30,6 +30,10 @@ El cuerpo de texto queda recto y legible a propósito — el contraste entre lo 
 
 Bilingüe ES/EN con un toggle que re-parte el texto y vuelve a disparar todas las animaciones al cambiar de idioma.
 
+### Sección 04 · Status
+
+La sección `#status` es su CV leído como la pantalla de estado de Persona 4 Golden: panel de vitales a la izquierda, pentágono de atributos a la derecha sobre campo violeta plano con trama de puntos, y la tira de herramientas abajo con las barras literales del CV. Los cinco ejes (composición, movimiento, narrativa, estructura, resistencia) y sus rangos salen de su formación y su experiencia reales — si cambia el CV, hay que actualizar tanto los porcentajes del `<polygon class="valor">` como los `<circle class="punto">`, que están calculados a mano sobre un pentágono de centro `310,195` y radio `150`.
+
 ## Infraestructura
 
 - **Hosting:** Cloudflare Pages, proyecto `notmanrivera`
