@@ -18,7 +18,7 @@
 <meta name="twitter:description" content="Motion graphics 2D/3D, edición de video, diseño web UI/UX y soporte de marca blanca para agencias, representantes y jugadores profesionales.">
 <meta name="twitter:image" content="https://notmanrivera.com/assets/logo-lg.webp">
 <link rel="canonical" href="https://notmanrivera.com/">
-<meta name="theme-color" content="#0b0410">
+<meta name="theme-color" content="#000000">
 
 <script type="application/ld+json">
 {
@@ -86,16 +86,31 @@
     font-display:swap;
   }
 
+  /* ===== PALETA =====
+     Base de Persona 5: negro absoluto, blanco puro y rojo saturado. El negro
+     es negro de verdad, no un gris "amable": ese contraste entintado, de
+     comic, es justo el efecto que se busca.
+
+     Encima va el morado, que es la identidad de Ruben y no se toca. Para que
+     los dos acentos no se peleen, cada uno tiene un trabajo:
+       MORADO = quien es    -> marca, bordes, botones, numeros de seccion
+       ROJO   = que mirar   -> etiquetas, hover, cursor, barras de acento
+       BLANCO = la informacion
+       NEGRO  = todo lo demas
+     El magenta anterior se retiro: al lado del rojo de P5 se leian como el
+     mismo color mal impreso, y cinco colores ya no son un sistema. */
   :root{
-    --ink:#0b0410;
-    --ink-2:#150827;
+    --ink:#000000;
+    --ink-2:#12081f;          /* paneles: negro con morado dentro */
     --violet:#8B3FFF;
     --violet-hi:#A96BFF;
     --violet-deep:#4A1391;
-    --magenta:#FF2E88;
-    --paper:#F6F1FF;
-    --muted:#9D8FB8;
-    --line:#2c1a45;
+    --rojo:#E50012;
+    --rojo-hi:#FF2233;
+    --rojo-deep:#8E000B;
+    --paper:#FFFFFF;
+    --muted:#A99CC4;          /* algo mas claro que antes: sobre negro puro hace falta */
+    --line:#33204f;
     --max:1180px;
     --disp:"Kenyan Coffee",Impact,"Haettenschweiler","Arial Narrow Bold",sans-serif;
     --body:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
@@ -125,13 +140,12 @@
 
   /* el campo violeta en diagonal, como el fondo de una pantalla de titulo */
   .carga-campo{
-    position:absolute;inset:-10% -20%;z-index:0;background:var(--violet-deep);
+    position:absolute;inset:-10% -20%;z-index:0;background:var(--rojo);
     clip-path:polygon(0% 38%, 100% 8%, 100% 66%, 0% 92%);
-    opacity:.55;
   }
   .carga-puntos{
     position:absolute;inset:0;z-index:1;opacity:.5;
-    background-image:radial-gradient(rgba(169,107,255,.5) 1.1px, transparent 1.1px);
+    background-image:radial-gradient(rgba(0,0,0,.42) 1.1px, transparent 1.1px);
     background-size:11px 11px;
     -webkit-mask-image:radial-gradient(ellipse at center, #000 12%, transparent 72%);
             mask-image:radial-gradient(ellipse at center, #000 12%, transparent 72%);
@@ -139,7 +153,7 @@
   .carga-centro{position:relative;z-index:2;width:min(78%,460px);text-align:center}
   .carga-centro img{
     width:100%;height:auto;display:block;
-    filter:drop-shadow(5px 6px 0 var(--violet-deep)) drop-shadow(11px 13px 0 rgba(0,0,0,.55));
+    filter:drop-shadow(6px 7px 0 var(--ink));
     animation:cargaLogo .72s cubic-bezier(.14,1.5,.32,1) both;
   }
   @keyframes cargaLogo{
@@ -147,12 +161,12 @@
     100%{opacity:1;transform:skewX(0)      scale(1)}
   }
   .carga-pista{
-    margin:26px auto 0;height:6px;width:78%;
-    background:rgba(0,0,0,.55);border:2px solid var(--ink);
+    margin:26px auto 0;height:9px;width:78%;
+    background:var(--ink);border:2px solid var(--ink);
     transform:skewX(-16deg);overflow:hidden;
   }
   .carga-pista i{
-    display:block;height:100%;background:var(--magenta);
+    display:block;height:100%;background:var(--paper);
     transform-origin:left;transform:scaleX(0);
     animation:cargaBarra 1.15s cubic-bezier(.3,.7,.2,1) .18s both;
   }
@@ -235,7 +249,7 @@
   /* ===== NAV ===== */
   nav{
     position:fixed;top:0;left:0;right:0;z-index:100;
-    background:rgba(11,4,16,.82);backdrop-filter:blur(12px);
+    background:rgba(0,0,0,.86);backdrop-filter:blur(12px);
     border-bottom:2px solid transparent;transition:border-color .3s;
   }
   nav.scrolled{border-bottom-color:var(--violet)}
@@ -264,7 +278,7 @@
     padding:7px 15px;font-size:1.4rem;letter-spacing:.06em;cursor:pointer;
     transform:skewX(-8deg);transition:background .18s;
   }
-  .lang:hover{background:var(--magenta)}
+  .lang:hover{background:var(--rojo)}
 
   /* ===== BOTON QUE ABRE EL MENU ===== */
   .abrir-menu{
@@ -306,12 +320,12 @@
     position:absolute;left:-10%;right:-10%;top:24%;height:34%;
     transform:rotate(-7deg);pointer-events:none;
     background:repeating-linear-gradient(90deg,
-      rgba(255,46,136,.3) 0 3px, transparent 3px 16px);
+      rgba(229,0,18,.34) 0 3px, transparent 3px 16px);
   }
   .cerrar-menu{
     position:absolute;top:26px;right:30px;z-index:3;
     font-family:var(--disp);font-size:2.2rem;line-height:1;
-    background:var(--magenta);color:#fff;border:0;cursor:pointer;
+    background:var(--rojo);color:#fff;border:0;cursor:pointer;
     padding:8px 18px;transform:skewX(-10deg);transition:background .18s;
   }
   .cerrar-menu:hover{background:var(--paper);color:var(--ink)}
@@ -343,7 +357,7 @@
   /* el tachon del item activo, igual que el rojo sobre "SKILL" */
   .menu-lista a::before{
     content:"";position:absolute;left:-3%;right:-5%;top:34%;height:26%;
-    background:var(--magenta);z-index:-1;
+    background:var(--rojo);z-index:-1;
     transform:scaleX(0);transform-origin:left center;
     transition:transform .2s cubic-bezier(.2,1.5,.35,1);
   }
@@ -400,7 +414,7 @@
     bottom:14%;left:-14%;right:-14%;height:9%;
     transform:rotate(6deg);
     background:repeating-linear-gradient(90deg,
-      rgba(255,46,136,.14) 0 3px, transparent 3px 15px);
+      rgba(229,0,18,.3) 0 3px, transparent 3px 15px);
   }
 
   /* El logo ya no es marca de agua: es el titular. Ya no hay .watermark. */
@@ -418,13 +432,13 @@
   }
   .costado::after{
     content:"";display:block;width:2px;height:70px;margin:16px auto 0;
-    background:linear-gradient(180deg,var(--magenta),transparent);
+    background:linear-gradient(180deg,var(--rojo),transparent);
   }
   @media(max-width:1100px){.costado{display:none}}
 
   .kicker{
     display:inline-block;font-family:var(--disp);text-transform:uppercase;
-    font-size:1.28rem;letter-spacing:.2em;color:#fff;background:var(--magenta);
+    font-size:1.28rem;letter-spacing:.2em;color:#fff;background:var(--rojo);
     padding:7px 16px;transform:skewX(-11deg);margin-bottom:20px;
   }
 
@@ -468,13 +482,13 @@
   h1 .rota{min-height:1.05em}
 
   .lede{
-    position:relative;font-size:clamp(1rem,1.9vw,1.2rem);color:#d8cdf0;
+    position:relative;font-size:clamp(1rem,1.9vw,1.2rem);color:#DED4F2;
     max-width:54ch;margin-bottom:22px;padding-left:20px;
   }
   /* la barra magenta ahora es pseudo-elemento para poder animarla */
   .lede::before{
     content:"";position:absolute;left:0;top:0;bottom:0;width:4px;
-    background:var(--magenta);transform-origin:top;
+    background:var(--rojo);transform-origin:top;
   }
   /* Solo escondemos si el JS confirmo que esta vivo (clase .js en <html>).
      Sin esto, un fallo de JS dejaria el contenido invisible para siempre. */
@@ -495,8 +509,8 @@
     display:inline-block;transform:skewX(10deg);font-style:normal;
     transition:transform .18s cubic-bezier(.2,1.4,.3,1);
   }
-  .btn-1{background:var(--violet);color:#fff}
-  .btn-1:hover{background:var(--magenta)}
+  .btn-1{background:var(--rojo);color:var(--paper)}
+  .btn-1:hover{background:var(--violet)}
   .btn-2{background:transparent;color:var(--paper);box-shadow:inset 0 0 0 2px var(--violet-hi)}
   .btn-2:hover{background:var(--violet-hi);color:var(--ink)}
   .btn:hover i{transform:skewX(10deg) translate(-3px,-3px)}
@@ -533,7 +547,7 @@
      la firma de los menus de Persona */
   section + section::before{
     content:"";position:absolute;top:-3px;left:-4%;right:-4%;height:6px;
-    background:linear-gradient(90deg,transparent,var(--violet) 18%,var(--magenta) 50%,var(--violet) 82%,transparent);
+    background:linear-gradient(90deg,transparent,var(--violet) 18%,var(--rojo) 50%,var(--violet) 82%,transparent);
     transform:rotate(-1.1deg);
     pointer-events:none;z-index:1;
   }
@@ -556,12 +570,12 @@
   h2{position:relative}
   h2::before{
     content:"";position:absolute;left:-26px;top:14%;bottom:14%;width:7px;
-    background:var(--magenta);transform:skewX(-9deg);
+    background:var(--rojo);transform:skewX(-9deg);
   }
   @media(max-width:640px){h2::before{left:-14px;width:5px}}
   .sec-tag{
     display:inline-block;font-family:var(--disp);text-transform:uppercase;
-    font-size:1.24rem;letter-spacing:.2em;background:var(--violet);color:#fff;
+    font-size:1.24rem;letter-spacing:.2em;background:var(--rojo);color:var(--paper);
     padding:6px 14px;transform:skewX(-11deg);margin-bottom:18px;
   }
   h2{
@@ -610,7 +624,7 @@
   }
   /* el slide de hover vive en h3/p, no en .svc: la fila entera nunca se
      mueve, asi que el hover no puede parpadear cerca de sus bordes */
-  .svc:hover{border-left-color:var(--magenta);background:#1c0b33}
+  .svc:hover{border-left-color:var(--rojo);background:#1d0c33}
   .svc-bignum{
     position:absolute;right:14px;top:50%;translate:0 -50%;
     font-family:var(--disp);font-size:9.2rem;line-height:1;
@@ -631,7 +645,7 @@
   .creds{display:grid;gap:24px;grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
   .cred{position:relative;padding:24px 22px;background:var(--ink-2);border:2px solid var(--line)}
   .cred::before{
-    content:"";position:absolute;top:-2px;left:-2px;width:46px;height:6px;background:var(--magenta);
+    content:"";position:absolute;top:-2px;left:-2px;width:46px;height:6px;background:var(--rojo);
   }
   .cred h3{
     font-family:var(--disp);font-weight:400;text-transform:uppercase;font-size:1.9rem;
@@ -641,7 +655,7 @@
   .cred p{color:var(--muted);font-size:.9rem}
 
   /* ===== STATUS (ficha de personaje, tipo pantalla de Persona) ===== */
-  #perfil{background:linear-gradient(180deg,var(--ink) 0%,#150b28 55%,var(--ink) 100%)}
+  #perfil{background:linear-gradient(180deg,var(--ink) 0%,#12081f 55%,var(--ink) 100%)}
   .ficha{
     display:grid;gap:26px;align-items:stretch;
     grid-template-columns:minmax(280px,1fr) minmax(320px,1.35fr);
@@ -655,7 +669,7 @@
   }
   .ficha-yo::before{
     content:"";position:absolute;top:0;left:0;width:100%;height:8px;
-    background:linear-gradient(90deg,var(--magenta),var(--violet) 70%,transparent);
+    background:linear-gradient(90deg,var(--rojo),var(--violet) 70%,transparent);
   }
   /* el logo hace de "retrato": silueta blanca muy tenue, sangrada al borde.
      Va como <img> suelto, no dentro de <picture>: un <picture> es inline y
@@ -701,7 +715,7 @@
   }
   .yo-libre::before{
     content:"";width:9px;height:9px;flex:0 0 9px;
-    background:var(--magenta);transform:rotate(45deg);
+    background:var(--rojo);transform:rotate(45deg);
   }
   @media(prefers-reduced-motion:no-preference){
     .yo-libre::before{animation:latir 1.9s ease-in-out infinite}
@@ -739,19 +753,22 @@
   .radar{position:relative;width:100%;height:auto;display:block;overflow:visible}
   .radar .rejilla{fill:none;stroke:rgba(255,255,255,.26);stroke-width:1.5}
   .radar .radio{stroke:rgba(255,255,255,.26);stroke-width:1.5}
+  /* El poligono va en blanco y no en rojo a proposito: el panel ya es el
+     bloque morado (estructura) y meterle rojo encima pondria los dos acentos
+     a pelearse. El rojo entra solo en los vertices, que es lo que se mira. */
   .radar .valor{
-    fill:rgba(255,46,136,.5);stroke:var(--magenta);stroke-width:4;
+    fill:rgba(255,255,255,.2);stroke:var(--paper);stroke-width:4;
     stroke-linejoin:round;
-    transform-box:view-box;transform-origin:310px 195px;
+    transform-box:view-box;transform-origin:310px 205px;
   }
-  .radar .punto{fill:#fff;stroke:var(--ink);stroke-width:2}
+  .radar .punto{fill:var(--rojo);stroke:var(--paper);stroke-width:2.5}
   .radar .eje{
     font-family:var(--disp);font-size:20px;letter-spacing:.05em;
     fill:#fff;text-transform:uppercase;
   }
   .radar .rango{
     font-family:var(--body);font-size:12.5px;font-weight:600;letter-spacing:.12em;
-    fill:#FFC9E3;text-transform:uppercase;
+    fill:rgba(255,255,255,.74);text-transform:uppercase;
   }
   /* el poligono crece desde el centro con rebote */
   .js .radar .valor,.js .radar .punto{opacity:0}
@@ -786,7 +803,7 @@
     display:inline-block;transform:skewX(10deg);
     transition:transform .2s cubic-bezier(.2,1.4,.3,1);
   }
-  .mail:hover{background:var(--magenta)}
+  .mail:hover{background:var(--rojo)}
   .mail:hover span{transform:skewX(10deg) translate(-4px,-4px)}
 
   footer{
@@ -821,7 +838,7 @@
   /* padding+margin negativo: evita que overflow:hidden recorte el texto inclinado */
   .swipe{position:relative;overflow:hidden;padding:.10em .14em;margin:-.10em -.14em}
   .swipe::after{
-    content:"";position:absolute;inset:-8% -4%;background:var(--magenta);
+    content:"";position:absolute;inset:-8% -4%;background:var(--rojo);
     transform:translateX(-108%) skewX(-14deg);pointer-events:none;
   }
   .swipe.go::after{animation:swipeBy .62s cubic-bezier(.5,0,.2,1) .06s both}
@@ -873,7 +890,7 @@
     transition:transform .30s cubic-bezier(.2,1.6,.35,1);
   }
   .svc h3::before{
-    inset:-24% -12% -6% -7%;background:var(--magenta);
+    inset:-24% -12% -6% -7%;background:var(--rojo);
     clip-path:polygon(0% 0%, 100% 0%, 86% 100%, 0% 100%);
     transition:transform .24s cubic-bezier(.2,1.6,.35,1) .05s;
   }
@@ -888,8 +905,8 @@
      una caja desincroniza el estado. Un cursor nativo con imagen SVG no es un
      elemento del DOM, asi que no puede entrar en conflicto con nada. */
   :root{
-    --cur-normal:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='32' viewBox='0 0 28 32'%3E%3Cpath d='M3 2 L3 25 L9.5 19.5 L13.5 29 L18 27 L14 17.8 L22.5 17 Z' fill='%23FF2E88' stroke='%230b0410' stroke-width='2.6' stroke-linejoin='round'/%3E%3C/svg%3E") 3 2;
-    --cur-activo:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='34' height='34' viewBox='0 0 34 34'%3E%3Cpath d='M5 15 L27 4 L23 15 L27 26 Z' fill='%23A96BFF' stroke='%230b0410' stroke-width='2.8' stroke-linejoin='round'/%3E%3C/svg%3E") 6 15;
+    --cur-normal:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='32' viewBox='0 0 28 32'%3E%3Cpath d='M3 2 L3 25 L9.5 19.5 L13.5 29 L18 27 L14 17.8 L22.5 17 Z' fill='%23E50012' stroke='%23FFFFFF' stroke-width='2.4' stroke-linejoin='round'/%3E%3C/svg%3E") 3 2;
+    --cur-activo:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='34' height='34' viewBox='0 0 34 34'%3E%3Cpath d='M5 15 L27 4 L23 15 L27 26 Z' fill='%23A96BFF' stroke='%23FFFFFF' stroke-width='2.6' stroke-linejoin='round'/%3E%3C/svg%3E") 6 15;
   }
   @media(pointer:fine){
     body{cursor:var(--cur-normal),auto}

@@ -6,7 +6,24 @@ Sitio personal de **Rubén Rivera** (pseudónimo **NotMan** / NotMan Rivera), di
 
 - El logo es un wildstyle grafitero en cromado plata (`assets/logo.webp`, `logo-lg.webp`, `favicon.png`). El original de 17 MB (7005×3941) vive fuera del repo, en `~/Desktop/notman-originales`; **nunca meterlo de vuelta a esta carpeta**.
 - El sitio usa las dos identidades: logo NotMan en nav/favicon/footer (personalidad), "Rubén Rivera" en el hero (credibilidad con clientes corporativos).
-- ⚠️ **El verde ácido está prohibido.** Es el color de Victorem Sports Marketing, su trabajo anterior — no el suyo. Su color es el **morado**. Paleta: violeta eléctrico `#8B3FFF` + magenta `#FF2E88` sobre casi-negro `#0b0410`.
+- ⚠️ **El verde ácido está prohibido.** Es el color de Victorem Sports Marketing, su trabajo anterior — no el suyo. Su color es el **morado**, y no se toca.
+
+## Paleta
+
+Base de Persona 5 — negro absoluto `#000000`, blanco puro `#FFFFFF`, rojo saturado `#E50012` — con el morado de Rubén encima. El negro es negro de verdad, no un gris "amable": ese contraste entintado de cómic es justamente el efecto buscado.
+
+Para que los dos acentos no se peleen, **cada color tiene un trabajo asignado**:
+
+| Color | Papel | Dónde |
+|---|---|---|
+| Morado `#8B3FFF` / `#A96BFF` / `#4A1391` | **Quién es** — identidad y estructura | Bordes, botón secundario, números de sección, sombras duras, panel del hexágono |
+| Rojo `#E50012` | **Qué mirar** — urgencia y acción | Etiquetas de sección, CTA principal, cuña de hover, cursor, cargador, barras de acento |
+| Blanco `#FFFFFF` | La información | Toda la tipografía |
+| Negro `#000000` | Todo lo demás | Fondo |
+
+El magenta `#FF2E88` que se usaba antes **se retiró**: junto al rojo de P5 los dos se leían como el mismo color mal impreso, y cinco colores dejan de ser un sistema. Si alguna vez hace falta recuperarlo, era el acento urgente y hoy ese papel lo tiene `--rojo`.
+
+El rojo nunca se usa como color de texto: `#E50012` sobre negro da 4.33:1 y no alcanza AA para texto normal. Va siempre de fondo, relleno o borde, con blanco encima (4.84:1, sí pasa).
 
 ## Estética: menús de Persona (P3R / P4G / P5)
 
@@ -32,7 +49,7 @@ Bilingüe ES/EN con un toggle que re-parte el texto y vuelve a disparar todas la
 
 ### Cargador
 
-Al entrar se ve una pantalla de título: campo violeta en diagonal, el logo con sombra dura, una barra que se llena y "CARGANDO" parpadeando; al terminar barre hacia arriba con el filo inferior cortado en diagonal. Se va cuando la página termina de cargar, nunca antes de 950 ms ni después de 2.6 s.
+Al entrar se ve una pantalla de título: campo **rojo** en diagonal, el logo cromado con sombra dura negra, una barra que se llena y "CARGANDO" parpadeando; al terminar barre hacia arriba con el filo inferior cortado en diagonal. Se va cuando la página termina de cargar, nunca antes de 950 ms ni después de 2.6 s.
 
 ⚠️ Tres cosas que no se deben tocar sin entenderlas:
 - Se activa con la clase `.cargando`, que pone un `<script>` diminuto al abrir el `<body>` — **no** con `.js`. Si compartieran clase, un fallo del script principal dejaría el sitio entero escondido; así, lo único que se rompe es el cargador.
