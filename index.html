@@ -69,15 +69,15 @@
     max-width:var(--max);margin:0 auto;padding:14px 24px;
     display:flex;align-items:center;justify-content:space-between;gap:16px;
   }
-  .logo{
-    display:flex;align-items:center;gap:12px;text-decoration:none;
-    transition:transform .18s;
-  }
-  .logo:hover{transform:translateY(-2px)}
+  .logo{display:flex;align-items:center;gap:12px;text-decoration:none}
   .logo img{
     height:58px;width:auto;display:block;
     filter:drop-shadow(0 0 18px rgba(169,107,255,.55));
+    transition:filter .2s;
   }
+  /* el hover ilumina el logo en vez de moverlo: sin geometria que
+     pueda parpadear cerca de los bordes */
+  .logo:hover img{filter:drop-shadow(0 0 30px rgba(169,107,255,.9)) brightness(1.15)}
   @media(max-width:520px){.logo img{height:46px}}
   .logo em{
     font-family:var(--disp);font-style:normal;font-size:1.02rem;
@@ -90,15 +90,15 @@
   .nav-links a{
     font-family:var(--disp);font-size:.95rem;letter-spacing:.04em;
     text-transform:uppercase;color:var(--muted);text-decoration:none;
-    transform:skewX(-8deg);display:inline-block;transition:color .18s,transform .18s;
+    transform:skewX(-8deg);display:inline-block;transition:color .18s;
   }
-  .nav-links a:hover{color:var(--violet-hi);transform:skewX(-8deg) translateY(-2px)}
+  .nav-links a:hover{color:var(--violet-hi)}
   .lang{
     font-family:var(--disp);background:var(--violet);border:0;color:#fff;
     padding:7px 15px;font-size:.85rem;letter-spacing:.06em;cursor:pointer;
-    transform:skewX(-8deg);transition:background .18s,transform .18s;
+    transform:skewX(-8deg);transition:background .18s;
   }
-  .lang:hover{background:var(--magenta);transform:skewX(-8deg) translateY(-2px)}
+  .lang:hover{background:var(--magenta)}
   @media(max-width:780px){.nav-links a{display:none}}
 
   /* ===== HERO ===== */
@@ -181,13 +181,19 @@
     font-family:var(--disp);text-transform:uppercase;letter-spacing:.05em;
     font-size:1rem;text-decoration:none;padding:15px 30px;
     transform:skewX(-10deg);display:inline-block;
-    transition:transform .18s,background .18s,color .18s;
+    transition:background .18s,color .18s;
   }
-  .btn i{display:inline-block;transform:skewX(10deg);font-style:normal}
+  /* el shift de hover vive en <i>, no en .btn: el area de hover nunca
+     se mueve, asi que no puede parpadear al perder/recuperar el hover */
+  .btn i{
+    display:inline-block;transform:skewX(10deg);font-style:normal;
+    transition:transform .18s cubic-bezier(.2,1.4,.3,1);
+  }
   .btn-1{background:var(--violet);color:#fff}
-  .btn-1:hover{background:var(--magenta);transform:skewX(-10deg) translate(-3px,-3px)}
+  .btn-1:hover{background:var(--magenta)}
   .btn-2{background:transparent;color:var(--paper);box-shadow:inset 0 0 0 2px var(--violet-hi)}
-  .btn-2:hover{background:var(--violet-hi);color:var(--ink);transform:skewX(-10deg) translate(-3px,-3px)}
+  .btn-2:hover{background:var(--violet-hi);color:var(--ink)}
+  .btn:hover i{transform:skewX(10deg) translate(-3px,-3px)}
 
   .stats{
     position:relative;display:flex;flex-wrap:wrap;gap:40px;margin-top:70px;padding-top:30px;
@@ -266,9 +272,11 @@
   .svc{
     position:relative;background:var(--ink-2);border-left:6px solid var(--violet);
     padding:30px 32px 30px 36px;overflow:hidden;
-    transition:transform .22s,border-color .22s,background .22s;
+    transition:border-color .22s,background .22s;
   }
-  .svc:hover{transform:translateX(9px);border-left-color:var(--magenta);background:#1c0b33}
+  /* el slide de hover vive en h3/p, no en .svc: la fila entera nunca se
+     mueve, asi que el hover no puede parpadear cerca de sus bordes */
+  .svc:hover{border-left-color:var(--magenta);background:#1c0b33}
   .svc-bignum{
     position:absolute;right:14px;top:50%;translate:0 -50%;
     font-family:var(--disp);font-size:5.4rem;line-height:1;
@@ -280,7 +288,10 @@
     font-size:clamp(1.25rem,3vw,1.75rem);letter-spacing:.02em;
     transform:skewX(-8deg);transform-origin:left;margin-bottom:9px;
   }
-  .svc p{color:var(--muted);font-size:.95rem;max-width:62ch;position:relative;z-index:1}
+  .svc p{
+    color:var(--muted);font-size:.95rem;max-width:62ch;position:relative;z-index:1;
+    transition:transform .24s cubic-bezier(.2,1.4,.3,1);
+  }
 
   /* ===== EXPERIENCE ===== */
   .creds{display:grid;gap:24px;grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
@@ -308,10 +319,14 @@
     font-size:clamp(1.15rem,4.4vw,2.6rem);letter-spacing:.01em;
     color:var(--paper);text-decoration:none;background:var(--violet);
     padding:14px 30px;transform:skewX(-10deg);margin-top:12px;
-    transition:background .18s,transform .18s;word-break:break-all;
+    transition:background .18s;word-break:break-all;
   }
-  .mail span{display:inline-block;transform:skewX(10deg)}
-  .mail:hover{background:var(--magenta);transform:skewX(-10deg) translate(-4px,-4px)}
+  .mail span{
+    display:inline-block;transform:skewX(10deg);
+    transition:transform .2s cubic-bezier(.2,1.4,.3,1);
+  }
+  .mail:hover{background:var(--magenta)}
+  .mail:hover span{transform:skewX(10deg) translate(-4px,-4px)}
 
   footer{
     border-top:2px solid var(--line);padding:34px 0;color:var(--muted);font-size:.82rem;
@@ -395,7 +410,10 @@
   .nav-links a.brush:hover,.nav-links a.brush:focus-visible{color:#fff}
 
   /* Misma cuña en servicios, disparada al pasar sobre toda la fila. */
-  .svc h3{position:relative;isolation:isolate;display:inline-block;transition:color .18s}
+  .svc h3{
+    position:relative;isolation:isolate;display:inline-block;
+    transition:color .18s, transform .22s cubic-bezier(.2,1.4,.3,1);
+  }
   .svc h3::before,.svc h3::after{
     content:"";position:absolute;z-index:-1;
     transform:scaleX(0) skewX(-13deg);transform-origin:left center;
@@ -411,10 +429,13 @@
     transition:transform .24s cubic-bezier(.2,1.6,.35,1) .05s;
   }
   .svc:hover h3::before,.svc:hover h3::after{transform:scaleX(1) skewX(-13deg)}
-  .svc:hover h3{color:#fff}
+  .svc:hover h3{color:#fff;transform:skewX(-8deg) translateX(9px)}
+  .svc:hover p{transform:translateX(9px)}
 
   /* ===== CURSOR CUSTOM =====
-     Solo en equipos con mouse real. En tactil no se toca nada. */
+     Chevron solido que gira hacia donde te mueves, como el marcador de
+     seleccion de un menu de RPG, mas un marco sesgado (mismo lenguaje
+     que .btn/.kicker) que lo sigue con retraso. Solo con mouse real. */
   @media(pointer:fine){
     body,a,button,.svc,.card,.cred,input,textarea{cursor:none}
 
@@ -422,22 +443,23 @@
       position:fixed;top:0;left:0;z-index:9999;pointer-events:none;
       will-change:transform;
     }
-    /* puntero: triangulo relleno, con sombra dura (sin blur) */
+    /* chevron: cuerpo con una punta afilada y una muesca en la cola,
+       gira segun la direccion del mouse via JS */
     .cur{
-      width:20px;height:22px;background:var(--magenta);
-      clip-path:polygon(0% 0%, 100% 46%, 38% 56%, 62% 100%, 0% 78%);
+      width:22px;height:18px;background:var(--magenta);
+      clip-path:polygon(0% 6%, 58% 6%, 58% 0%, 100% 50%, 58% 100%, 58% 94%, 0% 94%, 22% 50%);
       filter:drop-shadow(2px 2px 0 rgba(0,0,0,.95));
       transition:scale .16s cubic-bezier(.2,1.6,.35,1), background .16s;
     }
-    /* rombo que persigue con retraso */
+    /* marco sesgado que persigue con retraso */
     .cur-ring{
-      width:34px;height:34px;z-index:9998;
-      border:2px solid var(--violet-hi);opacity:.5;
+      width:46px;height:26px;z-index:9998;
+      border:2px solid var(--violet-hi);opacity:.55;
       transition:scale .22s cubic-bezier(.2,1.6,.35,1), border-color .22s, opacity .22s;
     }
-    body.hot .cur{scale:1.45;background:var(--violet-hi)}
-    body.hot .cur-ring{scale:1.7;border-color:var(--magenta);opacity:.95}
-    body.click .cur{scale:.75}
+    body.hot .cur{scale:1.5;background:var(--violet-hi)}
+    body.hot .cur-ring{scale:1.55;border-color:var(--magenta);opacity:1}
+    body.click .cur{scale:.7}
   }
   @media(pointer:coarse){.cur,.cur-ring{display:none}}
 
@@ -457,7 +479,7 @@
     .pop,.pop.go{opacity:1;animation:none;transform:skewX(-11deg)}
     .swipe::after,.swipe.go::after{display:none;animation:none}
     html{scroll-behavior:auto}
-    .btn:hover,.card:hover,.svc:hover,.mail:hover,.nav-links a:hover,.lang:hover,.logo:hover{transform:none}
+    .btn:hover i,.card:hover,.svc:hover h3,.svc:hover p,.mail:hover span,.logo:hover img{transform:none}
   }
 </style>
 </head>
@@ -752,18 +774,30 @@
     document.body.append(cur, ring);
 
     let mx = innerWidth / 2, my = innerHeight / 2;   // mouse
-    let rx = mx, ry = my;                            // rombo, con retraso
+    let rx = mx, ry = my;                            // marco, con retraso
+    let px = mx, py = my;                            // posicion anterior, para medir velocidad
+    let angulo = -18;                                // orientacion del chevron
 
     addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; }, {passive:true});
     addEventListener('mousedown', () => document.body.classList.add('click'));
     addEventListener('mouseup',   () => document.body.classList.remove('click'));
 
-    // el puntero va exacto; el rombo interpola hacia el (efecto de arrastre)
+    // el chevron va exacto y gira hacia donde te mueves;
+    // el marco interpola hacia el (efecto de arrastre)
     (function seguir(){
       rx += (mx - rx) * 0.18;
       ry += (my - ry) * 0.18;
-      cur.style.transform  = `translate(${mx - 2}px, ${my - 2}px)`;
-      ring.style.transform = `translate(${rx - 17}px, ${ry - 17}px) rotate(45deg)`;
+
+      const dx = mx - px, dy = my - py;
+      px = mx; py = my;
+      if (dx * dx + dy * dy > 1) {                    // solo gira si de verdad se mueve
+        const objetivo = Math.atan2(dy, dx) * 180 / Math.PI;
+        const delta = ((objetivo - angulo + 540) % 360) - 180;   // camino mas corto
+        angulo += delta * 0.22;                                   // suaviza, evita el temblor
+      }
+
+      cur.style.transform  = `translate(${mx - 11}px, ${my - 9}px) rotate(${angulo}deg)`;
+      ring.style.transform = `translate(${rx - 23}px, ${ry - 13}px) skewX(-12deg)`;
       requestAnimationFrame(seguir);
     })();
 
