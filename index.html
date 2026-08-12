@@ -502,48 +502,31 @@
   .svc:hover h3{color:#fff;transform:skewX(-8deg) translateX(9px)}
   .svc:hover p{transform:translateX(9px)}
 
-  /* ===== CURSOR CUSTOM =====
-     Puntero solido de orientacion fija (sin rotar: girarlo lo dejaba
-     apuntando hacia atras al detenerte) mas un rombo que lo sigue con
-     retraso. Solo con mouse real. */
-  @media(pointer:fine){
-    body,a,button,.svc,.card,.cred,input,textarea{cursor:none}
-    /* sobre los videos mandamos el cursor nativo: un iframe se traga los
-       eventos del mouse y el nuestro se congelaria */
-    .frame,.frame iframe{cursor:auto}
-
-    .cur,.cur-ring{
-      position:fixed;top:0;left:0;z-index:9999;pointer-events:none;
-      will-change:transform;
-      transition:scale .16s cubic-bezier(.2,1.6,.35,1), background .16s, opacity .12s;
-    }
-    /* silueta de flecha clasica, con la punta exacta en 0,0 */
-    .cur{
-      width:24px;height:28px;background:var(--magenta);
-      clip-path:polygon(0% 0%, 0% 76%, 21% 58%, 34% 92%, 52% 84%, 39% 51%, 66% 47%);
-      filter:drop-shadow(2px 2px 0 rgba(0,0,0,.95))
-             drop-shadow(0 0 10px rgba(255,46,136,.75));
-    }
-    /* rombo que persigue con retraso, con glow neon */
-    .cur-ring{
-      width:34px;height:34px;z-index:9998;
-      border:2px solid var(--violet-hi);opacity:.6;
-      box-shadow:0 0 12px rgba(169,107,255,.8), inset 0 0 8px rgba(169,107,255,.35);
-      transition:scale .22s cubic-bezier(.2,1.6,.35,1), border-color .22s,
-                 opacity .22s, box-shadow .22s;
-    }
-    /* Los estados (crecer, esconderse, click) los aplica el JS con estilos
-       directos sobre los dos elementos. Depender de clases en <body> se
-       probo y no surtia efecto de forma fiable; asi es determinista. */
+  /* ===== CURSOR CUSTOM (nativo, sin JS) =====
+     Se probaron dos versiones con un <div> siguiendo al mouse y las dos se
+     rompian: los iframes se tragan el mousemove, los bordes de ventana y los
+     cambios de pestana dejan el evento colgado, y cualquier :hover que mueva
+     una caja desincroniza el estado. Un cursor nativo con imagen SVG no es un
+     elemento del DOM, asi que no puede entrar en conflicto con nada. */
+  :root{
+    --cur-normal:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='32' viewBox='0 0 28 32'%3E%3Cpath d='M3 2 L3 25 L9.5 19.5 L13.5 29 L18 27 L14 17.8 L22.5 17 Z' fill='%23FF2E88' stroke='%230b0410' stroke-width='2.6' stroke-linejoin='round'/%3E%3C/svg%3E") 3 2;
+    --cur-activo:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='34' height='34' viewBox='0 0 34 34'%3E%3Cpath d='M5 15 L27 4 L23 15 L27 26 Z' fill='%23A96BFF' stroke='%230b0410' stroke-width='2.8' stroke-linejoin='round'/%3E%3C/svg%3E") 6 15;
   }
-  @media(pointer:coarse){.cur,.cur-ring{display:none}}
+  @media(pointer:fine){
+    body{cursor:var(--cur-normal),auto}
+    /* sobre cualquier cosa accionable, el marcador de seleccion violeta */
+    a,button,.svc,.card,.cred,.lang,.mail,[role="button"]{
+      cursor:var(--cur-activo),pointer;
+    }
+    /* dentro de los videos manda el iframe: tiene su propio documento */
+    .frame,.frame iframe{cursor:auto}
+    input,textarea{cursor:text}
+  }
 
   /* tarjetas que se inclinan siguiendo el mouse */
   .card{will-change:transform}
 
   @media(prefers-reduced-motion:reduce){
-    .cur,.cur-ring{display:none}
-    body,a,button,.svc,.card,.cred{cursor:auto}
     .fade,.fade.go{opacity:1;animation:none;transform:none}
     .lede::before,.lede.go::before{transform:scaleY(1);animation:none}
     .stats::before,.stats.go::before{transform:scaleX(1);animation:none}
@@ -853,81 +836,14 @@
     }, {passive:true});
   }
 
-  /* ===== CURSOR CUSTOM + INTERACTIVIDAD ===== */
+  /* ===== INTERACTIVIDAD CON EL MOUSE =====
+     El cursor ya no vive aqui: es nativo, definido con CSS. Aqui solo
+     quedan los efectos de parallax y el tilt de las tarjetas. */
   const finoYConMovimiento =
     matchMedia('(pointer:fine)').matches &&
     !matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   if (finoYConMovimiento) {
-    const cur  = document.createElement('div'); cur.className  = 'cur';
-    const ring = document.createElement('div'); ring.className = 'cur-ring';
-    document.body.append(cur, ring);
-
-    let mx = innerWidth / 2, my = innerHeight / 2;   // mouse
-    let rx = mx, ry = my;                            // rombo, con retraso
-
-    // Estado del cursor. Se aplica con estilos directos, no con clases.
-    let caliente = false;   // encima de algo accionable
-    let enVideo  = false;   // encima de un iframe (se traga el mousemove)
-    let fuera    = false;   // el mouse salio de la ventana
-    let apretado = false;
-
-    function pintarCursor(){
-      const oculto = enVideo || fuera;
-      cur.style.opacity  = oculto ? '0' : '1';
-      ring.style.opacity = oculto ? '0' : (caliente ? '1' : '0.6');
-      cur.style.scale    = apretado ? '0.7' : (caliente ? '1.5' : '1');
-      ring.style.scale   = caliente ? '1.7' : '1';
-      cur.style.background   = caliente ? 'var(--violet-hi)' : 'var(--magenta)';
-      ring.style.borderColor = caliente ? 'var(--magenta)'   : 'var(--violet-hi)';
-      ring.style.boxShadow   = caliente
-        ? '0 0 20px rgba(255,46,136,.9), inset 0 0 12px rgba(255,46,136,.45)'
-        : '0 0 12px rgba(169,107,255,.8), inset 0 0 8px rgba(169,107,255,.35)';
-    }
-    pintarCursor();
-
-    addEventListener('mousemove', e => {
-      mx = e.clientX; my = e.clientY;
-      // recibir un mousemove prueba que NO estamos dentro de un iframe ni
-      // fuera de la ventana: sirve para recuperarnos solos si algun
-      // mouseleave no llego
-      if (enVideo || fuera) { enVideo = false; fuera = false; pintarCursor(); }
-    }, {passive:true});
-
-    addEventListener('mousedown', () => { apretado = true;  pintarCursor(); });
-    addEventListener('mouseup',   () => { apretado = false; pintarCursor(); });
-
-    // el mouse salio de la ventana: esconder en vez de dejarlo pegado al borde
-    document.addEventListener('mouseleave', () => { fuera = true;  pintarCursor(); });
-    document.addEventListener('mouseenter', () => { fuera = false; pintarCursor(); });
-
-    // La punta de la flecha queda exactamente en el pixel del mouse.
-    // El rombo interpola hacia el (efecto de arrastre).
-    (function seguir(){
-      rx += (mx - rx) * 0.18;
-      ry += (my - ry) * 0.18;
-      cur.style.transform  = `translate(${mx}px, ${my}px)`;
-      ring.style.transform = `translate(${rx - 17}px, ${ry - 17}px) rotate(45deg)`;
-      requestAnimationFrame(seguir);
-    })();
-
-    // crece sobre cualquier cosa accionable
-    const accionables = 'a, button, .svc, .card, .cred, .mail, .lang';
-    document.querySelectorAll(accionables).forEach(el => {
-      el.addEventListener('mouseenter', () => { caliente = true;  pintarCursor(); });
-      el.addEventListener('mouseleave', () => { caliente = false; pintarCursor(); });
-    });
-
-    // Los videos son iframes: se tragan el mousemove y nuestro cursor se
-    // congelaria. Al entrar lo escondemos y dejamos el cursor nativo.
-    document.querySelectorAll('.frame').forEach(f => {
-      f.addEventListener('mouseenter', () => { enVideo = true;  pintarCursor(); });
-      f.addEventListener('mouseleave', () => { enVideo = false; pintarCursor(); });
-    });
-
-    // expuesto solo para poder verificarlo desde consola
-    window.__cursor = () => ({caliente, enVideo, fuera, apretado});
-
     // Parallax del hero siguiendo el mouse
     const wm = document.querySelector('.watermark');
     const h1 = document.querySelector('header h1');
