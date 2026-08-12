@@ -516,7 +516,7 @@
   .svc h3{
     font-family:var(--disp);font-weight:400;text-transform:uppercase;
     font-size:clamp(2.1rem,4.9vw,3rem);letter-spacing:.02em;
-    transform:skewX(-8deg);transform-origin:left;margin-bottom:9px;
+    transform:skewX(-8deg);transform-origin:left;margin-bottom:16px;
   }
   .svc p{
     color:var(--muted);font-size:.95rem;max-width:62ch;position:relative;z-index:1;
@@ -634,12 +634,12 @@
     transform:scaleX(0) skewX(-13deg);transform-origin:left center;
   }
   .svc h3::after{
-    inset:-32% -22% -32% -4%;z-index:-2;background:var(--violet-hi);
+    inset:-30% -22% -8% -4%;z-index:-2;background:var(--violet-hi);
     clip-path:polygon(0% 0%, 100% 0%, 78% 100%, 0% 100%);
     transition:transform .30s cubic-bezier(.2,1.6,.35,1);
   }
   .svc h3::before{
-    inset:-26% -12% -26% -7%;background:var(--magenta);
+    inset:-24% -12% -6% -7%;background:var(--magenta);
     clip-path:polygon(0% 0%, 100% 0%, 86% 100%, 0% 100%);
     transition:transform .24s cubic-bezier(.2,1.6,.35,1) .05s;
   }
