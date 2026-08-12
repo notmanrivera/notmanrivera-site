@@ -3,11 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Rubén Rivera — Motion Graphics & Video para Marcas Deportivas</title>
-<meta name="description" content="Motion graphics 2D/3D, edición de video deportiva y diseño web UI/UX. 9 años de experiencia en agencias. Querétaro, México.">
+<title>Rubén Rivera — Motion Graphics, Video y Web para Agencias y Jugadores</title>
+<meta name="description" content="Motion graphics 2D/3D, edición de video, diseño web UI/UX y soporte de marca blanca para agencias de marketing deportivo, representantes y jugadores profesionales. 9 años de experiencia. Querétaro, México.">
 
-<meta property="og:title" content="Rubén Rivera — Motion Graphics & Video para Marcas Deportivas">
-<meta property="og:description" content="Motion graphics 2D/3D, edición de video deportiva y diseño web UI/UX para clubes, agencias y representantes de atletas.">
+<meta property="og:title" content="Rubén Rivera — Motion Graphics, Video y Web para Agencias y Jugadores">
+<meta property="og:description" content="Motion graphics 2D/3D, edición de video, diseño web UI/UX y soporte de marca blanca para agencias, representantes y jugadores profesionales.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://notmanrivera.com">
 
@@ -57,6 +57,56 @@
     mask-image:linear-gradient(160deg,#000 0%,transparent 62%);
     -webkit-mask-image:linear-gradient(160deg,#000 0%,transparent 62%);
   }
+
+  /* ===== MESH GRADIENT =====
+     Manchas de color desenfocadas que se desplazan lento. Dos capas con
+     ritmos distintos para que el movimiento no se sienta ciclico. */
+  .mesh,.mesh2{
+    position:absolute;inset:-25%;z-index:0;pointer-events:none;
+    filter:blur(72px) saturate(150%);will-change:transform;
+  }
+  .mesh{
+    opacity:.5;
+    background:
+      radial-gradient(36% 40% at 16% 24%, #8B3FFF 0%, transparent 62%),
+      radial-gradient(32% 36% at 80% 16%, #FF2E88 0%, transparent 60%),
+      radial-gradient(40% 44% at 64% 80%, #4A1391 0%, transparent 64%);
+    animation:meshDrift 26s ease-in-out infinite alternate;
+  }
+  .mesh2{
+    opacity:.32;
+    background:
+      radial-gradient(30% 34% at 34% 78%, #2D7BFF 0%, transparent 58%),
+      radial-gradient(26% 30% at 88% 62%, #B24BFF 0%, transparent 56%);
+    animation:meshDrift2 34s ease-in-out infinite alternate;
+  }
+  @keyframes meshDrift{
+    0%  {transform:translate(0,0) scale(1)}
+    50% {transform:translate(3%,-4%) scale(1.1)}
+    100%{transform:translate(-4%,3%) scale(1.05)}
+  }
+  @keyframes meshDrift2{
+    0%  {transform:translate(0,0) scale(1.06)}
+    50% {transform:translate(-5%,3%) scale(1)}
+    100%{transform:translate(4%,-3%) scale(1.12)}
+  }
+
+  /* ===== GLOWS NEON ===== */
+  .kicker{box-shadow:0 0 22px rgba(255,46,136,.55)}
+  .sec-tag{box-shadow:0 0 20px rgba(139,63,255,.6)}
+  h2{text-shadow:0 0 28px rgba(139,63,255,.5)}
+  h2 em{text-shadow:0 0 26px rgba(169,107,255,.85)}
+  h1 .l3{text-shadow:0 0 34px rgba(169,107,255,.6)}
+  .stat b{text-shadow:0 0 22px rgba(169,107,255,.75)}
+  .btn-1{box-shadow:0 0 26px rgba(139,63,255,.5)}
+  .btn-1:hover{box-shadow:0 0 34px rgba(255,46,136,.75)}
+  .btn-2:hover{box-shadow:inset 0 0 0 2px var(--violet-hi), 0 0 28px rgba(169,107,255,.6)}
+  .mail{box-shadow:0 0 30px rgba(139,63,255,.55)}
+  .mail:hover{box-shadow:0 0 40px rgba(255,46,136,.8)}
+  .cred h3{text-shadow:0 0 20px rgba(169,107,255,.55)}
+  .svc{transition:border-color .22s,background .22s,box-shadow .22s}
+  .svc:hover{box-shadow:-6px 0 24px -4px rgba(255,46,136,.55)}
+  nav.scrolled{box-shadow:0 2px 26px -6px rgba(139,63,255,.7)}
 
   /* ===== NAV ===== */
   nav{
@@ -150,7 +200,9 @@
   h1 .l{
     display:block;transform-origin:left center;
   }
-  h1 .l1{font-size:clamp(2.7rem,9.4vw,7.4rem);transform:skewX(-10deg) rotate(-2.4deg)}
+  /* mas chica que antes: ahora carga textos largos que rotan */
+  h1 .l1{font-size:clamp(2rem,6.4vw,4.9rem);transform:skewX(-10deg) rotate(-2.4deg)}
+  h1 .rota{min-height:1.05em}
   h1 .l2{
     font-size:clamp(3.3rem,12.6vw,10rem);transform:skewX(-10deg) rotate(-1.1deg);
     margin-left:.06em;color:transparent;
@@ -247,16 +299,23 @@
 
   /* ===== WORK ===== */
   .work-grid{display:grid;gap:28px;grid-template-columns:repeat(auto-fit,minmax(320px,1fr))}
-  .card{
-    background:var(--ink-2);border:2px solid var(--line);position:relative;
+  /* .card es SOLO el area que detecta el hover: nunca se transforma.
+     Todo lo visual (borde, fondo, tilt 3D) vive en .card-in. Si la caja
+     que detecta el hover se moviera, se saldria de debajo del cursor y
+     el hover parpadearia sin parar. */
+  .card{position:relative}
+  .card-in{
+    display:block;height:100%;position:relative;
+    background:var(--ink-2);border:2px solid var(--line);
     transition:border-color .22s,transform .22s;
+    transform-style:preserve-3d;will-change:transform;
   }
-  .card:hover{border-color:var(--violet);transform:translate(-4px,-4px)}
-  .card::after{
+  .card:hover .card-in{border-color:var(--violet)}
+  .card-in::after{
     content:"";position:absolute;inset:0;pointer-events:none;
     box-shadow:8px 8px 0 rgba(139,63,255,0);transition:box-shadow .22s;
   }
-  .card:hover::after{box-shadow:8px 8px 0 var(--violet)}
+  .card:hover .card-in::after{box-shadow:8px 8px 0 var(--violet)}
   .frame{position:relative;width:100%;aspect-ratio:16/9;background:#000;border-bottom:2px solid var(--line)}
   .frame iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
   .card-body{padding:22px 24px 26px}
@@ -451,14 +510,19 @@
       filter:drop-shadow(2px 2px 0 rgba(0,0,0,.95));
       transition:scale .16s cubic-bezier(.2,1.6,.35,1), background .16s;
     }
-    /* marco sesgado que persigue con retraso */
+    /* rombo que persigue con retraso, con glow neon */
     .cur-ring{
-      width:46px;height:26px;z-index:9998;
-      border:2px solid var(--violet-hi);opacity:.55;
-      transition:scale .22s cubic-bezier(.2,1.6,.35,1), border-color .22s, opacity .22s;
+      width:34px;height:34px;z-index:9998;
+      border:2px solid var(--violet-hi);opacity:.6;
+      box-shadow:0 0 12px rgba(169,107,255,.8), inset 0 0 8px rgba(169,107,255,.35);
+      transition:scale .22s cubic-bezier(.2,1.6,.35,1), border-color .22s,
+                 opacity .22s, box-shadow .22s;
     }
     body.hot .cur{scale:1.5;background:var(--violet-hi)}
-    body.hot .cur-ring{scale:1.55;border-color:var(--magenta);opacity:1}
+    body.hot .cur-ring{
+      scale:1.7;border-color:var(--magenta);opacity:1;
+      box-shadow:0 0 20px rgba(255,46,136,.9), inset 0 0 12px rgba(255,46,136,.45);
+    }
     body.click .cur{scale:.7}
   }
   @media(pointer:coarse){.cur,.cur-ring{display:none}}
@@ -505,6 +569,8 @@
 </nav>
 
 <header>
+  <div class="mesh"></div>
+  <div class="mesh2"></div>
   <div class="slab slab-a"></div>
   <div class="slab slab-b"></div>
   <div class="watermark" aria-hidden="true"><img src="/assets/logo-lg.webp" alt="" width="1200" height="675" loading="lazy"></div>
@@ -514,12 +580,17 @@
     <span class="kicker" data-es="Rubén Rivera · Querétaro, México" data-en="Rubén Rivera · Querétaro, Mexico">Rubén Rivera · Querétaro, México</span>
 
     <h1>
-      <span class="l l1" data-es="Motion graphics" data-en="Motion graphics">Motion graphics</span>
-      <span class="l l2" data-es="y video para" data-en="and video for">y video para</span>
-      <span class="l l3" data-es="marcas deportivas" data-en="sports brands">marcas deportivas</span>
+      <!-- La primera linea rota entre los cuatro servicios. Usa data-rot-*
+           para que el toggle de idioma generico (que busca [data-es][data-en])
+           no la pise: la maneja su propia rutina. -->
+      <span class="l l1 rota"
+            data-rot-es="Motion graphics 2D/3D|Edición de video|Diseño web UI/UX|Soporte marca blanca"
+            data-rot-en="2D/3D motion graphics|Video editing|Web design UI/UX|White-label support">Motion graphics 2D/3D</span>
+      <span class="l l2" data-es="para agencias" data-en="for agencies">para agencias</span>
+      <span class="l l3" data-es="y jugadores" data-en="and athletes">y jugadores</span>
     </h1>
 
-    <p class="lede" data-es="Nueve años diseñando y animando para agencias, clubes y representantes de atletas. Reels de matchday, intros de jugadores, video case studies y sitios que comunican el valor real de un patrocinio." data-en="Nine years designing and animating for agencies, clubs and athlete representatives. Matchday reels, player intros, video case studies and sites that communicate what a sponsorship is actually worth.">Nueve años diseñando y animando para agencias, clubes y representantes de atletas. Reels de matchday, intros de jugadores, video case studies y sitios que comunican el valor real de un patrocinio.</p>
+    <p class="lede" data-es="Nueve años diseñando y animando para agencias de marketing, representantes y jugadores profesionales. Motion graphics, edición de video, diseño web y soporte de marca blanca cuando a tu equipo le falta capacidad." data-en="Nine years designing and animating for marketing agencies, representatives and professional athletes. Motion graphics, video editing, web design and white-label support when your team runs out of capacity.">Nueve años diseñando y animando para agencias de marketing, representantes y jugadores profesionales. Motion graphics, edición de video, diseño web y soporte de marca blanca cuando a tu equipo le falta capacidad.</p>
 
     <div class="cta-row">
       <a href="#trabajo" class="btn btn-1"><i data-es="Ver mi trabajo" data-en="See my work">Ver mi trabajo</i></a>
@@ -546,26 +617,32 @@
 
     <div class="work-grid">
       <article class="card rv">
-        <div class="frame"><iframe src="https://drive.google.com/file/d/1siqcAjyDYzRYeVd0EKn1E4dbUBghV-18/preview" allow="autoplay" allowfullscreen title="Animation Reel"></iframe></div>
-        <div class="card-body">
-          <h3 data-es="Reel de animación" data-en="Animation reel">Reel de animación</h3>
-          <p data-es="Motion graphics 2D y 3D: intros, transiciones, piezas para redes y anuncios animados." data-en="2D and 3D motion graphics: intros, transitions, social pieces and animated ads.">Motion graphics 2D y 3D: intros, transiciones, piezas para redes y anuncios animados.</p>
+        <div class="card-in">
+          <div class="frame"><iframe src="https://drive.google.com/file/d/1siqcAjyDYzRYeVd0EKn1E4dbUBghV-18/preview" allow="autoplay" allowfullscreen title="Animation Reel"></iframe></div>
+          <div class="card-body">
+            <h3 data-es="Reel de animación" data-en="Animation reel">Reel de animación</h3>
+            <p data-es="Motion graphics 2D y 3D: intros, transiciones, piezas para redes y anuncios animados." data-en="2D and 3D motion graphics: intros, transitions, social pieces and animated ads.">Motion graphics 2D y 3D: intros, transiciones, piezas para redes y anuncios animados.</p>
+          </div>
         </div>
       </article>
 
       <article class="card rv">
-        <div class="frame"><iframe src="https://drive.google.com/file/d/1okc8-yI_boWTaEM98IsDNFdwr1e4IDEH/preview" allow="autoplay" allowfullscreen title="Sports Portfolio"></iframe></div>
-        <div class="card-body">
-          <h3 data-es="Portafolio deportivo" data-en="Sports portfolio">Portafolio deportivo</h3>
-          <p data-es="Highlights de atletas, contenido de matchday y material para campañas de patrocinio." data-en="Athlete highlights, matchday content and sponsorship campaign material.">Highlights de atletas, contenido de matchday y material para campañas de patrocinio.</p>
+        <div class="card-in">
+          <div class="frame"><iframe src="https://drive.google.com/file/d/1okc8-yI_boWTaEM98IsDNFdwr1e4IDEH/preview" allow="autoplay" allowfullscreen title="Sports Portfolio"></iframe></div>
+          <div class="card-body">
+            <h3 data-es="Portafolio deportivo" data-en="Sports portfolio">Portafolio deportivo</h3>
+            <p data-es="Highlights de atletas, contenido de matchday y material para campañas de patrocinio." data-en="Athlete highlights, matchday content and sponsorship campaign material.">Highlights de atletas, contenido de matchday y material para campañas de patrocinio.</p>
+          </div>
         </div>
       </article>
 
       <article class="card rv">
-        <div class="frame"><iframe src="https://drive.google.com/file/d/14RnxxzYF4hV2xXDBEVEcAPKvAPnMPmZ1/preview" allow="autoplay" allowfullscreen title="Web Portfolio"></iframe></div>
-        <div class="card-body">
-          <h3 data-es="Portafolio web (UI/UX)" data-en="Web portfolio (UI/UX)">Portafolio web (UI/UX)</h3>
-          <p data-es="Landing pages interactivas, media kits modernizados e interfaces con micro-animaciones." data-en="Interactive landing pages, modernized media kits and interfaces with micro-animations.">Landing pages interactivas, media kits modernizados e interfaces con micro-animaciones.</p>
+        <div class="card-in">
+          <div class="frame"><iframe src="https://drive.google.com/file/d/14RnxxzYF4hV2xXDBEVEcAPKvAPnMPmZ1/preview" allow="autoplay" allowfullscreen title="Web Portfolio"></iframe></div>
+          <div class="card-body">
+            <h3 data-es="Portafolio web (UI/UX)" data-en="Web portfolio (UI/UX)">Portafolio web (UI/UX)</h3>
+            <p data-es="Landing pages interactivas, media kits modernizados e interfaces con micro-animaciones." data-en="Interactive landing pages, modernized media kits and interfaces with micro-animations.">Landing pages interactivas, media kits modernizados e interfaces con micro-animaciones.</p>
+          </div>
         </div>
       </article>
     </div>
@@ -579,6 +656,7 @@
       <span class="sec-num">02</span>
       <span class="sec-tag" data-es="Qué hago" data-en="What I do">Qué hago</span>
       <h2 data-es="Cuatro formas de <em>trabajar juntos</em>" data-en="Four ways to <em>work together</em>">Cuatro formas de <em>trabajar juntos</em></h2>
+      <p data-es="Con agencias de marketing, representantes y jugadores profesionales." data-en="With marketing agencies, representatives and professional athletes.">Con agencias de marketing, representantes y jugadores profesionales.</p>
     </div>
 
     <div class="svc-list">
@@ -633,6 +711,7 @@
 </section>
 
 <section id="contacto">
+  <div class="mesh"></div>
   <div class="halftone"></div>
   <div class="wrap rv">
     <span class="sec-tag" data-es="Contacto" data-en="Contact">Contacto</span>
@@ -797,7 +876,7 @@
       }
 
       cur.style.transform  = `translate(${mx - 11}px, ${my - 9}px) rotate(${angulo}deg)`;
-      ring.style.transform = `translate(${rx - 23}px, ${ry - 13}px) skewX(-12deg)`;
+      ring.style.transform = `translate(${rx - 17}px, ${ry - 17}px) rotate(45deg)`;
       requestAnimationFrame(seguir);
     })();
 
@@ -818,21 +897,60 @@
       if (h1) h1.style.translate = `${nx * 7}px ${ny * 5}px`;
     }, {passive:true});
 
-    // Las tarjetas se inclinan hacia el cursor
+    // Las tarjetas se inclinan hacia el cursor.
+    // El tilt va en .card-in; .card (que detecta el hover) no se mueve nunca.
     document.querySelectorAll('.card').forEach(card => {
+      const dentro = card.querySelector('.card-in');
+      if (!dentro) return;
       card.addEventListener('mousemove', e => {
         const r = card.getBoundingClientRect();
         const px = (e.clientX - r.left) / r.width  - .5;
         const py = (e.clientY - r.top)  / r.height - .5;
-        card.style.transform =
+        dentro.style.transform =
           `translate(-4px,-4px) perspective(900px) rotateY(${px * 7}deg) rotateX(${-py * 7}deg)`;
       });
-      card.addEventListener('mouseleave', () => { card.style.transform = ''; });
+      card.addEventListener('mouseleave', () => { dentro.style.transform = ''; });
     });
   }
 
-  // Toggle de idioma
+  // Idioma actual (lo usan tanto el toggle como el rotador de servicios)
   let lang = 'es';
+
+  /* ===== ROTADOR DE SERVICIOS EN EL HERO =====
+     Cambia la primera linea del titulo entre los cuatro servicios,
+     volviendo a disparar el slam palabra por palabra en cada cambio. */
+  const rota = document.querySelector('.rota');
+  if (rota) {
+    const opciones = () => (rota.getAttribute('data-rot-' + lang) || '').split('|');
+    let idx = 0;
+
+    function girarServicio(){
+      const lista = opciones();
+      if (lista.length < 2) return;
+      idx = (idx + 1) % lista.length;
+      pintarServicio(lista[idx]);
+    }
+
+    function pintarServicio(txt){
+      rota.classList.remove('go');
+      rota.textContent = txt;
+      splitWords(rota);
+      void rota.offsetWidth;                       // reinicia la animacion
+      requestAnimationFrame(() => rota.classList.add('go'));
+    }
+
+    // al cambiar de idioma hay que redibujar con la lista nueva
+    rota.addEventListener('idioma', () => {
+      const lista = opciones();
+      idx = Math.min(idx, lista.length - 1);
+      pintarServicio(lista[idx]);
+    });
+
+    if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      setInterval(girarServicio, 3400);
+    }
+  }
+
   const btn = document.getElementById('langBtn');
   btn.addEventListener('click', () => {
     lang = lang === 'es' ? 'en' : 'es';
@@ -849,6 +967,9 @@
         requestAnimationFrame(() => el.classList.add('go'));
       }
     });
+
+    // el rotador no tiene data-es/data-en, se avisa aparte
+    if (rota) rota.dispatchEvent(new Event('idioma'));
   });
 </script>
 
