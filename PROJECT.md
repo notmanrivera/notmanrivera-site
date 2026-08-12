@@ -12,14 +12,16 @@ Sitio personal de **Rubén Rivera** (pseudónimo **NotMan** / NotMan Rivera), di
 
 A petición explícita suya. Elementos clave:
 
-- Tipografía **Anton**, todo inclinado con `skewX(-10deg)` en títulos, botones y etiquetas
+- Tipografía de títulos: **Kenyan Coffee** (Ray Larabie / larabiefonts.com), auto-alojada en `assets/kenyan-coffee.woff2` (16 KB, convertida desde el TTF con fontTools). El TTF original vive en `~/Desktop/notman-originales`, fuera de la carpeta que se despliega. Cuerpo de texto: Inter, desde Google Fonts. Todo inclinado con `skewX(-10deg)` en títulos, botones y etiquetas
 - Halftone de puntos con máscara de degradado en cada sección
 - Bloques diagonales de color con parallax al hacer scroll
 - Números gigantes en contorno (`-webkit-text-stroke`) detrás de secciones y servicios
 - Títulos partidos en palabras que entran una por una con rebote (`cubic-bezier(.12,1.55,.32,1)`), efecto "slam"
 - Los `<h2>` llevan un barrido magenta al entrar
 - **Hover = cuña angular de dos capas** (violeta atrás, magenta al frente, bordes cortados en diagonal como la bandera de "SKILL" en el menú del juego) — no un brochazo irregular, se probó y se descartó
-- **Cursor custom**: puntero triangular con sombra dura + un rombo que lo persigue con retraso (interpolación 18%/frame). Crece y cambia de color sobre cualquier elemento accionable. Solo en `pointer:fine`, desactivado en táctil y con `prefers-reduced-motion`
+- **Cursor custom**: flecha sólida de orientación fija (se probó rotarla hacia la dirección del movimiento y quedaba apuntando hacia atrás al detenerse) + un rombo que lo persigue con retraso (interpolación 18%/frame). Crece y cambia de color sobre elementos accionables. Solo en `pointer:fine`, desactivado en táctil y con `prefers-reduced-motion`.
+  - ⚠️ **Su estado se aplica con estilos directos desde JS, no con clases en `<body>`.** Se intentó con clases (`body.hot .cur`, etc.) y las reglas no surtían efecto de forma fiable pese a estar bien parseadas y a que el selector hacía match. No vale la pena volver a intentarlo con clases.
+  - Los videos son iframes y **se tragan el `mousemove`**: sin tratamiento, el cursor se congela sobre ellos y además aparece la flecha nativa (el iframe tiene su propio documento, así que `cursor:none` no aplica dentro). Por eso al entrar a un `.frame` el cursor propio se esconde y se deja el nativo. Cualquier `mousemove` posterior lo recupera solo.
 - Parallax del hero siguiendo el mouse; las tarjetas de portafolio se inclinan en 3D hacia el cursor
 
 El cuerpo de texto queda recto y legible a propósito — el contraste entre lo salvaje y lo limpio es el argumento de venta (control del caos = lo que le vende a un cliente).
@@ -45,3 +47,5 @@ Bilingüe ES/EN con un toggle que re-parte el texto y vuelve a disparar todas la
 
 - El dashboard de Cloudflare y Gmail están bloqueados para el agente vía navegador — pero **la API de Cloudflare sí responde** usando el token OAuth que Wrangler guarda en `~/Library/Preferences/.wrangler/config/default.toml`. Ese token puede leer/escribir Pages y Email Routing, pero **no** puede escribir registros DNS — eso lo tiene que hacer Rubén a mano en el dashboard.
 - Antes de tocar `index.html`, revisa qué versión está realmente desplegada (`curl` a la URL del último deploy) — el caché del edge de Cloudflare a veces sirve una versión vieja por unos minutos tras el despliegue.
+- **Regla de oro para el hover:** ningún elemento que detecte `:hover` debe mover su propia caja. Si lo hace, se sale de debajo del cursor, el navegador quita el `:hover`, la caja vuelve, y el ciclo se repite decenas de veces por segundo. El desplazamiento visual siempre va en un hijo interno (por eso existen `.card-in`, y los `translate` viven en `i`, `h3`, `p`, `span`, `img`).
+- `.assetsignore` **no funciona en Cloudflare Pages** (es de Workers Static Assets). Para que un archivo no se publique, sácalo de la carpeta. Ojo: Pages responde `200` con el `index.html` para rutas inexistentes, así que un `200` no prueba que el archivo esté ahí — hay que mirar el `content-type` y el tamaño.

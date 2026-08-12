@@ -17,9 +17,20 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+<link rel="preload" href="/assets/kenyan-coffee.woff2" as="font" type="font/woff2" crossorigin>
 
 <style>
+  /* Kenyan Coffee (Ray Larabie / larabiefonts.com), auto-alojada.
+     swap: si tarda en llegar se ve Impact y luego cambia — nunca texto invisible. */
+  @font-face{
+    font-family:"Kenyan Coffee";
+    src:url("/assets/kenyan-coffee.woff2") format("woff2");
+    font-weight:400;
+    font-style:normal;
+    font-display:swap;
+  }
+
   :root{
     --ink:#0b0410;
     --ink-2:#150827;
@@ -31,7 +42,7 @@
     --muted:#9D8FB8;
     --line:#2c1a45;
     --max:1180px;
-    --disp:"Anton",Impact,"Haettenschweiler","Arial Narrow Bold",sans-serif;
+    --disp:"Kenyan Coffee",Impact,"Haettenschweiler","Arial Narrow Bold",sans-serif;
     --body:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
   }
 
@@ -492,23 +503,26 @@
   .svc:hover p{transform:translateX(9px)}
 
   /* ===== CURSOR CUSTOM =====
-     Chevron solido que gira hacia donde te mueves, como el marcador de
-     seleccion de un menu de RPG, mas un marco sesgado (mismo lenguaje
-     que .btn/.kicker) que lo sigue con retraso. Solo con mouse real. */
+     Puntero solido de orientacion fija (sin rotar: girarlo lo dejaba
+     apuntando hacia atras al detenerte) mas un rombo que lo sigue con
+     retraso. Solo con mouse real. */
   @media(pointer:fine){
     body,a,button,.svc,.card,.cred,input,textarea{cursor:none}
+    /* sobre los videos mandamos el cursor nativo: un iframe se traga los
+       eventos del mouse y el nuestro se congelaria */
+    .frame,.frame iframe{cursor:auto}
 
     .cur,.cur-ring{
       position:fixed;top:0;left:0;z-index:9999;pointer-events:none;
       will-change:transform;
+      transition:scale .16s cubic-bezier(.2,1.6,.35,1), background .16s, opacity .12s;
     }
-    /* chevron: cuerpo con una punta afilada y una muesca en la cola,
-       gira segun la direccion del mouse via JS */
+    /* silueta de flecha clasica, con la punta exacta en 0,0 */
     .cur{
-      width:22px;height:18px;background:var(--magenta);
-      clip-path:polygon(0% 6%, 58% 6%, 58% 0%, 100% 50%, 58% 100%, 58% 94%, 0% 94%, 22% 50%);
-      filter:drop-shadow(2px 2px 0 rgba(0,0,0,.95));
-      transition:scale .16s cubic-bezier(.2,1.6,.35,1), background .16s;
+      width:24px;height:28px;background:var(--magenta);
+      clip-path:polygon(0% 0%, 0% 76%, 21% 58%, 34% 92%, 52% 84%, 39% 51%, 66% 47%);
+      filter:drop-shadow(2px 2px 0 rgba(0,0,0,.95))
+             drop-shadow(0 0 10px rgba(255,46,136,.75));
     }
     /* rombo que persigue con retraso, con glow neon */
     .cur-ring{
@@ -518,12 +532,9 @@
       transition:scale .22s cubic-bezier(.2,1.6,.35,1), border-color .22s,
                  opacity .22s, box-shadow .22s;
     }
-    body.hot .cur{scale:1.5;background:var(--violet-hi)}
-    body.hot .cur-ring{
-      scale:1.7;border-color:var(--magenta);opacity:1;
-      box-shadow:0 0 20px rgba(255,46,136,.9), inset 0 0 12px rgba(255,46,136,.45);
-    }
-    body.click .cur{scale:.7}
+    /* Los estados (crecer, esconderse, click) los aplica el JS con estilos
+       directos sobre los dos elementos. Depender de clases en <body> se
+       probo y no surtia efecto de forma fiable; asi es determinista. */
   }
   @media(pointer:coarse){.cur,.cur-ring{display:none}}
 
@@ -853,29 +864,49 @@
     document.body.append(cur, ring);
 
     let mx = innerWidth / 2, my = innerHeight / 2;   // mouse
-    let rx = mx, ry = my;                            // marco, con retraso
-    let px = mx, py = my;                            // posicion anterior, para medir velocidad
-    let angulo = -18;                                // orientacion del chevron
+    let rx = mx, ry = my;                            // rombo, con retraso
 
-    addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; }, {passive:true});
-    addEventListener('mousedown', () => document.body.classList.add('click'));
-    addEventListener('mouseup',   () => document.body.classList.remove('click'));
+    // Estado del cursor. Se aplica con estilos directos, no con clases.
+    let caliente = false;   // encima de algo accionable
+    let enVideo  = false;   // encima de un iframe (se traga el mousemove)
+    let fuera    = false;   // el mouse salio de la ventana
+    let apretado = false;
 
-    // el chevron va exacto y gira hacia donde te mueves;
-    // el marco interpola hacia el (efecto de arrastre)
+    function pintarCursor(){
+      const oculto = enVideo || fuera;
+      cur.style.opacity  = oculto ? '0' : '1';
+      ring.style.opacity = oculto ? '0' : (caliente ? '1' : '0.6');
+      cur.style.scale    = apretado ? '0.7' : (caliente ? '1.5' : '1');
+      ring.style.scale   = caliente ? '1.7' : '1';
+      cur.style.background   = caliente ? 'var(--violet-hi)' : 'var(--magenta)';
+      ring.style.borderColor = caliente ? 'var(--magenta)'   : 'var(--violet-hi)';
+      ring.style.boxShadow   = caliente
+        ? '0 0 20px rgba(255,46,136,.9), inset 0 0 12px rgba(255,46,136,.45)'
+        : '0 0 12px rgba(169,107,255,.8), inset 0 0 8px rgba(169,107,255,.35)';
+    }
+    pintarCursor();
+
+    addEventListener('mousemove', e => {
+      mx = e.clientX; my = e.clientY;
+      // recibir un mousemove prueba que NO estamos dentro de un iframe ni
+      // fuera de la ventana: sirve para recuperarnos solos si algun
+      // mouseleave no llego
+      if (enVideo || fuera) { enVideo = false; fuera = false; pintarCursor(); }
+    }, {passive:true});
+
+    addEventListener('mousedown', () => { apretado = true;  pintarCursor(); });
+    addEventListener('mouseup',   () => { apretado = false; pintarCursor(); });
+
+    // el mouse salio de la ventana: esconder en vez de dejarlo pegado al borde
+    document.addEventListener('mouseleave', () => { fuera = true;  pintarCursor(); });
+    document.addEventListener('mouseenter', () => { fuera = false; pintarCursor(); });
+
+    // La punta de la flecha queda exactamente en el pixel del mouse.
+    // El rombo interpola hacia el (efecto de arrastre).
     (function seguir(){
       rx += (mx - rx) * 0.18;
       ry += (my - ry) * 0.18;
-
-      const dx = mx - px, dy = my - py;
-      px = mx; py = my;
-      if (dx * dx + dy * dy > 1) {                    // solo gira si de verdad se mueve
-        const objetivo = Math.atan2(dy, dx) * 180 / Math.PI;
-        const delta = ((objetivo - angulo + 540) % 360) - 180;   // camino mas corto
-        angulo += delta * 0.22;                                   // suaviza, evita el temblor
-      }
-
-      cur.style.transform  = `translate(${mx - 11}px, ${my - 9}px) rotate(${angulo}deg)`;
+      cur.style.transform  = `translate(${mx}px, ${my}px)`;
       ring.style.transform = `translate(${rx - 17}px, ${ry - 17}px) rotate(45deg)`;
       requestAnimationFrame(seguir);
     })();
@@ -883,9 +914,19 @@
     // crece sobre cualquier cosa accionable
     const accionables = 'a, button, .svc, .card, .cred, .mail, .lang';
     document.querySelectorAll(accionables).forEach(el => {
-      el.addEventListener('mouseenter', () => document.body.classList.add('hot'));
-      el.addEventListener('mouseleave', () => document.body.classList.remove('hot'));
+      el.addEventListener('mouseenter', () => { caliente = true;  pintarCursor(); });
+      el.addEventListener('mouseleave', () => { caliente = false; pintarCursor(); });
     });
+
+    // Los videos son iframes: se tragan el mousemove y nuestro cursor se
+    // congelaria. Al entrar lo escondemos y dejamos el cursor nativo.
+    document.querySelectorAll('.frame').forEach(f => {
+      f.addEventListener('mouseenter', () => { enVideo = true;  pintarCursor(); });
+      f.addEventListener('mouseleave', () => { enVideo = false; pintarCursor(); });
+    });
+
+    // expuesto solo para poder verificarlo desde consola
+    window.__cursor = () => ({caliente, enVideo, fuera, apretado});
 
     // Parallax del hero siguiendo el mouse
     const wm = document.querySelector('.watermark');
