@@ -104,6 +104,81 @@
   *{box-sizing:border-box;margin:0;padding:0}
   html{scroll-behavior:smooth}
 
+  /* ===== CARGADOR =====
+     Solo aparece si el script del <head> pudo marcar .cargando. Sin JS no se
+     ve nunca, y aunque el JS muera despues, la animacion 'rescate' lo aparta
+     a los 6s sin que nadie tenga que llamarla: el sitio no se puede quedar
+     atrapado detras de el. */
+  #cargador{display:none}
+  .cargando #cargador{
+    display:flex;position:fixed;inset:0;z-index:9999;
+    align-items:center;justify-content:center;flex-direction:column;
+    background:var(--ink);overflow:hidden;
+    animation:rescate 0s linear 6s forwards;
+  }
+  @keyframes rescate{to{visibility:hidden;pointer-events:none}}
+  /* El scroll se libera con .cargado, no quitando .cargando: si quitaramos
+     .cargando de golpe, el cargador pasaria a display:none y se comeria la
+     transicion de salida. .cargando se retira ya que termino de barrer. */
+  .cargando{overflow:hidden}
+  .cargando.cargado{overflow:visible}
+
+  /* el campo violeta en diagonal, como el fondo de una pantalla de titulo */
+  .carga-campo{
+    position:absolute;inset:-10% -20%;z-index:0;background:var(--violet-deep);
+    clip-path:polygon(0% 38%, 100% 8%, 100% 66%, 0% 92%);
+    opacity:.55;
+  }
+  .carga-puntos{
+    position:absolute;inset:0;z-index:1;opacity:.5;
+    background-image:radial-gradient(rgba(169,107,255,.5) 1.1px, transparent 1.1px);
+    background-size:11px 11px;
+    -webkit-mask-image:radial-gradient(ellipse at center, #000 12%, transparent 72%);
+            mask-image:radial-gradient(ellipse at center, #000 12%, transparent 72%);
+  }
+  .carga-centro{position:relative;z-index:2;width:min(78%,460px);text-align:center}
+  .carga-centro img{
+    width:100%;height:auto;display:block;
+    filter:drop-shadow(5px 6px 0 var(--violet-deep)) drop-shadow(11px 13px 0 rgba(0,0,0,.55));
+    animation:cargaLogo .72s cubic-bezier(.14,1.5,.32,1) both;
+  }
+  @keyframes cargaLogo{
+    0%  {opacity:0;transform:skewX(-14deg) scale(1.5)}
+    100%{opacity:1;transform:skewX(0)      scale(1)}
+  }
+  .carga-pista{
+    margin:26px auto 0;height:6px;width:78%;
+    background:rgba(0,0,0,.55);border:2px solid var(--ink);
+    transform:skewX(-16deg);overflow:hidden;
+  }
+  .carga-pista i{
+    display:block;height:100%;background:var(--magenta);
+    transform-origin:left;transform:scaleX(0);
+    animation:cargaBarra 1.15s cubic-bezier(.3,.7,.2,1) .18s both;
+  }
+  @keyframes cargaBarra{to{transform:scaleX(1)}}
+  .carga-txt{
+    display:block;margin-top:16px;font-family:var(--disp);
+    font-size:1.55rem;letter-spacing:.44em;text-transform:uppercase;
+    color:var(--paper);transform:skewX(-10deg);
+    text-shadow:3px 3px 0 var(--ink);
+    animation:parpadeo 1.5s steps(1,end) infinite;
+  }
+  @keyframes parpadeo{0%,64%{opacity:1}65%,100%{opacity:.22}}
+
+  /* salida: se va hacia arriba con el filo inferior cortado en diagonal */
+  .cargando #cargador.fuera{
+    clip-path:polygon(0% 0%, 100% 0%, 100% 88%, 0% 100%);
+    transform:translateY(-102%);
+    transition:transform .62s cubic-bezier(.6,0,.2,1), clip-path .62s cubic-bezier(.6,0,.2,1);
+  }
+
+  @media(prefers-reduced-motion:reduce){
+    .carga-centro img,.carga-pista i,.carga-txt{animation:none;opacity:1;transform:none}
+    .carga-pista i{transform:scaleX(1)}
+    .cargando #cargador.fuera{transition-duration:.2s}
+  }
+
   body{
     background:var(--ink);
     color:var(--paper);
@@ -144,7 +219,9 @@
      Persona no brilla: es plano, impreso, de trama. El resplandor neon
      pertenece al synthwave. Aqui todo desplazamiento es solido y sin
      difuminado, como una serigrafia mal registrada a proposito. */
-  h1 .l3{text-shadow:5px 5px 0 var(--violet-deep), 10px 10px 0 var(--ink)}
+  /* en em, no en px: si fuera fijo, en movil el desplazamiento seria tan
+     grande respecto a la letra que la sombra se leeria como texto doble */
+  h1 .l1{text-shadow:.07em .07em 0 var(--violet-deep), .15em .15em 0 var(--ink)}
   h2{text-shadow:4px 4px 0 var(--violet-deep)}
   .stat b{text-shadow:3px 3px 0 var(--violet-deep)}
   .cred h3{text-shadow:2px 2px 0 var(--ink)}
@@ -298,9 +375,12 @@
   /* ===== HERO ===== */
   header{
     position:relative;min-height:100svh;display:flex;align-items:center;
-    padding:96px 0 48px;overflow:hidden;
+    padding:92px 0 44px;overflow:hidden;
     background:var(--ink);
   }
+  /* El .wrap es item flex: sin width:100% se encoge al ancho de su contenido
+     y el hero se descuadra respecto a las demas secciones. */
+  header .wrap{width:100%}
   /* Bandas diagonales rayadas. Sustituyen a los bloques solidos de color,
      que con los mesh gradients detras leian como un rectangulo suelto en
      vez de como decoracion. Las rayas si se sienten intencionales. */
@@ -323,14 +403,7 @@
       rgba(255,46,136,.14) 0 3px, transparent 3px 15px);
   }
 
-  /* marca de agua del logo, atras de todo */
-  .watermark{
-    position:absolute;z-index:0;pointer-events:none;user-select:none;
-    right:-4%;top:10%;width:min(56%,700px);
-    opacity:.16;transform:rotate(-7deg);
-  }
-  .watermark img{width:100%;height:auto;display:block}
-  @media(max-width:820px){.watermark{width:88%;right:-14%;top:7%;opacity:.2}}
+  /* El logo ya no es marca de agua: es el titular. Ya no hay .watermark. */
 
   /* etiqueta vertical al costado, tipo ficha de menu de juego */
   .costado{
@@ -359,29 +432,44 @@
     font-family:var(--disp);font-weight:400;text-transform:uppercase;
     /* Kenyan Coffee es condensada y con mucho ascendente: el interlineado
        va mas apretado que con una fuente normal para que no se abra */
-    line-height:.78;letter-spacing:.005em;margin-bottom:18px;
+    line-height:.78;letter-spacing:.005em;margin-bottom:12px;
     /* sombra dura escalonada, sin blur: el recurso mas P5 que hay */
     text-shadow:5px 5px 0 var(--violet-deep), 10px 10px 0 rgba(0,0,0,.55);
   }
   h1 .l{
     display:block;transform-origin:left center;
   }
-  /* mas chica que antes: ahora carga textos largos que rotan */
-  h1 .l1{font-size:clamp(3.3rem,min(10vw,11.5vh),8rem);transform:skewX(-10deg) rotate(-2.4deg)}
+  /* El logo hace de titular, como el logotipo de una pantalla de titulo.
+     La sombra dura va con drop-shadow porque text-shadow no toca imagenes. */
+  /* El tamaño lo manda la ALTURA de la ventana, no el ancho: asi el logo
+     nunca empuja los botones fuera de la primera pantalla en una laptop baja.
+     max-width + object-fit son la red por si el ancho llegara a apretar:
+     recorta con aire en vez de deformar el logo. */
+  .marca{
+    display:block;height:min(29vh,330px);width:auto;
+    max-width:100%;object-fit:contain;object-position:left center;
+    margin:0 0 8px -1.5%;transform-origin:left center;
+    filter:drop-shadow(6px 7px 0 var(--violet-deep))
+           drop-shadow(13px 15px 0 rgba(0,0,0,.55));
+  }
+  @media(max-width:820px){.marca{height:auto;width:94%;margin-bottom:8px}}
+  .js .marca{opacity:0}
+  .marca.go{animation:marcaIn .66s cubic-bezier(.14,1.5,.32,1) both}
+  @keyframes marcaIn{
+    0%  {opacity:0;transform:skewX(-13deg) scale(1.42) translateY(-9%)}
+    100%{opacity:1;transform:skewX(0)      scale(1)    translateY(0)}
+  }
+  /* la linea de servicios: ahora es el subtitulo, no el titular */
+  h1 .l1{
+    font-size:clamp(1.7rem,min(5.2vw,6vh),3.4rem);
+    letter-spacing:.06em;color:var(--violet-hi);
+    transform:skewX(-10deg) rotate(-1.4deg);margin-left:.1em;
+  }
   h1 .rota{min-height:1.05em}
-  h1 .l2{
-    font-size:clamp(5.4rem,min(19.5vw,22vh),16rem);transform:skewX(-10deg) rotate(-1.1deg);
-    margin-left:.06em;color:transparent;
-    -webkit-text-stroke:2.5px var(--violet-hi);
-  }
-  h1 .l3{
-    font-size:clamp(4.8rem,min(16.4vw,18.5vh),13.4rem);transform:skewX(-10deg) rotate(1.5deg);
-    margin-left:.16em;color:var(--violet-hi);
-  }
 
   .lede{
     position:relative;font-size:clamp(1rem,1.9vw,1.2rem);color:#d8cdf0;
-    max-width:54ch;margin-bottom:28px;padding-left:20px;
+    max-width:54ch;margin-bottom:22px;padding-left:20px;
   }
   /* la barra magenta ahora es pseudo-elemento para poder animarla */
   .lede::before{
@@ -414,7 +502,7 @@
   .btn:hover i{transform:skewX(10deg) translate(-3px,-3px)}
 
   .stats{
-    position:relative;display:flex;flex-wrap:wrap;gap:40px;margin-top:30px;padding-top:20px;
+    position:relative;display:flex;flex-wrap:wrap;gap:40px;margin-top:20px;padding-top:20px;
   }
   /* la linea divisoria se dibuja de izquierda a derecha */
   .stats::before{
@@ -553,7 +641,7 @@
   .cred p{color:var(--muted);font-size:.9rem}
 
   /* ===== STATUS (ficha de personaje, tipo pantalla de Persona) ===== */
-  #status{background:linear-gradient(180deg,var(--ink) 0%,#150b28 55%,var(--ink) 100%)}
+  #perfil{background:linear-gradient(180deg,var(--ink) 0%,#150b28 55%,var(--ink) 100%)}
   .ficha{
     display:grid;gap:26px;align-items:stretch;
     grid-template-columns:minmax(280px,1fr) minmax(320px,1.35fr);
@@ -588,39 +676,37 @@
     display:block;color:var(--violet-hi);font-size:.82rem;
     letter-spacing:.18em;text-transform:uppercase;margin-bottom:22px;
   }
-  /* barras tipo HP/SP */
-  .vital{display:flex;align-items:center;gap:12px;margin-bottom:11px}
-  .vital span{
-    font-family:var(--disp);font-size:1.15rem;letter-spacing:.14em;
-    text-transform:uppercase;color:var(--muted);
-    transform:skewX(-8deg);flex:0 0 92px;
+  /* las dos cifras duras: años y casas donde ha trabajado */
+  .cifras{display:flex;gap:34px;flex-wrap:wrap;margin-bottom:20px}
+  .cifra b{
+    display:block;font-family:var(--disp);font-weight:400;
+    font-size:3.4rem;line-height:1;color:var(--violet-hi);
+    transform:skewX(-8deg);transform-origin:left;
+    text-shadow:3px 3px 0 var(--ink);
   }
-  .vital b{
-    font-family:var(--disp);font-weight:400;font-size:1.9rem;line-height:1;
-    color:var(--paper);transform:skewX(-8deg);flex:0 0 44px;text-align:right;
+  .cifra span{
+    display:block;font-size:.72rem;letter-spacing:.18em;
+    text-transform:uppercase;color:var(--muted);margin-top:6px;max-width:15ch;
   }
-  .vital .pista{
-    flex:1;height:13px;background:#0b0410;border:2px solid var(--line);
-    transform:skewX(-14deg);overflow:hidden;
+  .js .ficha-yo .cifra{opacity:0}
+  .ficha-yo.go .cifra{
+    animation:statIn .42s cubic-bezier(.15,1.6,.36,1) both;
+    animation-delay:calc(200ms + var(--i,0) * 110ms);
   }
-  .vital .llena{
-    display:block;height:100%;width:var(--v,100%);
-    transform-origin:left;transform:scaleX(0);
-  }
-  .vital.hp .llena{background:var(--magenta)}
-  .vital.sp .llena{background:var(--violet-hi)}
-  .ficha-yo.go .vital .llena{
-    animation:barraLlena .7s cubic-bezier(.16,.9,.3,1) both;
-    animation-delay:calc(220ms + var(--i,0) * 130ms);
-  }
-  @keyframes barraLlena{to{transform:scaleX(1)}}
 
-  .yo-exp{
-    font-family:var(--disp);font-size:1.2rem;letter-spacing:.1em;
-    text-transform:uppercase;color:var(--muted);transform:skewX(-8deg);
-    display:block;margin:16px 0 22px;
+  /* linea de disponibilidad, con su punto que late */
+  .yo-libre{
+    display:flex;align-items:center;gap:10px;
+    font-size:.84rem;color:var(--paper);margin-bottom:22px;
   }
-  .yo-exp em{font-style:normal;color:var(--magenta)}
+  .yo-libre::before{
+    content:"";width:9px;height:9px;flex:0 0 9px;
+    background:var(--magenta);transform:rotate(45deg);
+  }
+  @media(prefers-reduced-motion:no-preference){
+    .yo-libre::before{animation:latir 1.9s ease-in-out infinite}
+  }
+  @keyframes latir{0%,100%{opacity:1}50%{opacity:.3}}
 
   .yo-datos{list-style:none;border-top:2px solid var(--line);padding-top:18px}
   .yo-datos li{margin-bottom:13px}
@@ -682,36 +768,6 @@
     100%{opacity:1;transform:scale(1) rotate(0)}
   }
   @keyframes radarPunto{from{opacity:0}to{opacity:1}}
-
-  /* --- tira de software, las barras literales del CV --- */
-  .skills{
-    position:relative;margin-top:26px;padding:26px 26px 24px;
-    background:var(--ink-2);border:2px solid var(--line);
-    display:grid;gap:12px 34px;
-    grid-template-columns:repeat(auto-fit,minmax(300px,1fr));
-  }
-  .skills-tit{
-    grid-column:1/-1;font-family:var(--disp);font-weight:400;text-transform:uppercase;
-    font-size:1.5rem;letter-spacing:.08em;color:var(--violet-hi);
-    transform:skewX(-9deg);transform-origin:left;margin-bottom:2px;
-  }
-  .skill{display:flex;align-items:center;gap:12px}
-  .skill span{
-    flex:0 0 132px;font-size:.82rem;color:var(--paper);letter-spacing:.02em;
-  }
-  .skill .pista{
-    flex:1;height:9px;background:var(--ink-2);border:1px solid var(--line);
-    transform:skewX(-14deg);overflow:hidden;
-  }
-  .skill .llena{
-    display:block;height:100%;width:var(--v,100%);
-    background:linear-gradient(90deg,var(--violet),var(--violet-hi));
-    transform-origin:left;transform:scaleX(0);
-  }
-  .skills.go .llena{
-    animation:barraLlena .62s cubic-bezier(.16,.9,.3,1) both;
-    animation-delay:calc(var(--i,0) * 70ms);
-  }
 
   /* ===== CONTACT ===== */
   #contacto{
@@ -789,6 +845,7 @@
   .hero-a-salvo header .pop,
   .hero-a-salvo header .fade,
   .hero-a-salvo header .stat,
+  .hero-a-salvo header .marca,
   .hero-a-salvo header .slam .wd{opacity:1}
   .hero-a-salvo header .lede::before{transform:scaleY(1)}
   .hero-a-salvo header .stats::before{transform:scaleX(1)}
@@ -855,8 +912,7 @@
     .stat,.stats.go .stat{opacity:1;animation:none;transform:none}
     .svc h3::before,.svc h3::after{display:none}
     .rv,.rv.in{opacity:1;transform:none;transition:none}
-    .vital .llena,.skill .llena,
-    .ficha-yo.go .vital .llena,.skills.go .llena{transform:scaleX(1);animation:none}
+    .cifra,.ficha-yo.go .cifra{opacity:1;animation:none;transform:none}
     .radar .valor,.radar .punto,
     .ficha-radar.go .radar .valor,.ficha-radar.go .radar .punto{
       opacity:1;transform:none;animation:none;
@@ -870,6 +926,23 @@
 </style>
 </head>
 <body>
+
+<!-- Marcar el cargador aqui arriba, antes de que se pinte nada, para que no
+     haya un parpadeo de contenido antes de que aparezca. Va en su propia
+     clase (.cargando) y no en .js: asi, si el resto del script fallara, lo
+     unico afectado es el cargador y el sitio sigue viendose entero. -->
+<script>document.documentElement.classList.add('cargando');</script>
+
+<div id="cargador" aria-hidden="true">
+  <div class="carga-campo"></div>
+  <div class="carga-puntos"></div>
+  <div class="carga-centro">
+    <img src="/assets/logo-lg.webp" alt="" width="1200" height="675" fetchpriority="high" decoding="async">
+    <div class="carga-pista"><i></i></div>
+    <span class="carga-txt" data-es="Cargando" data-en="Loading">Cargando</span>
+  </div>
+</div>
+
 
 <nav id="nav">
   <div class="nav-in">
@@ -906,7 +979,7 @@
     <a href="#trabajo"     style="--i:0"><i>01</i><span data-es="Trabajo"     data-en="Work">Trabajo</span></a>
     <a href="#servicios"   style="--i:1"><i>02</i><span data-es="Servicios"   data-en="Services">Servicios</span></a>
     <a href="#experiencia" style="--i:2"><i>03</i><span data-es="Experiencia" data-en="Experience">Experiencia</span></a>
-    <a href="#status"      style="--i:3"><i>04</i><span data-es="Status"      data-en="Status">Status</span></a>
+    <a href="#perfil"      style="--i:3"><i>04</i><span data-es="Perfil"      data-en="Profile">Perfil</span></a>
     <a href="#contacto"    style="--i:4"><i>05</i><span data-es="Contacto"    data-en="Contact">Contacto</span></a>
   </nav>
 
@@ -918,7 +991,6 @@
   <div class="campo2"></div>
   <div class="slab slab-a"></div>
   <div class="slab slab-b"></div>
-  <div class="watermark" aria-hidden="true"><img src="/assets/logo-lg.webp" alt="" width="1200" height="675" loading="lazy"></div>
   <div class="halftone"></div>
   <span class="costado" aria-hidden="true" data-es="Diseño · Animación · Web" data-en="Design · Animation · Web">Diseño · Animación · Web</span>
 
@@ -926,14 +998,18 @@
     <span class="kicker" data-es="Rubén Rivera · Querétaro, México" data-en="Rubén Rivera · Querétaro, Mexico">Rubén Rivera · Querétaro, México</span>
 
     <h1>
-      <!-- La primera linea rota entre los cuatro servicios. Usa data-rot-*
+      <!-- El logo ES el titular. Su alt carga el texto que leen Google y los
+           lectores de pantalla, porque un <img> dentro del h1 aporta su alt
+           como encabezado de la pagina. -->
+      <img class="marca" src="/assets/logo-lg.webp"
+           alt="NotMan Rivera — Rubén Rivera, motion graphics, video y diseño web"
+           width="1200" height="675" fetchpriority="high" decoding="async">
+      <!-- Esta linea rota entre los cuatro servicios. Usa data-rot-*
            para que el toggle de idioma generico (que busca [data-es][data-en])
            no la pise: la maneja su propia rutina. -->
       <span class="l l1 rota"
             data-rot-es="Motion graphics 2D/3D|Edición de video|Diseño web UI/UX|Soporte marca blanca"
             data-rot-en="2D/3D motion graphics|Video editing|Web design UI/UX|White-label support">Motion graphics 2D/3D</span>
-      <span class="l l2" data-es="para agencias" data-en="for agencies">para agencias</span>
-      <span class="l l3" data-es="y jugadores" data-en="and athletes">y jugadores</span>
     </h1>
 
     <p class="lede" data-es="Nueve años diseñando y animando para agencias de marketing, representantes y jugadores profesionales. Motion graphics, edición de video, diseño web y soporte de marca blanca cuando a tu equipo le falta capacidad." data-en="Nine years designing and animating for marketing agencies, representatives and professional athletes. Motion graphics, video editing, web design and white-label support when your team runs out of capacity.">Nueve años diseñando y animando para agencias de marketing, representantes y jugadores profesionales. Motion graphics, edición de video, diseño web y soporte de marca blanca cuando a tu equipo le falta capacidad.</p>
@@ -1056,19 +1132,19 @@
   </div>
 </section>
 
-<section id="status">
+<section id="perfil">
   <div class="halftone"></div>
   <div class="wrap">
     <div class="sec-head rv">
       <span class="sec-num">04</span>
-      <span class="sec-tag" data-es="Status" data-en="Status">Status</span>
-      <h2 data-es="Ficha de <em>personaje</em>" data-en="Character <em>sheet</em>">Ficha de <em>personaje</em></h2>
-      <p data-es="Mi currículum, leído como una pantalla de estado. Todo lo de abajo es verificable." data-en="My résumé, read as a status screen. Everything below is verifiable.">Mi currículum, leído como una pantalla de estado. Todo lo de abajo es verificable.</p>
+      <span class="sec-tag" data-es="Perfil" data-en="Profile">Perfil</span>
+      <h2 data-es="Formación y <em>herramientas</em>" data-en="Training and <em>tools</em>">Formación y <em>herramientas</em></h2>
+      <p data-es="Con qué trabajo y de dónde vengo. Todo lo de abajo es verificable." data-en="What I work with and where I come from. Everything below is verifiable.">Con qué trabajo y de dónde vengo. Todo lo de abajo es verificable.</p>
     </div>
 
     <div class="ficha">
 
-      <!-- vitales -->
+      <!-- quien soy -->
       <div class="ficha-yo rv">
         <img class="yo-retrato" src="/assets/logo-lg.webp" alt="" aria-hidden="true"
              width="1200" height="675" loading="lazy" decoding="async">
@@ -1076,18 +1152,18 @@
         <span class="yo-nombre">Rubén Núñez Rivera</span>
         <span class="yo-clase" data-es="Diseñador · Animador · Web" data-en="Designer · Animator · Web">Diseñador · Animador · Web</span>
 
-        <div class="vital hp" style="--i:0">
-          <span data-es="Nivel" data-en="Level">Nivel</span>
-          <b>09</b>
-          <em class="pista" aria-hidden="true"><em class="llena" style="--v:100%"></em></em>
-        </div>
-        <div class="vital sp" style="--i:1">
-          <span data-es="Estudios" data-en="Studios">Estudios</span>
-          <b>07</b>
-          <em class="pista" aria-hidden="true"><em class="llena" style="--v:100%"></em></em>
+        <div class="cifras">
+          <div class="cifra" style="--i:0">
+            <b>9</b>
+            <span data-es="años de experiencia" data-en="years of experience">años de experiencia</span>
+          </div>
+          <div class="cifra" style="--i:1">
+            <b>7</b>
+            <span data-es="estudios y agencias" data-en="studios and agencies">estudios y agencias</span>
+          </div>
         </div>
 
-        <span class="yo-exp" data-es="Siguiente EXP · <em>tu proyecto</em>" data-en="Next EXP · <em>your project</em>">Siguiente EXP · <em>tu proyecto</em></span>
+        <p class="yo-libre" data-es="Disponible para proyectos y soporte de marca blanca" data-en="Available for projects and white-label support">Disponible para proyectos y soporte de marca blanca</p>
 
         <ul class="yo-datos">
           <li>
@@ -1108,64 +1184,59 @@
         </ul>
       </div>
 
-      <!-- pentagono -->
+      <!-- el mapa de herramientas -->
       <div class="ficha-radar rv">
-        <span class="radar-tit" data-es="Atributos" data-en="Attributes">Atributos</span>
+        <span class="radar-tit" data-es="Herramientas" data-en="Toolkit">Herramientas</span>
 
-        <svg class="radar" viewBox="0 0 620 400" role="img">
-          <!-- el titulo lleva data-es/data-en para que el toggle de idioma
-               tambien lo cambie: es lo unico que oye un lector de pantalla -->
-          <title data-es="Atributos: composición 100, movimiento 92, narrativa 86, estructura 82 y resistencia 96 sobre 100." data-en="Attributes: composition 100, motion 92, narrative 86, structure 82 and stamina 96 out of 100.">Atributos: composición 100, movimiento 92, narrativa 86, estructura 82 y resistencia 96 sobre 100.</title>
+        <!-- Hexagono de centro 310,205 y radio 145. Si cambian los valores hay
+             que recalcular a mano tanto el <polygon class="valor"> como los
+             <circle class="punto">: r_i = 145 * valor / 100. -->
+        <svg class="radar" viewBox="0 0 620 420" role="img">
+          <title data-es="Nivel de dominio: Photoshop 100, Illustrator 100, After Effects 94, Premiere Pro 90, Figma 88 y Lightroom 82 sobre 100." data-en="Proficiency: Photoshop 100, Illustrator 100, After Effects 94, Premiere Pro 90, Figma 88 and Lightroom 82 out of 100.">Nivel de dominio: Photoshop 100, Illustrator 100, After Effects 94, Premiere Pro 90, Figma 88 y Lightroom 82 sobre 100.</title>
+
           <!-- rejilla -->
-          <polygon class="rejilla" points="310,157.5 345.67,183.41 332.04,225.34 287.96,225.34 274.33,183.41"/>
-          <polygon class="rejilla" points="310,120 381.33,171.83 354.09,255.68 265.91,255.68 238.67,171.83"/>
-          <polygon class="rejilla" points="310,82.5 416.99,160.24 376.13,286.01 243.87,286.01 203.00,160.24"/>
-          <polygon class="rejilla" style="stroke-width:2.5" points="310,45 452.66,148.65 398.17,316.35 221.83,316.35 167.34,148.65"/>
+          <polygon class="rejilla" points="310,168.75 341.39,186.88 341.39,223.13 310,241.25 278.61,223.13 278.61,186.88"/>
+          <polygon class="rejilla" points="310,132.5 372.79,168.75 372.79,241.25 310,277.5 247.21,241.25 247.21,168.75"/>
+          <polygon class="rejilla" points="310,96.25 404.18,150.63 404.18,259.38 310,313.75 215.82,259.38 215.82,150.63"/>
+          <polygon class="rejilla" style="stroke-width:2.5" points="310,60 435.57,132.5 435.57,277.5 310,350 184.43,277.5 184.43,132.5"/>
           <g class="radio">
-            <line x1="310" y1="195" x2="310" y2="45"/>
-            <line x1="310" y1="195" x2="452.66" y2="148.65"/>
-            <line x1="310" y1="195" x2="398.17" y2="316.35"/>
-            <line x1="310" y1="195" x2="221.83" y2="316.35"/>
-            <line x1="310" y1="195" x2="167.34" y2="148.65"/>
+            <line x1="310" y1="205" x2="310"    y2="60"/>
+            <line x1="310" y1="205" x2="435.57" y2="132.5"/>
+            <line x1="310" y1="205" x2="435.57" y2="277.5"/>
+            <line x1="310" y1="205" x2="310"    y2="350"/>
+            <line x1="310" y1="205" x2="184.43" y2="277.5"/>
+            <line x1="310" y1="205" x2="184.43" y2="132.5"/>
           </g>
 
           <!-- valores -->
-          <polygon class="valor" points="310,45 441.25,152.36 385.82,299.36 237.70,294.51 173.05,150.50"/>
-          <circle class="punto" style="--i:0" cx="310"    cy="45"     r="5.5"/>
-          <circle class="punto" style="--i:1" cx="441.25" cy="152.36" r="5.5"/>
-          <circle class="punto" style="--i:2" cx="385.82" cy="299.36" r="5.5"/>
-          <circle class="punto" style="--i:3" cx="237.70" cy="294.51" r="5.5"/>
-          <circle class="punto" style="--i:4" cx="173.05" cy="150.50" r="5.5"/>
+          <polygon class="valor" points="310,60 435.57,132.5 428.04,273.15 310,335.5 199.50,268.80 207.03,145.55"/>
+          <circle class="punto" style="--i:0" cx="310"    cy="60"     r="5.5"/>
+          <circle class="punto" style="--i:1" cx="435.57" cy="132.5"  r="5.5"/>
+          <circle class="punto" style="--i:2" cx="428.04" cy="273.15" r="5.5"/>
+          <circle class="punto" style="--i:3" cx="310"    cy="335.5"  r="5.5"/>
+          <circle class="punto" style="--i:4" cx="199.50" cy="268.80" r="5.5"/>
+          <circle class="punto" style="--i:5" cx="207.03" cy="145.55" r="5.5"/>
 
           <!-- etiquetas -->
-          <text class="eje"   x="310" y="22"  text-anchor="middle" data-es="Composición" data-en="Composition">Composición</text>
-          <text class="rango" x="310" y="38"  text-anchor="middle" data-es="Maestro" data-en="Masterful">Maestro</text>
+          <text class="eje"   x="310" y="28"  text-anchor="middle">Photoshop</text>
+          <text class="rango" x="310" y="44"  text-anchor="middle">100</text>
 
-          <text class="eje"   x="474" y="140" text-anchor="start" data-es="Movimiento" data-en="Motion">Movimiento</text>
-          <text class="rango" x="474" y="156" text-anchor="start" data-es="Imparable" data-en="Relentless">Imparable</text>
+          <text class="eje"   x="456" y="126" text-anchor="start">Illustrator</text>
+          <text class="rango" x="456" y="142" text-anchor="start">100</text>
 
-          <text class="eje"   x="416" y="344" text-anchor="start" data-es="Narrativa" data-en="Narrative">Narrativa</text>
-          <text class="rango" x="416" y="360" text-anchor="start" data-es="Elocuente" data-en="Eloquent">Elocuente</text>
+          <text class="eje"   x="456" y="272" text-anchor="start">After Effects</text>
+          <text class="rango" x="456" y="288" text-anchor="start">94</text>
 
-          <text class="eje"   x="204" y="344" text-anchor="end"   data-es="Estructura" data-en="Structure">Estructura</text>
-          <text class="rango" x="204" y="360" text-anchor="end"   data-es="Preciso" data-en="Precise">Preciso</text>
+          <text class="eje"   x="310" y="380" text-anchor="middle">Premiere Pro</text>
+          <text class="rango" x="310" y="396" text-anchor="middle">90</text>
 
-          <text class="eje"   x="146" y="140" text-anchor="end"   data-es="Resistencia" data-en="Stamina">Resistencia</text>
-          <text class="rango" x="146" y="156" text-anchor="end"   data-es="Incansable" data-en="Tireless">Incansable</text>
+          <text class="eje"   x="164" y="272" text-anchor="end">Figma</text>
+          <text class="rango" x="164" y="288" text-anchor="end">88</text>
+
+          <text class="eje"   x="164" y="126" text-anchor="end">Lightroom</text>
+          <text class="rango" x="164" y="142" text-anchor="end">82</text>
         </svg>
       </div>
-    </div>
-
-    <!-- herramientas: las barras literales del CV -->
-    <div class="skills rv">
-      <span class="skills-tit" data-es="Herramientas" data-en="Toolkit">Herramientas</span>
-      <div class="skill" style="--i:0"><span>Adobe Photoshop</span>    <em class="pista" aria-hidden="true"><em class="llena" style="--v:100%"></em></em></div>
-      <div class="skill" style="--i:1"><span>Adobe Illustrator</span>  <em class="pista" aria-hidden="true"><em class="llena" style="--v:100%"></em></em></div>
-      <div class="skill" style="--i:2"><span>Adobe After Effects</span><em class="pista" aria-hidden="true"><em class="llena" style="--v:94%"></em></em></div>
-      <div class="skill" style="--i:3"><span>Adobe Premiere Pro</span> <em class="pista" aria-hidden="true"><em class="llena" style="--v:90%"></em></em></div>
-      <div class="skill" style="--i:4"><span>Figma</span>              <em class="pista" aria-hidden="true"><em class="llena" style="--v:88%"></em></em></div>
-      <div class="skill" style="--i:5"><span>Adobe Lightroom</span>    <em class="pista" aria-hidden="true"><em class="llena" style="--v:82%"></em></em></div>
-      <div class="skill" style="--i:6"><span data-es="Inglés" data-en="English">Inglés</span><em class="pista" aria-hidden="true"><em class="llena" style="--v:78%"></em></em></div>
     </div>
   </div>
 </section>
@@ -1218,11 +1289,11 @@
   document.querySelectorAll('.rv').forEach(el => io.observe(el));
 
   /* ===== Animacion de texto estilo Persona ===== */
-  const SLAM = 'header h1 .l, h2, .svc h3, .card-body h3, .cred h3, .yo-nombre, .radar-tit, .skills-tit';
+  const SLAM = 'header h1 .l, h2, .svc h3, .card-body h3, .cred h3, .yo-nombre, .radar-tit';
   const POP  = '.kicker, .sec-tag, .btn, .mail';
   const FADE = '.lede, .sec-head p, .svc p, .card-body p, .cred p, #contacto .wrap > p, .foot-in > span, .yo-datos li';
   // traen animacion propia, solo piden .go
-  const SOLO = '.stats, .ficha-yo, .ficha-radar, .skills';
+  const SOLO = '.stats, .ficha-yo, .ficha-radar';
   const TODO = [SLAM, POP, FADE, SOLO].join(', ');
 
   // indices para escalonar las estadisticas
@@ -1276,10 +1347,17 @@
     ioTexto.observe(el);
   });
 
-  // Entrada del hero, escalonada: kicker -> 3 lineas del titulo -> lede -> botones -> stats
+  // Entrada del hero, escalonada: kicker -> logo -> linea de servicios -> lede -> botones -> stats.
+  // Mientras el cargador tape la pantalla no arranca: si no, la animacion se
+  // gastaria detras del telon y el visitante llegaria al hero ya quieto.
+  const raiz = document.documentElement;
+  let heroListo = !raiz.classList.contains('cargando');
+
   function entradaHero(){
+    if (!heroListo) return;
     const orden = [
       ...document.querySelectorAll('header .kicker'),
+      ...document.querySelectorAll('header .marca'),
       ...document.querySelectorAll('header h1 .l'),
       ...document.querySelectorAll('header .lede'),
       ...document.querySelectorAll('header .btn'),
@@ -1292,7 +1370,39 @@
   // ...pero rAF no corre en pestanas ocultas, asi que reforzamos con un
   // temporizador, y a los 2.5s destapamos el hero pase lo que pase.
   setTimeout(entradaHero, 700);
-  setTimeout(() => document.documentElement.classList.add('hero-a-salvo'), 2500);
+  // Ultimo recurso, ya pasado el tope del cargador: destapa el hero pase lo que pase.
+  setTimeout(() => raiz.classList.add('hero-a-salvo'), 3600);
+
+  /* ===== CIERRE DEL CARGADOR =====
+     Se va cuando la pagina termina de cargar, pero nunca antes de MINIMO
+     (para que la animacion se alcance a leer) ni despues de TOPE (para no
+     castigar a quien tenga mala conexion). El CSS ademas lo aparta solo a
+     los 6s por si este bloque nunca llegara a correr. */
+  (function(){
+    const capa = document.getElementById('cargador');
+    if (!capa || heroListo) { entradaHero(); return; }
+
+    const MINIMO = 950, TOPE = 2600;
+    const t0 = performance.now();
+    let cerrado = false;
+
+    function cerrar(){
+      if (cerrado) return;
+      cerrado = true;
+      capa.classList.add('fuera');
+      raiz.classList.add('cargado');      // libera el scroll sin matar la salida
+      heroListo = true;
+      entradaHero();
+      setTimeout(() => raiz.classList.remove('cargando','cargado'), 720);
+    }
+
+    const alTerminar = () =>
+      setTimeout(cerrar, Math.max(0, MINIMO - (performance.now() - t0)));
+
+    if (document.readyState === 'complete') alTerminar();
+    else addEventListener('load', alTerminar, {once:true});
+    setTimeout(cerrar, TOPE);
+  })();
 
   // Parallax suave de los bloques diagonales
   const slabA = document.querySelector('.slab-a');
@@ -1314,13 +1424,13 @@
 
   if (finoYConMovimiento) {
     // Parallax del hero siguiendo el mouse
-    const wm = document.querySelector('.watermark');
     const h1 = document.querySelector('header h1');
+    const costado = document.querySelector('header .costado');
     addEventListener('mousemove', e => {
       const nx = (e.clientX / innerWidth  - .5) * 2;   // -1 .. 1
       const ny = (e.clientY / innerHeight - .5) * 2;
-      if (wm) wm.style.translate = `${nx * -22}px ${ny * -14}px`;
-      if (h1) h1.style.translate = `${nx * 7}px ${ny * 5}px`;
+      if (h1) h1.style.translate = `${nx * 9}px ${ny * 6}px`;
+      if (costado) costado.style.translate = `${nx * -14}px ${ny * -9}px`;
     }, {passive:true});
 
     // Las tarjetas se inclinan hacia el cursor.

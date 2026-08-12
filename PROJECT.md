@@ -30,9 +30,22 @@ El cuerpo de texto queda recto y legible a propósito — el contraste entre lo 
 
 Bilingüe ES/EN con un toggle que re-parte el texto y vuelve a disparar todas las animaciones al cambiar de idioma.
 
-### Sección 04 · Status
+### Cargador
 
-La sección `#status` es su CV leído como la pantalla de estado de Persona 4 Golden: panel de vitales a la izquierda, pentágono de atributos a la derecha sobre campo violeta plano con trama de puntos, y la tira de herramientas abajo con las barras literales del CV. Los cinco ejes (composición, movimiento, narrativa, estructura, resistencia) y sus rangos salen de su formación y su experiencia reales — si cambia el CV, hay que actualizar tanto los porcentajes del `<polygon class="valor">` como los `<circle class="punto">`, que están calculados a mano sobre un pentágono de centro `310,195` y radio `150`.
+Al entrar se ve una pantalla de título: campo violeta en diagonal, el logo con sombra dura, una barra que se llena y "CARGANDO" parpadeando; al terminar barre hacia arriba con el filo inferior cortado en diagonal. Se va cuando la página termina de cargar, nunca antes de 950 ms ni después de 2.6 s.
+
+⚠️ Tres cosas que no se deben tocar sin entenderlas:
+- Se activa con la clase `.cargando`, que pone un `<script>` diminuto al abrir el `<body>` — **no** con `.js`. Si compartieran clase, un fallo del script principal dejaría el sitio entero escondido; así, lo único que se rompe es el cargador.
+- El scroll se libera añadiendo `.cargado`, no quitando `.cargando`: quitarla lo manda a `display:none` de golpe y se come la transición de salida. `.cargando` se retira 720 ms después.
+- El CSS lo aparta solo a los 6 s con una animación (`rescate`) que nadie tiene que llamar. Es la garantía de que la página no se puede quedar atrapada detrás de él.
+
+La entrada del hero espera al cargador (bandera `heroListo`); si no, la animación se gastaría detrás del telón.
+
+### Sección 04 · Perfil
+
+El CV leído como una pantalla de estado de Persona, pero **sin jerga de videojuego** — nada de "nivel", "EXP" ni aptitudes inventadas; eso se probó y se descartó a petición suya. Panel izquierdo con las dos cifras duras (9 años, 7 estudios), disponibilidad y formación; a la derecha un hexágono con las seis herramientas y los porcentajes que él mismo puso en su CV.
+
+El hexágono está calculado a mano sobre centro `310,205` y radio `145`: si cambia un valor hay que recalcular el `<polygon class="valor">` **y** su `<circle class="punto">`, con `r = 145 × valor / 100`.
 
 ## Infraestructura
 
