@@ -35,8 +35,23 @@
   "knowsLanguage": ["es", "en"],
   "founder": {
     "@type": "Person",
-    "name": "Rubén Rivera",
-    "jobTitle": "Motion Graphics Designer, Video Editor & Web Designer"
+    "name": "Rubén Núñez Rivera",
+    "alternateName": "NotMan Rivera",
+    "jobTitle": "Motion Graphics Designer, Video Editor & Web Designer",
+    "alumniOf": {
+      "@type": "CollegeOrUniversity",
+      "name": "Universidad Autónoma de Querétaro",
+      "sameAs": "https://www.uaq.mx/"
+    },
+    "hasCredential": [
+      { "@type": "EducationalOccupationalCredential", "credentialCategory": "degree", "name": "Licenciatura en Diseño Gráfico" },
+      { "@type": "EducationalOccupationalCredential", "credentialCategory": "diploma", "name": "Diplomado en Cine" }
+    ],
+    "knowsAbout": [
+      "Motion graphics", "After Effects", "Adobe Premiere Pro", "Adobe Photoshop",
+      "Adobe Illustrator", "Figma", "Diseño web UI/UX", "Edición de video deportiva"
+    ],
+    "knowsLanguage": ["es", "en"]
   },
   "hasOfferCatalog": {
     "@type": "OfferCatalog",
@@ -243,6 +258,7 @@
   .menu-lista a:nth-child(2){--sangria:5%;   --escala:.9}
   .menu-lista a:nth-child(3){--sangria:10%;  --escala:.82}
   .menu-lista a:nth-child(4){--sangria:15%;  --escala:.75}
+  .menu-lista a:nth-child(5){--sangria:20%;  --escala:.69}
   .menu-lista a i{
     font-style:normal;font-size:.34em;color:var(--violet-hi);
     letter-spacing:.1em;
@@ -536,6 +552,167 @@
   }
   .cred p{color:var(--muted);font-size:.9rem}
 
+  /* ===== STATUS (ficha de personaje, tipo pantalla de Persona) ===== */
+  #status{background:linear-gradient(180deg,var(--ink) 0%,#150b28 55%,var(--ink) 100%)}
+  .ficha{
+    display:grid;gap:26px;align-items:stretch;
+    grid-template-columns:minmax(280px,1fr) minmax(320px,1.35fr);
+  }
+  @media(max-width:900px){.ficha{grid-template-columns:1fr}}
+
+  /* --- panel izquierdo: los vitales --- */
+  .ficha-yo{
+    position:relative;background:var(--ink-2);border:2px solid var(--line);
+    padding:28px 26px 30px;overflow:hidden;
+  }
+  .ficha-yo::before{
+    content:"";position:absolute;top:0;left:0;width:100%;height:8px;
+    background:linear-gradient(90deg,var(--magenta),var(--violet) 70%,transparent);
+  }
+  /* el logo hace de "retrato": silueta blanca muy tenue, sangrada al borde.
+     Va como <img> suelto, no dentro de <picture>: un <picture> es inline y
+     mide 0 de ancho, asi que el width:% del hijo absoluto se resolvia a 0. */
+  .yo-retrato{
+    position:absolute;right:-14%;bottom:-10%;width:78%;height:auto;opacity:.085;
+    filter:brightness(0) invert(1);
+    pointer-events:none;user-select:none;z-index:0;
+  }
+  .ficha-yo > :not(.yo-retrato){position:relative;z-index:1}
+  .yo-nombre{
+    display:block;font-family:var(--disp);font-weight:400;text-transform:uppercase;
+    font-size:clamp(2.2rem,4.6vw,3.1rem);line-height:.9;letter-spacing:.01em;
+    transform:skewX(-8deg);transform-origin:left;
+    text-shadow:3px 3px 0 var(--violet-deep);margin-bottom:6px;
+  }
+  .yo-clase{
+    display:block;color:var(--violet-hi);font-size:.82rem;
+    letter-spacing:.18em;text-transform:uppercase;margin-bottom:22px;
+  }
+  /* barras tipo HP/SP */
+  .vital{display:flex;align-items:center;gap:12px;margin-bottom:11px}
+  .vital span{
+    font-family:var(--disp);font-size:1.15rem;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--muted);
+    transform:skewX(-8deg);flex:0 0 92px;
+  }
+  .vital b{
+    font-family:var(--disp);font-weight:400;font-size:1.9rem;line-height:1;
+    color:var(--paper);transform:skewX(-8deg);flex:0 0 44px;text-align:right;
+  }
+  .vital .pista{
+    flex:1;height:13px;background:#0b0410;border:2px solid var(--line);
+    transform:skewX(-14deg);overflow:hidden;
+  }
+  .vital .llena{
+    display:block;height:100%;width:var(--v,100%);
+    transform-origin:left;transform:scaleX(0);
+  }
+  .vital.hp .llena{background:var(--magenta)}
+  .vital.sp .llena{background:var(--violet-hi)}
+  .ficha-yo.go .vital .llena{
+    animation:barraLlena .7s cubic-bezier(.16,.9,.3,1) both;
+    animation-delay:calc(220ms + var(--i,0) * 130ms);
+  }
+  @keyframes barraLlena{to{transform:scaleX(1)}}
+
+  .yo-exp{
+    font-family:var(--disp);font-size:1.2rem;letter-spacing:.1em;
+    text-transform:uppercase;color:var(--muted);transform:skewX(-8deg);
+    display:block;margin:16px 0 22px;
+  }
+  .yo-exp em{font-style:normal;color:var(--magenta)}
+
+  .yo-datos{list-style:none;border-top:2px solid var(--line);padding-top:18px}
+  .yo-datos li{margin-bottom:13px}
+  .yo-datos li:last-child{margin-bottom:0}
+  .yo-datos i{
+    display:block;font-style:normal;font-size:.68rem;letter-spacing:.2em;
+    text-transform:uppercase;color:var(--violet-hi);margin-bottom:2px;
+  }
+  .yo-datos p{color:var(--paper);font-size:.88rem;line-height:1.35}
+  .yo-datos p b{font-weight:600}
+  .yo-datos p small{display:block;color:var(--muted);font-size:.78rem}
+
+  /* --- panel derecho: el pentagono --- */
+  .ficha-radar{
+    position:relative;background:var(--violet-deep);border:2px solid var(--violet);
+    padding:22px 18px 18px;overflow:hidden;
+    display:flex;flex-direction:column;
+  }
+  /* el campo plano de color, con su trama de puntos, como el amarillo de P4 */
+  .ficha-radar::before{
+    content:"";position:absolute;inset:0;pointer-events:none;
+    background-image:radial-gradient(rgba(255,255,255,.16) 1.2px, transparent 1.2px);
+    background-size:9px 9px;opacity:.5;
+  }
+  .radar-tit{
+    position:relative;font-family:var(--disp);font-weight:400;text-transform:uppercase;
+    font-size:1.9rem;letter-spacing:.06em;transform:skewX(-9deg);transform-origin:left;
+    color:#fff;text-shadow:3px 3px 0 var(--ink);margin-bottom:2px;
+  }
+  .radar{position:relative;width:100%;height:auto;display:block;overflow:visible}
+  .radar .rejilla{fill:none;stroke:rgba(255,255,255,.26);stroke-width:1.5}
+  .radar .radio{stroke:rgba(255,255,255,.26);stroke-width:1.5}
+  .radar .valor{
+    fill:rgba(255,46,136,.5);stroke:var(--magenta);stroke-width:4;
+    stroke-linejoin:round;
+    transform-box:view-box;transform-origin:310px 195px;
+  }
+  .radar .punto{fill:#fff;stroke:var(--ink);stroke-width:2}
+  .radar .eje{
+    font-family:var(--disp);font-size:20px;letter-spacing:.05em;
+    fill:#fff;text-transform:uppercase;
+  }
+  .radar .rango{
+    font-family:var(--body);font-size:12.5px;font-weight:600;letter-spacing:.12em;
+    fill:#FFC9E3;text-transform:uppercase;
+  }
+  /* el poligono crece desde el centro con rebote */
+  .js .radar .valor,.js .radar .punto{opacity:0}
+  .ficha-radar.go .radar .valor{
+    animation:radarCrece .72s cubic-bezier(.18,1.5,.35,1) both;
+    animation-delay:200ms;
+  }
+  .ficha-radar.go .radar .punto{
+    animation:radarPunto .32s cubic-bezier(.15,1.7,.35,1) both;
+    animation-delay:calc(640ms + var(--i,0) * 70ms);
+  }
+  @keyframes radarCrece{
+    0%  {opacity:0;transform:scale(.05) rotate(-22deg)}
+    100%{opacity:1;transform:scale(1) rotate(0)}
+  }
+  @keyframes radarPunto{from{opacity:0}to{opacity:1}}
+
+  /* --- tira de software, las barras literales del CV --- */
+  .skills{
+    position:relative;margin-top:26px;padding:26px 26px 24px;
+    background:var(--ink-2);border:2px solid var(--line);
+    display:grid;gap:12px 34px;
+    grid-template-columns:repeat(auto-fit,minmax(300px,1fr));
+  }
+  .skills-tit{
+    grid-column:1/-1;font-family:var(--disp);font-weight:400;text-transform:uppercase;
+    font-size:1.5rem;letter-spacing:.08em;color:var(--violet-hi);
+    transform:skewX(-9deg);transform-origin:left;margin-bottom:2px;
+  }
+  .skill{display:flex;align-items:center;gap:12px}
+  .skill span{
+    flex:0 0 132px;font-size:.82rem;color:var(--paper);letter-spacing:.02em;
+  }
+  .skill .pista{
+    flex:1;height:9px;background:var(--ink-2);border:1px solid var(--line);
+    transform:skewX(-14deg);overflow:hidden;
+  }
+  .skill .llena{
+    display:block;height:100%;width:var(--v,100%);
+    background:linear-gradient(90deg,var(--violet),var(--violet-hi));
+    transform-origin:left;transform:scaleX(0);
+  }
+  .skills.go .llena{
+    animation:barraLlena .62s cubic-bezier(.16,.9,.3,1) both;
+    animation-delay:calc(var(--i,0) * 70ms);
+  }
+
   /* ===== CONTACT ===== */
   #contacto{
     background:var(--ink);
@@ -678,6 +855,12 @@
     .stat,.stats.go .stat{opacity:1;animation:none;transform:none}
     .svc h3::before,.svc h3::after{display:none}
     .rv,.rv.in{opacity:1;transform:none;transition:none}
+    .vital .llena,.skill .llena,
+    .ficha-yo.go .vital .llena,.skills.go .llena{transform:scaleX(1);animation:none}
+    .radar .valor,.radar .punto,
+    .ficha-radar.go .radar .valor,.ficha-radar.go .radar .punto{
+      opacity:1;transform:none;animation:none;
+    }
     .slam .wd,.slam.go .wd{opacity:1;transform:none;animation:none}
     .pop,.pop.go{opacity:1;animation:none;transform:skewX(-11deg)}
     .swipe::after,.swipe.go::after{display:none;animation:none}
@@ -723,7 +906,8 @@
     <a href="#trabajo"     style="--i:0"><i>01</i><span data-es="Trabajo"     data-en="Work">Trabajo</span></a>
     <a href="#servicios"   style="--i:1"><i>02</i><span data-es="Servicios"   data-en="Services">Servicios</span></a>
     <a href="#experiencia" style="--i:2"><i>03</i><span data-es="Experiencia" data-en="Experience">Experiencia</span></a>
-    <a href="#contacto"    style="--i:3"><i>04</i><span data-es="Contacto"    data-en="Contact">Contacto</span></a>
+    <a href="#status"      style="--i:3"><i>04</i><span data-es="Status"      data-en="Status">Status</span></a>
+    <a href="#contacto"    style="--i:4"><i>05</i><span data-es="Contacto"    data-en="Contact">Contacto</span></a>
   </nav>
 
   <span class="menu-pie" data-es="Rubén Rivera · NotMan" data-en="Rubén Rivera · NotMan">Rubén Rivera · NotMan</span>
@@ -872,6 +1056,120 @@
   </div>
 </section>
 
+<section id="status">
+  <div class="halftone"></div>
+  <div class="wrap">
+    <div class="sec-head rv">
+      <span class="sec-num">04</span>
+      <span class="sec-tag" data-es="Status" data-en="Status">Status</span>
+      <h2 data-es="Ficha de <em>personaje</em>" data-en="Character <em>sheet</em>">Ficha de <em>personaje</em></h2>
+      <p data-es="Mi currículum, leído como una pantalla de estado. Todo lo de abajo es verificable." data-en="My résumé, read as a status screen. Everything below is verifiable.">Mi currículum, leído como una pantalla de estado. Todo lo de abajo es verificable.</p>
+    </div>
+
+    <div class="ficha">
+
+      <!-- vitales -->
+      <div class="ficha-yo rv">
+        <img class="yo-retrato" src="/assets/logo-lg.webp" alt="" aria-hidden="true"
+             width="1200" height="675" loading="lazy" decoding="async">
+
+        <span class="yo-nombre">Rubén Núñez Rivera</span>
+        <span class="yo-clase" data-es="Diseñador · Animador · Web" data-en="Designer · Animator · Web">Diseñador · Animador · Web</span>
+
+        <div class="vital hp" style="--i:0">
+          <span data-es="Nivel" data-en="Level">Nivel</span>
+          <b>09</b>
+          <em class="pista" aria-hidden="true"><em class="llena" style="--v:100%"></em></em>
+        </div>
+        <div class="vital sp" style="--i:1">
+          <span data-es="Estudios" data-en="Studios">Estudios</span>
+          <b>07</b>
+          <em class="pista" aria-hidden="true"><em class="llena" style="--v:100%"></em></em>
+        </div>
+
+        <span class="yo-exp" data-es="Siguiente EXP · <em>tu proyecto</em>" data-en="Next EXP · <em>your project</em>">Siguiente EXP · <em>tu proyecto</em></span>
+
+        <ul class="yo-datos">
+          <li>
+            <i data-es="Formación" data-en="Education">Formación</i>
+            <p><b data-es="Lic. en Diseño Gráfico" data-en="BA in Graphic Design">Lic. en Diseño Gráfico</b>
+              <small data-es="Universidad Autónoma de Querétaro · Bellas Artes · 2011–2016" data-en="Universidad Autónoma de Querétaro · Fine Arts · 2011–2016">Universidad Autónoma de Querétaro · Bellas Artes · 2011–2016</small></p>
+          </li>
+          <li>
+            <i data-es="Especialidad" data-en="Specialty">Especialidad</i>
+            <p><b data-es="Diplomado en Cine" data-en="Diploma in Filmmaking">Diplomado en Cine</b>
+              <small data-es="UAQ · Ciencias Políticas y Sociales · 2017" data-en="UAQ · Political and Social Sciences · 2017">UAQ · Ciencias Políticas y Sociales · 2017</small></p>
+          </li>
+          <li>
+            <i data-es="Base" data-en="Based in">Base</i>
+            <p><b data-es="Querétaro, México" data-en="Querétaro, Mexico">Querétaro, México</b>
+              <small data-es="Español nativo · Inglés profesional" data-en="Native Spanish · Professional English">Español nativo · Inglés profesional</small></p>
+          </li>
+        </ul>
+      </div>
+
+      <!-- pentagono -->
+      <div class="ficha-radar rv">
+        <span class="radar-tit" data-es="Atributos" data-en="Attributes">Atributos</span>
+
+        <svg class="radar" viewBox="0 0 620 400" role="img">
+          <!-- el titulo lleva data-es/data-en para que el toggle de idioma
+               tambien lo cambie: es lo unico que oye un lector de pantalla -->
+          <title data-es="Atributos: composición 100, movimiento 92, narrativa 86, estructura 82 y resistencia 96 sobre 100." data-en="Attributes: composition 100, motion 92, narrative 86, structure 82 and stamina 96 out of 100.">Atributos: composición 100, movimiento 92, narrativa 86, estructura 82 y resistencia 96 sobre 100.</title>
+          <!-- rejilla -->
+          <polygon class="rejilla" points="310,157.5 345.67,183.41 332.04,225.34 287.96,225.34 274.33,183.41"/>
+          <polygon class="rejilla" points="310,120 381.33,171.83 354.09,255.68 265.91,255.68 238.67,171.83"/>
+          <polygon class="rejilla" points="310,82.5 416.99,160.24 376.13,286.01 243.87,286.01 203.00,160.24"/>
+          <polygon class="rejilla" style="stroke-width:2.5" points="310,45 452.66,148.65 398.17,316.35 221.83,316.35 167.34,148.65"/>
+          <g class="radio">
+            <line x1="310" y1="195" x2="310" y2="45"/>
+            <line x1="310" y1="195" x2="452.66" y2="148.65"/>
+            <line x1="310" y1="195" x2="398.17" y2="316.35"/>
+            <line x1="310" y1="195" x2="221.83" y2="316.35"/>
+            <line x1="310" y1="195" x2="167.34" y2="148.65"/>
+          </g>
+
+          <!-- valores -->
+          <polygon class="valor" points="310,45 441.25,152.36 385.82,299.36 237.70,294.51 173.05,150.50"/>
+          <circle class="punto" style="--i:0" cx="310"    cy="45"     r="5.5"/>
+          <circle class="punto" style="--i:1" cx="441.25" cy="152.36" r="5.5"/>
+          <circle class="punto" style="--i:2" cx="385.82" cy="299.36" r="5.5"/>
+          <circle class="punto" style="--i:3" cx="237.70" cy="294.51" r="5.5"/>
+          <circle class="punto" style="--i:4" cx="173.05" cy="150.50" r="5.5"/>
+
+          <!-- etiquetas -->
+          <text class="eje"   x="310" y="22"  text-anchor="middle" data-es="Composición" data-en="Composition">Composición</text>
+          <text class="rango" x="310" y="38"  text-anchor="middle" data-es="Maestro" data-en="Masterful">Maestro</text>
+
+          <text class="eje"   x="474" y="140" text-anchor="start" data-es="Movimiento" data-en="Motion">Movimiento</text>
+          <text class="rango" x="474" y="156" text-anchor="start" data-es="Imparable" data-en="Relentless">Imparable</text>
+
+          <text class="eje"   x="416" y="344" text-anchor="start" data-es="Narrativa" data-en="Narrative">Narrativa</text>
+          <text class="rango" x="416" y="360" text-anchor="start" data-es="Elocuente" data-en="Eloquent">Elocuente</text>
+
+          <text class="eje"   x="204" y="344" text-anchor="end"   data-es="Estructura" data-en="Structure">Estructura</text>
+          <text class="rango" x="204" y="360" text-anchor="end"   data-es="Preciso" data-en="Precise">Preciso</text>
+
+          <text class="eje"   x="146" y="140" text-anchor="end"   data-es="Resistencia" data-en="Stamina">Resistencia</text>
+          <text class="rango" x="146" y="156" text-anchor="end"   data-es="Incansable" data-en="Tireless">Incansable</text>
+        </svg>
+      </div>
+    </div>
+
+    <!-- herramientas: las barras literales del CV -->
+    <div class="skills rv">
+      <span class="skills-tit" data-es="Herramientas" data-en="Toolkit">Herramientas</span>
+      <div class="skill" style="--i:0"><span>Adobe Photoshop</span>    <em class="pista" aria-hidden="true"><em class="llena" style="--v:100%"></em></em></div>
+      <div class="skill" style="--i:1"><span>Adobe Illustrator</span>  <em class="pista" aria-hidden="true"><em class="llena" style="--v:100%"></em></em></div>
+      <div class="skill" style="--i:2"><span>Adobe After Effects</span><em class="pista" aria-hidden="true"><em class="llena" style="--v:94%"></em></em></div>
+      <div class="skill" style="--i:3"><span>Adobe Premiere Pro</span> <em class="pista" aria-hidden="true"><em class="llena" style="--v:90%"></em></em></div>
+      <div class="skill" style="--i:4"><span>Figma</span>              <em class="pista" aria-hidden="true"><em class="llena" style="--v:88%"></em></em></div>
+      <div class="skill" style="--i:5"><span>Adobe Lightroom</span>    <em class="pista" aria-hidden="true"><em class="llena" style="--v:82%"></em></em></div>
+      <div class="skill" style="--i:6"><span data-es="Inglés" data-en="English">Inglés</span><em class="pista" aria-hidden="true"><em class="llena" style="--v:78%"></em></em></div>
+    </div>
+  </div>
+</section>
+
 <section id="contacto">
   <div class="campo"></div>
   <div class="halftone"></div>
@@ -920,10 +1218,11 @@
   document.querySelectorAll('.rv').forEach(el => io.observe(el));
 
   /* ===== Animacion de texto estilo Persona ===== */
-  const SLAM = 'header h1 .l, h2, .svc h3, .card-body h3, .cred h3';
+  const SLAM = 'header h1 .l, h2, .svc h3, .card-body h3, .cred h3, .yo-nombre, .radar-tit, .skills-tit';
   const POP  = '.kicker, .sec-tag, .btn, .mail';
-  const FADE = '.lede, .sec-head p, .svc p, .card-body p, .cred p, #contacto .wrap > p, .foot-in > span';
-  const SOLO = '.stats';                  // trae animacion propia, solo pide .go
+  const FADE = '.lede, .sec-head p, .svc p, .card-body p, .cred p, #contacto .wrap > p, .foot-in > span, .yo-datos li';
+  // traen animacion propia, solo piden .go
+  const SOLO = '.stats, .ficha-yo, .ficha-radar, .skills';
   const TODO = [SLAM, POP, FADE, SOLO].join(', ');
 
   // indices para escalonar las estadisticas
