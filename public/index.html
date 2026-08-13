@@ -906,7 +906,13 @@
     font-size:clamp(3.6rem,9.6vw,7.1rem);line-height:.88;letter-spacing:.01em;
     transform:skewX(-9deg);transform-origin:left;margin-bottom:16px;position:relative;z-index:1;
   }
-  h2 em{font-style:normal;color:var(--violet-hi)}
+  /* El enfasis de un h2 es el mismo rol que ya tiene el rojo: "esta palabra
+     es la que grita". En las referencias de P5R ese rol nunca lo comparten
+     dos colores saturados a la vez dentro de la misma frase — antes esto
+     iba en violeta y competia con el rojo del resto de la seccion. El
+     violeta se queda como estructura (paneles, bordes, CTA de contacto),
+     nunca como acento de texto. */
+  h2 em{font-style:normal;color:var(--rojo)}
   .sec-head p{color:var(--muted);max-width:56ch;position:relative;z-index:1}
 
   /* ===== WORK ===== */
