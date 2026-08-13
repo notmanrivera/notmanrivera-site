@@ -179,16 +179,16 @@ El hexágono está calculado a mano sobre centro `310,205` y radio `145`: si cam
 ## Infraestructura
 
 - **Hosting:** Cloudflare Pages, proyecto `notmanrivera`
-- **Desplegar:** desde esta carpeta, `wrangler pages deploy . --project-name=notmanrivera --commit-dirty=true`. Wrangler instalado vía Homebrew (`cloudflare-wrangler`) y ya autenticado en esta Mac contra la cuenta `rnrivera93@gmail.com`
+- **Desplegar:** desde la raíz del repo, `wrangler pages deploy public --project-name=notmanrivera --commit-dirty=true`. Wrangler instalado vía Homebrew (`cloudflare-wrangler`) y ya autenticado en esta Mac contra la cuenta `rnrivera93@gmail.com`
+- ⚠️ **El sitio vive en `public/`, y eso es a propósito.** Pages sube *todo* lo que haya en la carpeta que se le indique, así que apuntarle a la raíz publicaría `PROJECT.md` en `notmanrivera.com/PROJECT.md` a la vista de cualquiera. Nunca volver a `wrangler pages deploy .`; si se añade un archivo que no es del sitio, va a la raíz del repo, no a `public/`. Se quitó `.assetsignore`: en Pages no hace nada y con esta separación ya sobra.
+- **Dos cosas las inyecta Cloudflare en el dominio proxeado, no están en el repo** — y por eso `notmanrivera.com` y la URL `*.pages.dev` no devuelven byte por byte lo mismo. No es caché viejo:
+  - *Email Address Obfuscation* reescribe el `mailto:` a `/cdn-cgi/l/email-protection` y añade un script que lo descifra. Verificado en vivo: el texto y el `href` quedan correctos. El único costo es que sin JavaScript se lee `[email protected]`. Se apaga en Scrape Shield si alguna vez estorba.
+  - *AI Crawl Control* antepone su bloque de Content Signals al `robots.txt`. Deja `search=yes` y `Allow: /` para todos, y solo bloquea rastreadores de entrenamiento de IA (GPTBot, ClaudeBot, Google-Extended…). El SEO no se toca y nuestras directivas siguen al final.
 - **Repo:** privado, `github.com/notmanrivera/notmanrivera-site`
 - **Dominio:** registrado en Hostinger, DNS administrado en Cloudflare (nameservers `aarav`/`dawn.ns.cloudflare.com`). Apex y `www` son CNAME proxeados a `notmanrivera.pages.dev`. Renovación automática apagada — Rubén la renueva a mano cuando se acerca la fecha, no hace falta recordárselo
 - **Correo:** `hola@notmanrivera.com` vía Cloudflare Email Routing, reenvía a su Gmail (MX, SPF y DKIM puestos por Cloudflare). Esto **solo recibe** — para *enviar* desde el dominio hace falta Google Workspace (~$6/mes, da DKIM/DMARC propios) o un SMTP externo. Relacionado con su Apps Script de prospección deportiva, que hoy sigue enviando desde `rnrivera93@gmail.com`
 
 ## Pendientes conocidos
-
-- 🔴 **Mover el sitio a una subcarpeta `public/` antes del próximo despliegue.** `wrangler pages deploy .` sube **todos** los archivos de la carpeta, no solo el sitio, y `.assetsignore` no funciona en Pages (ver más abajo). Eso significa que **este mismo archivo queda publicado** en `notmanrivera.com/PROJECT.md`, legible por cualquiera — incluida la nota sobre la licencia de Monument Extended, que es justo lo que no conviene tener a la vista.
-
-  El arreglo: `git mv index.html assets _headers robots.txt sitemap.xml public/` y desplegar con `wrangler pages deploy public --project-name=notmanrivera`. `PROJECT.md` se queda en la raíz del repo y deja de subirse. Rubén lo dejó para la sesión de wrangler; **hacerlo antes de desplegar**, no después.
 
 - Los tres videos del portafolio son **embeds de Google Drive** y se ven con la marca de Google. Conviene subir el reel a Vimeo y cambiar el `src` del `<iframe>`.
 - Cerrar el envío desde el dominio propio (Workspace o SMTP externo) para que la firma de los correos de prospección coincida con `hola@notmanrivera.com`.
