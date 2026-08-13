@@ -229,11 +229,17 @@
   /* ===== LETRAS SUELTAS =====
      Linea base irregular, como "SELECT THE DIFFICULTY" en P5R: cada letra
      con su propio salto y giro, como un recorte a mano en vez de una fuente
-     recta. Acotado a esta sola palabra a proposito -- el sitio ya tiene su
-     propio efecto de entrada (.slam, palabra por palabra) para h1/h2, y
-     sumarle tambaleo por letra a CADA titulo pelearia con eso y se leeria
-     saturado. Aqui es un solo momento, chico y contenido. */
-  .carga-txt.sueltas i{
+     recta.
+
+     Se probaron dos amplitudes. La primera version (saltos en px, giro hasta
+     6deg) se vio bien en CARGANDO en aislamiento, pero Ruben la señalo como
+     "pierde seriedad": era la amplitud de un titulo aplicada a una etiqueta
+     de estado, y una etiqueta de estado es interfaz, no contenido -- la
+     misma regla que ya mantiene el nav y los botones sin el vocabulario
+     salvaje del h1/h2 (ver mas arriba). Se recorto a la mitad y se paso a
+     em (arriba) para que sirviera en los dos registros: sutil en CARGANDO,
+     visible pero no ruidosa en los titulos grandes. */
+  .sueltas i{
     /* estatico, no animado -- es un tambaleo de composicion, no movimiento,
        asi que no hace falta gatearlo detras de prefers-reduced-motion */
     display:inline-block;font-style:normal;
@@ -324,9 +330,6 @@
      Persona no brilla: es plano, impreso, de trama. El resplandor neon
      pertenece al synthwave. Aqui todo desplazamiento es solido y sin
      difuminado, como una serigrafia mal registrada a proposito. */
-  /* en em, no en px: si fuera fijo, en movil el desplazamiento seria tan
-     grande respecto a la letra que la sombra se leeria como texto doble */
-  h1 .l1{text-shadow:.07em .07em 0 var(--violet-deep), .15em .15em 0 var(--ink)}
   h2{text-shadow:4px 4px 0 var(--violet-deep)}
   .stat b{text-shadow:3px 3px 0 var(--violet-deep)}
   /* sin sombra: es negra y sobre la placa blanca solo emborrona */
@@ -644,13 +647,22 @@
     0%  {opacity:0;transform:skewX(-13deg) scale(calc(var(--marca-escala,1) * 1.42)) translateY(-9%)}
     100%{opacity:1;transform:skewX(0)      scale(var(--marca-escala,1))              translateY(0)}
   }
-  /* la linea de servicios: ahora es el subtitulo, no el titular */
-  h1 .l1{
+  /* La linea de servicios ahora vive en su propia placa -- mismo lenguaje
+     que el resto del hero (filo cortado, rojo = lo que esta activo ahora
+     mismo) en vez de texto violeta suelto bajo el logo. Sin box-shadow a
+     proposito: clip-path recorta la sombra exterior (ver la nota de los
+     CTA aqui abajo, en PLACAS DEL HERO), asi que el propio corte carga
+     todo el peso visual, igual que en los botones. */
+  h1 .rota{
+    display:inline-block;position:relative;min-height:1.05em;
     font-size:clamp(1.7rem,min(5.2vw,6vh),3.4rem);
-    letter-spacing:.06em;color:var(--violet-hi);
-    transform:skewX(-10deg) rotate(-1.4deg);margin-left:.1em;
+    letter-spacing:.06em;color:var(--paper);
+    background:var(--rojo);
+    padding:.16em .55em .1em;
+    clip-path:var(--filo);
+    transform:skewX(-10deg) rotate(-1.4deg);
+    margin:.25em 0 0 .1em;
   }
-  h1 .rota{min-height:1.05em}
 
   /* ===== HERO RADIAL =====
      El logo ocupa la columna central y los textos salen hacia afuera: la
@@ -720,7 +732,7 @@
       margin:0 auto 10px;object-position:center;transform-origin:center;
     }
     .orbita h1{text-align:center}
-    .orbita h1 .l1{margin-left:0}
+    .orbita h1 .rota{margin:.3em 0 0}
 
     /* el parrafo cierra la composicion sobre su propia placa. Va de una
        pieza y NO con fondo por linea: box-decoration-break sabe pintar por
@@ -1712,12 +1724,17 @@
   /* ===== LETRAS SUELTAS (linea base irregular, estilo P5R) =====
      Patrones fijos, NO Math.random(): un patron por indice se ve igual de
      organico y no cambia de una carga a otra, que es mas facil de calibrar
-     y de defender en diseño que un jitter que sale distinto cada vez. */
-  const SALTOS = [-3,4,-6,2,5,-2,3,-4,1,-5];
-  const GIROS  = [-4,3,-6,5,-3,4,-5,2,-2,6];
+     y de defender en diseño que un jitter que sale distinto cada vez.
+
+     El salto vertical va en EM, no en px: asi el mismo patron se ve
+     igual de sutil en un titulo de h2 a 7rem que en una etiqueta a 1rem.
+     El giro se queda en grados -- una inclinacion de 2deg lee igual de
+     "recortado a mano" sin importar el tamaño, no hace falta escalarla. */
+  const SALTOS = [-.035,.04,-.05,.025,.045,-.025,.035,-.04,.02,-.045];
+  const GIROS  = [-2,1.6,-2.4,2,-1.4,1.8,-2,1.2,-1,2.2];
   function letrasSueltas(el){
     el.innerHTML = [...el.textContent].map((ch, i) =>
-      `<i style="--dy:${SALTOS[i % SALTOS.length]}px;--gr:${GIROS[i % GIROS.length]}deg">${ch}</i>`
+      `<i style="--dy:${SALTOS[i % SALTOS.length]}em;--gr:${GIROS[i % GIROS.length]}deg">${ch}</i>`
     ).join('');
     el.classList.add('sueltas');
   }
@@ -1755,25 +1772,46 @@
   // indices para escalonar las estadisticas
   document.querySelectorAll('.stats .stat').forEach((el,i) => el.style.setProperty('--i', i));
 
-  // Parte el texto en palabras conservando etiquetas internas como <em>
-  function splitWords(el){
+  // Parte el texto en palabras conservando etiquetas internas como <em>.
+  // Con letras:true, ademas envuelve cada caracter dentro de la palabra en
+  // un <i> con el tambaleo de LETRAS SUELTAS (arriba) -- el .wd sigue siendo
+  // quien anima la entrada (.slam), y una vez que esa animacion se asienta
+  // en transform:none, el tambaleo del <i> hijo queda como resto visible.
+  // Las dos transformaciones nunca compiten porque viven en elementos
+  // distintos, padre e hijo.
+  let letraGlobal = 0;
+  function envolverLetras(txt){
+    return [...txt].map(ch => {
+      const html = `<i style="--dy:${SALTOS[letraGlobal % SALTOS.length]}em;--gr:${GIROS[letraGlobal % GIROS.length]}deg">${ch}</i>`;
+      letraGlobal++;
+      return html;
+    }).join('');
+  }
+  function splitWords(el, letras = false){
+    letraGlobal = 0;
+    const envolverPalabra = t => t.trim()
+      ? `<span class="wd">${letras ? envolverLetras(t) : t}</span>`
+      : t;
     const piezas = [];
     el.childNodes.forEach(n => {
       if (n.nodeType === 3){
-        n.textContent.split(/(\s+)/).forEach(t => {
-          piezas.push(t.trim() ? `<span class="wd">${t}</span>` : t);
-        });
+        n.textContent.split(/(\s+)/).forEach(t => piezas.push(envolverPalabra(t)));
       } else if (n.nodeType === 1){
         const tag = n.tagName.toLowerCase();
-        const dentro = n.textContent.split(/(\s+)/)
-          .map(t => t.trim() ? `<span class="wd">${t}</span>` : t).join('');
+        const dentro = n.textContent.split(/(\s+)/).map(envolverPalabra).join('');
         piezas.push(`<${tag}>${dentro}</${tag}>`);
       }
     });
     el.innerHTML = piezas.join('');
     el.querySelectorAll('.wd').forEach((s,i) => s.style.setProperty('--i', i));
+    el.classList.toggle('sueltas', letras);
   }
 
+  // Se probaron las letras sueltas tambien en los h2 (splitWords(el, true))
+  // y funcionaban -- sin overflow, sin choque con .slam, correctas en los
+  // dos idiomas y en movil. Rubén las vio y prefirio que el efecto se
+  // quedara solo en CARGANDO por ahora. splitWords conserva el parametro
+  // `letras` por si se retoma mas adelante; aqui simplemente no se usa.
   function prepararTexto(raiz = document){
     raiz.querySelectorAll(SLAM).forEach(el => {
       el.classList.add('slam');
