@@ -78,7 +78,13 @@ Bilingüe ES/EN con un toggle que re-parte el texto y vuelve a disparar todas la
 
 ### Hero radial
 
-El logo va en la **celda central** de una rejilla 3×3 y los textos salen hacia afuera. La columna izquierda se alinea a la **derecha** y la derecha a la **izquierda**: así las dos arrancan pegadas al logo y crecen alejándose de él. Cada placa lleva su propio `--giro` además del skew común, igual que en el menú, y al pasar encima se vuelve roja.
+El logo va en la **celda central** de una rejilla 3×3 y los textos salen hacia afuera. La columna izquierda se alinea a la **derecha** y la derecha a la **izquierda**: así las dos arrancan pegadas al logo y crecen alejándose de él.
+
+Las piezas usan **el mismo lenguaje de placas que el menú de pantalla completa**, a petición de Rubén: cuadriláteros de esquinas desiguales, alternando **blanca y negra**, cada una con su propio `--giro` además del skew común, y al pasar encima se vuelven rojas. El **rojo queda reservado al elemento seleccionado** — en el menú es el ítem con el cursor encima; en el hero es el CTA principal, que hace de "opción ya marcada" y por eso nace rojo. Esa placa no puede ponerse más roja al hacer hover, así que se invierte a blanca.
+
+Las variantes se llaman `.sat-blanca` / `.sat-negra` / `.sat-roja` y se aplican como clase en el HTML, no por `nth-child`: la posición de cada pieza en la rejilla puede cambiar, su papel en la alternancia no.
+
+`.orbita .stat b` lleva `text-shadow:none`. La sombra dura heredada es violeta y sobre placa blanca se lee como una mala impresión; las placas del menú tampoco la llevan. Por el mismo motivo los CTA del hero pierden su sombra dura exterior: **`clip-path` recorta también el `box-shadow`**, así que saldría cortada por el filo. La forma recortada hace el trabajo que antes hacía la sombra.
 
 Solo a partir de 1000px. Por debajo se apila en una columna y `--giro` se anula en el hero (las placas del menú conservan el suyo), porque apilado el giro no lee como composición radial sino como error de maquetación.
 

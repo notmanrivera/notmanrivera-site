@@ -653,18 +653,45 @@
     .orbita .sat{--giro:0deg}
   }
 
-  /* Placas del hero: mismo lenguaje que el menu -- fondo plano, filo cortado
-     y al pasar encima se vuelven rojas. Ninguna mueve su propia caja: el
-     desplazamiento vive en los hijos (regla de oro del hover). */
-  .sat.stat{
-    padding:12px 18px;background:var(--ink-2);
-    box-shadow:inset 0 0 0 2px var(--line);
-    clip-path:polygon(2% 0%, 100% 5%, 98% 100%, 0% 94%);
-    transition:background .18s, box-shadow .18s;
+  /* ===== PLACAS DEL HERO =====
+     Mismo juego que el menu de pantalla completa: cuadrilateros de esquinas
+     desiguales, alternando blanco y negro, y el ROJO reservado al elemento
+     seleccionado -- en el menu es el item con el cursor encima, aqui es el
+     CTA principal, que hace de "opcion ya marcada".
+
+     Ninguna mueve su propia caja al hacer hover: el desplazamiento vive en
+     los hijos (regla de oro del hover de este sitio). */
+  .orbita .sat{
+    clip-path:polygon(1.6% 0%, 100% 4%, 98.4% 100%, 0% 93%);
+    transition:background .18s, box-shadow .18s, color .18s;
   }
-  .sat.stat:hover{background:var(--rojo);box-shadow:inset 0 0 0 2px var(--rojo)}
-  .sat.stat:hover b,.sat.stat:hover span{color:var(--paper)}
-  .sat.stat b,.sat.stat span{transition:color .18s}
+  /* .orbita delante otra vez: .btn-1{background:var(--rojo)} y
+     .btn-2{background:transparent} viven mas abajo en la hoja y con la misma
+     especificidad ganarian por orden de aparicion. */
+  .orbita .sat-blanca{background:var(--paper);color:var(--ink)}
+  .orbita .sat-negra {background:var(--ink);color:var(--paper);box-shadow:inset 0 0 0 3px var(--paper)}
+  .orbita .sat-roja  {background:var(--rojo);color:var(--paper)}
+
+  /* la cifra y el rotulo heredan el color de su placa en vez de traer el
+     suyo, que es lo que permite que la misma pieza funcione sobre blanco,
+     sobre negro y sobre rojo sin escribir tres reglas por elemento */
+  .orbita .stat{padding:13px 20px 12px}
+  /* sin sombra dura: la heredada de .stat b es violeta y sobre placa blanca
+     se lee como una mala impresion. Las placas del menu tampoco la llevan. */
+  .orbita .stat b   {color:inherit;text-shadow:none;transition:color .18s}
+  .orbita .stat span{color:inherit;opacity:.74;transition:color .18s}
+
+  /* al pasar encima, la placa entera se vuelve roja, igual que en el menu */
+  .orbita .sat:hover{background:var(--rojo);color:var(--paper);box-shadow:none}
+  /* la que ya esta roja no puede "ponerse mas roja": se invierte a blanca */
+  .orbita .sat-roja:hover{background:var(--paper);color:var(--ink)}
+
+  /* ⚠️ Los CTA pierden aqui su sombra dura: clip-path recorta tambien el
+     box-shadow exterior, asi que la sombra saldria cortada por el filo.
+     Las placas del menu tampoco la llevan -- la forma recortada hace el
+     trabajo que antes hacia la sombra. */
+  .orbita .btn-1,.orbita .btn-2{box-shadow:none}
+  .orbita .btn-1:hover,.orbita .btn-2:hover{box-shadow:none}
 
   .lede{
     position:relative;font-size:clamp(1rem,1.9vw,1.2rem);color:#DED4F2;
@@ -1231,7 +1258,7 @@
        la izquierda, asi que las dos columnas arrancan pegadas al logo y
        crecen alejandose de el. -->
   <div class="wrap orbita">
-    <span class="kicker sat" style="--giro:-2.6deg" data-es="Rubén Rivera · Querétaro, México" data-en="Rubén Rivera · Querétaro, Mexico">Rubén Rivera · Querétaro, México</span>
+    <span class="kicker sat sat-blanca" style="--giro:-2.6deg" data-es="Rubén Rivera · Querétaro, México" data-en="Rubén Rivera · Querétaro, Mexico">Rubén Rivera · Querétaro, México</span>
 
     <h1>
       <!-- El logo ES el titular. Su alt carga el texto que leen Google y los
@@ -1254,14 +1281,14 @@
          DOM (el JS de entrada los busca por nombre) pero no ponen caja, asi
          que sus hijos entran como celdas de .orbita. -->
     <div class="cta-row">
-      <a href="#trabajo" class="btn btn-1 sat" style="--giro:-2.1deg"><i data-es="Ver mi trabajo" data-en="See my work">Ver mi trabajo</i></a>
-      <a href="#contacto" class="btn btn-2 sat" style="--giro:1.7deg"><i data-es="Trabajemos juntos" data-en="Let's work together">Trabajemos juntos</i></a>
+      <a href="#trabajo" class="btn btn-1 sat sat-roja" style="--giro:-2.1deg"><i data-es="Ver mi trabajo" data-en="See my work">Ver mi trabajo</i></a>
+      <a href="#contacto" class="btn btn-2 sat sat-blanca" style="--giro:1.7deg"><i data-es="Trabajemos juntos" data-en="Let's work together">Trabajemos juntos</i></a>
     </div>
 
     <div class="stats">
-      <div class="stat sat" style="--giro:1.9deg"><b>9+</b><span data-es="años en agencias" data-en="years in agencies">años en agencias</span></div>
-      <div class="stat sat" style="--giro:-1.5deg"><b>2D / 3D</b><span data-es="motion graphics" data-en="motion graphics">motion graphics</span></div>
-      <div class="stat sat" style="--giro:2.7deg"><b>MX · ES · MENA</b><span data-es="mercados" data-en="markets">mercados</span></div>
+      <div class="stat sat sat-negra" style="--giro:1.9deg"><b>9+</b><span data-es="años en agencias" data-en="years in agencies">años en agencias</span></div>
+      <div class="stat sat sat-blanca" style="--giro:-1.5deg"><b>2D / 3D</b><span data-es="motion graphics" data-en="motion graphics">motion graphics</span></div>
+      <div class="stat sat sat-negra" style="--giro:2.7deg"><b>MX · ES · MENA</b><span data-es="mercados" data-en="markets">mercados</span></div>
     </div>
   </div>
 </header>
