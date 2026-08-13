@@ -30,7 +30,23 @@ El rojo nunca se usa como color de texto: `#E50012` sobre negro da 4.33:1 y no a
 
 A petición explícita suya. Elementos clave:
 
-- Tipografía de títulos: **Kenyan Coffee** (Ray Larabie / larabiefonts.com), auto-alojada en `assets/kenyan-coffee.woff2` (16 KB, convertida desde el TTF con fontTools). El TTF original vive en `~/Desktop/notman-originales`, fuera de la carpeta que se despliega. Cuerpo de texto: Inter, desde Google Fonts. Todo inclinado con `skewX(-10deg)` en títulos, botones y etiquetas
+- **Sistema tipográfico de tres voces.** Son tres familias y sin un trabajo claro cada una se vuelven ruido, así que cada una tiene el suyo:
+
+  | Familia | Papel | Dónde |
+  |---|---|---|
+  | **Kenyan Coffee** (Ray Larabie) | **La voz** — lo que grita | `h1`, `h2`, `h3`, ítems del menú, cifras grandes, `.radar-tit`, botones |
+  | **Monument Extended** (Pangram Pangram) | **La interfaz** — el chrome del menú | Etiquetas de chapa (`.kicker`, `.sec-tag`), nav, rótulos pequeños, números gigantes en contorno |
+  | **Inter** | **La información** | Párrafos y nada más |
+
+  Kenyan Coffee la eligió Rubén **por la temática deportiva** de su trabajo: condensada, alta, de marcador. Monument Extended entró después para el papel de interfaz. El contraste condensada-contra-extendida es el argumento del sistema: una empuja hacia arriba, la otra a los lados. Si las dos fueran anchas o las dos estrechas no habría sistema, habría dos fuentes parecidas.
+
+  Ambas auto-alojadas: `assets/kenyan-coffee.woff2` (16 KB, convertida desde el TTF con fontTools) y `assets/monument-black.woff2` / `monument-light.woff2` (24 KB cada una). Los dos pesos de Monument comparten `font-family` y se eligen con `font-weight:900` / `300`, no con dos familias inventadas. Solo se precarga la Black: es la que aparece sobre el pliegue.
+
+  ⚠️ **Al pasar un elemento de Kenyan a Monument hay que bajarle el cuerpo y el tracking** (más o menos a 0.7× el tamaño y de `.2em` a `.12em`). La extendida ya ocupa a lo ancho lo que la condensada daba con la letra suelta; con los valores de la condensada, el kicker se salía del móvil.
+
+  ⚠️ Monument Extended es **comercial**. Auto-alojarla en producción necesita licencia de webfont de Pangram Pangram. Rubén dice tenerla resuelta.
+
+- El TTF original de Kenyan Coffee vive en `~/Desktop/notman-originales`, fuera de la carpeta que se despliega. Todo inclinado con `skewX(-10deg)` en títulos, botones y etiquetas
 - Halftone de puntos con máscara de degradado en cada sección
 - Bloques diagonales de color con parallax al hacer scroll
 - Números gigantes en contorno (`-webkit-text-stroke`) detrás de secciones y servicios

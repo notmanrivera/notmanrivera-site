@@ -74,6 +74,9 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
 <link rel="preload" href="/assets/kenyan-coffee.woff2" as="font" type="font/woff2" crossorigin>
+<!-- Solo la Black: es la que aparece sobre el pliegue (kicker y nav). La Light
+     vive mas abajo y no vale la pena que compita por el ancho de banda del hero. -->
+<link rel="preload" href="/assets/monument-black.woff2" as="font" type="font/woff2" crossorigin>
 
 <style>
   /* Kenyan Coffee (Ray Larabie / larabiefonts.com), auto-alojada.
@@ -82,6 +85,37 @@
     font-family:"Kenyan Coffee";
     src:url("/assets/kenyan-coffee.woff2") format("woff2");
     font-weight:400;
+    font-style:normal;
+    font-display:swap;
+  }
+
+  /* Monument Extended (Pangram Pangram), auto-alojada en dos pesos bajo el
+     MISMO family-name: asi se eligen con font-weight 900 / 300 en vez de
+     inventar dos familias.
+
+     Reparto de papeles -- son tres tipografias y sin un trabajo claro cada
+     una se vuelven ruido:
+       KENYAN COFFEE = la voz.  Condensada, alta, deportiva. Todo lo que
+                       grita: titulares, h2, h3, items del menu, cifras.
+       MONUMENT      = la interfaz. Extendida y geometrica; es el chrome
+                       del menu, no el contenido: etiquetas de chapa,
+                       rotulos pequenos, numeros gigantes en contorno.
+       INTER         = la informacion. Parrafos y nada mas.
+
+     El contraste condensada-contra-extendida es el argumento: una empuja
+     hacia arriba, la otra hacia los lados. Si las dos fueran anchas o las
+     dos estrechas, no habria sistema, habria dos fuentes parecidas. */
+  @font-face{
+    font-family:"Monument Extended";
+    src:url("/assets/monument-black.woff2") format("woff2");
+    font-weight:900;
+    font-style:normal;
+    font-display:swap;
+  }
+  @font-face{
+    font-family:"Monument Extended";
+    src:url("/assets/monument-light.woff2") format("woff2");
+    font-weight:300;
     font-style:normal;
     font-display:swap;
   }
@@ -113,6 +147,9 @@
     --line:#33204f;
     --max:1180px;
     --disp:"Kenyan Coffee",Impact,"Haettenschweiler","Arial Narrow Bold",sans-serif;
+    /* No hay respaldo extendido decente en el sistema: si Monument no llega,
+       Arial Black al menos conserva el peso aunque pierda el ancho. */
+    --ui:"Monument Extended","Arial Black","Helvetica Neue",sans-serif;
     --body:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
   }
 
@@ -298,17 +335,19 @@
     padding-left:12px;border-left:2px solid var(--violet);
   }
   @media(max-width:520px){.logo em{display:none}}
+  /* El nav es interfaz, no contenido: va en Monument. Es lo que separa el
+     chrome de la pagina de la voz de la pagina. */
   .lang{
-    font-family:var(--disp);background:var(--violet);border:0;color:#fff;
-    padding:7px 15px;font-size:1.4rem;letter-spacing:.06em;cursor:pointer;
+    font-family:var(--ui);font-weight:900;background:var(--violet);border:0;color:#fff;
+    padding:9px 14px;font-size:.82rem;letter-spacing:.08em;cursor:pointer;
     transform:skewX(-8deg);transition:background .18s;
   }
   .lang:hover{background:var(--rojo)}
 
   /* ===== BOTON QUE ABRE EL MENU ===== */
   .abrir-menu{
-    font-family:var(--disp);background:transparent;border:0;color:var(--paper);
-    font-size:1.58rem;letter-spacing:.14em;text-transform:uppercase;
+    font-family:var(--ui);font-weight:900;background:transparent;border:0;color:var(--paper);
+    font-size:.82rem;letter-spacing:.1em;text-transform:uppercase;
     cursor:pointer;transform:skewX(-8deg);display:flex;align-items:center;gap:10px;
     padding:6px 4px;transition:color .18s;
   }
@@ -376,8 +415,8 @@
   .menu-lista a:nth-child(4){--sangria:15%;  --escala:.75}
   .menu-lista a:nth-child(5){--sangria:20%;  --escala:.69}
   .menu-lista a i{
-    font-style:normal;font-size:.34em;color:var(--violet-hi);
-    letter-spacing:.1em;
+    font-style:normal;font-family:var(--ui);font-weight:900;
+    font-size:.2em;color:var(--violet-hi);letter-spacing:.06em;
   }
   /* el tachon del item activo, igual que el rojo sobre "SKILL" */
   .menu-lista a::before{
@@ -393,8 +432,8 @@
 
   .menu-pie{
     position:absolute;left:clamp(24px,7vw,110px);bottom:34px;z-index:2;
-    font-family:var(--disp);text-transform:uppercase;letter-spacing:.2em;
-    font-size:1.1rem;color:var(--muted);
+    font-family:var(--ui);font-weight:300;text-transform:uppercase;letter-spacing:.16em;
+    font-size:.7rem;color:var(--muted);
   }
 
   /* entrada escalonada de los items */
@@ -461,10 +500,13 @@
   }
   @media(max-width:1100px){.costado{display:none}}
 
+  /* Etiqueta de chapa: Monument. Baja de 1.28rem a .92rem y de .2em a .12em
+     de tracking porque la extendida ya ocupa el ancho que antes daba la
+     letra suelta -- con los valores de la condensada se salia del movil. */
   .kicker{
-    display:inline-block;font-family:var(--disp);text-transform:uppercase;
-    font-size:1.28rem;letter-spacing:.2em;color:#fff;background:var(--rojo);
-    padding:7px 16px;transform:skewX(-11deg);margin-bottom:20px;
+    display:inline-block;font-family:var(--ui);font-weight:900;text-transform:uppercase;
+    font-size:.92rem;letter-spacing:.12em;color:#fff;background:var(--rojo);
+    padding:9px 16px;transform:skewX(-11deg);margin-bottom:20px;
   }
 
   h1{
@@ -564,7 +606,10 @@
     font-size:3.6rem;line-height:1;color:var(--violet-hi);
     transform:skewX(-8deg);transform-origin:left;
   }
-  .stat span{font-size:.8rem;color:var(--muted);text-transform:uppercase;letter-spacing:.1em}
+  .stat span{
+    font-family:var(--ui);font-weight:300;font-size:.62rem;
+    color:var(--muted);text-transform:uppercase;letter-spacing:.14em;
+  }
 
   /* ===== SECTIONS ===== */
   section{position:relative;padding:130px 0;overflow:hidden}
@@ -585,9 +630,13 @@
 
   .sec-head{margin-bottom:58px;position:relative}
   /* el numero se sale del borde derecho a proposito: rompe la caja */
+  /* El numero gigante en contorno pasa a Monument: en extendida el contorno
+     encierra mucho mas aire y se lee como una placa de fondo, no como texto
+     enorme. El clamp baja de 22rem a 15rem porque la extendida ocupa a lo
+     ancho lo que la condensada ocupaba a lo alto. */
   .sec-num{
-    position:absolute;top:-72px;right:-6%;font-family:var(--disp);
-    font-size:clamp(10.4rem,28vw,22rem);line-height:.8;color:transparent;
+    position:absolute;top:-42px;right:-6%;font-family:var(--ui);font-weight:900;
+    font-size:clamp(6.4rem,17vw,15rem);line-height:.8;color:transparent;
     -webkit-text-stroke:3px rgba(139,63,255,.34);
     transform:skewX(-10deg) rotate(-3deg);
     pointer-events:none;z-index:0;user-select:none;
@@ -599,9 +648,9 @@
   }
   @media(max-width:640px){h2::before{left:-14px;width:5px}}
   .sec-tag{
-    display:inline-block;font-family:var(--disp);text-transform:uppercase;
-    font-size:1.24rem;letter-spacing:.2em;background:var(--rojo);color:var(--paper);
-    padding:6px 14px;transform:skewX(-11deg);margin-bottom:18px;
+    display:inline-block;font-family:var(--ui);font-weight:900;text-transform:uppercase;
+    font-size:.88rem;letter-spacing:.12em;background:var(--rojo);color:var(--paper);
+    padding:8px 14px;transform:skewX(-11deg);margin-bottom:18px;
   }
   h2{
     font-family:var(--disp);font-weight:400;text-transform:uppercase;
@@ -652,7 +701,7 @@
   .svc:hover{border-left-color:var(--rojo);background:#1d0c33}
   .svc-bignum{
     position:absolute;right:14px;top:50%;translate:0 -50%;
-    font-family:var(--disp);font-size:9.2rem;line-height:1;
+    font-family:var(--ui);font-weight:900;font-size:5.4rem;line-height:1;
     color:transparent;-webkit-text-stroke:2px rgba(169,107,255,.24);
     transform:skewX(-10deg);pointer-events:none;user-select:none;
   }
@@ -712,8 +761,8 @@
     text-shadow:3px 3px 0 var(--violet-deep);margin-bottom:6px;
   }
   .yo-clase{
-    display:block;color:var(--violet-hi);font-size:.82rem;
-    letter-spacing:.18em;text-transform:uppercase;margin-bottom:22px;
+    display:block;color:var(--violet-hi);font-family:var(--ui);font-weight:300;
+    font-size:.64rem;letter-spacing:.14em;text-transform:uppercase;margin-bottom:22px;
   }
   /* las dos cifras duras: años y casas donde ha trabajado */
   .cifras{display:flex;gap:34px;flex-wrap:wrap;margin-bottom:20px}
@@ -751,8 +800,9 @@
   .yo-datos li{margin-bottom:13px}
   .yo-datos li:last-child{margin-bottom:0}
   .yo-datos i{
-    display:block;font-style:normal;font-size:.68rem;letter-spacing:.2em;
-    text-transform:uppercase;color:var(--violet-hi);margin-bottom:2px;
+    display:block;font-style:normal;font-family:var(--ui);font-weight:300;
+    font-size:.56rem;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--violet-hi);margin-bottom:4px;
   }
   .yo-datos p{color:var(--paper);font-size:.88rem;line-height:1.35}
   .yo-datos p b{font-weight:600}
@@ -792,7 +842,7 @@
     fill:#fff;text-transform:uppercase;
   }
   .radar .rango{
-    font-family:var(--body);font-size:12.5px;font-weight:600;letter-spacing:.12em;
+    font-family:var(--ui);font-size:11px;font-weight:300;letter-spacing:.08em;
     fill:rgba(255,255,255,.74);text-transform:uppercase;
   }
   /* el poligono crece desde el centro con rebote */
