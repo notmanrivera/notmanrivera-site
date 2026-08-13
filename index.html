@@ -204,6 +204,31 @@
 
   .wrap{max-width:var(--max);margin:0 auto;padding:0 24px;position:relative;z-index:2}
 
+  /* ===== FOCO VISIBLE =====
+     El outline por defecto del navegador es un hilo oscuro y fino: sobre
+     negro puro practicamente no existe, asi que quien navega con teclado no
+     sabe donde esta parado. Un solo anillo blanco para todo el sitio.
+
+     Blanco y no rojo a proposito: el anillo tiene que leerse encima de
+     CUALQUIER fondo que le toque, y el rojo desaparece sobre el boton rojo.
+     El blanco da 21:1 sobre el negro, 4.84:1 sobre el rojo y 3.4:1 sobre el
+     morado -- los tres pasan el 3:1 que pide la norma para elementos que no
+     son texto.
+
+     El outline-offset hace ademas que el anillo caiga FUERA de la caja, o
+     sea sobre el fondo de la pagina y no sobre el relleno del elemento: por
+     eso sigue visible aunque el boton se ponga blanco al pasar el mouse.
+
+     Va en :focus-visible, no en :focus: con el mouse no aparece nunca. */
+  :focus-visible{
+    outline:3px solid var(--paper);
+    outline-offset:3px;
+  }
+  /* En la cascada del menu los items estan casi pegados y el anillo del uno
+     invadia la letra del otro; ahi se va ceñido. El tachon rojo ya venia
+     respondiendo a :focus-visible, este anillo solo lo remata. */
+  .menu-lista a:focus-visible{outline-offset:1px}
+
   /* ===== halftone utility ===== */
   .halftone{
     position:absolute;inset:0;pointer-events:none;
@@ -964,10 +989,7 @@
 <nav id="nav">
   <div class="nav-in">
     <a href="#" class="logo" aria-label="NotMan · Rubén Rivera">
-      <picture>
-        <source srcset="/assets/logo.webp" type="image/webp">
-        <img src="/assets/logo.png" alt="NotMan" width="440" height="247">
-      </picture>
+      <img src="/assets/logo.webp" alt="NotMan" width="440" height="247">
       <em>Rubén Rivera</em>
     </a>
     <div style="display:flex;align-items:center;gap:20px">
@@ -1272,10 +1294,7 @@
 <footer>
   <div class="wrap foot-in">
     <span style="display:flex;align-items:center;gap:10px">
-      <picture>
-        <source srcset="/assets/logo.webp" type="image/webp">
-        <img src="/assets/logo.png" alt="NotMan" style="height:26px;width:auto;opacity:.7" width="440" height="247" loading="lazy">
-      </picture>
+      <img src="/assets/logo.webp" alt="NotMan" style="height:26px;width:auto;opacity:.7" width="440" height="247" loading="lazy">
       © <span id="yr"></span> Rubén Rivera
     </span>
     <span data-es="Diseño y animación deportiva · Querétaro, México" data-en="Sports design and animation · Querétaro, Mexico">Diseño y animación deportiva · Querétaro, México</span>
