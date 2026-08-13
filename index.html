@@ -74,6 +74,9 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
 <link rel="preload" href="/assets/kenyan-coffee.woff2" as="font" type="font/woff2" crossorigin>
+<!-- Solo la Black: es la que aparece sobre el pliegue (kicker y nav). La Light
+     vive mas abajo y no vale la pena que compita por el ancho de banda del hero. -->
+<link rel="preload" href="/assets/monument-black.woff2" as="font" type="font/woff2" crossorigin>
 
 <style>
   /* Kenyan Coffee (Ray Larabie / larabiefonts.com), auto-alojada.
@@ -82,6 +85,37 @@
     font-family:"Kenyan Coffee";
     src:url("/assets/kenyan-coffee.woff2") format("woff2");
     font-weight:400;
+    font-style:normal;
+    font-display:swap;
+  }
+
+  /* Monument Extended (Pangram Pangram), auto-alojada en dos pesos bajo el
+     MISMO family-name: asi se eligen con font-weight 900 / 300 en vez de
+     inventar dos familias.
+
+     Reparto de papeles -- son tres tipografias y sin un trabajo claro cada
+     una se vuelven ruido:
+       KENYAN COFFEE = la voz.  Condensada, alta, deportiva. Todo lo que
+                       grita: titulares, h2, h3, items del menu, cifras.
+       MONUMENT      = la interfaz. Extendida y geometrica; es el chrome
+                       del menu, no el contenido: etiquetas de chapa,
+                       rotulos pequenos, numeros gigantes en contorno.
+       INTER         = la informacion. Parrafos y nada mas.
+
+     El contraste condensada-contra-extendida es el argumento: una empuja
+     hacia arriba, la otra hacia los lados. Si las dos fueran anchas o las
+     dos estrechas, no habria sistema, habria dos fuentes parecidas. */
+  @font-face{
+    font-family:"Monument Extended";
+    src:url("/assets/monument-black.woff2") format("woff2");
+    font-weight:900;
+    font-style:normal;
+    font-display:swap;
+  }
+  @font-face{
+    font-family:"Monument Extended";
+    src:url("/assets/monument-light.woff2") format("woff2");
+    font-weight:300;
     font-style:normal;
     font-display:swap;
   }
@@ -111,8 +145,20 @@
     --paper:#FFFFFF;
     --muted:#A99CC4;          /* algo mas claro que antes: sobre negro puro hace falta */
     --line:#33204f;
+    /* El filo de las placas: cuatro esquinas desiguales, ninguna a 90 grados.
+       Vive aqui y no repetido en cada regla porque es EL motivo de forma del
+       sitio -- menu, hero y secciones tienen que cortar igual.
+
+       ⚠️ En PIXELES y no en porcentaje: con porcentajes el corte crece con la
+       caja, asi que en una placa ancha el triangulo que recorta se come el
+       anillo blanco del borde y este sale a trozos. En px el filo se ve igual
+       en un badge chico y en una fila de ancho completo. */
+    --filo:polygon(9px 0%, 100% 6px, calc(100% - 9px) 100%, 0% calc(100% - 6px));
     --max:1180px;
     --disp:"Kenyan Coffee",Impact,"Haettenschweiler","Arial Narrow Bold",sans-serif;
+    /* No hay respaldo extendido decente en el sistema: si Monument no llega,
+       Arial Black al menos conserva el peso aunque pierda el ancho. */
+    --ui:"Monument Extended","Arial Black","Helvetica Neue",sans-serif;
     --body:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
   }
 
@@ -204,6 +250,31 @@
 
   .wrap{max-width:var(--max);margin:0 auto;padding:0 24px;position:relative;z-index:2}
 
+  /* ===== FOCO VISIBLE =====
+     El outline por defecto del navegador es un hilo oscuro y fino: sobre
+     negro puro practicamente no existe, asi que quien navega con teclado no
+     sabe donde esta parado. Un solo anillo blanco para todo el sitio.
+
+     Blanco y no rojo a proposito: el anillo tiene que leerse encima de
+     CUALQUIER fondo que le toque, y el rojo desaparece sobre el boton rojo.
+     El blanco da 21:1 sobre el negro, 4.84:1 sobre el rojo y 3.4:1 sobre el
+     morado -- los tres pasan el 3:1 que pide la norma para elementos que no
+     son texto.
+
+     El outline-offset hace ademas que el anillo caiga FUERA de la caja, o
+     sea sobre el fondo de la pagina y no sobre el relleno del elemento: por
+     eso sigue visible aunque el boton se ponga blanco al pasar el mouse.
+
+     Va en :focus-visible, no en :focus: con el mouse no aparece nunca. */
+  :focus-visible{
+    outline:3px solid var(--paper);
+    outline-offset:3px;
+  }
+  /* En la cascada del menu los items estan casi pegados y el anillo del uno
+     invadia la letra del otro; ahi se va ceñido. El tachon rojo ya venia
+     respondiendo a :focus-visible, este anillo solo lo remata. */
+  .menu-lista a:focus-visible{outline-offset:1px}
+
   /* ===== halftone utility ===== */
   .halftone{
     position:absolute;inset:0;pointer-events:none;
@@ -218,6 +289,12 @@
      con bordes duros y diagonales -- el rojo de P5, el amarillo de P4 --
      no manchas difuminadas. El halftone encima remata el aire de impreso. */
   .campo,.campo2{position:absolute;z-index:0;pointer-events:none}
+  /* En el hero el rojo de las placas es quien manda ahora, asi que el campo
+     violeta baja de .5 a un susurro: fondo practicamente negro, como la
+     referencia. No se elimina del todo -- el morado es la identidad de Ruben
+     y aqui se queda como textura, no como masa de color. */
+  header .campo{opacity:.13}
+  header .campo2{opacity:.07}
   .campo{
     top:-12%;right:-20%;width:82%;height:124%;
     background:var(--violet-deep);opacity:.5;
@@ -238,7 +315,8 @@
   h1 .l1{text-shadow:.07em .07em 0 var(--violet-deep), .15em .15em 0 var(--ink)}
   h2{text-shadow:4px 4px 0 var(--violet-deep)}
   .stat b{text-shadow:3px 3px 0 var(--violet-deep)}
-  .cred h3{text-shadow:2px 2px 0 var(--ink)}
+  /* sin sombra: es negra y sobre la placa blanca solo emborrona */
+  .cred h3{text-shadow:none}
   .btn-1{box-shadow:7px 7px 0 var(--violet-deep)}
   .btn-1:hover{box-shadow:3px 3px 0 var(--ink)}
   .btn-2:hover{box-shadow:inset 0 0 0 2px var(--violet-hi), 7px 7px 0 var(--violet-deep)}
@@ -247,12 +325,16 @@
   .svc{transition:border-color .22s,background .22s}
 
   /* ===== NAV ===== */
-  nav{
+  /* ⚠️ #nav y NO nav: .menu-lista tambien es un <nav>, asi que con el
+     selector de elemento heredaba este fondo negro al 86% a pantalla
+     completa y apagaba todo lo que hubiera detras. Estuvo ahi desde el
+     principio y no se noto hasta que hubo astillas rojas que tapar. */
+  #nav{
     position:fixed;top:0;left:0;right:0;z-index:100;
     background:rgba(0,0,0,.86);backdrop-filter:blur(12px);
     border-bottom:2px solid transparent;transition:border-color .3s;
   }
-  nav.scrolled{border-bottom-color:var(--violet)}
+  #nav.scrolled{border-bottom-color:var(--violet)}
   .nav-in{
     max-width:var(--max);margin:0 auto;padding:14px 24px;
     display:flex;align-items:center;justify-content:space-between;gap:16px;
@@ -273,17 +355,19 @@
     padding-left:12px;border-left:2px solid var(--violet);
   }
   @media(max-width:520px){.logo em{display:none}}
+  /* El nav es interfaz, no contenido: va en Monument. Es lo que separa el
+     chrome de la pagina de la voz de la pagina. */
   .lang{
-    font-family:var(--disp);background:var(--violet);border:0;color:#fff;
-    padding:7px 15px;font-size:1.4rem;letter-spacing:.06em;cursor:pointer;
+    font-family:var(--ui);font-weight:900;background:var(--violet);border:0;color:#fff;
+    padding:9px 14px;font-size:.82rem;letter-spacing:.08em;cursor:pointer;
     transform:skewX(-8deg);transition:background .18s;
   }
   .lang:hover{background:var(--rojo)}
 
   /* ===== BOTON QUE ABRE EL MENU ===== */
   .abrir-menu{
-    font-family:var(--disp);background:transparent;border:0;color:var(--paper);
-    font-size:1.58rem;letter-spacing:.14em;text-transform:uppercase;
+    font-family:var(--ui);font-weight:900;background:transparent;border:0;color:var(--paper);
+    font-size:.82rem;letter-spacing:.1em;text-transform:uppercase;
     cursor:pointer;transform:skewX(-8deg);display:flex;align-items:center;gap:10px;
     padding:6px 4px;transition:color .18s;
   }
@@ -301,27 +385,17 @@
     background:var(--ink);overflow:hidden;
   }
   .menu-full[data-abierto="si"]{display:block}
-  .menu-campo{
-    position:absolute;top:-10%;right:-24%;width:86%;height:120%;
-    background:var(--violet);opacity:.5;
-    clip-path:polygon(38% 0%, 100% 0%, 100% 100%, 0% 100%);
-    pointer-events:none;
-  }
   /* el logo cortado por el borde derecho, ocupando el lugar que en las
      referencias tiene el personaje */
   .menu-figura{
     position:absolute;right:-8%;top:50%;translate:0 -50%;
-    width:min(58%,820px);opacity:.6;transform:rotate(-6deg);
-    pointer-events:none;user-select:none;z-index:1;
+    /* Sin las astillas el logo vuelve a ser lo unico que hay detras de las
+       placas, asi que puede subir de .28 a .45 sin ensuciar nada. */
+    width:min(58%,820px);opacity:.45;transform:rotate(-6deg);
+    pointer-events:none;user-select:none;z-index:0;
   }
   .menu-figura img{width:100%;height:auto;display:block}
   @media(max-width:900px){.menu-figura{display:none}}
-  .menu-rayas{
-    position:absolute;left:-10%;right:-10%;top:24%;height:34%;
-    transform:rotate(-7deg);pointer-events:none;
-    background:repeating-linear-gradient(90deg,
-      rgba(229,0,18,.34) 0 3px, transparent 3px 16px);
-  }
   .cerrar-menu{
     position:absolute;top:26px;right:30px;z-index:3;
     font-family:var(--disp);font-size:2.2rem;line-height:1;
@@ -335,41 +409,82 @@
     display:flex;flex-direction:column;justify-content:center;
     padding:0 clamp(24px,7vw,110px);
   }
+  /* ===== PLACAS =====
+     Cada item es un cuadrilatero irregular con su propio giro. Tres cosas
+     lo sacan de "lista con estilo" y lo meten en el menu de batalla:
+       1. clip-path con las cuatro esquinas desiguales -- ninguna a 90 grados
+       2. --giro propio por item, ademas del skew comun: no comparten base
+       3. alternancia placa blanca / placa negra, como ORDER contra PERSONA */
   .menu-lista a{
-    display:flex;align-items:baseline;gap:18px;
-    font-family:var(--disp);text-transform:uppercase;text-decoration:none;
-    color:var(--paper);line-height:.92;
-    transform:skewX(-11deg);width:max-content;position:relative;
-    transition:color .16s;
-    /* cada item baja un escalon a la derecha y encoge: la cascada */
+    display:grid;
+    grid-template-columns:auto 1fr;
+    grid-template-areas:"num tit" "num sub";
+    align-items:baseline;
+    column-gap:14px;
+    text-decoration:none;
+    width:max-content;max-width:88%;
+    position:relative;isolation:isolate;
+    padding:14px 34px 13px 20px;
     margin-left:var(--sangria);
-    font-size:calc(clamp(2.2rem,7vw,5.4rem) * var(--escala));
+    margin-bottom:-6px;                       /* se encabalgan un poco */
+    background:var(--paper);color:var(--ink);
+    clip-path:var(--filo);
+    transform:skewX(-11deg) rotate(var(--giro));
+    transition:background .16s, color .16s;
   }
+  /* la alternancia: las pares son placa negra con filo blanco */
+  .menu-lista a:nth-child(even){
+    background:var(--ink);color:var(--paper);
+    box-shadow:inset 0 0 0 3px var(--paper);
+  }
+  /* cada item baja un escalon a la derecha y encoge: la cascada se conserva */
   .menu-lista a:nth-child(1){--sangria:0;    --escala:1}
   .menu-lista a:nth-child(2){--sangria:5%;   --escala:.9}
   .menu-lista a:nth-child(3){--sangria:10%;  --escala:.82}
   .menu-lista a:nth-child(4){--sangria:15%;  --escala:.75}
   .menu-lista a:nth-child(5){--sangria:20%;  --escala:.69}
+
+  .menu-lista a > span{
+    grid-area:tit;
+    font-family:var(--disp);text-transform:uppercase;line-height:.9;
+    font-size:calc(clamp(2rem,6.2vw,4.6rem) * var(--escala));
+  }
+  /* el numero, como los glifos de boton: badge cuadrado girado al reves
+     para que se lea recto dentro de la placa inclinada */
   .menu-lista a i{
-    font-style:normal;font-size:.34em;color:var(--violet-hi);
-    letter-spacing:.1em;
+    grid-area:num;align-self:center;
+    font-style:normal;font-family:var(--ui);font-weight:900;
+    font-size:calc(.72rem * var(--escala));letter-spacing:.04em;
+    background:var(--rojo);color:#fff;
+    padding:6px 8px;transform:skewX(11deg);
   }
-  /* el tachon del item activo, igual que el rojo sobre "SKILL" */
-  .menu-lista a::before{
-    content:"";position:absolute;left:-3%;right:-5%;top:34%;height:26%;
-    background:var(--rojo);z-index:-1;
-    transform:scaleX(0);transform-origin:left center;
-    transition:transform .2s cubic-bezier(.2,1.5,.35,1);
+  /* la segunda linea diminuta: el papel del subtitulo japones */
+  .menu-lista a em{
+    grid-area:sub;font-style:normal;
+    font-family:var(--ui);font-weight:300;text-transform:uppercase;
+    font-size:calc(.52rem * var(--escala));letter-spacing:.13em;
+    opacity:.72;margin-top:5px;line-height:1.3;
   }
-  .menu-lista a{isolation:isolate}
-  .menu-lista a:hover,.menu-lista a:focus-visible{color:#fff}
-  .menu-lista a:hover::before,.menu-lista a:focus-visible::before{transform:scaleX(1)}
-  .menu-lista a:hover i,.menu-lista a:focus-visible i{color:#fff}
+
+  /* al pasar encima la placa se vuelve roja, como el item seleccionado */
+  .menu-lista a:hover,.menu-lista a:focus-visible{
+    background:var(--rojo);color:var(--paper);box-shadow:none;
+  }
+  .menu-lista a:hover i,.menu-lista a:focus-visible i{
+    background:var(--paper);color:var(--rojo);
+  }
+  /* ⚠️ El anillo de foco global NO sirve aqui: clip-path recorta el outline
+     junto con la caja, asi que el anillo se vuelve invisible en las placas.
+     La sombra INSET si vive dentro del recorte, y hace el mismo trabajo. */
+  .menu-lista a:focus-visible{
+    outline:none;
+    box-shadow:inset 0 0 0 4px var(--paper), inset 0 0 0 8px var(--ink);
+  }
 
   .menu-pie{
     position:absolute;left:clamp(24px,7vw,110px);bottom:34px;z-index:2;
-    font-family:var(--disp);text-transform:uppercase;letter-spacing:.2em;
-    font-size:1.1rem;color:var(--muted);
+    font-family:var(--ui);font-weight:300;text-transform:uppercase;letter-spacing:.16em;
+    font-size:.7rem;color:var(--muted);
   }
 
   /* entrada escalonada de los items */
@@ -377,13 +492,15 @@
     animation:menuEntra .38s cubic-bezier(.15,1.5,.35,1) both;
     animation-delay:calc(var(--i,0) * 60ms);
   }
+  /* El giro propio de cada placa tiene que ir tambien aqui: si la animacion
+     solo declara skew+translate, machaca el rotate y las placas aterrizan
+     todas alineadas -- justo lo que la referencia no hace. */
   @keyframes menuEntra{
-    from{opacity:0;transform:skewX(-11deg) translateX(-60px)}
-    to  {opacity:1;transform:skewX(-11deg) translateX(0)}
+    from{opacity:0;transform:skewX(-11deg) rotate(var(--giro)) translateX(-60px)}
+    to  {opacity:1;transform:skewX(-11deg) rotate(var(--giro)) translateX(0)}
   }
   @media(prefers-reduced-motion:reduce){
     .menu-full[data-abierto="si"] .menu-lista a{animation:none;opacity:1}
-    .menu-lista a::before{display:none}
   }
 
   /* ===== HERO ===== */
@@ -436,10 +553,13 @@
   }
   @media(max-width:1100px){.costado{display:none}}
 
+  /* Etiqueta de chapa: Monument. Baja de 1.28rem a .92rem y de .2em a .12em
+     de tracking porque la extendida ya ocupa el ancho que antes daba la
+     letra suelta -- con los valores de la condensada se salia del movil. */
   .kicker{
-    display:inline-block;font-family:var(--disp);text-transform:uppercase;
-    font-size:1.28rem;letter-spacing:.2em;color:#fff;background:var(--rojo);
-    padding:7px 16px;transform:skewX(-11deg);margin-bottom:20px;
+    display:inline-block;font-family:var(--ui);font-weight:900;text-transform:uppercase;
+    font-size:.92rem;letter-spacing:.12em;color:#fff;background:var(--rojo);
+    padding:9px 16px;transform:skewX(-11deg) rotate(var(--giro,0deg));margin-bottom:20px;
   }
 
   h1{
@@ -463,15 +583,19 @@
     display:block;height:min(29vh,330px);width:auto;
     max-width:100%;object-fit:contain;object-position:left center;
     margin:0 0 8px -1.5%;transform-origin:left center;
+    transform:scale(var(--marca-escala,1));
     filter:drop-shadow(6px 7px 0 var(--violet-deep))
            drop-shadow(13px 15px 0 rgba(0,0,0,.55));
   }
   @media(max-width:820px){.marca{height:auto;width:94%;margin-bottom:8px}}
   .js .marca{opacity:0}
   .marca.go{animation:marcaIn .66s cubic-bezier(.14,1.5,.32,1) both}
+  /* ⚠️ La escala va DENTRO del keyframe. marcaIn corre con fill-mode both,
+     asi que su estado final se queda pegado: un scale(1) fijo aqui anularia
+     el aumento del logo en escritorio sin que nada lo delatara. */
   @keyframes marcaIn{
-    0%  {opacity:0;transform:skewX(-13deg) scale(1.42) translateY(-9%)}
-    100%{opacity:1;transform:skewX(0)      scale(1)    translateY(0)}
+    0%  {opacity:0;transform:skewX(-13deg) scale(calc(var(--marca-escala,1) * 1.42)) translateY(-9%)}
+    100%{opacity:1;transform:skewX(0)      scale(var(--marca-escala,1))              translateY(0)}
   }
   /* la linea de servicios: ahora es el subtitulo, no el titular */
   h1 .l1{
@@ -481,26 +605,171 @@
   }
   h1 .rota{min-height:1.05em}
 
+  /* ===== HERO RADIAL =====
+     El logo ocupa la columna central y los textos salen hacia afuera: la
+     columna izquierda se alinea a la DERECHA y la derecha a la IZQUIERDA,
+     asi las dos arrancan pegadas al logo y crecen alejandose de el.
+
+     .cta-row y .stats van con display:contents -- siguen en el DOM (el JS de
+     entrada y el de idioma los buscan por nombre) pero no ponen caja, asi
+     que sus hijos entran directamente como celdas de la rejilla.
+
+     Solo a partir de 1000px: por debajo se apila en una columna y las placas
+     se enderezan, porque en movil el giro se lee como error de maquetacion. */
+  @media(min-width:1000px){
+    .orbita{
+      display:grid;
+      /* ⚠️ minmax(0,1fr) y NO 1fr. Un track 1fr tiene minimo automatico de
+         min-content, asi que no puede encogerse por debajo de su contenido:
+         el kicker, que es la cadena mas larga del hero, ensanchaba su columna
+         a 507px contra los 286px de la otra y empujaba el logo 111px fuera
+         del centro. Con minmax(0,...) las dos laterales miden igual y la
+         columna del logo queda centrada de verdad. */
+      grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);
+      grid-template-areas:
+        "kick logo st1"
+        "st2  logo st3"
+        "b1   logo b2"
+        "lede lede lede";
+      align-items:center;
+      /* pegadas: en la referencia las placas casi se tocan y alguna se monta
+         sobre la de al lado. El hueco generoso las volvia una lista */
+      column-gap:clamp(10px,1.7vw,28px);
+      /* Con los angulos radiales (hasta 22 grados) las cajas giradas ocupan
+         mucho mas alto que su caja sin girar, y con row-gap:2px la de arriba
+         tapaba el rotulo de la de abajo. El hueco lo pide la rotacion, no el
+         diseno. */
+      row-gap:40px;
+    }
+    /* .orbita delante a proposito: .cta-row{display:flex} y .stats{display:flex}
+       viven MAS ABAJO en esta hoja, asi que con la misma especificidad ganaban
+       por orden y los hijos nunca llegaban a ser celdas de la rejilla. */
+    .orbita .cta-row,.orbita .stats{display:contents}
+
+    /* Empuje horizontal: las de arriba y abajo se abren hacia afuera y las
+       del medio se meten hacia el logo. Eso es lo que convierte dos columnas
+       rectas en un abanico. Va en MARGEN y no en transform, porque popIn y
+       statIn fijan el transform al terminar y se lo comerian. */
+    .orbita > .kicker      {grid-area:kick;justify-self:end;margin:0 var(--empuje,0) 0 0}
+    /* z-index por encima de las placas (que van en 1): con giros fuertes
+       alguna esquina puede acercarse al logo, y el logo es la pieza que no
+       se tapa nunca */
+    .orbita > h1           {grid-area:logo;margin-bottom:0;position:relative;z-index:2}
+    .orbita > .lede        {grid-area:lede}
+    .cta-row .btn-1        {grid-area:b1;justify-self:end;  margin-right:var(--empuje,0)}
+    .cta-row .btn-2        {grid-area:b2;justify-self:start; margin-left:var(--empuje,0)}
+    .stats .stat:nth-child(1){grid-area:st1;justify-self:start;margin-left:var(--empuje,0)}
+    .stats .stat:nth-child(2){grid-area:st2;justify-self:end;text-align:right;margin-right:var(--empuje,0)}
+    .stats .stat:nth-child(3){grid-area:st3;justify-self:start;margin-left:var(--empuje,0)}
+
+    /* la cifra hereda la alineacion de su placa en vez de anclarse siempre
+       a la izquierda, si no la de la columna izquierda queda descolgada */
+    .stats .stat:nth-child(2) b{transform-origin:right}
+
+    /* el logo deja de estar anclado a la izquierda y se centra en su celda */
+    .orbita .marca{
+      height:min(27vh,320px);
+      --marca-escala:1.34;
+      margin:0 auto 10px;object-position:center;transform-origin:center;
+    }
+    .orbita h1{text-align:center}
+    .orbita h1 .l1{margin-left:0}
+
+    /* el parrafo cierra la composicion sobre su propia placa. Va de una
+       pieza y NO con fondo por linea: box-decoration-break sabe pintar por
+       linea, pero todas saldrian del mismo color -- son fragmentos de una
+       misma caja inline -- y alternar exigiria saltos de linea a mano, que
+       se rompen al cambiar el ancho o el idioma. */
+    .orbita > .lede{
+      justify-self:center;max-width:62ch;margin:30px 0 0;text-align:center;
+    }
+
+    /* la linea divisoria de .stats no existe con display:contents (no hay
+       caja que la pinte) y en radial tampoco pinta nada: fuera */
+    .orbita .stats::before{display:none}
+  }
+
+  /* ⚠️ Un giro puesto en style="" NO se puede anular desde una media query:
+     el estilo en linea gana a cualquier regla de hoja. Por eso el valor en
+     linea se llama --giro-d ("el de escritorio") y es el CSS quien decide si
+     --giro lo toma o lo ignora.
+
+     Apilado en una columna el giro individual no lee como composicion radial
+     sino como error de maquetacion, asi que por defecto es 0 y solo se activa
+     a partir de 1000px. Las placas del MENU no entran aqui: conservan su giro
+     en todos los anchos, porque alli la cascada es la composicion. */
+  .orbita .sat,.svc,.cred,.ficha-yo,.ficha-radar{--giro:0deg}
+  @media(min-width:1000px){
+    .orbita .sat,.svc,.cred,.ficha-yo,.ficha-radar{--giro:var(--giro-d,0deg)}
+  }
+
+  /* ===== PLACAS DEL HERO =====
+     Mismo juego que el menu de pantalla completa: cuadrilateros de esquinas
+     desiguales, alternando blanco y negro, y el ROJO reservado al elemento
+     seleccionado -- en el menu es el item con el cursor encima, aqui es el
+     CTA principal, que hace de "opcion ya marcada".
+
+     Ninguna mueve su propia caja al hacer hover: el desplazamiento vive en
+     los hijos (regla de oro del hover de este sitio). */
+  .orbita .sat{
+    clip-path:var(--filo);
+    /* ceñidas al texto: en la referencia ninguna placa es mas ancha que su
+       etiqueta. Estiradas al ancho de la celda se leian como una tabla */
+    width:max-content;max-width:100%;
+    transition:background .18s, box-shadow .18s, color .18s;
+  }
+  /* con el giro fuerte las esquinas se salen de su celda; el hero ya recorta
+     con overflow:hidden, que es justo el encuadre de la referencia */
+  .orbita .sat{position:relative;z-index:1}
+  /* .orbita delante otra vez: .btn-1{background:var(--rojo)} y
+     .btn-2{background:transparent} viven mas abajo en la hoja y con la misma
+     especificidad ganarian por orden de aparicion. */
+  .orbita .placa-roja {background:var(--rojo);color:var(--paper)}
+  .orbita .placa-negra{background:var(--paper);color:var(--paper)}
+
+  /* la cifra y el rotulo heredan el color de su placa en vez de traer el
+     suyo, que es lo que permite que la misma pieza funcione sobre blanco,
+     sobre negro y sobre rojo sin escribir tres reglas por elemento */
+  .orbita .stat{padding:13px 20px 12px}
+  /* sin sombra dura: la heredada de .stat b es violeta y sobre placa blanca
+     se lee como una mala impresion. Las placas del menu tampoco la llevan. */
+  .orbita .stat b   {color:inherit;text-shadow:none;transition:color .18s}
+  .orbita .stat span{color:inherit;opacity:.74;transition:color .18s}
+  /* ⚠️ Sobre ROJO el texto pequeño va a blanco pleno. #E50012 con blanco al
+     100% da 4.84:1 y pasa AA; bajarlo al 74% lo hunde a ~2.5:1. Sobre negro
+     sí puede respirar, que ahi el margen sobra. */
+  .orbita .placa-roja span,.orbita .placa-roja em{opacity:1}
+  .orbita .sat:hover span,.orbita .sat:hover em{opacity:.78}
+  /* tercera linea, solo donde hace falta desglosar una abreviatura. Mismo
+     papel que el subtitulo diminuto de las placas del menu. */
+  .orbita .stat em{
+    display:block;font-style:normal;color:inherit;opacity:.62;
+    font-family:var(--ui);font-weight:300;text-transform:uppercase;
+    font-size:.5rem;letter-spacing:.1em;line-height:1.6;margin-top:8px;
+    max-width:26ch;
+  }
+
+  /* Al pasar encima TODO se vuelve blanco. El blanco pasa a ser el estado
+     seleccionado y el rojo el de reposo, al reves que antes: sobre un hero
+     que ya es rojo y negro, el blanco es lo unico que puede destacar mas. */
+  .orbita .sat:hover{background:var(--paper);color:var(--ink);box-shadow:none}
+
+  /* ⚠️ Los CTA pierden aqui su sombra dura: clip-path recorta tambien el
+     box-shadow exterior, asi que la sombra saldria cortada por el filo.
+     Las placas del menu tampoco la llevan -- la forma recortada hace el
+     trabajo que antes hacia la sombra. */
+  .orbita .btn-1,.orbita .btn-2{box-shadow:none}
+  .orbita .btn-1:hover,.orbita .btn-2:hover{box-shadow:none}
+
   .lede{
     position:relative;font-size:clamp(1rem,1.9vw,1.2rem);color:#DED4F2;
-    max-width:54ch;margin-bottom:22px;padding-left:20px;
+    max-width:54ch;margin-bottom:22px;
   }
-  /* la barra magenta ahora es pseudo-elemento para poder animarla */
-  .lede::before{
-    content:"";position:absolute;left:0;top:0;bottom:0;width:4px;
-    background:var(--rojo);transform-origin:top;
-  }
-  /* Solo escondemos si el JS confirmo que esta vivo (clase .js en <html>).
-     Sin esto, un fallo de JS dejaria el contenido invisible para siempre. */
-  .js .lede::before{transform:scaleY(0)}
-  .lede.go::before{animation:barGrow .46s cubic-bezier(.2,1.3,.35,1) both}
-  @keyframes barGrow{to{transform:scaleY(1)}}
-
   .cta-row{display:flex;flex-wrap:wrap;gap:14px}
   .btn{
     font-family:var(--disp);text-transform:uppercase;letter-spacing:.05em;
     font-size:1.62rem;text-decoration:none;padding:15px 30px;
-    transform:skewX(-10deg);display:inline-block;
+    transform:skewX(-10deg) rotate(var(--giro,0deg));display:inline-block;
     transition:background .18s,color .18s;
   }
   /* el shift de hover vive en <i>, no en .btn: el area de hover nunca
@@ -531,15 +800,18 @@
     animation-delay:calc(260ms + var(--i,0) * 90ms);
   }
   @keyframes statIn{
-    0%  {opacity:0;transform:translateY(16px) scale(.8)}
-    100%{opacity:1;transform:translateY(0) scale(1)}
+    0%  {opacity:0;transform:rotate(var(--giro,0deg)) translateY(16px) scale(.8)}
+    100%{opacity:1;transform:rotate(var(--giro,0deg)) translateY(0) scale(1)}
   }
   .stat b{
     display:block;font-family:var(--disp);font-weight:400;
     font-size:3.6rem;line-height:1;color:var(--violet-hi);
     transform:skewX(-8deg);transform-origin:left;
   }
-  .stat span{font-size:.8rem;color:var(--muted);text-transform:uppercase;letter-spacing:.1em}
+  .stat span{
+    font-family:var(--ui);font-weight:300;font-size:.62rem;
+    color:var(--muted);text-transform:uppercase;letter-spacing:.14em;
+  }
 
   /* ===== SECTIONS ===== */
   section{position:relative;padding:130px 0;overflow:hidden}
@@ -560,9 +832,13 @@
 
   .sec-head{margin-bottom:58px;position:relative}
   /* el numero se sale del borde derecho a proposito: rompe la caja */
+  /* El numero gigante en contorno pasa a Monument: en extendida el contorno
+     encierra mucho mas aire y se lee como una placa de fondo, no como texto
+     enorme. El clamp baja de 22rem a 15rem porque la extendida ocupa a lo
+     ancho lo que la condensada ocupaba a lo alto. */
   .sec-num{
-    position:absolute;top:-72px;right:-6%;font-family:var(--disp);
-    font-size:clamp(10.4rem,28vw,22rem);line-height:.8;color:transparent;
+    position:absolute;top:-42px;right:-6%;font-family:var(--ui);font-weight:900;
+    font-size:clamp(6.4rem,17vw,15rem);line-height:.8;color:transparent;
     -webkit-text-stroke:3px rgba(139,63,255,.34);
     transform:skewX(-10deg) rotate(-3deg);
     pointer-events:none;z-index:0;user-select:none;
@@ -574,9 +850,9 @@
   }
   @media(max-width:640px){h2::before{left:-14px;width:5px}}
   .sec-tag{
-    display:inline-block;font-family:var(--disp);text-transform:uppercase;
-    font-size:1.24rem;letter-spacing:.2em;background:var(--rojo);color:var(--paper);
-    padding:6px 14px;transform:skewX(-11deg);margin-bottom:18px;
+    display:inline-block;font-family:var(--ui);font-weight:900;text-transform:uppercase;
+    font-size:.88rem;letter-spacing:.12em;background:var(--rojo);color:var(--paper);
+    padding:8px 14px;transform:skewX(-11deg);margin-bottom:18px;
   }
   h2{
     font-family:var(--disp);font-weight:400;text-transform:uppercase;
@@ -593,18 +869,18 @@
      que detecta el hover se moviera, se saldria de debajo del cursor y
      el hover parpadearia sin parar. */
   .card{position:relative}
+  /* La tarjeta toma la FORMA de placa pero se queda oscura: lleva un video
+     dentro y una placa blanca detras de un reproductor no tiene sentido.
+     El filo sustituye al borde recto, y el realce de hover pasa a ser un
+     anillo INSET -- clip-path recorta el box-shadow exterior. */
   .card-in{
     display:block;height:100%;position:relative;
-    background:var(--ink-2);border:2px solid var(--line);
-    transition:border-color .22s,transform .22s;
+    background:var(--ink-2);box-shadow:inset 0 0 0 3px var(--line);
+    clip-path:var(--filo);
+    transition:box-shadow .22s,transform .22s;
     transform-style:preserve-3d;will-change:transform;
   }
-  .card:hover .card-in{border-color:var(--violet)}
-  .card-in::after{
-    content:"";position:absolute;inset:0;pointer-events:none;
-    box-shadow:8px 8px 0 rgba(139,63,255,0);transition:box-shadow .22s;
-  }
-  .card:hover .card-in::after{box-shadow:8px 8px 0 var(--violet)}
+  .card:hover .card-in{box-shadow:inset 0 0 0 3px var(--rojo)}
   .frame{position:relative;width:100%;aspect-ratio:16/9;background:#000;border-bottom:2px solid var(--line)}
   .frame iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
   .card-body{padding:22px 24px 26px}
@@ -617,42 +893,99 @@
 
   /* ===== SERVICES ===== */
   .svc-list{display:grid;gap:18px}
+  /* Placas, igual que el menu y el hero: alternan blanca y negra, y al pasar
+     encima la fila entera se vuelve roja. El slide de hover sigue viviendo en
+     h3/p y nunca en .svc -- la fila que detecta el hover no se mueve jamas. */
   .svc{
-    position:relative;background:var(--ink-2);border-left:6px solid var(--violet);
-    padding:30px 32px 30px 36px;overflow:hidden;
-    transition:border-color .22s,background .22s;
+    position:relative;padding:30px 34px;overflow:hidden;
+    clip-path:var(--filo);
+    transform:rotate(var(--giro,0deg));
+    transition:background .2s,color .2s,box-shadow .2s;
   }
-  /* el slide de hover vive en h3/p, no en .svc: la fila entera nunca se
-     mueve, asi que el hover no puede parpadear cerca de sus bordes */
-  .svc:hover{border-left-color:var(--rojo);background:#1d0c33}
+  .svc:nth-child(odd){background:var(--rojo);color:var(--paper)}
+  .svc:nth-child(odd):hover{background:var(--paper);color:var(--ink)}
   .svc-bignum{
     position:absolute;right:14px;top:50%;translate:0 -50%;
-    font-family:var(--disp);font-size:9.2rem;line-height:1;
-    color:transparent;-webkit-text-stroke:2px rgba(169,107,255,.24);
+    font-family:var(--ui);font-weight:900;font-size:5.4rem;line-height:1;
+    /* ⚠️ NO usar currentColor aqui: el elemento tiene color:transparent para
+       que solo se vea el contorno, asi que currentColor resuelve a
+       transparente y el numero se pinta invisible. El color del trazo se da
+       explicito por variante de placa. */
+    color:transparent;-webkit-text-stroke:2px rgba(255,255,255,.22);
     transform:skewX(-10deg);pointer-events:none;user-select:none;
   }
+  /* la impar ya no es blanca sino ROJA: el contorno oscuro se perdia encima.
+     En hover la placa se vuelve blanca, asi que ahi el trazo se oscurece. */
+  .svc:nth-child(odd) .svc-bignum{-webkit-text-stroke-color:rgba(255,255,255,.32)}
+  .svc:hover .svc-bignum{-webkit-text-stroke-color:rgba(0,0,0,.22)}
   .svc h3{
     font-family:var(--disp);font-weight:400;text-transform:uppercase;
-    font-size:clamp(2.1rem,4.9vw,3rem);letter-spacing:.02em;
+    font-size:clamp(2.1rem,4.9vw,3rem);letter-spacing:.02em;color:inherit;
     transform:skewX(-8deg);transform-origin:left;margin-bottom:16px;
   }
   .svc p{
-    color:var(--muted);font-size:.95rem;max-width:62ch;position:relative;z-index:1;
+    color:inherit;opacity:.92;font-size:.95rem;max-width:62ch;position:relative;z-index:1;
     transition:transform .24s cubic-bezier(.2,1.4,.3,1);
   }
 
   /* ===== EXPERIENCE ===== */
   .creds{display:grid;gap:24px;grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
-  .cred{position:relative;padding:24px 22px;background:var(--ink-2);border:2px solid var(--line)}
-  .cred::before{
-    content:"";position:absolute;top:-2px;left:-2px;width:46px;height:6px;background:var(--rojo);
+  .cred{
+    position:relative;padding:26px 24px;
+    clip-path:var(--filo);
+    transform:rotate(var(--giro,0deg));
+    transition:background .2s,color .2s,box-shadow .2s;
   }
+  .cred:nth-child(odd){background:var(--rojo);color:var(--paper)}
+  .cred:nth-child(odd):hover{background:var(--paper);color:var(--ink)}
+
+  /* ===== PLACA NEGRA CON BORDE =====
+     ⚠️ El anillo blanco NO puede ser box-shadow:inset. El inset se dibuja en
+     el borde de la caja y el filo diagonal es exactamente lo que recorta ese
+     borde, asi que el anillo sale a trozos -- entero donde el corte es poco
+     profundo y desaparecido donde es mucho.
+
+     Se hace al reves: la placa entera va BLANCA y una capa interior negra,
+     metida 3px y recortada con el MISMO filo, se pone encima. El "borde" es
+     el blanco que asoma, y como las dos capas comparten recorte, sigue la
+     forma exacta por los cuatro lados. */
+  .placa-negra{background:var(--paper);color:var(--paper);isolation:isolate}
+  .placa-negra:hover{color:var(--ink)}
+  /* ⚠️ z-index:-1, no 0. Con 0 la capa interior se pinta por ENCIMA del texto
+     en cuanto el texto es un nodo suelto y no un hijo elemento -- le pasa al
+     kicker del hero, que no tiene hijos que subir con z-index:1. En -1 el
+     orden de pintado queda: fondo de la placa, capa interior, contenido.
+     El isolation:isolate es lo que garantiza que ese -1 se quede dentro de la
+     placa y no caiga detras del fondo del padre. */
+  .placa-negra::after{
+    content:"";position:absolute;inset:3px;z-index:-1;
+    background:var(--ink);clip-path:var(--filo);
+    transition:background .2s;
+  }
+  .placa-negra:hover::after{background:var(--paper)}
+  /* el parrafo lleva la placa pero no es accionable: no enrojece */
+  .lede.placa-negra:hover::after{background:var(--ink)}
+  .lede.placa-negra:hover{color:var(--paper)}
+  /* ⚠️ El relleno y el filo van FUERA del media query de escritorio. La clase
+     .placa-negra se aplica en todos los anchos, asi que si la geometria vive
+     solo en el media query, en movil queda la capa interior sin relleno y el
+     texto se sale por los bordes -- se comia las primeras letras de cada
+     linea. Lo que si es de escritorio es la posicion en la rejilla. */
+  .lede.placa-negra{padding:24px clamp(20px,5vw,32px)}
+  .lede.placa-negra{clip-path:var(--filo)}
+  /* el acento rojo se corre a left:8%: pegado al borde lo cortaba el filo */
+  .cred::before{
+    content:"";position:absolute;top:0;left:8%;width:46px;height:7px;
+    background:var(--rojo);z-index:2;
+  }
+  .cred:nth-child(odd)::before{background:var(--paper)}
+  .cred:hover::before{background:var(--rojo)}
   .cred h3{
     font-family:var(--disp);font-weight:400;text-transform:uppercase;font-size:1.9rem;
     letter-spacing:.02em;margin-bottom:9px;transform:skewX(-8deg);transform-origin:left;
-    color:var(--violet-hi);
+    color:inherit;
   }
-  .cred p{color:var(--muted);font-size:.9rem}
+  .cred p{color:inherit;opacity:.92;font-size:.9rem}
 
   /* ===== STATUS (ficha de personaje, tipo pantalla de Persona) ===== */
   #perfil{background:linear-gradient(180deg,var(--ink) 0%,#12081f 55%,var(--ink) 100%)}
@@ -663,9 +996,16 @@
   @media(max-width:900px){.ficha{grid-template-columns:1fr}}
 
   /* --- panel izquierdo: los vitales --- */
+  /* ⚠️ Perfil NO alterna blanca/negra: las dos placas van en negro. El
+     hexagono se dibuja con trazos y etiquetas BLANCAS, asi que sobre una
+     placa blanca desapareceria entero. La forma del filo si se comparte. */
   .ficha-yo{
-    position:relative;background:var(--ink-2);border:2px solid var(--line);
-    padding:28px 26px 30px;overflow:hidden;
+    /* sin anillo blanco: aqui el relleno --ink-2 ya la separa del negro puro
+       de la pagina, y evita el problema del borde recortado por el filo */
+    position:relative;background:var(--ink-2);color:var(--paper);
+    clip-path:var(--filo);
+    transform:rotate(var(--giro,0deg));
+    padding:30px 28px 32px;overflow:hidden;
   }
   .ficha-yo::before{
     content:"";position:absolute;top:0;left:0;width:100%;height:8px;
@@ -687,8 +1027,8 @@
     text-shadow:3px 3px 0 var(--violet-deep);margin-bottom:6px;
   }
   .yo-clase{
-    display:block;color:var(--violet-hi);font-size:.82rem;
-    letter-spacing:.18em;text-transform:uppercase;margin-bottom:22px;
+    display:block;color:var(--violet-hi);font-family:var(--ui);font-weight:300;
+    font-size:.64rem;letter-spacing:.14em;text-transform:uppercase;margin-bottom:22px;
   }
   /* las dos cifras duras: años y casas donde ha trabajado */
   .cifras{display:flex;gap:34px;flex-wrap:wrap;margin-bottom:20px}
@@ -726,8 +1066,9 @@
   .yo-datos li{margin-bottom:13px}
   .yo-datos li:last-child{margin-bottom:0}
   .yo-datos i{
-    display:block;font-style:normal;font-size:.68rem;letter-spacing:.2em;
-    text-transform:uppercase;color:var(--violet-hi);margin-bottom:2px;
+    display:block;font-style:normal;font-family:var(--ui);font-weight:300;
+    font-size:.56rem;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--violet-hi);margin-bottom:4px;
   }
   .yo-datos p{color:var(--paper);font-size:.88rem;line-height:1.35}
   .yo-datos p b{font-weight:600}
@@ -735,8 +1076,10 @@
 
   /* --- panel derecho: el pentagono --- */
   .ficha-radar{
-    position:relative;background:var(--violet-deep);border:2px solid var(--violet);
-    padding:22px 18px 18px;overflow:hidden;
+    position:relative;background:var(--ink-2);
+    clip-path:var(--filo);
+    transform:rotate(var(--giro,0deg));
+    padding:24px 20px 20px;overflow:hidden;
     display:flex;flex-direction:column;
   }
   /* el campo plano de color, con su trama de puntos, como el amarillo de P4 */
@@ -767,7 +1110,7 @@
     fill:#fff;text-transform:uppercase;
   }
   .radar .rango{
-    font-family:var(--body);font-size:12.5px;font-weight:600;letter-spacing:.12em;
+    font-family:var(--ui);font-size:11px;font-weight:300;letter-spacing:.08em;
     fill:rgba(255,255,255,.74);text-transform:uppercase;
   }
   /* el poligono crece desde el centro con rebote */
@@ -811,10 +1154,17 @@
   }
   .foot-in{display:flex;flex-wrap:wrap;gap:14px;justify-content:space-between}
 
-  /* ===== REVEAL (snap-in, estilo Persona) ===== */
-  .js .rv{opacity:0;transform:translate(-26px,14px) skewX(-6deg)}
+  /* ===== REVEAL (snap-in, estilo Persona) =====
+     ⚠️ El estado final NO puede ser transform:none. Las placas de las
+     secciones llevan su giro en el transform, y como el revelado se queda
+     fijado al terminar, un "none" se lo llevaba por delante: el --giro de
+     Servicios, Experiencia y Perfil estuvo muerto sin que se notara, porque
+     el filo del recorte ya inclina un poco los bordes y disimulaba. El giro
+     tiene que ir en los DOS estados. Para lo que no lo tiene, rotate(0deg)
+     no hace nada. */
+  .js .rv{opacity:0;transform:translate(-26px,14px) skewX(-6deg) rotate(var(--giro,0deg))}
   .rv.in{
-    opacity:1;transform:none;
+    opacity:1;transform:rotate(var(--giro,0deg));
     transition:opacity .42s ease-out, transform .58s cubic-bezier(.18,1.35,.36,1);
   }
 
@@ -850,9 +1200,13 @@
   /* etiquetas y botones: golpe seco con sobre-escala */
   .pop{opacity:0}
   .pop.go{animation:popIn .34s cubic-bezier(.15,1.7,.4,1) both}
+  /* El --giro de cada placa del hero va DENTRO del keyframe: la animacion
+     corre con fill-mode both, o sea que su estado final se queda pegado y
+     machacaria cualquier transform de base. Para lo que no tiene --giro,
+     rotate(0deg) no hace nada. */
   @keyframes popIn{
-    0%  {opacity:0;transform:skewX(-11deg) scale(.62) translateY(10px)}
-    100%{opacity:1;transform:skewX(-11deg) scale(1) translateY(0)}
+    0%  {opacity:0;transform:skewX(-11deg) rotate(var(--giro,0deg)) scale(.62) translateY(10px)}
+    100%{opacity:1;transform:skewX(-11deg) rotate(var(--giro,0deg)) scale(1) translateY(0)}
   }
   .kicker.pop.go, .sec-tag.pop.go{animation-name:popIn}
 
@@ -864,7 +1218,6 @@
   .hero-a-salvo header .stat,
   .hero-a-salvo header .marca,
   .hero-a-salvo header .slam .wd{opacity:1}
-  .hero-a-salvo header .lede::before{transform:scaleY(1)}
   .hero-a-salvo header .stats::before{transform:scaleX(1)}
 
   /* ===== texto corrido: entra suave pero con desplazamiento ===== */
@@ -880,22 +1233,11 @@
     position:relative;isolation:isolate;display:inline-block;
     transition:color .18s, transform .22s cubic-bezier(.2,1.4,.3,1);
   }
-  .svc h3::before,.svc h3::after{
-    content:"";position:absolute;z-index:-1;
-    transform:scaleX(0) skewX(-13deg);transform-origin:left center;
-  }
-  .svc h3::after{
-    inset:-30% -22% -8% -4%;z-index:-2;background:var(--violet-hi);
-    clip-path:polygon(0% 0%, 100% 0%, 78% 100%, 0% 100%);
-    transition:transform .30s cubic-bezier(.2,1.6,.35,1);
-  }
-  .svc h3::before{
-    inset:-24% -12% -6% -7%;background:var(--rojo);
-    clip-path:polygon(0% 0%, 100% 0%, 86% 100%, 0% 100%);
-    transition:transform .24s cubic-bezier(.2,1.6,.35,1) .05s;
-  }
-  .svc:hover h3::before,.svc:hover h3::after{transform:scaleX(1) skewX(-13deg)}
-  .svc:hover h3{color:#fff;transform:skewX(-8deg) translateX(9px)}
+  /* La cuña angular de dos capas se retiro al pasar Servicios a placas: la
+     fila entera ya se vuelve roja al hacer hover, asi que una cuña roja
+     dentro de una placa roja no se ve. El desplazamiento de h3/p se queda,
+     que es lo que daba la sensacion de "seleccion" del menu. */
+  .svc:hover h3{transform:skewX(-8deg) translateX(9px)}
   .svc:hover p{transform:translateX(9px)}
 
   /* ===== CURSOR CUSTOM (nativo, sin JS) =====
@@ -924,10 +1266,8 @@
 
   @media(prefers-reduced-motion:reduce){
     .fade,.fade.go{opacity:1;animation:none;transform:none}
-    .lede::before,.lede.go::before{transform:scaleY(1);animation:none}
     .stats::before,.stats.go::before{transform:scaleX(1);animation:none}
     .stat,.stats.go .stat{opacity:1;animation:none;transform:none}
-    .svc h3::before,.svc h3::after{display:none}
     .rv,.rv.in{opacity:1;transform:none;transition:none}
     .cifra,.ficha-yo.go .cifra{opacity:1;animation:none;transform:none}
     .radar .valor,.radar .punto,
@@ -964,10 +1304,7 @@
 <nav id="nav">
   <div class="nav-in">
     <a href="#" class="logo" aria-label="NotMan · Rubén Rivera">
-      <picture>
-        <source srcset="/assets/logo.webp" type="image/webp">
-        <img src="/assets/logo.png" alt="NotMan" width="440" height="247">
-      </picture>
+      <img src="/assets/logo.webp" alt="NotMan" width="440" height="247">
       <em>Rubén Rivera</em>
     </a>
     <div style="display:flex;align-items:center;gap:20px">
@@ -983,8 +1320,6 @@
 <!-- Menu de pantalla completa en cascada diagonal -->
 <div class="menu-full" id="menuFull" data-abierto="no" role="dialog" aria-modal="true"
      aria-label="Menú de navegación">
-  <div class="menu-campo" aria-hidden="true"></div>
-  <div class="menu-rayas" aria-hidden="true"></div>
   <div class="menu-figura" aria-hidden="true">
     <img src="/assets/logo-lg.webp" alt="" width="1200" height="675" loading="lazy">
   </div>
@@ -992,12 +1327,35 @@
 
   <button class="cerrar-menu" id="cerrarMenu" aria-label="Cerrar menú">✕</button>
 
+  <!-- Cada item es una PLACA con su propio giro: en la referencia ninguna
+       comparte linea de base. La segunda linea diminuta hace el papel del
+       subtitulo japones -- es lo que da la densidad. -->
   <nav class="menu-lista" aria-label="Principal">
-    <a href="#trabajo"     style="--i:0"><i>01</i><span data-es="Trabajo"     data-en="Work">Trabajo</span></a>
-    <a href="#servicios"   style="--i:1"><i>02</i><span data-es="Servicios"   data-en="Services">Servicios</span></a>
-    <a href="#experiencia" style="--i:2"><i>03</i><span data-es="Experiencia" data-en="Experience">Experiencia</span></a>
-    <a href="#perfil"      style="--i:3"><i>04</i><span data-es="Perfil"      data-en="Profile">Perfil</span></a>
-    <a href="#contacto"    style="--i:4"><i>05</i><span data-es="Contacto"    data-en="Contact">Contacto</span></a>
+    <a href="#trabajo" style="--i:0;--giro:-2.4deg">
+      <i>01</i>
+      <span data-es="Trabajo" data-en="Work">Trabajo</span>
+      <em data-es="Reel y casos" data-en="Reel and case work">Reel y casos</em>
+    </a>
+    <a href="#servicios" style="--i:1;--giro:1.6deg">
+      <i>02</i>
+      <span data-es="Servicios" data-en="Services">Servicios</span>
+      <em data-es="Cuatro formas de trabajar" data-en="Four ways to work">Cuatro formas de trabajar</em>
+    </a>
+    <a href="#experiencia" style="--i:2;--giro:-3.1deg">
+      <i>03</i>
+      <span data-es="Experiencia" data-en="Experience">Experiencia</span>
+      <em data-es="Dónde he trabajado" data-en="Where I've worked">Dónde he trabajado</em>
+    </a>
+    <a href="#perfil" style="--i:3;--giro:2.2deg">
+      <i>04</i>
+      <span data-es="Perfil" data-en="Profile">Perfil</span>
+      <em data-es="Formación y herramientas" data-en="Training and tools">Formación y herramientas</em>
+    </a>
+    <a href="#contacto" style="--i:4;--giro:-1.3deg">
+      <i>05</i>
+      <span data-es="Contacto" data-en="Contact">Contacto</span>
+      <em data-es="Hablemos de tu proyecto" data-en="Let's talk about your project">Hablemos de tu proyecto</em>
+    </a>
   </nav>
 
   <span class="menu-pie" data-es="Rubén Rivera · NotMan" data-en="Rubén Rivera · NotMan">Rubén Rivera · NotMan</span>
@@ -1011,8 +1369,12 @@
   <div class="halftone"></div>
   <span class="costado" aria-hidden="true" data-es="Diseño · Animación · Web" data-en="Design · Animation · Web">Diseño · Animación · Web</span>
 
-  <div class="wrap">
-    <span class="kicker" data-es="Rubén Rivera · Querétaro, México" data-en="Rubén Rivera · Querétaro, Mexico">Rubén Rivera · Querétaro, México</span>
+  <!-- Composicion radial: el logo manda en la celda central y los textos
+       salen hacia afuera. La izquierda se alinea a la derecha y la derecha a
+       la izquierda, asi que las dos columnas arrancan pegadas al logo y
+       crecen alejandose de el. -->
+  <div class="wrap orbita">
+    <span class="kicker sat placa-negra" style="--giro-d:10.1deg;--empuje:26px" data-es="Rubén Rivera · Querétaro, México" data-en="Rubén Rivera · Querétaro, Mexico">Rubén Rivera · Querétaro, México</span>
 
     <h1>
       <!-- El logo ES el titular. Su alt carga el texto que leen Google y los
@@ -1029,17 +1391,20 @@
             data-rot-en="2D/3D motion graphics|Video editing|Web design UI/UX|White-label support">Motion graphics 2D/3D</span>
     </h1>
 
-    <p class="lede" data-es="Nueve años diseñando y animando para agencias de marketing, representantes y jugadores profesionales. Motion graphics, edición de video, diseño web y soporte de marca blanca cuando a tu equipo le falta capacidad." data-en="Nine years designing and animating for marketing agencies, representatives and professional athletes. Motion graphics, video editing, web design and white-label support when your team runs out of capacity.">Nueve años diseñando y animando para agencias de marketing, representantes y jugadores profesionales. Motion graphics, edición de video, diseño web y soporte de marca blanca cuando a tu equipo le falta capacidad.</p>
+    <p class="lede placa-negra" data-es="Nueve años diseñando y animando para agencias de marketing, representantes y jugadores profesionales. Motion graphics, edición de video, diseño web y soporte de marca blanca cuando a tu equipo le falta capacidad." data-en="Nine years designing and animating for marketing agencies, representatives and professional athletes. Motion graphics, video editing, web design and white-label support when your team runs out of capacity.">Nueve años diseñando y animando para agencias de marketing, representantes y jugadores profesionales. Motion graphics, edición de video, diseño web y soporte de marca blanca cuando a tu equipo le falta capacidad.</p>
 
+    <!-- .cta-row y .stats van con display:contents: siguen existiendo en el
+         DOM (el JS de entrada los busca por nombre) pero no ponen caja, asi
+         que sus hijos entran como celdas de .orbita. -->
     <div class="cta-row">
-      <a href="#trabajo" class="btn btn-1"><i data-es="Ver mi trabajo" data-en="See my work">Ver mi trabajo</i></a>
-      <a href="#contacto" class="btn btn-2"><i data-es="Trabajemos juntos" data-en="Let's work together">Trabajemos juntos</i></a>
+      <a href="#trabajo" class="btn btn-1 sat placa-negra" style="--giro-d:-22.6deg;--empuje:58px"><i data-es="Ver mi trabajo" data-en="See my work">Ver mi trabajo</i></a>
+      <a href="#contacto" class="btn btn-2 sat placa-roja" style="--giro-d:22deg;--empuje:50px"><i data-es="Trabajemos juntos" data-en="Let's work together">Trabajemos juntos</i></a>
     </div>
 
     <div class="stats">
-      <div class="stat"><b>9+</b><span data-es="años en agencias" data-en="years in agencies">años en agencias</span></div>
-      <div class="stat"><b>2D / 3D</b><span data-es="motion graphics" data-en="motion graphics">motion graphics</span></div>
-      <div class="stat"><b>MX · ES · MENA</b><span data-es="mercados" data-en="markets">mercados</span></div>
+      <div class="stat sat placa-roja" style="--giro-d:-11.6deg;--empuje:66px"><b>9+</b><span data-es="años en agencias" data-en="years in agencies">años en agencias</span></div>
+      <div class="stat sat placa-roja" style="--giro-d:-8.6deg;--empuje:44px"><b>2D / 3D</b><span data-es="motion graphics" data-en="motion graphics">motion graphics</span></div>
+      <div class="stat sat placa-negra" style="--giro-d:7.6deg;--empuje:52px"><b>MX · ES · MENA</b><span data-es="mercados" data-en="markets">mercados</span><em data-es="México · España · Medio Oriente y Norte de África" data-en="Mexico · Spain · Middle East &amp; North Africa">México · España · Medio Oriente y Norte de África</em></div>
     </div>
   </div>
 </header>
@@ -1099,22 +1464,22 @@
     </div>
 
     <div class="svc-list">
-      <div class="svc rv">
+      <div class="svc rv" style="--giro-d:-3deg">
         <span class="svc-bignum">01</span>
         <h3 data-es="Motion graphics 2D/3D" data-en="2D/3D motion graphics">Motion graphics 2D/3D</h3>
         <p data-es="Anuncios animados, intros de jugadores, paquetes gráficos para transmisión y piezas verticales optimizadas para Reels y TikTok." data-en="Animated ads, player intros, broadcast graphics packages and vertical pieces optimized for Reels and TikTok.">Anuncios animados, intros de jugadores, paquetes gráficos para transmisión y piezas verticales optimizadas para Reels y TikTok.</p>
       </div>
-      <div class="svc rv">
+      <div class="svc rv placa-negra" style="--giro-d:2.4deg">
         <span class="svc-bignum">02</span>
         <h3 data-es="Edición de video deportiva" data-en="Sports video editing">Edición de video deportiva</h3>
         <p data-es="Reels publicitarios, contenido de matchday, highlights de atletas y video case studies que traducen resultados en historia." data-en="Ad reels, matchday content, athlete highlights and video case studies that turn results into a story.">Reels publicitarios, contenido de matchday, highlights de atletas y video case studies que traducen resultados en historia.</p>
       </div>
-      <div class="svc rv">
+      <div class="svc rv" style="--giro-d:-2.6deg">
         <span class="svc-bignum">03</span>
         <h3 data-es="Diseño web UI/UX" data-en="Web design UI/UX">Diseño web UI/UX</h3>
         <p data-es="Landing pages interactivas y modernización de media kits, para que la presencia digital esté a la altura del talento que representas." data-en="Interactive landing pages and media kit modernization, so the digital presence matches the talent you represent.">Landing pages interactivas y modernización de media kits, para que la presencia digital esté a la altura del talento que representas.</p>
       </div>
-      <div class="svc rv">
+      <div class="svc rv placa-negra" style="--giro-d:3.4deg">
         <span class="svc-bignum">04</span>
         <h3 data-es="Soporte marca blanca" data-en="White-label support">Soporte marca blanca</h3>
         <p data-es="Aliado externo para agencias: absorbo picos de trabajo sin que tengas que elevar costos fijos ni contratar de más." data-en="External ally for agencies: I absorb workload peaks without you raising fixed costs or over-hiring.">Aliado externo para agencias: absorbo picos de trabajo sin que tengas que elevar costos fijos ni contratar de más.</p>
@@ -1133,15 +1498,15 @@
     </div>
 
     <div class="creds">
-      <div class="cred rv">
+      <div class="cred rv" style="--giro-d:3.6deg">
         <h3>Victorem Sports Marketing</h3>
         <p data-es="Nueve años de experiencia en agencia, con especialización en el sector deportivo." data-en="Nine years of agency experience, specialized in the sports sector.">Nueve años de experiencia en agencia, con especialización en el sector deportivo.</p>
       </div>
-      <div class="cred rv">
+      <div class="cred rv placa-negra" style="--giro-d:-4.4deg">
         <h3>Hugo González · Mazatlán FC</h3>
         <p data-es="Branding e imagen digital para el arquero profesional durante su etapa en el club." data-en="Branding and digital image for the professional goalkeeper during his time at the club.">Branding e imagen digital para el arquero profesional durante su etapa en el club.</p>
       </div>
-      <div class="cred rv">
+      <div class="cred rv" style="--giro-d:2.8deg">
         <h3>Al-Arabi SC Volleyball · Catar</h3>
         <p data-es="Diseño visual y piezas gráficas para una propiedad deportiva internacional en Doha." data-en="Visual design and graphic assets for an international sports property in Doha.">Diseño visual y piezas gráficas para una propiedad deportiva internacional en Doha.</p>
       </div>
@@ -1162,7 +1527,7 @@
     <div class="ficha">
 
       <!-- quien soy -->
-      <div class="ficha-yo rv">
+      <div class="ficha-yo rv" style="--giro-d:-2deg">
         <img class="yo-retrato" src="/assets/logo-lg.webp" alt="" aria-hidden="true"
              width="1200" height="675" loading="lazy" decoding="async">
 
@@ -1202,7 +1567,7 @@
       </div>
 
       <!-- el mapa de herramientas -->
-      <div class="ficha-radar rv">
+      <div class="ficha-radar rv" style="--giro-d:2.4deg">
         <span class="radar-tit" data-es="Herramientas" data-en="Toolkit">Herramientas</span>
 
         <!-- Hexagono de centro 310,205 y radio 145. Si cambian los valores hay
@@ -1272,10 +1637,7 @@
 <footer>
   <div class="wrap foot-in">
     <span style="display:flex;align-items:center;gap:10px">
-      <picture>
-        <source srcset="/assets/logo.webp" type="image/webp">
-        <img src="/assets/logo.png" alt="NotMan" style="height:26px;width:auto;opacity:.7" width="440" height="247" loading="lazy">
-      </picture>
+      <img src="/assets/logo.webp" alt="NotMan" style="height:26px;width:auto;opacity:.7" width="440" height="247" loading="lazy">
       © <span id="yr"></span> Rubén Rivera
     </span>
     <span data-es="Diseño y animación deportiva · Querétaro, México" data-en="Sports design and animation · Querétaro, Mexico">Diseño y animación deportiva · Querétaro, México</span>

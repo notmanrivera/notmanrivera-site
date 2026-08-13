@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- Una sola URL, sin build step que mantenga fechas. Se quitaron <lastmod>,
+     <changefreq> y <priority> a proposito: Google ignora los dos ultimos por
+     completo, y solo hace caso a lastmod si es fiable. Una fecha puesta a
+     mano se queda vieja al primer cambio que se nos olvide, y una fecha
+     mentirosa es peor que ninguna. -->
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://notmanrivera.com/</loc>
-    <lastmod>2026-08-12</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>1.0</priority>
   </url>
 </urlset>
