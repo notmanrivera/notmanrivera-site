@@ -583,15 +583,19 @@
     display:block;height:min(29vh,330px);width:auto;
     max-width:100%;object-fit:contain;object-position:left center;
     margin:0 0 8px -1.5%;transform-origin:left center;
+    transform:scale(var(--marca-escala,1));
     filter:drop-shadow(6px 7px 0 var(--violet-deep))
            drop-shadow(13px 15px 0 rgba(0,0,0,.55));
   }
   @media(max-width:820px){.marca{height:auto;width:94%;margin-bottom:8px}}
   .js .marca{opacity:0}
   .marca.go{animation:marcaIn .66s cubic-bezier(.14,1.5,.32,1) both}
+  /* ⚠️ La escala va DENTRO del keyframe. marcaIn corre con fill-mode both,
+     asi que su estado final se queda pegado: un scale(1) fijo aqui anularia
+     el aumento del logo en escritorio sin que nada lo delatara. */
   @keyframes marcaIn{
-    0%  {opacity:0;transform:skewX(-13deg) scale(1.42) translateY(-9%)}
-    100%{opacity:1;transform:skewX(0)      scale(1)    translateY(0)}
+    0%  {opacity:0;transform:skewX(-13deg) scale(calc(var(--marca-escala,1) * 1.42)) translateY(-9%)}
+    100%{opacity:1;transform:skewX(0)      scale(var(--marca-escala,1))              translateY(0)}
   }
   /* la linea de servicios: ahora es el subtitulo, no el titular */
   h1 .l1{
@@ -664,7 +668,8 @@
 
     /* el logo deja de estar anclado a la izquierda y se centra en su celda */
     .orbita .marca{
-      height:min(25vh,290px);
+      height:min(27vh,320px);
+      --marca-escala:1.34;
       margin:0 auto 10px;object-position:center;transform-origin:center;
     }
     .orbita h1{text-align:center}
@@ -1397,9 +1402,9 @@
     </div>
 
     <div class="stats">
-      <div class="stat sat placa-roja" style="--giro-d:-11.6deg;--empuje:38px"><b>9+</b><span data-es="años en agencias" data-en="years in agencies">años en agencias</span></div>
-      <div class="stat sat placa-roja" style="--giro-d:-8.6deg;--empuje:16px"><b>2D / 3D</b><span data-es="motion graphics" data-en="motion graphics">motion graphics</span></div>
-      <div class="stat sat placa-negra" style="--giro-d:7.6deg;--empuje:20px"><b>MX · ES · MENA</b><span data-es="mercados" data-en="markets">mercados</span><em data-es="México · España · Medio Oriente y Norte de África" data-en="Mexico · Spain · Middle East &amp; North Africa">México · España · Medio Oriente y Norte de África</em></div>
+      <div class="stat sat placa-roja" style="--giro-d:-11.6deg;--empuje:66px"><b>9+</b><span data-es="años en agencias" data-en="years in agencies">años en agencias</span></div>
+      <div class="stat sat placa-roja" style="--giro-d:-8.6deg;--empuje:44px"><b>2D / 3D</b><span data-es="motion graphics" data-en="motion graphics">motion graphics</span></div>
+      <div class="stat sat placa-negra" style="--giro-d:7.6deg;--empuje:52px"><b>MX · ES · MENA</b><span data-es="mercados" data-en="markets">mercados</span><em data-es="México · España · Medio Oriente y Norte de África" data-en="Mexico · Spain · Middle East &amp; North Africa">México · España · Medio Oriente y Norte de África</em></div>
     </div>
   </div>
 </header>

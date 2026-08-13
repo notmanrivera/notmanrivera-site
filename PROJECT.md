@@ -117,6 +117,10 @@ Las variantes se aplican como clase en el HTML (`.sat-blanca` / `.placa-negra`),
 
 El logo va en `z-index:2`, por encima de las placas: con giros fuertes alguna esquina se le acerca, y el logo es la pieza que no se tapa nunca.
 
+En escritorio se agranda con **`transform: scale()`** (`--marca-escala`, 1.34) y no subiendo su `height`. La diferencia es lo que Rubén pidió: un `transform` no afecta a la maquetación, así que **nadie se aparta para dejarle sitio y el logo pisa las placas**. Si se hiciera con `height`, la columna central crecería y empujaría a las laterales.
+
+⚠️ La escala también tiene que ir **dentro de `@keyframes marcaIn`**. Esa animación corre con `fill-mode: both`, así que su estado final se queda pegado: un `scale(1)` fijo ahí anularía el aumento en escritorio sin que nada lo delatara. Mismo patrón que el `--giro` en `popIn`, `statIn` y `.rv.in`. Y `--marca-escala` solo se define a partir de 1000px: en móvil el logo ya ocupa el 94% del ancho.
+
 ⚠️ **Las columnas laterales van en `minmax(0,1fr)`, no en `1fr`.** Un track `1fr` tiene mínimo automático de `min-content`, así que no puede encogerse por debajo de su contenido. El kicker, que es la cadena más larga del hero, ensanchaba su columna a 507 px contra los 286 px de la otra y **empujaba el logo 111 px fuera del centro** — la composición se veía torcida sin que ninguna regla dijera nada raro. Con `minmax(0,…)` las dos laterales miden igual y la columna del logo queda centrada de verdad; verificado a 1024, 1280, 1440, 1680 y 1920 px, desvío 0 en todos.
 
 El párrafo cierra la composición sobre **su propia placa negra**, de una pieza.
