@@ -174,6 +174,10 @@ El hexágono está calculado a mano sobre centro `310,205` y radio `145`: si cam
 
 ## Pendientes conocidos
 
+- 🔴 **Mover el sitio a una subcarpeta `public/` antes del próximo despliegue.** `wrangler pages deploy .` sube **todos** los archivos de la carpeta, no solo el sitio, y `.assetsignore` no funciona en Pages (ver más abajo). Eso significa que **este mismo archivo queda publicado** en `notmanrivera.com/PROJECT.md`, legible por cualquiera — incluida la nota sobre la licencia de Monument Extended, que es justo lo que no conviene tener a la vista.
+
+  El arreglo: `git mv index.html assets _headers robots.txt sitemap.xml public/` y desplegar con `wrangler pages deploy public --project-name=notmanrivera`. `PROJECT.md` se queda en la raíz del repo y deja de subirse. Rubén lo dejó para la sesión de wrangler; **hacerlo antes de desplegar**, no después.
+
 - Los tres videos del portafolio son **embeds de Google Drive** y se ven con la marca de Google. Conviene subir el reel a Vimeo y cambiar el `src` del `<iframe>`.
 - Cerrar el envío desde el dominio propio (Workspace o SMTP externo) para que la firma de los correos de prospección coincida con `hola@notmanrivera.com`.
 
