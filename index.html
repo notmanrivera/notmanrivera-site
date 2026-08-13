@@ -369,42 +369,13 @@
     background:var(--ink);overflow:hidden;
   }
   .menu-full[data-abierto="si"]{display:block}
-  /* ===== ASTILLAS =====
-     El campo se queda negro y el rojo entra en slivers. Cada astilla es una
-     barra que sale del mismo origen (50% 50%, fuera de cuadro a la izquierda)
-     y se afila hacia la punta con un clip-path de cuatro vertices. El giro,
-     el largo y el grosor van por variable en el HTML para poder recomponer
-     el abanico sin tocar el CSS. */
-  /* z-index 1, por ENCIMA de .menu-figura: el logo de fondo es una imagen
-     oscura al 60% y si le queda encima apaga las astillas hasta dejarlas
-     granate. Van detras de las placas (z-index 2) pero delante del fondo. */
-  .menu-astillas{position:absolute;inset:0;z-index:1;pointer-events:none;overflow:hidden}
-  /* El origen va en el centro, NO en el borde izquierdo: naciendo a la
-     izquierda el abanico entero quedaba detras del monton de placas, que son
-     opacas, y solo asomaban las puntas. Desde el centro las astillas salen
-     por los huecos ENTRE placas, que es lo que hace la referencia. */
-  .menu-astillas i{
-    position:absolute;left:46%;top:46%;display:block;
-    width:var(--largo);height:var(--grosor);
-    margin-top:calc(var(--grosor) / -2);
-    background:var(--rojo);
-    transform-origin:0 50%;
-    transform:rotate(var(--ang)) translateX(var(--dist));
-    clip-path:polygon(0% 0%, 100% 41%, 100% 59%, 0% 100%);
-  }
-  /* la 2 y la 4 van mas apagadas: si las cinco pesan igual se vuelve una
-     estrella simetrica, y la referencia es deliberadamente desigual */
-  .menu-astillas i:nth-child(2){opacity:.5}
-  .menu-astillas i:nth-child(4){opacity:.42}
-  .menu-astillas i:nth-child(6){opacity:.55}
-  .menu-astillas i:nth-child(7){opacity:.38}
   /* el logo cortado por el borde derecho, ocupando el lugar que en las
      referencias tiene el personaje */
   .menu-figura{
     position:absolute;right:-8%;top:50%;translate:0 -50%;
-    /* .28 y no .6: el logo es cromado y a mas opacidad ensucia los rojos de
-       las astillas, que es lo que tiene que mandar en esta pantalla */
-    width:min(58%,820px);opacity:.28;transform:rotate(-6deg);
+    /* Sin las astillas el logo vuelve a ser lo unico que hay detras de las
+       placas, asi que puede subir de .28 a .45 sin ensuciar nada. */
+    width:min(58%,820px);opacity:.45;transform:rotate(-6deg);
     pointer-events:none;user-select:none;z-index:0;
   }
   .menu-figura img{width:100%;height:auto;display:block}
@@ -572,7 +543,7 @@
   .kicker{
     display:inline-block;font-family:var(--ui);font-weight:900;text-transform:uppercase;
     font-size:.92rem;letter-spacing:.12em;color:#fff;background:var(--rojo);
-    padding:9px 16px;transform:skewX(-11deg);margin-bottom:20px;
+    padding:9px 16px;transform:skewX(-11deg) rotate(var(--giro,0deg));margin-bottom:20px;
   }
 
   h1{
@@ -614,6 +585,87 @@
   }
   h1 .rota{min-height:1.05em}
 
+  /* ===== HERO RADIAL =====
+     El logo ocupa la columna central y los textos salen hacia afuera: la
+     columna izquierda se alinea a la DERECHA y la derecha a la IZQUIERDA,
+     asi las dos arrancan pegadas al logo y crecen alejandose de el.
+
+     .cta-row y .stats van con display:contents -- siguen en el DOM (el JS de
+     entrada y el de idioma los buscan por nombre) pero no ponen caja, asi
+     que sus hijos entran directamente como celdas de la rejilla.
+
+     Solo a partir de 1000px: por debajo se apila en una columna y las placas
+     se enderezan, porque en movil el giro se lee como error de maquetacion. */
+  @media(min-width:1000px){
+    .orbita{
+      display:grid;
+      grid-template-columns:1fr auto 1fr;
+      grid-template-areas:
+        "kick logo st1"
+        "st2  logo st3"
+        "b1   logo b2"
+        "lede lede lede";
+      align-items:center;
+      column-gap:clamp(18px,2.6vw,44px);
+      row-gap:18px;
+    }
+    /* .orbita delante a proposito: .cta-row{display:flex} y .stats{display:flex}
+       viven MAS ABAJO en esta hoja, asi que con la misma especificidad ganaban
+       por orden y los hijos nunca llegaban a ser celdas de la rejilla. */
+    .orbita .cta-row,.orbita .stats{display:contents}
+
+    .orbita > .kicker      {grid-area:kick;justify-self:end;margin-bottom:0}
+    .orbita > h1           {grid-area:logo;margin-bottom:0}
+    .orbita > .lede        {grid-area:lede}
+    .cta-row .btn-1        {grid-area:b1;justify-self:end}
+    .cta-row .btn-2        {grid-area:b2;justify-self:start}
+    .stats .stat:nth-child(1){grid-area:st1;justify-self:start}
+    .stats .stat:nth-child(2){grid-area:st2;justify-self:end;text-align:right}
+    .stats .stat:nth-child(3){grid-area:st3;justify-self:start}
+
+    /* la cifra hereda la alineacion de su placa en vez de anclarse siempre
+       a la izquierda, si no la de la columna izquierda queda descolgada */
+    .stats .stat:nth-child(2) b{transform-origin:right}
+
+    /* el logo deja de estar anclado a la izquierda y se centra en su celda */
+    .orbita .marca{
+      height:min(25vh,290px);
+      margin:0 auto 10px;object-position:center;transform-origin:center;
+    }
+    .orbita h1{text-align:center}
+    .orbita h1 .l1{margin-left:0}
+
+    /* el parrafo se queda como el punto tranquilo debajo de la composicion */
+    .orbita > .lede{
+      justify-self:center;max-width:60ch;margin:26px 0 0;
+      text-align:center;padding:0 0 0 20px;
+    }
+
+    /* la linea divisoria de .stats no existe con display:contents (no hay
+       caja que la pinte) y en radial tampoco pinta nada: fuera */
+    .orbita .stats::before{display:none}
+  }
+
+  /* Apilado en una columna, el giro individual ya no lee como composicion
+     radial sino como error de maquetacion. Se anula solo en el hero: las
+     placas del menu conservan el suyo. */
+  @media(max-width:999px){
+    .orbita .sat{--giro:0deg}
+  }
+
+  /* Placas del hero: mismo lenguaje que el menu -- fondo plano, filo cortado
+     y al pasar encima se vuelven rojas. Ninguna mueve su propia caja: el
+     desplazamiento vive en los hijos (regla de oro del hover). */
+  .sat.stat{
+    padding:12px 18px;background:var(--ink-2);
+    box-shadow:inset 0 0 0 2px var(--line);
+    clip-path:polygon(2% 0%, 100% 5%, 98% 100%, 0% 94%);
+    transition:background .18s, box-shadow .18s;
+  }
+  .sat.stat:hover{background:var(--rojo);box-shadow:inset 0 0 0 2px var(--rojo)}
+  .sat.stat:hover b,.sat.stat:hover span{color:var(--paper)}
+  .sat.stat b,.sat.stat span{transition:color .18s}
+
   .lede{
     position:relative;font-size:clamp(1rem,1.9vw,1.2rem);color:#DED4F2;
     max-width:54ch;margin-bottom:22px;padding-left:20px;
@@ -633,7 +685,7 @@
   .btn{
     font-family:var(--disp);text-transform:uppercase;letter-spacing:.05em;
     font-size:1.62rem;text-decoration:none;padding:15px 30px;
-    transform:skewX(-10deg);display:inline-block;
+    transform:skewX(-10deg) rotate(var(--giro,0deg));display:inline-block;
     transition:background .18s,color .18s;
   }
   /* el shift de hover vive en <i>, no en .btn: el area de hover nunca
@@ -664,8 +716,8 @@
     animation-delay:calc(260ms + var(--i,0) * 90ms);
   }
   @keyframes statIn{
-    0%  {opacity:0;transform:translateY(16px) scale(.8)}
-    100%{opacity:1;transform:translateY(0) scale(1)}
+    0%  {opacity:0;transform:rotate(var(--giro,0deg)) translateY(16px) scale(.8)}
+    100%{opacity:1;transform:rotate(var(--giro,0deg)) translateY(0) scale(1)}
   }
   .stat b{
     display:block;font-family:var(--disp);font-weight:400;
@@ -991,9 +1043,13 @@
   /* etiquetas y botones: golpe seco con sobre-escala */
   .pop{opacity:0}
   .pop.go{animation:popIn .34s cubic-bezier(.15,1.7,.4,1) both}
+  /* El --giro de cada placa del hero va DENTRO del keyframe: la animacion
+     corre con fill-mode both, o sea que su estado final se queda pegado y
+     machacaria cualquier transform de base. Para lo que no tiene --giro,
+     rotate(0deg) no hace nada. */
   @keyframes popIn{
-    0%  {opacity:0;transform:skewX(-11deg) scale(.62) translateY(10px)}
-    100%{opacity:1;transform:skewX(-11deg) scale(1) translateY(0)}
+    0%  {opacity:0;transform:skewX(-11deg) rotate(var(--giro,0deg)) scale(.62) translateY(10px)}
+    100%{opacity:1;transform:skewX(-11deg) rotate(var(--giro,0deg)) scale(1) translateY(0)}
   }
   .kicker.pop.go, .sec-tag.pop.go{animation-name:popIn}
 
@@ -1121,18 +1177,6 @@
 <!-- Menu de pantalla completa en cascada diagonal -->
 <div class="menu-full" id="menuFull" data-abierto="no" role="dialog" aria-modal="true"
      aria-label="Menú de navegación">
-  <!-- Las astillas rojas del menu de batalla: slivers afilados que se abren
-       en abanico desde un punto fuera de cuadro. El fondo se queda NEGRO --
-       en la referencia el rojo nunca inunda, solo raja. -->
-  <div class="menu-astillas" aria-hidden="true">
-    <i style="--ang:-148deg;--largo:46%;--grosor:30px;--dist:5%"></i>
-    <i style="--ang:-112deg;--largo:34%;--grosor:16px;--dist:9%"></i>
-    <i style="--ang:-37deg;--largo:56%;--grosor:44px;--dist:2%"></i>
-    <i style="--ang:-13deg;--largo:62%;--grosor:20px;--dist:6%"></i>
-    <i style="--ang:14deg;--largo:52%;--grosor:54px;--dist:3%"></i>
-    <i style="--ang:44deg;--largo:48%;--grosor:24px;--dist:7%"></i>
-    <i style="--ang:126deg;--largo:40%;--grosor:34px;--dist:8%"></i>
-  </div>
   <div class="menu-figura" aria-hidden="true">
     <img src="/assets/logo-lg.webp" alt="" width="1200" height="675" loading="lazy">
   </div>
@@ -1182,8 +1226,12 @@
   <div class="halftone"></div>
   <span class="costado" aria-hidden="true" data-es="Diseño · Animación · Web" data-en="Design · Animation · Web">Diseño · Animación · Web</span>
 
-  <div class="wrap">
-    <span class="kicker" data-es="Rubén Rivera · Querétaro, México" data-en="Rubén Rivera · Querétaro, Mexico">Rubén Rivera · Querétaro, México</span>
+  <!-- Composicion radial: el logo manda en la celda central y los textos
+       salen hacia afuera. La izquierda se alinea a la derecha y la derecha a
+       la izquierda, asi que las dos columnas arrancan pegadas al logo y
+       crecen alejandose de el. -->
+  <div class="wrap orbita">
+    <span class="kicker sat" style="--giro:-2.6deg" data-es="Rubén Rivera · Querétaro, México" data-en="Rubén Rivera · Querétaro, Mexico">Rubén Rivera · Querétaro, México</span>
 
     <h1>
       <!-- El logo ES el titular. Su alt carga el texto que leen Google y los
@@ -1202,15 +1250,18 @@
 
     <p class="lede" data-es="Nueve años diseñando y animando para agencias de marketing, representantes y jugadores profesionales. Motion graphics, edición de video, diseño web y soporte de marca blanca cuando a tu equipo le falta capacidad." data-en="Nine years designing and animating for marketing agencies, representatives and professional athletes. Motion graphics, video editing, web design and white-label support when your team runs out of capacity.">Nueve años diseñando y animando para agencias de marketing, representantes y jugadores profesionales. Motion graphics, edición de video, diseño web y soporte de marca blanca cuando a tu equipo le falta capacidad.</p>
 
+    <!-- .cta-row y .stats van con display:contents: siguen existiendo en el
+         DOM (el JS de entrada los busca por nombre) pero no ponen caja, asi
+         que sus hijos entran como celdas de .orbita. -->
     <div class="cta-row">
-      <a href="#trabajo" class="btn btn-1"><i data-es="Ver mi trabajo" data-en="See my work">Ver mi trabajo</i></a>
-      <a href="#contacto" class="btn btn-2"><i data-es="Trabajemos juntos" data-en="Let's work together">Trabajemos juntos</i></a>
+      <a href="#trabajo" class="btn btn-1 sat" style="--giro:-2.1deg"><i data-es="Ver mi trabajo" data-en="See my work">Ver mi trabajo</i></a>
+      <a href="#contacto" class="btn btn-2 sat" style="--giro:1.7deg"><i data-es="Trabajemos juntos" data-en="Let's work together">Trabajemos juntos</i></a>
     </div>
 
     <div class="stats">
-      <div class="stat"><b>9+</b><span data-es="años en agencias" data-en="years in agencies">años en agencias</span></div>
-      <div class="stat"><b>2D / 3D</b><span data-es="motion graphics" data-en="motion graphics">motion graphics</span></div>
-      <div class="stat"><b>MX · ES · MENA</b><span data-es="mercados" data-en="markets">mercados</span></div>
+      <div class="stat sat" style="--giro:1.9deg"><b>9+</b><span data-es="años en agencias" data-en="years in agencies">años en agencias</span></div>
+      <div class="stat sat" style="--giro:-1.5deg"><b>2D / 3D</b><span data-es="motion graphics" data-en="motion graphics">motion graphics</span></div>
+      <div class="stat sat" style="--giro:2.7deg"><b>MX · ES · MENA</b><span data-es="mercados" data-en="markets">mercados</span></div>
     </div>
   </div>
 </header>
