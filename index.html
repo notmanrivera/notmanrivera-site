@@ -645,10 +645,13 @@
     .orbita h1{text-align:center}
     .orbita h1 .l1{margin-left:0}
 
-    /* el parrafo se queda como el punto tranquilo debajo de la composicion */
+    /* el parrafo cierra la composicion sobre su propia placa. Va de una
+       pieza y NO con fondo por linea: box-decoration-break sabe pintar por
+       linea, pero todas saldrian del mismo color -- son fragmentos de una
+       misma caja inline -- y alternar exigiria saltos de linea a mano, que
+       se rompen al cambiar el ancho o el idioma. */
     .orbita > .lede{
-      justify-self:center;max-width:60ch;margin:26px 0 0;
-      text-align:center;
+      justify-self:center;max-width:62ch;margin:30px 0 0;text-align:center;
     }
 
     /* la linea divisoria de .stats no existe con display:contents (no hay
@@ -689,6 +692,14 @@
      se lee como una mala impresion. Las placas del menu tampoco la llevan. */
   .orbita .stat b   {color:inherit;text-shadow:none;transition:color .18s}
   .orbita .stat span{color:inherit;opacity:.74;transition:color .18s}
+  /* tercera linea, solo donde hace falta desglosar una abreviatura. Mismo
+     papel que el subtitulo diminuto de las placas del menu. */
+  .orbita .stat em{
+    display:block;font-style:normal;color:inherit;opacity:.62;
+    font-family:var(--ui);font-weight:300;text-transform:uppercase;
+    font-size:.5rem;letter-spacing:.1em;line-height:1.6;margin-top:8px;
+    max-width:34ch;
+  }
 
   /* al pasar encima, la placa entera se vuelve roja, igual que en el menu */
   .orbita .sat:hover{background:var(--rojo);color:var(--paper);box-shadow:none}
@@ -899,6 +910,15 @@
     transition:background .2s;
   }
   .placa-negra:hover::after{background:var(--rojo)}
+  /* el parrafo lleva la placa pero no es accionable: no enrojece */
+  .lede.placa-negra:hover::after{background:var(--ink)}
+  /* ⚠️ El relleno y el filo van FUERA del media query de escritorio. La clase
+     .placa-negra se aplica en todos los anchos, asi que si la geometria vive
+     solo en el media query, en movil queda la capa interior sin relleno y el
+     texto se sale por los bordes -- se comia las primeras letras de cada
+     linea. Lo que si es de escritorio es la posicion en la rejilla. */
+  .lede.placa-negra{padding:24px clamp(20px,5vw,32px)}
+  .lede.placa-negra{clip-path:var(--filo)}
   /* el acento rojo se corre a left:8%: pegado al borde lo cortaba el filo */
   .cred::before{
     content:"";position:absolute;top:0;left:8%;width:46px;height:7px;
@@ -1309,7 +1329,7 @@
             data-rot-en="2D/3D motion graphics|Video editing|Web design UI/UX|White-label support">Motion graphics 2D/3D</span>
     </h1>
 
-    <p class="lede" data-es="Nueve años diseñando y animando para agencias de marketing, representantes y jugadores profesionales. Motion graphics, edición de video, diseño web y soporte de marca blanca cuando a tu equipo le falta capacidad." data-en="Nine years designing and animating for marketing agencies, representatives and professional athletes. Motion graphics, video editing, web design and white-label support when your team runs out of capacity.">Nueve años diseñando y animando para agencias de marketing, representantes y jugadores profesionales. Motion graphics, edición de video, diseño web y soporte de marca blanca cuando a tu equipo le falta capacidad.</p>
+    <p class="lede placa-negra" data-es="Nueve años diseñando y animando para agencias de marketing, representantes y jugadores profesionales. Motion graphics, edición de video, diseño web y soporte de marca blanca cuando a tu equipo le falta capacidad." data-en="Nine years designing and animating for marketing agencies, representatives and professional athletes. Motion graphics, video editing, web design and white-label support when your team runs out of capacity.">Nueve años diseñando y animando para agencias de marketing, representantes y jugadores profesionales. Motion graphics, edición de video, diseño web y soporte de marca blanca cuando a tu equipo le falta capacidad.</p>
 
     <!-- .cta-row y .stats van con display:contents: siguen existiendo en el
          DOM (el JS de entrada los busca por nombre) pero no ponen caja, asi
@@ -1322,7 +1342,7 @@
     <div class="stats">
       <div class="stat sat sat-blanca" style="--giro:1.9deg"><b>9+</b><span data-es="años en agencias" data-en="years in agencies">años en agencias</span></div>
       <div class="stat sat sat-blanca" style="--giro:-1.5deg"><b>2D / 3D</b><span data-es="motion graphics" data-en="motion graphics">motion graphics</span></div>
-      <div class="stat sat placa-negra" style="--giro:2.7deg"><b>MX · ES · MENA</b><span data-es="mercados" data-en="markets">mercados</span></div>
+      <div class="stat sat placa-negra" style="--giro:2.7deg"><b>MX · ES · MENA</b><span data-es="mercados" data-en="markets">mercados</span><em data-es="México · España · Medio Oriente y Norte de África" data-en="Mexico · Spain · Middle East &amp; North Africa">México · España · Medio Oriente y Norte de África</em></div>
     </div>
   </div>
 </header>
