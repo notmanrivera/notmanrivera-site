@@ -679,8 +679,7 @@
      .btn-2{background:transparent} viven mas abajo en la hoja y con la misma
      especificidad ganarian por orden de aparicion. */
   .orbita .sat-blanca{background:var(--paper);color:var(--ink)}
-  .orbita .sat-negra {background:var(--ink);color:var(--paper);box-shadow:inset 0 0 0 3px var(--paper)}
-  .orbita .sat-roja  {background:var(--rojo);color:var(--paper)}
+  .orbita .placa-negra{background:var(--paper);color:var(--paper)}
 
   /* la cifra y el rotulo heredan el color de su placa en vez de traer el
      suyo, que es lo que permite que la misma pieza funcione sobre blanco,
@@ -693,8 +692,6 @@
 
   /* al pasar encima, la placa entera se vuelve roja, igual que en el menu */
   .orbita .sat:hover{background:var(--rojo);color:var(--paper);box-shadow:none}
-  /* la que ya esta roja no puede "ponerse mas roja": se invierte a blanca */
-  .orbita .sat-roja:hover{background:var(--paper);color:var(--ink)}
 
   /* ⚠️ Los CTA pierden aqui su sombra dura: clip-path recorta tambien el
      box-shadow exterior, asi que la sombra saldria cortada por el filo.
@@ -889,15 +886,19 @@
      metida 3px y recortada con el MISMO filo, se pone encima. El "borde" es
      el blanco que asoma, y como las dos capas comparten recorte, sigue la
      forma exacta por los cuatro lados. */
-  .placa-negra{background:var(--paper);color:var(--paper)}
+  .placa-negra{background:var(--paper);color:var(--paper);isolation:isolate}
+  /* ⚠️ z-index:-1, no 0. Con 0 la capa interior se pinta por ENCIMA del texto
+     en cuanto el texto es un nodo suelto y no un hijo elemento -- le pasa al
+     kicker del hero, que no tiene hijos que subir con z-index:1. En -1 el
+     orden de pintado queda: fondo de la placa, capa interior, contenido.
+     El isolation:isolate es lo que garantiza que ese -1 se quede dentro de la
+     placa y no caiga detras del fondo del padre. */
   .placa-negra::after{
-    content:"";position:absolute;inset:3px;z-index:0;
+    content:"";position:absolute;inset:3px;z-index:-1;
     background:var(--ink);clip-path:var(--filo);
     transition:background .2s;
   }
   .placa-negra:hover::after{background:var(--rojo)}
-  /* el contenido tiene que subir por encima de la capa interior */
-  .placa-negra > *{position:relative;z-index:1}
   /* el acento rojo se corre a left:8%: pegado al borde lo cortaba el filo */
   .cred::before{
     content:"";position:absolute;top:0;left:8%;width:46px;height:7px;
@@ -1291,7 +1292,7 @@
        la izquierda, asi que las dos columnas arrancan pegadas al logo y
        crecen alejandose de el. -->
   <div class="wrap orbita">
-    <span class="kicker sat sat-blanca" style="--giro:-2.6deg" data-es="Rubén Rivera · Querétaro, México" data-en="Rubén Rivera · Querétaro, Mexico">Rubén Rivera · Querétaro, México</span>
+    <span class="kicker sat placa-negra" style="--giro:-2.6deg" data-es="Rubén Rivera · Querétaro, México" data-en="Rubén Rivera · Querétaro, Mexico">Rubén Rivera · Querétaro, México</span>
 
     <h1>
       <!-- El logo ES el titular. Su alt carga el texto que leen Google y los
@@ -1314,14 +1315,14 @@
          DOM (el JS de entrada los busca por nombre) pero no ponen caja, asi
          que sus hijos entran como celdas de .orbita. -->
     <div class="cta-row">
-      <a href="#trabajo" class="btn btn-1 sat sat-roja" style="--giro:-2.1deg"><i data-es="Ver mi trabajo" data-en="See my work">Ver mi trabajo</i></a>
+      <a href="#trabajo" class="btn btn-1 sat placa-negra" style="--giro:-2.1deg"><i data-es="Ver mi trabajo" data-en="See my work">Ver mi trabajo</i></a>
       <a href="#contacto" class="btn btn-2 sat sat-blanca" style="--giro:1.7deg"><i data-es="Trabajemos juntos" data-en="Let's work together">Trabajemos juntos</i></a>
     </div>
 
     <div class="stats">
-      <div class="stat sat sat-negra" style="--giro:1.9deg"><b>9+</b><span data-es="años en agencias" data-en="years in agencies">años en agencias</span></div>
+      <div class="stat sat sat-blanca" style="--giro:1.9deg"><b>9+</b><span data-es="años en agencias" data-en="years in agencies">años en agencias</span></div>
       <div class="stat sat sat-blanca" style="--giro:-1.5deg"><b>2D / 3D</b><span data-es="motion graphics" data-en="motion graphics">motion graphics</span></div>
-      <div class="stat sat sat-negra" style="--giro:2.7deg"><b>MX · ES · MENA</b><span data-es="mercados" data-en="markets">mercados</span></div>
+      <div class="stat sat placa-negra" style="--giro:2.7deg"><b>MX · ES · MENA</b><span data-es="mercados" data-en="markets">mercados</span></div>
     </div>
   </div>
 </header>
