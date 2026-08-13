@@ -309,12 +309,16 @@
   .svc{transition:border-color .22s,background .22s}
 
   /* ===== NAV ===== */
-  nav{
+  /* ⚠️ #nav y NO nav: .menu-lista tambien es un <nav>, asi que con el
+     selector de elemento heredaba este fondo negro al 86% a pantalla
+     completa y apagaba todo lo que hubiera detras. Estuvo ahi desde el
+     principio y no se noto hasta que hubo astillas rojas que tapar. */
+  #nav{
     position:fixed;top:0;left:0;right:0;z-index:100;
     background:rgba(0,0,0,.86);backdrop-filter:blur(12px);
     border-bottom:2px solid transparent;transition:border-color .3s;
   }
-  nav.scrolled{border-bottom-color:var(--violet)}
+  #nav.scrolled{border-bottom-color:var(--violet)}
   .nav-in{
     max-width:var(--max);margin:0 auto;padding:14px 24px;
     display:flex;align-items:center;justify-content:space-between;gap:16px;
@@ -365,27 +369,46 @@
     background:var(--ink);overflow:hidden;
   }
   .menu-full[data-abierto="si"]{display:block}
-  .menu-campo{
-    position:absolute;top:-10%;right:-24%;width:86%;height:120%;
-    background:var(--violet);opacity:.5;
-    clip-path:polygon(38% 0%, 100% 0%, 100% 100%, 0% 100%);
-    pointer-events:none;
+  /* ===== ASTILLAS =====
+     El campo se queda negro y el rojo entra en slivers. Cada astilla es una
+     barra que sale del mismo origen (50% 50%, fuera de cuadro a la izquierda)
+     y se afila hacia la punta con un clip-path de cuatro vertices. El giro,
+     el largo y el grosor van por variable en el HTML para poder recomponer
+     el abanico sin tocar el CSS. */
+  /* z-index 1, por ENCIMA de .menu-figura: el logo de fondo es una imagen
+     oscura al 60% y si le queda encima apaga las astillas hasta dejarlas
+     granate. Van detras de las placas (z-index 2) pero delante del fondo. */
+  .menu-astillas{position:absolute;inset:0;z-index:1;pointer-events:none;overflow:hidden}
+  /* El origen va en el centro, NO en el borde izquierdo: naciendo a la
+     izquierda el abanico entero quedaba detras del monton de placas, que son
+     opacas, y solo asomaban las puntas. Desde el centro las astillas salen
+     por los huecos ENTRE placas, que es lo que hace la referencia. */
+  .menu-astillas i{
+    position:absolute;left:46%;top:46%;display:block;
+    width:var(--largo);height:var(--grosor);
+    margin-top:calc(var(--grosor) / -2);
+    background:var(--rojo);
+    transform-origin:0 50%;
+    transform:rotate(var(--ang)) translateX(var(--dist));
+    clip-path:polygon(0% 0%, 100% 41%, 100% 59%, 0% 100%);
   }
+  /* la 2 y la 4 van mas apagadas: si las cinco pesan igual se vuelve una
+     estrella simetrica, y la referencia es deliberadamente desigual */
+  .menu-astillas i:nth-child(2){opacity:.5}
+  .menu-astillas i:nth-child(4){opacity:.42}
+  .menu-astillas i:nth-child(6){opacity:.55}
+  .menu-astillas i:nth-child(7){opacity:.38}
   /* el logo cortado por el borde derecho, ocupando el lugar que en las
      referencias tiene el personaje */
   .menu-figura{
     position:absolute;right:-8%;top:50%;translate:0 -50%;
-    width:min(58%,820px);opacity:.6;transform:rotate(-6deg);
-    pointer-events:none;user-select:none;z-index:1;
+    /* .28 y no .6: el logo es cromado y a mas opacidad ensucia los rojos de
+       las astillas, que es lo que tiene que mandar en esta pantalla */
+    width:min(58%,820px);opacity:.28;transform:rotate(-6deg);
+    pointer-events:none;user-select:none;z-index:0;
   }
   .menu-figura img{width:100%;height:auto;display:block}
   @media(max-width:900px){.menu-figura{display:none}}
-  .menu-rayas{
-    position:absolute;left:-10%;right:-10%;top:24%;height:34%;
-    transform:rotate(-7deg);pointer-events:none;
-    background:repeating-linear-gradient(90deg,
-      rgba(229,0,18,.34) 0 3px, transparent 3px 16px);
-  }
   .cerrar-menu{
     position:absolute;top:26px;right:30px;z-index:3;
     font-family:var(--disp);font-size:2.2rem;line-height:1;
@@ -399,36 +422,77 @@
     display:flex;flex-direction:column;justify-content:center;
     padding:0 clamp(24px,7vw,110px);
   }
+  /* ===== PLACAS =====
+     Cada item es un cuadrilatero irregular con su propio giro. Tres cosas
+     lo sacan de "lista con estilo" y lo meten en el menu de batalla:
+       1. clip-path con las cuatro esquinas desiguales -- ninguna a 90 grados
+       2. --giro propio por item, ademas del skew comun: no comparten base
+       3. alternancia placa blanca / placa negra, como ORDER contra PERSONA */
   .menu-lista a{
-    display:flex;align-items:baseline;gap:18px;
-    font-family:var(--disp);text-transform:uppercase;text-decoration:none;
-    color:var(--paper);line-height:.92;
-    transform:skewX(-11deg);width:max-content;position:relative;
-    transition:color .16s;
-    /* cada item baja un escalon a la derecha y encoge: la cascada */
+    display:grid;
+    grid-template-columns:auto 1fr;
+    grid-template-areas:"num tit" "num sub";
+    align-items:baseline;
+    column-gap:14px;
+    text-decoration:none;
+    width:max-content;max-width:88%;
+    position:relative;isolation:isolate;
+    padding:14px 34px 13px 20px;
     margin-left:var(--sangria);
-    font-size:calc(clamp(2.2rem,7vw,5.4rem) * var(--escala));
+    margin-bottom:-6px;                       /* se encabalgan un poco */
+    background:var(--paper);color:var(--ink);
+    clip-path:polygon(1.4% 0%, 100% 3.5%, 98.6% 100%, 0% 94%);
+    transform:skewX(-11deg) rotate(var(--giro));
+    transition:background .16s, color .16s;
   }
+  /* la alternancia: las pares son placa negra con filo blanco */
+  .menu-lista a:nth-child(even){
+    background:var(--ink);color:var(--paper);
+    box-shadow:inset 0 0 0 3px var(--paper);
+  }
+  /* cada item baja un escalon a la derecha y encoge: la cascada se conserva */
   .menu-lista a:nth-child(1){--sangria:0;    --escala:1}
   .menu-lista a:nth-child(2){--sangria:5%;   --escala:.9}
   .menu-lista a:nth-child(3){--sangria:10%;  --escala:.82}
   .menu-lista a:nth-child(4){--sangria:15%;  --escala:.75}
   .menu-lista a:nth-child(5){--sangria:20%;  --escala:.69}
+
+  .menu-lista a > span{
+    grid-area:tit;
+    font-family:var(--disp);text-transform:uppercase;line-height:.9;
+    font-size:calc(clamp(2rem,6.2vw,4.6rem) * var(--escala));
+  }
+  /* el numero, como los glifos de boton: badge cuadrado girado al reves
+     para que se lea recto dentro de la placa inclinada */
   .menu-lista a i{
+    grid-area:num;align-self:center;
     font-style:normal;font-family:var(--ui);font-weight:900;
-    font-size:.2em;color:var(--violet-hi);letter-spacing:.06em;
+    font-size:calc(.72rem * var(--escala));letter-spacing:.04em;
+    background:var(--rojo);color:#fff;
+    padding:6px 8px;transform:skewX(11deg);
   }
-  /* el tachon del item activo, igual que el rojo sobre "SKILL" */
-  .menu-lista a::before{
-    content:"";position:absolute;left:-3%;right:-5%;top:34%;height:26%;
-    background:var(--rojo);z-index:-1;
-    transform:scaleX(0);transform-origin:left center;
-    transition:transform .2s cubic-bezier(.2,1.5,.35,1);
+  /* la segunda linea diminuta: el papel del subtitulo japones */
+  .menu-lista a em{
+    grid-area:sub;font-style:normal;
+    font-family:var(--ui);font-weight:300;text-transform:uppercase;
+    font-size:calc(.52rem * var(--escala));letter-spacing:.13em;
+    opacity:.72;margin-top:5px;line-height:1.3;
   }
-  .menu-lista a{isolation:isolate}
-  .menu-lista a:hover,.menu-lista a:focus-visible{color:#fff}
-  .menu-lista a:hover::before,.menu-lista a:focus-visible::before{transform:scaleX(1)}
-  .menu-lista a:hover i,.menu-lista a:focus-visible i{color:#fff}
+
+  /* al pasar encima la placa se vuelve roja, como el item seleccionado */
+  .menu-lista a:hover,.menu-lista a:focus-visible{
+    background:var(--rojo);color:var(--paper);box-shadow:none;
+  }
+  .menu-lista a:hover i,.menu-lista a:focus-visible i{
+    background:var(--paper);color:var(--rojo);
+  }
+  /* ⚠️ El anillo de foco global NO sirve aqui: clip-path recorta el outline
+     junto con la caja, asi que el anillo se vuelve invisible en las placas.
+     La sombra INSET si vive dentro del recorte, y hace el mismo trabajo. */
+  .menu-lista a:focus-visible{
+    outline:none;
+    box-shadow:inset 0 0 0 4px var(--paper), inset 0 0 0 8px var(--ink);
+  }
 
   .menu-pie{
     position:absolute;left:clamp(24px,7vw,110px);bottom:34px;z-index:2;
@@ -441,13 +505,15 @@
     animation:menuEntra .38s cubic-bezier(.15,1.5,.35,1) both;
     animation-delay:calc(var(--i,0) * 60ms);
   }
+  /* El giro propio de cada placa tiene que ir tambien aqui: si la animacion
+     solo declara skew+translate, machaca el rotate y las placas aterrizan
+     todas alineadas -- justo lo que la referencia no hace. */
   @keyframes menuEntra{
-    from{opacity:0;transform:skewX(-11deg) translateX(-60px)}
-    to  {opacity:1;transform:skewX(-11deg) translateX(0)}
+    from{opacity:0;transform:skewX(-11deg) rotate(var(--giro)) translateX(-60px)}
+    to  {opacity:1;transform:skewX(-11deg) rotate(var(--giro)) translateX(0)}
   }
   @media(prefers-reduced-motion:reduce){
     .menu-full[data-abierto="si"] .menu-lista a{animation:none;opacity:1}
-    .menu-lista a::before{display:none}
   }
 
   /* ===== HERO ===== */
@@ -1055,8 +1121,18 @@
 <!-- Menu de pantalla completa en cascada diagonal -->
 <div class="menu-full" id="menuFull" data-abierto="no" role="dialog" aria-modal="true"
      aria-label="Menú de navegación">
-  <div class="menu-campo" aria-hidden="true"></div>
-  <div class="menu-rayas" aria-hidden="true"></div>
+  <!-- Las astillas rojas del menu de batalla: slivers afilados que se abren
+       en abanico desde un punto fuera de cuadro. El fondo se queda NEGRO --
+       en la referencia el rojo nunca inunda, solo raja. -->
+  <div class="menu-astillas" aria-hidden="true">
+    <i style="--ang:-148deg;--largo:46%;--grosor:30px;--dist:5%"></i>
+    <i style="--ang:-112deg;--largo:34%;--grosor:16px;--dist:9%"></i>
+    <i style="--ang:-37deg;--largo:56%;--grosor:44px;--dist:2%"></i>
+    <i style="--ang:-13deg;--largo:62%;--grosor:20px;--dist:6%"></i>
+    <i style="--ang:14deg;--largo:52%;--grosor:54px;--dist:3%"></i>
+    <i style="--ang:44deg;--largo:48%;--grosor:24px;--dist:7%"></i>
+    <i style="--ang:126deg;--largo:40%;--grosor:34px;--dist:8%"></i>
+  </div>
   <div class="menu-figura" aria-hidden="true">
     <img src="/assets/logo-lg.webp" alt="" width="1200" height="675" loading="lazy">
   </div>
@@ -1064,12 +1140,35 @@
 
   <button class="cerrar-menu" id="cerrarMenu" aria-label="Cerrar menú">✕</button>
 
+  <!-- Cada item es una PLACA con su propio giro: en la referencia ninguna
+       comparte linea de base. La segunda linea diminuta hace el papel del
+       subtitulo japones -- es lo que da la densidad. -->
   <nav class="menu-lista" aria-label="Principal">
-    <a href="#trabajo"     style="--i:0"><i>01</i><span data-es="Trabajo"     data-en="Work">Trabajo</span></a>
-    <a href="#servicios"   style="--i:1"><i>02</i><span data-es="Servicios"   data-en="Services">Servicios</span></a>
-    <a href="#experiencia" style="--i:2"><i>03</i><span data-es="Experiencia" data-en="Experience">Experiencia</span></a>
-    <a href="#perfil"      style="--i:3"><i>04</i><span data-es="Perfil"      data-en="Profile">Perfil</span></a>
-    <a href="#contacto"    style="--i:4"><i>05</i><span data-es="Contacto"    data-en="Contact">Contacto</span></a>
+    <a href="#trabajo" style="--i:0;--giro:-2.4deg">
+      <i>01</i>
+      <span data-es="Trabajo" data-en="Work">Trabajo</span>
+      <em data-es="Reel y casos" data-en="Reel and case work">Reel y casos</em>
+    </a>
+    <a href="#servicios" style="--i:1;--giro:1.6deg">
+      <i>02</i>
+      <span data-es="Servicios" data-en="Services">Servicios</span>
+      <em data-es="Cuatro formas de trabajar" data-en="Four ways to work">Cuatro formas de trabajar</em>
+    </a>
+    <a href="#experiencia" style="--i:2;--giro:-3.1deg">
+      <i>03</i>
+      <span data-es="Experiencia" data-en="Experience">Experiencia</span>
+      <em data-es="Dónde he trabajado" data-en="Where I've worked">Dónde he trabajado</em>
+    </a>
+    <a href="#perfil" style="--i:3;--giro:2.2deg">
+      <i>04</i>
+      <span data-es="Perfil" data-en="Profile">Perfil</span>
+      <em data-es="Formación y herramientas" data-en="Training and tools">Formación y herramientas</em>
+    </a>
+    <a href="#contacto" style="--i:4;--giro:-1.3deg">
+      <i>05</i>
+      <span data-es="Contacto" data-en="Contact">Contacto</span>
+      <em data-es="Hablemos de tu proyecto" data-en="Let's talk about your project">Hablemos de tu proyecto</em>
+    </a>
   </nav>
 
   <span class="menu-pie" data-es="Rubén Rivera · NotMan" data-en="Rubén Rivera · NotMan">Rubén Rivera · NotMan</span>
