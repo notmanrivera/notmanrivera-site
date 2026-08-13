@@ -956,6 +956,61 @@
   }
   .card-body p{color:var(--muted);font-size:.9rem}
 
+  /* ===== GALERIA (piezas reales, agrupadas por cliente) =====
+     Mismo lenguaje que .card: filo cortado, anillo INSET en vez de borde
+     recto (clip-path recorta el box-shadow exterior -- la misma nota de
+     .card-in de aqui arriba, tercera vez que aparece en el archivo). */
+  .galeria{margin-top:56px}
+  .galeria-tit{
+    font-family:var(--disp);font-weight:400;text-transform:uppercase;
+    font-size:clamp(1.6rem,3.4vw,2.1rem);letter-spacing:.02em;
+    transform:skewX(-8deg);transform-origin:left;margin-bottom:28px;
+    color:var(--muted);
+  }
+  .galeria-tit em{font-style:normal;color:var(--paper)}
+  .galeria-grupos{display:grid;gap:44px}
+  .galeria-grupo-tit{
+    display:inline-flex;align-items:baseline;gap:10px;
+    font-family:var(--ui);font-weight:900;text-transform:uppercase;
+    font-size:.8rem;letter-spacing:.1em;color:var(--paper);
+    background:var(--ink-2);border:1px solid var(--line);
+    padding:7px 14px;transform:skewX(-11deg);margin-bottom:16px;
+  }
+  .galeria-grupo-tit small{
+    font-weight:300;letter-spacing:.06em;color:var(--muted);font-size:.86em;
+  }
+  .galeria-grid{
+    display:grid;gap:14px;
+    grid-template-columns:repeat(auto-fill,minmax(160px,1fr));
+  }
+  .galeria-item{
+    position:relative;display:block;aspect-ratio:3/4;overflow:hidden;
+    clip-path:var(--filo);background:var(--ink-2);
+    box-shadow:inset 0 0 0 2px var(--line);
+    transition:box-shadow .2s;
+  }
+  .galeria-item:hover,.galeria-item:focus-visible{
+    box-shadow:inset 0 0 0 3px var(--rojo);outline:none;
+  }
+  .galeria-item img{
+    display:block;width:100%;height:100%;object-fit:cover;object-position:top center;
+    transition:transform .3s ease;
+  }
+  .galeria-item:hover img,.galeria-item:focus-visible img{transform:scale(1.06)}
+  .galeria-item span{
+    position:absolute;left:0;right:0;bottom:0;z-index:1;
+    padding:22px 12px 9px;
+    background:linear-gradient(180deg,transparent,rgba(0,0,0,.86) 78%);
+    font-size:.72rem;color:var(--paper);letter-spacing:.02em;line-height:1.3;
+    opacity:0;transform:translateY(6px);
+    transition:opacity .2s,transform .2s;
+  }
+  .galeria-item:hover span,.galeria-item:focus-visible span{opacity:1;transform:translateY(0)}
+  @media(prefers-reduced-motion:reduce){
+    .galeria-item img,.galeria-item span{transition:none}
+    .galeria-item:hover img{transform:none}
+  }
+
   /* ===== SERVICES ===== */
   .svc-list{display:grid;gap:18px}
   /* Placas, igual que el menu y el hero: alternan blanca y negra, y al pasar
@@ -1521,6 +1576,66 @@
           </div>
         </div>
       </article>
+    </div>
+
+    <div class="galeria">
+      <h3 class="galeria-tit rv" data-es="Piezas <em>reales</em>, entregadas a clientes" data-en="<em>Real</em> pieces, delivered to clients">Piezas <em>reales</em>, entregadas a clientes</h3>
+
+      <div class="galeria-grupos">
+        <div class="galeria-grupo">
+          <span class="galeria-grupo-tit">Al-Arabi SC <small data-es="Voleibol · Catar/Baréin" data-en="Volleyball · Qatar/Bahrain">Voleibol · Catar/Baréin</small></span>
+          <div class="galeria-grid">
+            <a class="galeria-item rv" href="/assets/galeria/al-arabi-grupo.webp" target="_blank" rel="noopener">
+              <img src="/assets/galeria/al-arabi-grupo.webp" alt="Al-Arabi SC — gráfico de fase de grupos" width="431" height="538" loading="lazy" decoding="async">
+              <span data-es="Fase de grupos" data-en="Group stage">Fase de grupos</span>
+            </a>
+            <a class="galeria-item rv" href="/assets/galeria/al-arabi-lineup.webp" target="_blank" rel="noopener">
+              <img src="/assets/galeria/al-arabi-lineup.webp" alt="Al-Arabi SC — alineación titular" width="431" height="539" loading="lazy" decoding="async">
+              <span data-es="Alineación" data-en="Line-up">Alineación</span>
+            </a>
+            <a class="galeria-item rv" href="/assets/galeria/al-arabi-matchday.webp" target="_blank" rel="noopener">
+              <img src="/assets/galeria/al-arabi-matchday.webp" alt="Al-Arabi SC — anuncio de próximo partido" width="434" height="542" loading="lazy" decoding="async">
+              <span data-es="Próximo partido" data-en="Next match">Próximo partido</span>
+            </a>
+          </div>
+        </div>
+
+        <div class="galeria-grupo">
+          <span class="galeria-grupo-tit">Hugo González <small>Mazatlán FC</small></span>
+          <div class="galeria-grid">
+            <a class="galeria-item rv" href="/assets/galeria/hugo-gonzalez-tijuana.webp" target="_blank" rel="noopener">
+              <img src="/assets/galeria/hugo-gonzalez-tijuana.webp" alt="Hugo González — Tijuana vs Mazatlán, previa de partido" width="434" height="771" loading="lazy" decoding="async">
+              <span>Tijuana vs Mazatlán</span>
+            </a>
+            <a class="galeria-item rv" href="/assets/galeria/hugo-gonzalez-puebla.webp" target="_blank" rel="noopener">
+              <img src="/assets/galeria/hugo-gonzalez-puebla.webp" alt="Hugo González — Mazatlán vs Puebla, previa de partido" width="346" height="553" loading="lazy" decoding="async">
+              <span>Mazatlán vs Puebla</span>
+            </a>
+            <a class="galeria-item rv" href="/assets/galeria/hugo-gonzalez-monterrey.webp" target="_blank" rel="noopener">
+              <img src="/assets/galeria/hugo-gonzalez-monterrey.webp" alt="Hugo González — Monterrey vs Mazatlán, previa de partido" width="434" height="738" loading="lazy" decoding="async">
+              <span>Monterrey vs Mazatlán</span>
+            </a>
+            <a class="galeria-item rv" href="/assets/galeria/hugo-gonzalez-leagues-cup.webp" target="_blank" rel="noopener">
+              <img src="/assets/galeria/hugo-gonzalez-leagues-cup.webp" alt="Hugo González — Leagues Cup, Mazatlán vs Nashville SC" width="434" height="709" loading="lazy" decoding="async">
+              <span>Leagues Cup</span>
+            </a>
+          </div>
+        </div>
+
+        <div class="galeria-grupo">
+          <span class="galeria-grupo-tit">Sub-17 <small data-es="Fútbol femenil · Liga BBVA" data-en="Women's football · Liga BBVA">Fútbol femenil · Liga BBVA</small></span>
+            <div class="galeria-grid">
+            <a class="galeria-item rv" href="/assets/galeria/sub17-andrea-velarde.webp" target="_blank" rel="noopener">
+              <img src="/assets/galeria/sub17-andrea-velarde.webp" alt="Andrea Velarde — anuncio de transferencia" width="287" height="333" loading="lazy" decoding="async">
+              <span data-es="Andrea Velarde · Transferencia" data-en="Andrea Velarde · Transfer">Andrea Velarde · Transferencia</span>
+            </a>
+            <a class="galeria-item rv" href="/assets/galeria/sub17-nayrobi-garcia.webp" target="_blank" rel="noopener">
+              <img src="/assets/galeria/sub17-nayrobi-garcia.webp" alt="Nayrobi García — anuncio de firma de primer contrato profesional" width="289" height="334" loading="lazy" decoding="async">
+              <span data-es="Nayrobi García · Firma" data-en="Nayrobi García · Signing">Nayrobi García · Firma</span>
+            </a>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </section>

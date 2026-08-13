@@ -176,6 +176,16 @@ El CV leído como una pantalla de estado de Persona, pero **sin jerga de videoju
 
 El hexágono está calculado a mano sobre centro `310,205` y radio `145`: si cambia un valor hay que recalcular el `<polygon class="valor">` **y** su `<circle class="punto">`, con `r = 145 × valor / 100`.
 
+### Galería de trabajo real (dentro de `#trabajo`)
+
+Debajo de las 3 tarjetas de reel, un grid de 9 piezas reales agrupadas por cliente (Al-Arabi SC, Hugo González · Mazatlán FC, Sub-17 · Liga BBVA Femenil), en `assets/galeria/`. Cada miniatura abre la imagen completa en pestaña nueva — sin lightbox, a propósito: es una sola línea de HTML por pieza y no pide JS nuevo.
+
+⚠️ **5 de las 9 imágenes originales llevaban la marca "victorem" al pie o arriba** (su empleador anterior). Se recortó esa franja con Pillow antes de subirlas — no se regeneró el diseño, solo se cortó el borde. Si se agregan piezas nuevas de esa época, revisar primero si traen la marca.
+
+De las 12 imágenes que llegaron en la carpeta origen, **se dejaron fuera 3** (Cristiano Ronaldo, Múnich/Eurocopa) por ser contenido genérico de agencia sin relación con Al-Arabi, Hugo González o Sub-17 — no por la marca de Victorem, aunque también la llevaban.
+
+Cada `.galeria-item` lleva su propia clase `.rv` (no el `.galeria-grupo` que lo envuelve): los grupos son más altos que la ventana, y con el `.rv` en el contenedor completo el `IntersectionObserver` no cruza el 12% de visibilidad hasta que casi todo el bloque ya pasó — se ve un hueco en blanco larguísimo antes de que aparezca nada. Es la misma razón por la que `.svc`/`.cred` ponen `.rv` en cada tarjeta y no en `.svc-list`/`.creds`.
+
 ## Infraestructura
 
 - **Hosting:** Cloudflare Pages, proyecto `notmanrivera`
