@@ -972,6 +972,40 @@
   .card:hover .card-in{box-shadow:inset 0 0 0 3px var(--rojo)}
   .frame{position:relative;width:100%;aspect-ratio:16/9;background:#000;border-bottom:2px solid var(--line)}
   .frame iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+
+  /* ===== PRÓXIMAMENTE (proyectos web sin lanzar) =====
+     3 franjas verticales dentro del mismo .frame 16/9 -- misma caja que
+     usan el reel y el resto de tarjetas, no un componente nuevo. Cuando
+     los 3 sitios esten en linea esto se cambia por iframes reales, como
+     el reel y como el visor de la galeria deportiva. */
+  .frame-proximas{display:flex;height:100%}
+  .frame-proximas .tira{
+    position:relative;flex:1;overflow:hidden;
+    border-left:1px solid var(--line);
+  }
+  .frame-proximas .tira:first-child{border-left:0}
+  .frame-proximas .tira img{
+    position:absolute;top:0;left:50%;translate:-50% 0;
+    width:auto;height:100%;max-width:none;
+    filter:grayscale(.25) brightness(.72);
+  }
+  .frame-proximas .tira.confidencial{
+    display:flex;align-items:center;justify-content:center;
+    background:var(--ink-2);
+  }
+  .frame-proximas .tira.confidencial span{
+    font-family:var(--ui);font-weight:900;text-transform:uppercase;
+    font-size:.62rem;letter-spacing:.1em;color:var(--muted);
+    writing-mode:vertical-rl;transform:rotate(180deg);
+  }
+  .cinta-proximamente{
+    position:absolute;top:14px;left:-8px;z-index:2;
+    background:var(--rojo);color:var(--paper);
+    font-family:var(--ui);font-weight:900;text-transform:uppercase;
+    font-size:.68rem;letter-spacing:.1em;
+    padding:6px 16px;transform:skewX(-11deg);
+    box-shadow:3px 3px 0 var(--sombra);
+  }
   .card-body{padding:22px 24px 26px}
   .card-body h3{
     font-family:var(--disp);font-weight:400;text-transform:uppercase;
@@ -1626,10 +1660,21 @@
 
       <article class="card rv">
         <div class="card-in">
-          <div class="frame"><iframe src="https://drive.google.com/file/d/14RnxxzYF4hV2xXDBEVEcAPKvAPnMPmZ1/preview" allow="autoplay" allowfullscreen title="Web Portfolio"></iframe></div>
+          <div class="frame frame-proximas">
+            <span class="cinta-proximamente" data-es="Próximamente" data-en="Coming soon">Próximamente</span>
+            <div class="tira">
+              <img src="/assets/web-proximamente/sasima.webp" alt="Vista previa del sitio de SASIMA" width="900" height="562" loading="lazy" decoding="async">
+            </div>
+            <div class="tira">
+              <img src="/assets/web-proximamente/zlm-agency.webp" alt="Vista previa del sitio de Zero Limits Marketing" width="900" height="562" loading="lazy" decoding="async">
+            </div>
+            <div class="tira confidencial">
+              <span data-es="Cliente confidencial" data-en="Confidential client">Cliente confidencial</span>
+            </div>
+          </div>
           <div class="card-body">
             <h3 data-es="Portafolio web (UI/UX)" data-en="Web portfolio (UI/UX)">Portafolio web (UI/UX)</h3>
-            <p data-es="Landing pages interactivas, media kits modernizados e interfaces con micro-animaciones." data-en="Interactive landing pages, modernized media kits and interfaces with micro-animations.">Landing pages interactivas, media kits modernizados e interfaces con micro-animaciones.</p>
+            <p data-es="Tres sitios en desarrollo — SASIMA, Zero Limits Marketing y un tercer cliente. Landing pages y media kits modernizados. Lanzan pronto." data-en="Three sites in development — SASIMA, Zero Limits Marketing and a third client. Landing pages and modernized media kits. Launching soon.">Tres sitios en desarrollo — SASIMA, Zero Limits Marketing y un tercer cliente. Landing pages y media kits modernizados. Lanzan pronto.</p>
           </div>
         </div>
       </article>
