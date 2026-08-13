@@ -616,22 +616,31 @@
         "b1   logo b2"
         "lede lede lede";
       align-items:center;
-      column-gap:clamp(18px,2.6vw,44px);
-      row-gap:18px;
+      /* pegadas: en la referencia las placas casi se tocan y alguna se monta
+         sobre la de al lado. El hueco generoso las volvia una lista */
+      column-gap:clamp(10px,1.7vw,28px);
+      row-gap:2px;
     }
     /* .orbita delante a proposito: .cta-row{display:flex} y .stats{display:flex}
        viven MAS ABAJO en esta hoja, asi que con la misma especificidad ganaban
        por orden y los hijos nunca llegaban a ser celdas de la rejilla. */
     .orbita .cta-row,.orbita .stats{display:contents}
 
-    .orbita > .kicker      {grid-area:kick;justify-self:end;margin-bottom:0}
-    .orbita > h1           {grid-area:logo;margin-bottom:0}
+    /* Empuje horizontal: las de arriba y abajo se abren hacia afuera y las
+       del medio se meten hacia el logo. Eso es lo que convierte dos columnas
+       rectas en un abanico. Va en MARGEN y no en transform, porque popIn y
+       statIn fijan el transform al terminar y se lo comerian. */
+    .orbita > .kicker      {grid-area:kick;justify-self:end;margin:0 var(--empuje,0) 0 0}
+    /* z-index por encima de las placas (que van en 1): con giros fuertes
+       alguna esquina puede acercarse al logo, y el logo es la pieza que no
+       se tapa nunca */
+    .orbita > h1           {grid-area:logo;margin-bottom:0;position:relative;z-index:2}
     .orbita > .lede        {grid-area:lede}
-    .cta-row .btn-1        {grid-area:b1;justify-self:end}
-    .cta-row .btn-2        {grid-area:b2;justify-self:start}
-    .stats .stat:nth-child(1){grid-area:st1;justify-self:start}
-    .stats .stat:nth-child(2){grid-area:st2;justify-self:end;text-align:right}
-    .stats .stat:nth-child(3){grid-area:st3;justify-self:start}
+    .cta-row .btn-1        {grid-area:b1;justify-self:end;  margin-right:var(--empuje,0)}
+    .cta-row .btn-2        {grid-area:b2;justify-self:start; margin-left:var(--empuje,0)}
+    .stats .stat:nth-child(1){grid-area:st1;justify-self:start;margin-left:var(--empuje,0)}
+    .stats .stat:nth-child(2){grid-area:st2;justify-self:end;text-align:right;margin-right:var(--empuje,0)}
+    .stats .stat:nth-child(3){grid-area:st3;justify-self:start;margin-left:var(--empuje,0)}
 
     /* la cifra hereda la alineacion de su placa en vez de anclarse siempre
        a la izquierda, si no la de la columna izquierda queda descolgada */
@@ -659,11 +668,18 @@
     .orbita .stats::before{display:none}
   }
 
-  /* Apilado en una columna, el giro individual ya no lee como composicion
-     radial sino como error de maquetacion. Se anula solo en el hero: las
-     placas del menu conservan el suyo. */
-  @media(max-width:999px){
-    .orbita .sat,.svc,.cred,.ficha-yo,.ficha-radar{--giro:0deg}
+  /* ⚠️ Un giro puesto en style="" NO se puede anular desde una media query:
+     el estilo en linea gana a cualquier regla de hoja. Por eso el valor en
+     linea se llama --giro-d ("el de escritorio") y es el CSS quien decide si
+     --giro lo toma o lo ignora.
+
+     Apilado en una columna el giro individual no lee como composicion radial
+     sino como error de maquetacion, asi que por defecto es 0 y solo se activa
+     a partir de 1000px. Las placas del MENU no entran aqui: conservan su giro
+     en todos los anchos, porque alli la cascada es la composicion. */
+  .orbita .sat,.svc,.cred,.ficha-yo,.ficha-radar{--giro:0deg}
+  @media(min-width:1000px){
+    .orbita .sat,.svc,.cred,.ficha-yo,.ficha-radar{--giro:var(--giro-d,0deg)}
   }
 
   /* ===== PLACAS DEL HERO =====
@@ -676,8 +692,14 @@
      los hijos (regla de oro del hover de este sitio). */
   .orbita .sat{
     clip-path:var(--filo);
+    /* ceñidas al texto: en la referencia ninguna placa es mas ancha que su
+       etiqueta. Estiradas al ancho de la celda se leian como una tabla */
+    width:max-content;max-width:100%;
     transition:background .18s, box-shadow .18s, color .18s;
   }
+  /* con el giro fuerte las esquinas se salen de su celda; el hero ya recorta
+     con overflow:hidden, que es justo el encuadre de la referencia */
+  .orbita .sat{position:relative;z-index:1}
   /* .orbita delante otra vez: .btn-1{background:var(--rojo)} y
      .btn-2{background:transparent} viven mas abajo en la hoja y con la misma
      especificidad ganarian por orden de aparicion. */
@@ -698,7 +720,7 @@
     display:block;font-style:normal;color:inherit;opacity:.62;
     font-family:var(--ui);font-weight:300;text-transform:uppercase;
     font-size:.5rem;letter-spacing:.1em;line-height:1.6;margin-top:8px;
-    max-width:34ch;
+    max-width:26ch;
   }
 
   /* al pasar encima, la placa entera se vuelve roja, igual que en el menu */
@@ -1099,10 +1121,17 @@
   }
   .foot-in{display:flex;flex-wrap:wrap;gap:14px;justify-content:space-between}
 
-  /* ===== REVEAL (snap-in, estilo Persona) ===== */
-  .js .rv{opacity:0;transform:translate(-26px,14px) skewX(-6deg)}
+  /* ===== REVEAL (snap-in, estilo Persona) =====
+     ⚠️ El estado final NO puede ser transform:none. Las placas de las
+     secciones llevan su giro en el transform, y como el revelado se queda
+     fijado al terminar, un "none" se lo llevaba por delante: el --giro de
+     Servicios, Experiencia y Perfil estuvo muerto sin que se notara, porque
+     el filo del recorte ya inclina un poco los bordes y disimulaba. El giro
+     tiene que ir en los DOS estados. Para lo que no lo tiene, rotate(0deg)
+     no hace nada. */
+  .js .rv{opacity:0;transform:translate(-26px,14px) skewX(-6deg) rotate(var(--giro,0deg))}
   .rv.in{
-    opacity:1;transform:none;
+    opacity:1;transform:rotate(var(--giro,0deg));
     transition:opacity .42s ease-out, transform .58s cubic-bezier(.18,1.35,.36,1);
   }
 
@@ -1312,7 +1341,7 @@
        la izquierda, asi que las dos columnas arrancan pegadas al logo y
        crecen alejandose de el. -->
   <div class="wrap orbita">
-    <span class="kicker sat placa-negra" style="--giro:-2.6deg" data-es="Rubén Rivera · Querétaro, México" data-en="Rubén Rivera · Querétaro, Mexico">Rubén Rivera · Querétaro, México</span>
+    <span class="kicker sat placa-negra" style="--giro-d:-11deg;--empuje:26px" data-es="Rubén Rivera · Querétaro, México" data-en="Rubén Rivera · Querétaro, Mexico">Rubén Rivera · Querétaro, México</span>
 
     <h1>
       <!-- El logo ES el titular. Su alt carga el texto que leen Google y los
@@ -1335,14 +1364,14 @@
          DOM (el JS de entrada los busca por nombre) pero no ponen caja, asi
          que sus hijos entran como celdas de .orbita. -->
     <div class="cta-row">
-      <a href="#trabajo" class="btn btn-1 sat placa-negra" style="--giro:-2.1deg"><i data-es="Ver mi trabajo" data-en="See my work">Ver mi trabajo</i></a>
-      <a href="#contacto" class="btn btn-2 sat sat-blanca" style="--giro:1.7deg"><i data-es="Trabajemos juntos" data-en="Let's work together">Trabajemos juntos</i></a>
+      <a href="#trabajo" class="btn btn-1 sat placa-negra" style="--giro-d:10.5deg;--empuje:58px"><i data-es="Ver mi trabajo" data-en="See my work">Ver mi trabajo</i></a>
+      <a href="#contacto" class="btn btn-2 sat sat-blanca" style="--giro-d:-9deg;--empuje:50px"><i data-es="Trabajemos juntos" data-en="Let's work together">Trabajemos juntos</i></a>
     </div>
 
     <div class="stats">
-      <div class="stat sat sat-blanca" style="--giro:1.9deg"><b>9+</b><span data-es="años en agencias" data-en="years in agencies">años en agencias</span></div>
-      <div class="stat sat sat-blanca" style="--giro:-1.5deg"><b>2D / 3D</b><span data-es="motion graphics" data-en="motion graphics">motion graphics</span></div>
-      <div class="stat sat placa-negra" style="--giro:2.7deg"><b>MX · ES · MENA</b><span data-es="mercados" data-en="markets">mercados</span><em data-es="México · España · Medio Oriente y Norte de África" data-en="Mexico · Spain · Middle East &amp; North Africa">México · España · Medio Oriente y Norte de África</em></div>
+      <div class="stat sat sat-blanca" style="--giro-d:12deg;--empuje:38px"><b>9+</b><span data-es="años en agencias" data-en="years in agencies">años en agencias</span></div>
+      <div class="stat sat sat-blanca" style="--giro-d:-5.5deg;--empuje:16px"><b>2D / 3D</b><span data-es="motion graphics" data-en="motion graphics">motion graphics</span></div>
+      <div class="stat sat placa-negra" style="--giro-d:5.5deg;--empuje:20px"><b>MX · ES · MENA</b><span data-es="mercados" data-en="markets">mercados</span><em data-es="México · España · Medio Oriente y Norte de África" data-en="Mexico · Spain · Middle East &amp; North Africa">México · España · Medio Oriente y Norte de África</em></div>
     </div>
   </div>
 </header>
@@ -1402,22 +1431,22 @@
     </div>
 
     <div class="svc-list">
-      <div class="svc rv" style="--giro:-1.4deg">
+      <div class="svc rv" style="--giro-d:-3deg">
         <span class="svc-bignum">01</span>
         <h3 data-es="Motion graphics 2D/3D" data-en="2D/3D motion graphics">Motion graphics 2D/3D</h3>
         <p data-es="Anuncios animados, intros de jugadores, paquetes gráficos para transmisión y piezas verticales optimizadas para Reels y TikTok." data-en="Animated ads, player intros, broadcast graphics packages and vertical pieces optimized for Reels and TikTok.">Anuncios animados, intros de jugadores, paquetes gráficos para transmisión y piezas verticales optimizadas para Reels y TikTok.</p>
       </div>
-      <div class="svc rv placa-negra" style="--giro:1.1deg">
+      <div class="svc rv placa-negra" style="--giro-d:2.4deg">
         <span class="svc-bignum">02</span>
         <h3 data-es="Edición de video deportiva" data-en="Sports video editing">Edición de video deportiva</h3>
         <p data-es="Reels publicitarios, contenido de matchday, highlights de atletas y video case studies que traducen resultados en historia." data-en="Ad reels, matchday content, athlete highlights and video case studies that turn results into a story.">Reels publicitarios, contenido de matchday, highlights de atletas y video case studies que traducen resultados en historia.</p>
       </div>
-      <div class="svc rv" style="--giro:-0.9deg">
+      <div class="svc rv" style="--giro-d:-2.6deg">
         <span class="svc-bignum">03</span>
         <h3 data-es="Diseño web UI/UX" data-en="Web design UI/UX">Diseño web UI/UX</h3>
         <p data-es="Landing pages interactivas y modernización de media kits, para que la presencia digital esté a la altura del talento que representas." data-en="Interactive landing pages and media kit modernization, so the digital presence matches the talent you represent.">Landing pages interactivas y modernización de media kits, para que la presencia digital esté a la altura del talento que representas.</p>
       </div>
-      <div class="svc rv placa-negra" style="--giro:1.6deg">
+      <div class="svc rv placa-negra" style="--giro-d:3.4deg">
         <span class="svc-bignum">04</span>
         <h3 data-es="Soporte marca blanca" data-en="White-label support">Soporte marca blanca</h3>
         <p data-es="Aliado externo para agencias: absorbo picos de trabajo sin que tengas que elevar costos fijos ni contratar de más." data-en="External ally for agencies: I absorb workload peaks without you raising fixed costs or over-hiring.">Aliado externo para agencias: absorbo picos de trabajo sin que tengas que elevar costos fijos ni contratar de más.</p>
@@ -1436,15 +1465,15 @@
     </div>
 
     <div class="creds">
-      <div class="cred rv" style="--giro:1.3deg">
+      <div class="cred rv" style="--giro-d:3.6deg">
         <h3>Victorem Sports Marketing</h3>
         <p data-es="Nueve años de experiencia en agencia, con especialización en el sector deportivo." data-en="Nine years of agency experience, specialized in the sports sector.">Nueve años de experiencia en agencia, con especialización en el sector deportivo.</p>
       </div>
-      <div class="cred rv placa-negra" style="--giro:-1.7deg">
+      <div class="cred rv placa-negra" style="--giro-d:-4.4deg">
         <h3>Hugo González · Mazatlán FC</h3>
         <p data-es="Branding e imagen digital para el arquero profesional durante su etapa en el club." data-en="Branding and digital image for the professional goalkeeper during his time at the club.">Branding e imagen digital para el arquero profesional durante su etapa en el club.</p>
       </div>
-      <div class="cred rv" style="--giro:0.9deg">
+      <div class="cred rv" style="--giro-d:2.8deg">
         <h3>Al-Arabi SC Volleyball · Catar</h3>
         <p data-es="Diseño visual y piezas gráficas para una propiedad deportiva internacional en Doha." data-en="Visual design and graphic assets for an international sports property in Doha.">Diseño visual y piezas gráficas para una propiedad deportiva internacional en Doha.</p>
       </div>
@@ -1465,7 +1494,7 @@
     <div class="ficha">
 
       <!-- quien soy -->
-      <div class="ficha-yo rv" style="--giro:-1.1deg">
+      <div class="ficha-yo rv" style="--giro-d:-2deg">
         <img class="yo-retrato" src="/assets/logo-lg.webp" alt="" aria-hidden="true"
              width="1200" height="675" loading="lazy" decoding="async">
 
@@ -1505,7 +1534,7 @@
       </div>
 
       <!-- el mapa de herramientas -->
-      <div class="ficha-radar rv" style="--giro:1.4deg">
+      <div class="ficha-radar rv" style="--giro-d:2.4deg">
         <span class="radar-tit" data-es="Herramientas" data-en="Toolkit">Herramientas</span>
 
         <!-- Hexagono de centro 310,205 y radio 145. Si cambian los valores hay
