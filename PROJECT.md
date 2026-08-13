@@ -176,15 +176,38 @@ El CV leído como una pantalla de estado de Persona, pero **sin jerga de videoju
 
 El hexágono está calculado a mano sobre centro `310,205` y radio `145`: si cambia un valor hay que recalcular el `<polygon class="valor">` **y** su `<circle class="punto">`, con `r = 145 × valor / 100`.
 
-### Galería de trabajo real (dentro de `#trabajo`)
+### Galería de trabajo real — el visor (dentro de `#trabajo`)
 
-Debajo de las 3 tarjetas de reel, un grid de 9 piezas reales agrupadas por cliente (Al-Arabi SC, Hugo González · Mazatlán FC, Sub-17 · Liga BBVA Femenil), en `assets/galeria/`. Cada miniatura abre la imagen completa en pestaña nueva — sin lightbox, a propósito: es una sola línea de HTML por pieza y no pide JS nuevo.
+Un visor tipo "hoja de contactos": imagen grande a la izquierda, miniaturas agrupadas por cliente a la derecha en desktop (≥900px); en móvil se apila, imagen arriba y una tira horizontal con scroll por cliente debajo. 9 piezas reales en `assets/galeria/`, agrupadas en Al-Arabi SC, Hugo González · Mazatlán FC y Sub-17 · Liga BBVA Femenil.
+
+Las miniaturas (`.visor-thumb`) son `<button>`, no `<a>`: cambian la imagen grande **en el sitio** vía JS (`pintarVisor`), no navegan. "Ver tamaño completo" vive aparte, como link suelto sobre la imagen grande, para quien de verdad quiera la pieza en su propia pestaña. El bilingüe de la miniatura activa se repinta a mano con un evento `idioma` propio (igual que el rotador del hero) porque su texto no vive en `[data-es][data-en]` — depende de cuál miniatura esté seleccionada.
 
 ⚠️ **5 de las 9 imágenes originales llevaban la marca "victorem" al pie o arriba** (su empleador anterior). Se recortó esa franja con Pillow antes de subirlas — no se regeneró el diseño, solo se cortó el borde. Si se agregan piezas nuevas de esa época, revisar primero si traen la marca.
 
 De las 12 imágenes que llegaron en la carpeta origen, **se dejaron fuera 3** (Cristiano Ronaldo, Múnich/Eurocopa) por ser contenido genérico de agencia sin relación con Al-Arabi, Hugo González o Sub-17 — no por la marca de Victorem, aunque también la llevaban.
 
-Cada `.galeria-item` lleva su propia clase `.rv` (no el `.galeria-grupo` que lo envuelve): los grupos son más altos que la ventana, y con el `.rv` en el contenedor completo el `IntersectionObserver` no cruza el 12% de visibilidad hasta que casi todo el bloque ya pasó — se ve un hueco en blanco larguísimo antes de que aparezca nada. Es la misma razón por la que `.svc`/`.cred` ponen `.rv` en cada tarjeta y no en `.svc-list`/`.creds`.
+`.visor-grande` usa `aspect-ratio:3/4` de base (no 16/11): casi todas las piezas son carteles verticales, y con una caja en paisaje quedaban franjas vacías a los lados. En desktop se anula a `aspect-ratio:auto` y la caja se estira a lo que mida la columna de miniaturas de al lado.
+
+### Trabajo en stand by (`work-grid`)
+
+⚠️ **A pedido de Rubén (2026-08-13), el `work-grid` completo (Reel de animación + el teaser "Próximamente" del portafolio web) está comentado dentro de `#trabajo`**, no borrado. Sigue completo en el HTML, envuelto en un comentario con la fecha y el motivo — para reactivarlo alcanza con quitar el comentario, no hay que reconstruir nada. Mientras tanto la sección solo muestra el encabezado y el visor de la galería.
+
+Cuando Rubén pase material nuevo del reel y de los 3 proyectos web (SASIMA, Zero Limits Marketing y un tercero confidencial, lanzan ~sept 2026), destapar el bloque y actualizar el contenido antes.
+
+## Inmersión (2026-08-13)
+
+Tres piezas que imitan mecánicas de interfaz de Persona, no solo su apariencia — pedido explícito de Rubén: "más inmersivo y atrapante, sin salirnos de la estética".
+
+- **Barrido de escena** (`#transicion`): al hacer clic en cualquier link interno (`a[href^="#"]`, capturado por selector genérico — cubre el menú y los CTA del hero), dos cuñas diagonales (negra detrás, roja al frente) cubren la pantalla, el salto ocurre oculto detrás, y las cuñas se retiran del otro lado. Mismo gesto que un cambio de menú en P5.
+  - ⚠️ El salto usa `scrollIntoView({behavior:'instant', ...})`, **nunca** `'auto'`. Con `'auto'` hereda el `scroll-behavior:smooth` global del `<html>` y el salto se hace visible a medias — descuadrado, que es justo lo que el barrido tiene que tapar sin que se note.
+  - Los tiempos de espera en JS (`ENTRA_MS`/`SALE_MS`) están calculados a mano para igualar la duración real de las animaciones CSS (incluyendo el `animation-delay` de la capa más lenta de cada fase). Cortarlos antes se ve como un salto en vez de una barrida completa.
+  - Se salta entero con `prefers-reduced-motion`.
+- **Medidor de progreso** (`.progreso`): franja de 2px pegada al filo inferior del nav, debajo de su borde violeta existente — se leen como una sola línea de estado, no dos elementos sueltos. Se llena con `scrollY / (scrollHeight - innerHeight)`.
+- **Sonido de interfaz** (`sonidoBtn` + `blip()`): **apagado por default**, solo se prende con un clic explícito del botón — nunca autoplay, en ningún caso. Los tonos se generan con Web Audio API en el momento (oscilador `square` + envolvente exponencial corta) — no es un archivo de audio ni una muestra de nada, así que no hay peso extra ni riesgo de derechos por usar el sonido real del juego. Preferencia guardada en `localStorage['notman_sonido']`. Suena en el barrido de escena y al activar el propio botón (para confirmar al oído que quedó prendido).
+
+## Redes (footer)
+
+Instagram (`@notman.rivera`), LinkedIn y Behance (`/notmanrivera`) como iconos SVG inline en `.social`, dentro de `.foot-in`. Sin librería de íconos — son 3 `<svg>` a mano, glifos genéricos (cámara, "in", "Bē") para no reproducir marcas registradas al pixel.
 
 ## Infraestructura
 

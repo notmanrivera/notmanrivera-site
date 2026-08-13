@@ -263,6 +263,43 @@
     .cargando #cargador.fuera{transition-duration:.2s}
   }
 
+  /* ===== BARRIDO DE ESCENA =====
+     Al navegar por el menu, dos cuñas diagonales cruzan la pantalla y
+     descubren la seccion de destino -- el mismo gesto que un cambio de
+     menu en P5. #transicion no se anima a si mismo: JS agrega .activa
+     (entra, cubre todo) y despues .sale (se retira), y limpia las dos
+     clases al terminar. Sin JS, o con prefers-reduced-motion, nunca gana
+     ninguna clase y el elemento se queda invisible para siempre. */
+  #transicion{
+    position:fixed;inset:0;z-index:9997;pointer-events:none;
+  }
+  #transicion .capa{
+    position:absolute;inset:0;display:block;
+    clip-path:polygon(0 0, 0 0, 0 100%, 0 100%);
+  }
+  #transicion .capa-negra{background:var(--ink)}
+  #transicion .capa-roja{background:var(--rojo)}
+  #transicion.activa .capa-roja{
+    animation:cunaEntra .22s cubic-bezier(.6,0,.2,1) both;
+  }
+  #transicion.activa .capa-negra{
+    animation:cunaEntra .22s cubic-bezier(.6,0,.2,1) .05s both;
+  }
+  #transicion.sale .capa-roja{
+    animation:cunaSale .22s cubic-bezier(.6,0,.2,1) .05s both;
+  }
+  #transicion.sale .capa-negra{
+    animation:cunaSale .22s cubic-bezier(.6,0,.2,1) both;
+  }
+  @keyframes cunaEntra{
+    from{clip-path:polygon(0 0, 0 0, 0 100%, 0 100%)}
+    to{clip-path:polygon(0 0, 100% 0, 92% 100%, 0 100%)}
+  }
+  @keyframes cunaSale{
+    from{clip-path:polygon(0 0, 100% 0, 92% 100%, 0 100%)}
+    to{clip-path:polygon(100% 0, 100% 0, 100% 100%, 100% 100%)}
+  }
+
   body{
     background:var(--ink);
     color:var(--paper);
@@ -361,6 +398,18 @@
     border-bottom:2px solid transparent;transition:border-color .3s;
   }
   #nav.scrolled{border-bottom-color:var(--violet)}
+  /* Medidor de progreso, como el rango de un confidente: se llena de
+     rojo pegado al filo inferior del nav conforme avanzas la pagina.
+     Vive DEBAJO del borde violeta existente (bottom:-2px), asi los dos
+     leen como una sola linea de estado en vez de dos elementos sueltos. */
+  .progreso{
+    position:absolute;left:0;right:0;bottom:-2px;height:2px;
+    background:var(--line);overflow:hidden;pointer-events:none;
+  }
+  .progreso i{
+    display:block;height:100%;width:100%;background:var(--rojo);
+    transform-origin:left;transform:scaleX(0);
+  }
   .nav-in{
     max-width:var(--max);margin:0 auto;padding:14px 24px;
     display:flex;align-items:center;justify-content:space-between;gap:16px;
@@ -389,6 +438,17 @@
     transform:skewX(-8deg);transition:background .18s;
   }
   .lang:hover{background:var(--rojo)}
+  .sonido{
+    display:flex;align-items:center;justify-content:center;
+    width:38px;height:34px;background:var(--violet);border:0;color:#fff;
+    cursor:pointer;transform:skewX(-8deg);transition:background .18s;
+  }
+  .sonido:hover,.sonido:focus-visible{background:var(--rojo)}
+  .sonido svg{width:18px;height:18px;transform:skewX(8deg)}
+  /* Muestra ondas o tachon segun el estado, nunca los dos */
+  .sonido .ondas{display:none}
+  .sonido[aria-pressed="true"] .ondas{display:block}
+  .sonido[aria-pressed="true"] .tachon{display:none}
 
   /* ===== BOTON QUE ABRE EL MENU ===== */
   .abrir-menu{
@@ -1373,7 +1433,15 @@
   footer{
     border-top:2px solid var(--line);padding:34px 0;color:var(--muted);font-size:.82rem;
   }
-  .foot-in{display:flex;flex-wrap:wrap;gap:14px;justify-content:space-between}
+  .foot-in{display:flex;flex-wrap:wrap;gap:14px;justify-content:space-between;align-items:center}
+  .social{display:flex;gap:14px}
+  .social a{
+    display:flex;align-items:center;justify-content:center;
+    width:30px;height:30px;color:var(--muted);
+    transition:color .18s,transform .18s;
+  }
+  .social a:hover,.social a:focus-visible{color:var(--rojo);transform:translateY(-2px)}
+  .social svg{width:18px;height:18px}
 
   /* ===== REVEAL (snap-in, estilo Persona) =====
      ⚠️ El estado final NO puede ser transform:none. Las placas de las
@@ -1521,8 +1589,19 @@
   </div>
 </div>
 
+<!-- Barrido de escena: cubre la pantalla un instante al navegar entre
+     secciones del menu, como el cambio de menu en P5. Dos capas, negra
+     detras y roja delante, con el mismo filo diagonal del resto del
+     sitio -- nunca un rectangulo recto. Empieza colapsado (clip-path en
+     0) y JS le añade/quita .activa/.sale para barrer y descubrir. -->
+<div id="transicion" aria-hidden="true">
+  <i class="capa capa-negra"></i>
+  <i class="capa capa-roja"></i>
+</div>
+
 
 <nav id="nav">
+  <div class="progreso" aria-hidden="true"><i id="progresoBarra"></i></div>
   <div class="nav-in">
     <a href="#" class="logo" aria-label="NotMan · Rubén Rivera">
       <img src="/assets/logo.webp" alt="NotMan" width="440" height="247">
@@ -1532,6 +1611,15 @@
       <button class="abrir-menu" id="abrirMenu" aria-expanded="false" aria-controls="menuFull">
         <span aria-hidden="true"></span>
         <em style="font-style:normal" data-es="Menú" data-en="Menu">Menú</em>
+      </button>
+      <!-- Apagado por default a proposito: nunca reproducir audio sin que
+           la persona lo haya pedido de forma explicita con un clic. -->
+      <button class="sonido" id="sonidoBtn" type="button" aria-pressed="false" aria-label="Activar sonido de interfaz">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+          <path d="M4 9v6h4l5 4V5L8 9H4z" fill="currentColor" stroke="none"/>
+          <path class="ondas" d="M16 9a5 5 0 0 1 0 6M18.4 6.6a8.5 8.5 0 0 1 0 10.8"/>
+          <line class="tachon" x1="3" y1="3" x2="21" y2="21"/>
+        </svg>
       </button>
       <button class="lang" id="langBtn">EN</button>
     </div>
@@ -1647,6 +1735,12 @@
       <p data-es="Animación, edición deportiva y diseño de interfaz. Dale play." data-en="Animation, sports editing and interface design. Hit play.">Animación, edición deportiva y diseño de interfaz. Dale play.</p>
     </div>
 
+    <!-- ⚠️ EN STAND BY a pedido de Rubén (2026-08-13): tanto el reel como
+         el teaser de "Próximamente" del portafolio web se retiran de la
+         vista hasta que el pase material nuevo para las dos. El markup se
+         queda completo aqui adentro, comentado, para reactivarlo con solo
+         quitar este comentario -- no se borro nada, no hay que reconstruir
+         las tarjetas desde cero cuando llegue el contenido.
     <div class="work-grid">
       <article class="card rv">
         <div class="card-in">
@@ -1679,6 +1773,7 @@
         </div>
       </article>
     </div>
+    -->
 
     <div class="galeria">
       <h3 class="galeria-tit rv" data-es="Piezas <em>reales</em>, entregadas a clientes" data-en="<em>Real</em> pieces, delivered to clients">Piezas <em>reales</em>, entregadas a clientes</h3>
@@ -1931,6 +2026,30 @@
       <img src="/assets/logo.webp" alt="NotMan" style="height:26px;width:auto;opacity:.7" width="440" height="247" loading="lazy">
       © <span id="yr"></span> Rubén Rivera
     </span>
+
+    <nav class="social" aria-label="Redes sociales">
+      <a href="https://www.instagram.com/notman.rivera" target="_blank" rel="noopener" aria-label="Instagram — @notman.rivera">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+          <rect x="3" y="3" width="18" height="18" rx="5"/>
+          <circle cx="12" cy="12" r="4.2"/>
+          <circle cx="17.4" cy="6.6" r="1.1" fill="currentColor" stroke="none"/>
+        </svg>
+      </a>
+      <a href="https://www.linkedin.com/in/rub%C3%A9n-n%C3%BA%C3%B1ez-rivera-485bb1142/" target="_blank" rel="noopener" aria-label="LinkedIn — Rubén Núñez Rivera">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+          <rect x="3" y="3" width="18" height="18" rx="3"/>
+          <line x1="7.2" y1="10" x2="7.2" y2="17"/>
+          <circle cx="7.2" cy="6.8" r="1" fill="currentColor" stroke="none"/>
+          <path d="M11.5 17v-4.2c0-1.6 1-2.5 2.3-2.5s2 .9 2 2.4V17"/>
+        </svg>
+      </a>
+      <a href="https://www.behance.net/notmanrivera" target="_blank" rel="noopener" aria-label="Behance — notmanrivera">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <text x="12" y="16.5" text-anchor="middle" font-family="Arial,sans-serif" font-weight="700" font-size="12" fill="currentColor">Bē</text>
+        </svg>
+      </a>
+    </nav>
+
     <span data-es="Diseño y animación deportiva · Querétaro, México" data-en="Sports design and animation · Querétaro, Mexico">Diseño y animación deportiva · Querétaro, México</span>
   </div>
 </footer>
@@ -2318,6 +2437,94 @@
     // el rotador y el visor de la galeria no tienen data-es/data-en, se avisan aparte
     if (rota) rota.dispatchEvent(new Event('idioma'));
     if (visorImg) visorImg.dispatchEvent(new Event('idioma'));
+  });
+
+  /* ===== SONIDO DE INTERFAZ =====
+     Apagado por default y solo se prende con un clic explicito del propio
+     boton -- nunca autoplay. Los tonos se generan con Web Audio API en el
+     momento: no son un archivo de audio, cero peso extra y cero riesgo de
+     derechos, porque no es una muestra de nada, es una onda propia. */
+  let sonidoActivo = localStorage.getItem('notman_sonido') === '1';
+  let audioCtx;
+  function blip(freq = 880, dur = .05){
+    if (!sonidoActivo) return;
+    audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    const t0 = audioCtx.currentTime;
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = 'square';
+    osc.frequency.setValueAtTime(freq, t0);
+    // rampa exponencial, no lineal: un blip de consola sube y baja rapido,
+    // una rampa lineal se oye mas a "beep" de microondas
+    gain.gain.setValueAtTime(.0001, t0);
+    gain.gain.exponentialRampToValueAtTime(.09, t0 + .006);
+    gain.gain.exponentialRampToValueAtTime(.0001, t0 + dur);
+    osc.connect(gain).connect(audioCtx.destination);
+    osc.start(t0);
+    osc.stop(t0 + dur + .02);
+  }
+
+  const sonidoBtn = document.getElementById('sonidoBtn');
+  sonidoBtn.addEventListener('click', () => {
+    sonidoActivo = !sonidoActivo;
+    sonidoBtn.setAttribute('aria-pressed', sonidoActivo ? 'true' : 'false');
+    localStorage.setItem('notman_sonido', sonidoActivo ? '1' : '0');
+    if (sonidoActivo) blip(1046, .07);   // confirma al oido que ya quedo activado
+  });
+
+  /* ===== MEDIDOR DE PROGRESO =====
+     Se llena de izquierda a derecha con el avance de la pagina, pegado
+     al filo inferior del nav -- como el rango de un confidente. */
+  const progresoBarra = document.getElementById('progresoBarra');
+  if (progresoBarra) {
+    const pintarProgreso = () => {
+      const total = document.documentElement.scrollHeight - innerHeight;
+      const r = total > 0 ? Math.min(1, Math.max(0, scrollY / total)) : 0;
+      progresoBarra.style.transform = `scaleX(${r})`;
+    };
+    pintarProgreso();
+    addEventListener('scroll', pintarProgreso, {passive:true});
+    addEventListener('resize', pintarProgreso);
+  }
+
+  /* ===== BARRIDO DE ESCENA =====
+     Al hacer clic en un link interno (menu, botones del hero), dos cuñas
+     diagonales cubren la pantalla y la descubren en el destino -- el
+     mismo gesto que un cambio de menu en P5. Los tiempos de espera abajo
+     (280ms / 290ms) igualan la duracion real de las animaciones CSS
+     (.22s + .05s de retraso en la capa mas lenta de cada fase); cortar
+     antes se ve como un salto en vez de una barrida completa. */
+  const transicion = document.getElementById('transicion');
+  const ENTRA_MS = 280, SALE_MS = 290;
+
+  function irConBarrido(saltar){
+    if (!transicion || matchMedia('(prefers-reduced-motion: reduce)').matches){
+      saltar();
+      return;
+    }
+    blip(660, .045);
+    transicion.classList.add('activa');
+    setTimeout(() => {
+      saltar();
+      transicion.classList.remove('activa');
+      transicion.classList.add('sale');
+      setTimeout(() => transicion.classList.remove('sale'), SALE_MS);
+    }, ENTRA_MS);
+  }
+
+  document.querySelectorAll('a[href^="#"]').forEach(a => {
+    const id = a.getAttribute('href').slice(1);
+    if (!id) return;                          // href="#" suelto (el logo): comportamiento nativo
+    const destino = document.getElementById(id);
+    if (!destino) return;
+    a.addEventListener('click', e => {
+      e.preventDefault();
+      // 'instant', NO 'auto': con 'auto' hereda el scroll-behavior:smooth
+      // global del CSS y el salto se hace visible a medias, deja el
+      // destino descuadrado -- justo lo que el barrido tiene que tapar.
+      irConBarrido(() => destino.scrollIntoView({behavior:'instant', block:'start'}));
+    });
   });
 </script>
 
