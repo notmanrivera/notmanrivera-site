@@ -226,6 +226,20 @@
   }
   @keyframes parpadeo{0%,64%{opacity:1}65%,100%{opacity:.22}}
 
+  /* ===== LETRAS SUELTAS =====
+     Linea base irregular, como "SELECT THE DIFFICULTY" en P5R: cada letra
+     con su propio salto y giro, como un recorte a mano en vez de una fuente
+     recta. Acotado a esta sola palabra a proposito -- el sitio ya tiene su
+     propio efecto de entrada (.slam, palabra por palabra) para h1/h2, y
+     sumarle tambaleo por letra a CADA titulo pelearia con eso y se leeria
+     saturado. Aqui es un solo momento, chico y contenido. */
+  .carga-txt.sueltas i{
+    /* estatico, no animado -- es un tambaleo de composicion, no movimiento,
+       asi que no hace falta gatearlo detras de prefers-reduced-motion */
+    display:inline-block;font-style:normal;
+    transform:translateY(var(--dy)) rotate(var(--gr));
+  }
+
   /* salida: se va hacia arriba con el filo inferior cortado en diagonal */
   .cargando #cargador.fuera{
     clip-path:polygon(0% 0%, 100% 0%, 100% 88%, 0% 100%);
@@ -473,6 +487,35 @@
   .menu-lista a:hover i,.menu-lista a:focus-visible i{
     background:var(--paper);color:var(--rojo);
   }
+
+  /* ===== CUÑA DEL ITEM ACTIVO =====
+     El triangulo que en P5R apunta al comando seleccionado.
+
+     ⚠️ Dos vueltas antes de que se viera:
+     1. Iba a vivir FUERA de la placa (left:-20px, a su izquierda sobre el
+        negro) y no se veia: clip-path recorta tambien a los pseudo-elementos
+        hijos que intenten salirse de la caja, igual que ya recorta el
+        outline y el box-shadow (ver notas mas arriba). Se movio DENTRO del
+        recorte, pegada al borde interior izquierdo, con margen de sobra
+        para no rozar el filo ni en el punto mas angosto del corte.
+     2. Movida adentro y en rojo, SEGUIA sin verse -- porque solo aparece en
+        :hover, que es EXACTAMENTE cuando la placa entera se vuelve roja.
+        Rojo sobre rojo se camufla contra su propio disparador. El color que
+        de verdad contrasta ahi es blanco, que ademas ya es "lo seleccionado"
+        en todo el sitio -- no es un color nuevo, es el mismo blanco del
+        hover reusado como puntero. */
+  .menu-lista a::before{
+    content:"";position:absolute;left:6px;top:50%;
+    width:0;height:0;border-style:solid;
+    border-width:7px 0 7px 10px;
+    border-color:transparent transparent transparent var(--paper);
+    transform:translate(-6px,-50%);
+    opacity:0;pointer-events:none;
+    transition:opacity .16s, transform .18s cubic-bezier(.2,1.4,.3,1);
+  }
+  .menu-lista a:hover::before,.menu-lista a:focus-visible::before{
+    opacity:1;transform:translate(0,-50%);
+  }
   /* ⚠️ El anillo de foco global NO sirve aqui: clip-path recorta el outline
      junto con la caja, asi que el anillo se vuelve invisible en las placas.
      La sombra INSET si vive dentro del recorte, y hace el mismo trabajo. */
@@ -551,6 +594,10 @@
     content:"";display:block;width:2px;height:70px;margin:16px auto 0;
     background:linear-gradient(180deg,var(--rojo),transparent);
   }
+  /* la × va en rojo puro, no en el violeta heredado del texto: es el unico
+     acento que se mueve solo en este rincon, y tiene que notarse como marca
+     de puntuacion y no como parte de la palabra */
+  .costado .cruz{color:var(--rojo);font-style:normal;opacity:1}
   @media(max-width:1100px){.costado{display:none}}
 
   /* Etiqueta de chapa: Monument. Baja de 1.28rem a .92rem y de .2em a .12em
@@ -1367,7 +1414,14 @@
   <div class="slab slab-a"></div>
   <div class="slab slab-b"></div>
   <div class="halftone"></div>
-  <span class="costado" aria-hidden="true" data-es="Diseño · Animación · Web" data-en="Design · Animation · Web">Diseño · Animación · Web</span>
+  <!-- La × en rojo, no el · neutro: es una lista de tres oficios pares, como
+       "NEW GAME × LOAD GAME × THIEVES DEN" en el menu de P5R. Los demas ·
+       del sitio (nombre · lugar, en el kicker y el pie del menu) se quedan
+       con punto -- ahi la × leeria raro, como si fueran cosas cruzadas y no
+       una ubicacion. -->
+  <span class="costado" aria-hidden="true"
+        data-es="Diseño <b class='cruz'>×</b> Animación <b class='cruz'>×</b> Web"
+        data-en="Design <b class='cruz'>×</b> Animation <b class='cruz'>×</b> Web">Diseño <b class="cruz">×</b> Animación <b class="cruz">×</b> Web</span>
 
   <!-- Composicion radial: el logo manda en la celda central y los textos
        salen hacia afuera. La izquierda se alinea a la derecha y la derecha a
@@ -1648,6 +1702,23 @@
   // Marca que el JS esta vivo. El CSS solo esconde contenido si ve esta clase,
   // asi que si algo falla aqui la pagina se ve completa en vez de vacia.
   document.documentElement.classList.add('js');
+
+  /* ===== LETRAS SUELTAS (linea base irregular, estilo P5R) =====
+     Patrones fijos, NO Math.random(): un patron por indice se ve igual de
+     organico y no cambia de una carga a otra, que es mas facil de calibrar
+     y de defender en diseño que un jitter que sale distinto cada vez. */
+  const SALTOS = [-3,4,-6,2,5,-2,3,-4,1,-5];
+  const GIROS  = [-4,3,-6,5,-3,4,-5,2,-2,6];
+  function letrasSueltas(el){
+    el.innerHTML = [...el.textContent].map((ch, i) =>
+      `<i style="--dy:${SALTOS[i % SALTOS.length]}px;--gr:${GIROS[i % GIROS.length]}deg">${ch}</i>`
+    ).join('');
+    el.classList.add('sueltas');
+  }
+  // Sin data-es/data-en en juego todavia: el toggle de idioma reemplaza este
+  // innerHTML mas tarde, pero para entonces el cargador ya esta invisible
+  // (display:none via la regla base), asi que no hace falta re-partir.
+  document.querySelectorAll('.carga-txt').forEach(letrasSueltas);
 
   document.getElementById('yr').textContent = new Date().getFullYear();
 
