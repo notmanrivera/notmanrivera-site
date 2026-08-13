@@ -609,7 +609,13 @@
   @media(min-width:1000px){
     .orbita{
       display:grid;
-      grid-template-columns:1fr auto 1fr;
+      /* ⚠️ minmax(0,1fr) y NO 1fr. Un track 1fr tiene minimo automatico de
+         min-content, asi que no puede encogerse por debajo de su contenido:
+         el kicker, que es la cadena mas larga del hero, ensanchaba su columna
+         a 507px contra los 286px de la otra y empujaba el logo 111px fuera
+         del centro. Con minmax(0,...) las dos laterales miden igual y la
+         columna del logo queda centrada de verdad. */
+      grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);
       grid-template-areas:
         "kick logo st1"
         "st2  logo st3"
