@@ -205,6 +205,33 @@ Tres piezas que imitan mecánicas de interfaz de Persona, no solo su apariencia 
 - **Medidor de progreso** (`.progreso`): franja de 2px pegada al filo inferior del nav, debajo de su borde violeta existente — se leen como una sola línea de estado, no dos elementos sueltos. Se llena con `scrollY / (scrollHeight - innerHeight)`.
 - **Sonido de interfaz** (`sonidoBtn` + `blip()`): **apagado por default**, solo se prende con un clic explícito del botón — nunca autoplay, en ningún caso. Los tonos se generan con Web Audio API en el momento (oscilador `square` + envolvente exponencial corta) — no es un archivo de audio ni una muestra de nada, así que no hay peso extra ni riesgo de derechos por usar el sonido real del juego. Preferencia guardada en `localStorage['notman_sonido']`. Suena en el barrido de escena y al activar el propio botón (para confirmar al oído que quedó prendido).
 
+## Cuatro piezas más (2026-08-13, segunda tanda)
+
+A partir de la pregunta "qué más se te ocurre para el feeling de Persona", ya con todo lo anterior desplegado. Dos ideas se descartaron antes de escribir código, por criterio y no por falta de tiempo:
+
+- **Destello blanco en las transiciones** (screen flash). Es un riesgo real de fotosensibilidad, no un tema de gusto — no se intentó ni en versión sutil.
+- **Aberración cromática / glitch en los hovers.** Es el vocabulario de otro género (cyberpunk, señal corrupta); Persona es cómic serigrafiado, tinta física, no VHS roto.
+
+Lo que sí se hizo:
+
+- **Sonido en los hovers** del menú y los botones. Reutiliza `blip()` tal cual, con un tono más agudo y corto (740 Hz / .03 s) que el de navegación (660 Hz) y el de encendido (1046 Hz), para que las tres se distingan al oído. `blip()` ya revisa `sonidoActivo` por dentro, así que no hace falta duplicar el chequeo en cada listener. Va en `mouseenter`, no `mouseover`: no burbujea y no se repite mientras el cursor se queda quieto dentro del elemento.
+
+- **Cifras que cuentan** (`.cifra b`, `.radar .rango`, y el `"9+"` del hero marcado con `.cuenta`): suben desde 0 hasta el valor final al revelarse, con un *ease-out* cúbico — arrancan rápido y se asientan, como un marcador de arcade y no un conteo lineal de reloj. Respeta `prefers-reduced-motion` saltando directo al valor final.
+
+  ⚠️ **Marcado explícito, no adivinado por regex.** `.cifra b` y `.radar .rango` son siempre números puros, pero `.stats .stat b` del hero mezcla números con texto (`"2D / 3D"`, `"MX · ES · MENA"`) — un regex que solo mirara "¿empieza con dígito?" habría atrapado `"2D / 3D"` y lo habría hecho contar de 0 a 2 antes de mostrar el texto completo, un efecto sin sentido. Se marcó a mano solo la pieza que sí es un conteo real.
+
+- **Chispas en el barrido de escena** — la pieza que faltó de la primera tanda de referencias (la pantalla "LET US START THE GAME", con destellos sobre el corte diagonal). Seis destellos de cuatro puntas (`clip-path` con ocho vértices, no una imagen) en posiciones fijas junto al filo derecho, con `animation-delay` escalonado para que no parpadeen todas a la vez.
+
+  ⚠️ **Posiciones fijas, no sincronizadas con el `clip-path` en movimiento.** Perseguir el filo diagonal con precisión mientras se anima en 220 ms es ingeniería que no vale la pena para un destello tan breve; quietas se leen igual de bien como "algo brilló al pasar el corte cerca".
+
+  ⚠️ **Verificarlas con capturas de pantalla completa no sirve** — a 12×12px sobre una imagen de 2880px son casi invisibles a simple vista aunque estén renderizando perfecto. Se confirmaron leyendo `getComputedStyle` directo (`opacity`, `transform`, `background-color`) y con un recorte de imagen acercado a la franja donde viven, no con la captura completa.
+
+  Sin regla de `prefers-reduced-motion` propia: `irConBarrido()` ya salta el barrido entero con movimiento reducido (nunca añade `.activa`/`.sale`), así que la animación de las chispas nunca llega a dispararse — una regla CSS aparte sería código muerto.
+
+- **Grano sobre el fondo** (`body::before`), como el screentone de un cómic impreso — el logo ya tenía grano, esto lo extiende al resto de la página. SVG con `feTurbulence` en un data URI, no una imagen: cero peso de red, y se repite en mosaico sin costuras visibles porque el ruido no tiene un patrón periódico reconocible (a diferencia de una foto de grano, que sí las delata).
+
+  `position:fixed` sin que `<body>` necesite `position:relative` — fixed se ancla al viewport igual. `z-index:0` a propósito: pinta detrás de todo el contenido real (nav en 100, menú en 200), así que solo se asoma por el espacio negro entre paneles y nunca ensucia una placa blanca o roja encima.
+
 ## Redes (footer)
 
 Instagram (`@notman.rivera`), LinkedIn y Behance (`/notmanrivera`) como iconos SVG inline en `.social`, dentro de `.foot-in`. Sin librería de íconos — son 3 `<svg>` a mano, glifos genéricos (cámara, "in", "Bē") para no reproducir marcas registradas al pixel.
