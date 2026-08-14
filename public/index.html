@@ -300,6 +300,25 @@
     to{clip-path:polygon(100% 0, 100% 0, 100% 100%, 100% 100%)}
   }
 
+  #transicion .chispas{position:absolute;inset:0;pointer-events:none}
+  #transicion .chispa{
+    position:absolute;width:12px;height:12px;margin:-6px 0 0 -6px;
+    background:var(--paper);opacity:0;
+    clip-path:polygon(50% 0%,61% 39%,100% 50%,61% 61%,50% 100%,39% 61%,0% 50%,39% 39%);
+    animation-delay:calc(var(--i,0) * 18ms);
+  }
+  #transicion.activa .chispa{animation:chispaFlash .34s cubic-bezier(.2,1,.3,1) both}
+  #transicion.sale   .chispa{animation:chispaFlash .34s cubic-bezier(.2,1,.3,1) both}
+  @keyframes chispaFlash{
+    0%  {opacity:0;transform:scale(.2) rotate(0deg)}
+    35% {opacity:1;transform:scale(1)  rotate(20deg)}
+    100%{opacity:0;transform:scale(.4) rotate(35deg)}
+  }
+  /* sin regla de prefers-reduced-motion aqui a proposito: irConBarrido()
+     ya salta el barrido entero con movimiento reducido (nunca agrega
+     .activa/.sale), asi que la animacion de las chispas nunca llega a
+     dispararse -- una regla CSS aparte seria codigo muerto. */
+
   body{
     background:var(--ink);
     color:var(--paper);
@@ -307,6 +326,25 @@
     line-height:1.62;
     -webkit-font-smoothing:antialiased;
     overflow-x:hidden;
+  }
+  /* Grano sutil sobre todo el fondo, como el screentone de un comic
+     impreso -- el logo ya tiene grano, esto lo extiende al resto de la
+     pagina para que el negro no se sienta un vector perfecto.
+
+     SVG con feTurbulence, no una imagen: cero peso de red (es texto CSS
+     dentro de un data URI, no un archivo) y se repite en mosaico sin
+     costuras visibles porque el ruido no tiene un patron periodico
+     reconocible -- a diferencia de una foto de grano, que sí las delata.
+
+     z-index:0 y sin position en <body> a proposito: position:fixed se
+     ancla al viewport igual, sin necesitar un ancestro posicionado, y con
+     z-index tan bajo pinta DETRAS de todo el contenido real (nav va en
+     100, el menu en 200): solo se asoma por el espacio negro entre
+     paneles, nunca ensucia una placa blanca o roja encima. */
+  body::before{
+    content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
+    opacity:.035;mix-blend-mode:overlay;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   }
 
   .wrap{max-width:var(--max);margin:0 auto;padding:0 24px;position:relative;z-index:2}
@@ -1597,6 +1635,19 @@
 <div id="transicion" aria-hidden="true">
   <i class="capa capa-negra"></i>
   <i class="capa capa-roja"></i>
+  <!-- Chispas: destellos de cuatro puntas a lo largo del filo diagonal,
+       igual que las particulas de la pantalla de transicion de la
+       referencia de P5R. Posiciones fijas junto al corte -- perseguir el
+       filo en movimiento con precision es ingenieria que no vale la pena
+       para un destello de 300ms, y quieto se lee igual de bien. -->
+  <div class="chispas">
+    <i class="chispa" style="--i:0;left:96%;top:6%"></i>
+    <i class="chispa" style="--i:1;left:93%;top:22%"></i>
+    <i class="chispa" style="--i:2;left:97%;top:38%"></i>
+    <i class="chispa" style="--i:3;left:94%;top:54%"></i>
+    <i class="chispa" style="--i:4;left:96%;top:70%"></i>
+    <i class="chispa" style="--i:5;left:93%;top:86%"></i>
+  </div>
 </div>
 
 
@@ -1718,7 +1769,7 @@
     </div>
 
     <div class="stats">
-      <div class="stat sat placa-roja" style="--giro-d:-11.6deg;--empuje:66px"><b>9+</b><span data-es="años en agencias" data-en="years in agencies">años en agencias</span></div>
+      <div class="stat sat placa-roja" style="--giro-d:-11.6deg;--empuje:66px"><b class="cuenta">9+</b><span data-es="años en agencias" data-en="years in agencies">años en agencias</span></div>
       <div class="stat sat placa-roja" style="--giro-d:-8.6deg;--empuje:44px"><b>2D / 3D</b><span data-es="motion graphics" data-en="motion graphics">motion graphics</span></div>
       <div class="stat sat placa-negra" style="--giro-d:7.6deg;--empuje:52px"><b>MX · ES · MENA</b><span data-es="mercados" data-en="markets">mercados</span><em data-es="México · España · Medio Oriente y Norte de África" data-en="Mexico · Spain · Middle East &amp; North Africa">México · España · Medio Oriente y Norte de África</em></div>
     </div>
@@ -2472,6 +2523,52 @@
     localStorage.setItem('notman_sonido', sonidoActivo ? '1' : '0');
     if (sonidoActivo) blip(1046, .07);   // confirma al oido que ya quedo activado
   });
+
+  /* Tick de hover: mismo blip(), tono mas agudo y corto que la navegacion
+     (660Hz/.045s) y que la confirmacion de encendido (1046Hz/.07s), para que
+     las tres se distingan al oido. blip() ya revisa sonidoActivo por dentro,
+     asi que esto no hace nada mientras el sonido siga apagado -- no hace
+     falta duplicar el chequeo aqui.
+     mouseenter y no mouseover: mouseenter no burbujea y no se repite
+     mientras el cursor se queda quieto dentro del elemento. */
+  document.querySelectorAll('.menu-lista a, .btn').forEach(el => {
+    el.addEventListener('mouseenter', () => blip(740, .03));
+  });
+
+  /* ===== CIFRAS QUE CUENTAN =====
+     Las estadisticas no aparecen, SUBEN -- la convencion exacta de una
+     pantalla de estado de RPG. Cuenta desde 0 hasta el valor final que ya
+     esta escrito en el HTML (asi que sin JS se ve el numero correcto de
+     una vez, nunca un 0 congelado).
+
+     Marcado explicito, no adivinado por regex: .cifra b (Perfil) y
+     .radar .rango (hexagono) son siempre numeros puros, pero .stats .stat b
+     en el hero mezcla numeros con texto ("2D / 3D", "MX · ES · MENA") --
+     ahi solo se marca a mano la pieza que SI es un conteo (.cuenta en el
+     "9+"), para no tener que parsear "es esto un numero" con un regex
+     fragil que tarde o temprano atrapa algo que no debia. */
+  const contarReducido = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function contarHasta(el, final, sufijo, ms){
+    if (contarReducido) { el.textContent = final + sufijo; return; }
+    const t0 = performance.now();
+    (function paso(ahora){
+      const p = Math.min(1, (ahora - t0) / ms);
+      // ease-out cubico: arranca rapido y se asienta al final, como un
+      // marcador de arcade -- un conteo lineal se lee a reloj, no a juego
+      el.textContent = Math.round(final * (1 - Math.pow(1 - p, 3))) + sufijo;
+      if (p < 1) requestAnimationFrame(paso);
+    })(t0);
+  }
+  const ioCifras = new IntersectionObserver((es) => {
+    es.forEach(e => {
+      if (!e.isIntersecting) return;
+      const el = e.target, m = el.textContent.trim().match(/^(\d+)(\D*)$/);
+      if (m) contarHasta(el, parseInt(m[1], 10), m[2], 700);
+      ioCifras.unobserve(el);
+    });
+  }, {threshold:.4});
+  document.querySelectorAll('.cifra b, .stats .stat b.cuenta, .radar .rango')
+    .forEach(el => ioCifras.observe(el));
 
   /* ===== MEDIDOR DE PROGRESO =====
      Se llena de izquierda a derecha con el avance de la pagina, pegado
