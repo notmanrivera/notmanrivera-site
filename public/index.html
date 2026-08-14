@@ -336,6 +336,40 @@
      costuras visibles porque el ruido no tiene un patron periodico
      reconocible -- a diferencia de una foto de grano, que sí las delata.
 
+     ⚠️ Tres vueltas hasta que se vio, y la ultima fue la que realmente
+     importaba -- las dos primeras persiguieron una pista falsa:
+     1. mix-blend-mode:overlay daba CERO cambio, verificado diffeando
+        pixeles con y sin la capa (bbox de diferencia "None"). Esto si es
+        matematica real y no percepcion: overlay hace 2*fondo*capa cuando
+        el fondo es oscuro, y --ink es negro real (fondo ≈ 0), asi que
+        2*0*cualquier_cosa = 0 siempre, sin importar que traiga la capa.
+     2. Cambiar a mix-blend-mode:screen (que si deberia funcionar sobre
+        negro) SEGUIA sin verse, incluso forzando la opacidad a .35 para
+        probar. Aqui se sospecho de position:fixed rompiendo el blend
+        mode -- pista PLAUSIBLE pero nunca comprobada: los dos intentos se
+        midieron en la misma zona (la parte alta de la pagina), y esa zona
+        resulto estar tapada por el fondo solido de <header> (negro,
+        min-height:100svh, pinta DESPUES de body::before en el orden del
+        documento y por lo tanto ENCIMA). El experimento nunca aislo blend
+        mode de "estoy midiendo donde no se puede ver nada".
+     3. La prueba que si aislo la variable: fondo solido ROJO opaco al
+        100% de opacidad, sin blend mode, en una seccion generica sin
+        fondo propio (mas abajo del header) -- y ahi si se vio, pintando
+        la seccion entera. O sea que el mecanismo (posicion, tamaño,
+        z-index, opacity) funcionaba bien desde el principio; el problema
+        real fue donde se estaba mirando, no el CSS.
+
+     La conclusion honesta: no hay evidencia real de que position:fixed
+     rompa mix-blend-mode aqui (pudo haber funcionado igual con screen).
+     Se deja SIN blend mode de todas formas porque la composicion "normal"
+     (alfa simple) no depende en absoluto del contexto de apilamiento y no
+     tiene ninguna trampa que perseguir si algo cambia mas adelante -- la
+     opcion mas simple que ya se sabe que funciona, en vez de reabrir el
+     misterio de blend modes para un efecto que apenas se nota. Sube a
+     .09 porque sin el efecto "solo aclara" de screen,
+     una capa opaca de ruido gris a esta opacidad se ve un poco mas tenue
+     que antes con el mismo numero.
+
      z-index:0 y sin position en <body> a proposito: position:fixed se
      ancla al viewport igual, sin necesitar un ancestro posicionado, y con
      z-index tan bajo pinta DETRAS de todo el contenido real (nav va en
@@ -343,7 +377,7 @@
      paneles, nunca ensucia una placa blanca o roja encima. */
   body::before{
     content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
-    opacity:.035;mix-blend-mode:overlay;
+    opacity:.09;
     background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   }
 
@@ -733,6 +767,7 @@
      tendria ningun texto al que aplicarse -- se quito para no dejar
      morado muerto en el CSS. */
   h1{
+    position:relative;isolation:isolate;
     font-family:var(--disp);font-weight:400;text-transform:uppercase;
     /* Kenyan Coffee es condensada y con mucho ascendente: el interlineado
        va mas apretado que con una fuente normal para que no se abra */
@@ -764,6 +799,45 @@
   @keyframes marcaIn{
     0%  {opacity:0;transform:skewX(-13deg) scale(calc(var(--marca-escala,1) * 1.42)) translateY(-9%)}
     100%{opacity:1;transform:skewX(0)      scale(var(--marca-escala,1))              translateY(0)}
+  }
+
+  /* ===== RAFAGA: lineas cineticas al aterrizar el logo =====
+     El logo es el momento de impacto mas grande y singular del sitio --
+     aparece una sola vez al cargar, no cinco veces por cada seccion como
+     pasaria con los h2. Se ancla ahi y no en los h2 tambien por motivo
+     tecnico: h2 ya usa ::before (la barra roja) y ::after (el barrido
+     .swipe), y una tercera cosa ahi seria forzarlo. .marca es un <img>,
+     que no puede llevar pseudo-elementos propios en la mayoria de los
+     navegadores (elemento reemplazado), asi que la rafaga es un elemento
+     real y hermano, no un ::before/::after -- disparado con el selector
+     de hermano general (.marca.go ~ .rafaga), sin tocar el JS. */
+  .rafaga{
+    position:absolute;left:0;top:50%;z-index:-1;
+    width:min(29vh,330px);height:min(29vh,330px);
+    transform:translateY(-50%) scale(0);
+    border-radius:50%;pointer-events:none;opacity:0;
+    background:repeating-conic-gradient(var(--rojo) 0deg 3deg, transparent 3deg 18deg);
+  }
+  .marca.go ~ .rafaga{
+    animation:rafagaBurst .5s cubic-bezier(.15,.9,.35,1) both;
+    /* el logo tarda .66s en aterrizar; la rafaga estalla .16s despues de
+       arrancar la entrada, justo cuando el logo ya esta casi en su lugar
+       -- el impacto llega CON el aterrizaje, no antes */
+    animation-delay:.16s;
+  }
+  @keyframes rafagaBurst{
+    0%  {opacity:.6;transform:translateY(-50%) scale(.15)}
+    60% {opacity:.35;transform:translateY(-50%) scale(1.05)}
+    100%{opacity:0;transform:translateY(-50%) scale(1.5)}
+  }
+  @media(max-width:820px){.rafaga{display:none}}
+  /* ⚠️ marcaIn nunca tuvo su propia regla de reduced-motion en todo el
+     archivo -- hallazgo incidental al tocar este mismo punto, no algo que
+     ya estuviera cubierto. Se arregla de paso junto con la rafaga nueva,
+     que por supuesto tambien es movimiento. */
+  @media(prefers-reduced-motion:reduce){
+    .marca.go{animation:none;opacity:1;transform:scale(var(--marca-escala,1))}
+    .rafaga,.marca.go ~ .rafaga{display:none}
   }
   /* La linea de servicios ahora vive en su propia placa -- mismo lenguaje
      que el resto del hero (filo cortado, rojo = lo que esta activo ahora
@@ -1750,6 +1824,7 @@
       <img class="marca" src="/assets/logo-lg.webp"
            alt="NotMan Rivera — Rubén Rivera, motion graphics, video y diseño web"
            width="1200" height="675" fetchpriority="high" decoding="async">
+      <i class="rafaga" aria-hidden="true"></i>
       <!-- Esta linea rota entre los cuatro servicios. Usa data-rot-*
            para que el toggle de idioma generico (que busca [data-es][data-en])
            no la pise: la maneja su propia rutina. -->

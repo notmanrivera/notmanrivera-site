@@ -232,6 +232,25 @@ Lo que sí se hizo:
 
   `position:fixed` sin que `<body>` necesite `position:relative` — fixed se ancla al viewport igual. `z-index:0` a propósito: pinta detrás de todo el contenido real (nav en 100, menú en 200), así que solo se asoma por el espacio negro entre paneles y nunca ensucia una placa blanca o roja encima.
 
+  ⚠️ **Rubén reportó que no se notaba nada — y tenía razón, no era falta de sutileza.** Costó tres vueltas encontrar por qué, y las dos primeras persiguieron una pista falsa:
+
+  1. `mix-blend-mode:overlay` daba cero cambio real, verificado diffeando píxeles con y sin la capa (`bbox` de diferencia `"None"`). Esto sí es matemática, no percepción: `overlay` hace `2×fondo×capa` cuando el fondo es oscuro, y `--ink` es negro real (fondo ≈ 0), así que el resultado es 0 sin importar qué traiga la capa encima.
+  2. Cambiar a `mix-blend-mode:screen` (que en teoría sí funciona sobre negro) **seguía sin verse**, incluso forzando la opacidad a .35 para probar. Aquí se sospechó de `position:fixed` rompiendo el blend mode — una pista plausible pero **nunca comprobada**: los dos intentos se midieron en la parte alta de la página, que resultó estar tapada por el fondo sólido de `<header>` (pinta *después* de `body::before` en el orden del documento, así que queda encima). El experimento nunca aisló "el blend mode no funciona" de "estoy midiendo donde no se puede ver nada".
+  3. La prueba que sí aisló la variable: fondo sólido rojo opaco al 100%, sin blend mode, en una sección genérica sin fondo propio (más abajo del header) — y ahí **sí** se vio, pintando la sección entera. El mecanismo (posición, tamaño, `z-index`, `opacity`) funcionaba bien desde el principio; el problema real fue *dónde* se estaba mirando, no el CSS.
+
+  La conclusión honesta: no hay evidencia real de que `position:fixed` rompa `mix-blend-mode` aquí — pudo haber funcionado igual con `screen`. Se dejó **sin blend mode** de todas formas, porque la composición "normal" (alfa simple) no depende del contexto de apilamiento y no tiene ninguna trampa que perseguir si algo cambia más adelante — la opción más simple que ya se sabe que funciona, en vez de reabrir el misterio de blend modes para un efecto que apenas se nota. Opacidad final: `.09` (subió de `.05`, porque sin el "solo aclara" de `screen` una capa opaca de ruido gris se ve un poco más tenue con el mismo número).
+
+  **La lección que vale para la próxima vez que "no se vea" algo:** antes de sospechar del blend mode o de la fórmula, confirmar que el punto donde se está midiendo no está tapado por otro elemento opaco encima — con `document.elementFromPoint(x,y)` y revisando toda la cadena de ancestros, no solo un `getComputedStyle` de la propia capa.
+
+- **Líneas cinéticas al aterrizar el logo** (`.rafaga`) — el punto de la lista de Gemini que más se acercaba a algo real y factible sin arte nuevo: rayas radiales de velocidad, como las del manga en el momento de un impacto. Ancladas al logo del hero y no a los `h2` de cada sección, por dos motivos:
+
+  1. **Diseño:** el logo es el momento de impacto más grande y singular del sitio — aparece una sola vez al cargar, no cinco veces por cada sección como pasaría con los `h2`.
+  2. **Técnico:** `h2` ya usa `::before` (la barra roja) y `::after` (el barrido `.swipe`) — una tercera cosa ahí sería forzarlo. Y `.marca` es un `<img>`, que no puede llevar pseudo-elementos propios en la mayoría de los navegadores (elemento reemplazado) — así que la ráfaga es un elemento real y hermano (`<i class="rafaga">`), no un `::before`/`::after`, disparado con el selector de hermano general (`.marca.go ~ .rafaga`) sin tocar el JS.
+
+  Estalla `.16s` después de que arranca `marcaIn`, cuando el logo ya está casi en su lugar — el impacto llega *con* el aterrizaje, no antes. `z-index:-1` necesita `isolation:isolate` en `h1` (mismo patrón que `.placa-negra`, ver arriba) para que ese `-1` se quede detrás del logo y no caiga detrás de toda la página.
+
+  ⚠️ **Hallazgo incidental: `marcaIn` nunca tuvo su propia regla de `prefers-reduced-motion` en todo el archivo.** No es algo que esta ráfaga rompiera — ya faltaba desde antes. Se arregló de paso, junto con la ráfaga (que por supuesto también es movimiento), al tocar exactamente ese punto del código.
+
 ## Redes (footer)
 
 Instagram (`@notman.rivera`), LinkedIn y Behance (`/notmanrivera`) como iconos SVG inline en `.social`, dentro de `.foot-in`. Sin librería de íconos — son 3 `<svg>` a mano, glifos genéricos (cámara, "in", "Bē") para no reproducir marcas registradas al pixel.
