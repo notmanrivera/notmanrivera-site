@@ -251,6 +251,22 @@ Lo que sí se hizo:
 
   ⚠️ **Hallazgo incidental: `marcaIn` nunca tuvo su propia regla de `prefers-reduced-motion` en todo el archivo.** No es algo que esta ráfaga rompiera — ya faltaba desde antes. Se arregló de paso, junto con la ráfaga (que por supuesto también es movimiento), al tocar exactamente ese punto del código.
 
+## Seis piezas de interacción (2026-08-16)
+
+- **Barra de progreso → "Confidant Rank" escalonado.** `#progresoBarra` dejó de ser una `<i>` con `scaleX` continuo y pasó a ser un contenedor (`.pasos`) con cinco `<i class="paso">`, uno por sección (`#trabajo`, `#servicios`, `#experiencia`, `#perfil`, `#contacto`). Un `IntersectionObserver` con `rootMargin:'-45% 0px -45% 0px'` (el mismo truco de franja central que ya se usaba en otro lado del sitio) detecta qué sección cruza el centro del viewport y enciende de golpe todos los pasos hasta ese índice — sin porcentaje de scroll de por medio. Pasos ya vistos quedan en `--rojo`, los que faltan en `--line`. Verificado con Playwright: 0 pasos activos al cargar, 2 activos en `#servicios`, 5 en `#contacto`.
+
+- **Tooltip del radar** (`.p5-tooltip`). Un solo `div` reutilizado para los 6 `<circle class="punto">`, creado una vez por JS y reposicionado con `clientX/clientY` del mouse en cada `mousemove`. Estilo etiqueta P5: fondo `--ink`, texto `--paper`, valor en `--rojo`, `clip-path:var(--filo)`. El offset visual (`translate(14px,-140%)`) vive en el CSS del propio tooltip, no en el JS — así el JS no tiene que convertir coordenadas del `viewBox` del SVG a píxeles de pantalla, solo pasar la posición cruda del cursor. Cada punto lleva `data-skill`/`data-valor` (dato junto al elemento, mismo patrón que `data-cliente` en el visor de trabajos) y `tabindex="0"` + listeners de `focus`/`blur` para que también funcione por teclado, posicionando el tooltip sobre el centro del círculo enfocado vía `getBoundingClientRect()`.
+
+- **Placeholder "CONFIDENTIAL"** para el reel de animación oculto (`#trabajo`), un `<article class="card rv">` con `.frame-bloqueado`: `repeating-linear-gradient(-45deg, var(--rojo) 0 18px, var(--ink) 18px 36px)` de fondo, una etiqueta "BLOQUEADO" sesgada arriba a la izquierda y "CONFIDENTIAL" en `var(--ui)` a `opacity:.34` rotado -11°. Deliberadamente **`--rojo`/`--ink` y no amarillo/negro** aunque el pedido original ofrecía esa opción: el amarillo no es parte de la paleta (cada color tiene un trabajo asignado — ver arriba), y meterlo aquí para un solo elemento rompería esa disciplina sin ganar nada. Se envuelve en `.work-grid-uno{max-width:420px}` porque una sola tarjeta dentro del `auto-fit` de `.work-grid` se estiraría a ancho completo de fila si no se le pone un tope.
+
+- **Parallax inverso en `.svc-bignum`.** Al hacer `:hover` sobre `.svc`, el número gigante de fondo se desplaza `translateX(-10px)` (contra el texto, que ya se movía en su propia dirección) y oscurece su `-webkit-text-stroke-color`. El `skewX(-10deg)` base se preserva porque va **dentro de la misma declaración `transform`** del hover (`skewX(-10deg) translateX(-10px)`), no reemplazándola — la trampa de siempre con transforms compuestos.
+
+- **Menú: cerrar al hacer clic fuera.** `#menuFull` ya cerraba con `Escape`; se añadió un listener de `click` en el propio panel (`.menu-full`, el fondo oscuro) que llama a `cerrarMenu()`, y un `stopPropagation()` en `.menu-lista` para que los clics dentro de la caja de enlaces no burbujeen hasta el panel y se disparen en falso. Verificado: clic en el fondo cierra, clic dentro de `.menu-lista` (fuera de un link) no cierra, `Escape` cierra.
+
+- **Deriva del halftone.** `.halftone` gana `animation:halftoneDeriva 46s linear infinite`, moviendo `background-position` de `0 0` a `7px 7px` — exactamente el `background-size` existente, para que el loop no salte. Apagada bajo `prefers-reduced-motion:reduce`, como el resto de animaciones del sitio.
+
+Las seis piezas se verificaron juntas con Playwright (`getComputedStyle`, capturas recortadas del tooltip y de la tarjeta bloqueada, simulación de teclado y clics) antes de commitear — sin sorpresas ni callejones sin salida esta vez.
+
 ## Redes (footer)
 
 Instagram (`@notman.rivera`), LinkedIn y Behance (`/notmanrivera`) como iconos SVG inline en `.social`, dentro de `.foot-in`. Sin librería de íconos — son 3 `<svg>` a mano, glifos genéricos (cámara, "in", "Bē") para no reproducir marcas registradas al pixel.
