@@ -415,6 +415,19 @@
     background-size:7px 7px;
     mask-image:linear-gradient(160deg,#000 0%,transparent 62%);
     -webkit-mask-image:linear-gradient(160deg,#000 0%,transparent 62%);
+    /* deriva diagonal, muy lenta: la trama nunca se queda del todo quieta,
+       como el papel impreso real que tiembla un poco al escanearlo. El
+       recorrido es EXACTAMENTE un tile (7px, el mismo que background-size),
+       asi el bucle no da un salto visible al reiniciar -- vuelve al mismo
+       patron que tenia al principio. */
+    animation:halftoneDeriva 46s linear infinite;
+  }
+  @keyframes halftoneDeriva{
+    from{background-position:0 0}
+    to  {background-position:7px 7px}
+  }
+  @media(prefers-reduced-motion:reduce){
+    .halftone{animation:none}
   }
 
   /* ===== CAMPOS DE COLOR PLANOS =====
@@ -470,18 +483,24 @@
     border-bottom:2px solid transparent;transition:border-color .3s;
   }
   #nav.scrolled{border-bottom-color:var(--violet)}
-  /* Medidor de progreso, como el rango de un confidente: se llena de
-     rojo pegado al filo inferior del nav conforme avanzas la pagina.
-     Vive DEBAJO del borde violeta existente (bottom:-2px), asi los dos
-     leen como una sola linea de estado en vez de dos elementos sueltos. */
+  /* Medidor de progreso, como el rango de un confidente en P5: NO es una
+     linea continua que se llena con el porcentaje de scroll, son 5 pasos
+     discretos -- uno por seccion -- que saltan de golpe de un paso al
+     siguiente cuando cruzas a la siguiente seccion. Vive DEBAJO del borde
+     violeta existente del nav (bottom:-2px), asi los dos leen como una
+     sola linea de estado en vez de dos elementos sueltos. */
   .progreso{
     position:absolute;left:0;right:0;bottom:-2px;height:2px;
-    background:var(--line);overflow:hidden;pointer-events:none;
+    pointer-events:none;
   }
-  .progreso i{
-    display:block;height:100%;width:100%;background:var(--rojo);
-    transform-origin:left;transform:scaleX(0);
+  .progreso .pasos{display:flex;height:100%;gap:3px}
+  .progreso .paso{
+    flex:1;height:100%;background:var(--line);
+    transition:background .18s;
   }
+  /* rojo solo hasta la seccion actual (inclusive), como los pips ya
+     alcanzados de un rango -- no un solo paso suelto encendido */
+  .progreso .paso.activo{background:var(--rojo)}
   .nav-in{
     max-width:var(--max);margin:0 auto;padding:14px 24px;
     display:flex;align-items:center;justify-content:space-between;gap:16px;
@@ -1125,6 +1144,10 @@
 
   /* ===== WORK ===== */
   .work-grid{display:grid;gap:28px;grid-template-columns:repeat(auto-fit,minmax(320px,1fr))}
+  /* un solo hijo en un grid auto-fit se estira a todo el ancho de la fila;
+     para la placa bloqueada eso se ve como un cartel de banco en vez de
+     una tarjeta de portafolio, asi que se acota al ancho de una columna */
+  .work-grid-uno{max-width:420px;margin-bottom:28px}
   /* .card es SOLO el area que detecta el hover: nunca se transforma.
      Todo lo visual (borde, fondo, tilt 3D) vive en .card-in. Si la caja
      que detecta el hover se moviera, se saldria de debajo del cursor y
@@ -1169,6 +1192,39 @@
     font-family:var(--ui);font-weight:900;text-transform:uppercase;
     font-size:.62rem;letter-spacing:.1em;color:var(--muted);
     writing-mode:vertical-rl;transform:rotate(180deg);
+  }
+  /* ===== REEL BLOQUEADO (placeholder "Confidencial") =====
+     El reel de verdad sigue comentado mas abajo (a peticion de Ruben, ver
+     nota "EN STAND BY"). Esta placa NO lo reactiva -- es un teaser aparte
+     que ocupa su lugar mientras tanto, con la estetica de expediente
+     bloqueado de un menu de Persona en vez de dejar un hueco vacio.
+     Rayas en --rojo/--ink y no en amarillo/negro: amarillo no existe en
+     la paleta del sitio (cada color tiene su trabajo asignado, ver
+     PROJECT.md), y meter uno nuevo solo para esta placa rompe el sistema
+     por una sola pieza. */
+  .frame-bloqueado{
+    display:flex;align-items:center;justify-content:center;
+    background:repeating-linear-gradient(-45deg,
+      var(--rojo) 0 18px, var(--ink) 18px 36px);
+    overflow:hidden;
+  }
+  .bloqueado-etiqueta{
+    position:absolute;top:14px;left:-8px;z-index:2;
+    background:var(--ink);color:var(--paper);
+    font-family:var(--ui);font-weight:900;text-transform:uppercase;
+    font-size:.68rem;letter-spacing:.1em;
+    padding:6px 16px;transform:skewX(-11deg);
+    box-shadow:3px 3px 0 var(--sombra);
+  }
+  /* el texto grande, como los numeros de fondo de .svc-bignum: opacidad
+     baja, decorativo, nunca compite con la etiqueta ni con el titulo real
+     de la tarjeta que va debajo en .card-body */
+  .bloqueado-grande{
+    font-family:var(--ui);font-weight:900;text-transform:uppercase;
+    font-size:clamp(1.8rem,7vw,3.2rem);letter-spacing:.06em;
+    color:var(--ink);opacity:.34;
+    transform:rotate(-11deg);white-space:nowrap;
+    pointer-events:none;user-select:none;
   }
   .cinta-proximamente{
     position:absolute;top:14px;left:-8px;z-index:2;
@@ -1306,11 +1362,24 @@
        explicito por variante de placa. */
     color:transparent;-webkit-text-stroke:2px rgba(255,255,255,.22);
     transform:skewX(-10deg);pointer-events:none;user-select:none;
+    /* la propia skewX ya vive aqui en transform (translate:0 -50% es una
+       propiedad CSS aparte, para el centrado vertical, y compone con esta
+       sin pelearse); la transicion solo anima lo que agrega el hover */
+    transition:transform .22s cubic-bezier(.2,1.4,.3,1),-webkit-text-stroke-color .18s;
   }
   /* la impar ya no es blanca sino ROJA: el contorno oscuro se perdia encima.
      En hover la placa se vuelve blanca, asi que ahi el trazo se oscurece. */
   .svc:nth-child(odd) .svc-bignum{-webkit-text-stroke-color:rgba(255,255,255,.32)}
-  .svc:hover .svc-bignum{-webkit-text-stroke-color:rgba(0,0,0,.22)}
+  /* Parallax inverso: el numero de fondo se retira 10px en sentido contrario
+     al texto (h3/p avanzan +9px, ver mas abajo), como si el titulo se
+     despegara del fondo al pasar el cursor -- misma sensacion de profundidad
+     que el tilt 3D de las tarjetas del portafolio, pero solo en un eje. El
+     skewX(-10deg) base se mantiene: el translate se agrega DENTRO del mismo
+     transform, no lo reemplaza. */
+  .svc:hover .svc-bignum{
+    -webkit-text-stroke-color:rgba(0,0,0,.22);
+    transform:skewX(-10deg) translateX(-10px);
+  }
   .svc h3{
     font-family:var(--disp);font-weight:400;text-transform:uppercase;
     font-size:clamp(2.1rem,4.9vw,3rem);letter-spacing:.02em;color:inherit;
@@ -1506,6 +1575,24 @@
     font-family:var(--ui);font-size:11px;font-weight:300;letter-spacing:.08em;
     fill:rgba(255,255,255,.74);text-transform:uppercase;
   }
+  .radar .punto{cursor:pointer}
+  /* etiqueta estilo Persona 5: fondo --ink, texto --paper, filo diagonal.
+     position:fixed + clientX/clientY del mouse directo, sin convertir
+     coordenadas del viewBox del SVG -- el offset visual (14px,-140%) lo
+     pone el transform, no el JS. */
+  .p5-tooltip{
+    position:fixed;left:0;top:0;z-index:500;pointer-events:none;
+    background:var(--ink);color:var(--paper);
+    font-family:var(--ui);font-weight:900;text-transform:uppercase;
+    font-size:.72rem;letter-spacing:.06em;white-space:nowrap;
+    padding:8px 14px;
+    clip-path:var(--filo);
+    box-shadow:0 0 0 2px var(--rojo);
+    opacity:0;transform:translate(14px,-140%) scale(.92);
+    transition:opacity .12s,transform .12s;
+  }
+  .p5-tooltip.activo{opacity:1;transform:translate(14px,-140%) scale(1)}
+  .p5-tooltip b{color:var(--rojo);margin-left:6px}
   /* el poligono crece desde el centro con rebote */
   .js .radar .valor,.js .radar .punto{opacity:0}
   .ficha-radar.go .radar .valor{
@@ -1726,7 +1813,15 @@
 
 
 <nav id="nav">
-  <div class="progreso" aria-hidden="true"><i id="progresoBarra"></i></div>
+  <!-- 5 pasos, uno por seccion (Trabajo/Servicios/Experiencia/Perfil/Contacto).
+       #progresoBarra ahora es el CONTENEDOR de los pasos, no una barra
+       continua: se llena por secciones enteras, como un rango de
+       confidente, no por porcentaje de scroll. -->
+  <div class="progreso" aria-hidden="true">
+    <div id="progresoBarra" class="pasos">
+      <i class="paso"></i><i class="paso"></i><i class="paso"></i><i class="paso"></i><i class="paso"></i>
+    </div>
+  </div>
   <div class="nav-in">
     <a href="#" class="logo" aria-label="NotMan · Rubén Rivera">
       <img src="/assets/logo.webp" alt="NotMan" width="440" height="247">
@@ -1859,6 +1954,24 @@
       <span class="sec-tag" data-es="Portafolio" data-en="Portfolio">Portafolio</span>
       <h2 data-es="Reel y <em>casos</em>" data-en="Reel and <em>case work</em>">Reel y <em>casos</em></h2>
       <p data-es="Animación, edición deportiva y diseño de interfaz. Dale play." data-en="Animation, sports editing and interface design. Hit play.">Animación, edición deportiva y diseño de interfaz. Dale play.</p>
+    </div>
+
+    <!-- Placeholder del reel, estetica "expediente bloqueado" -- NO es el
+         reel comentado mas abajo, es una placa aparte que ocupa su lugar
+         mientras el reel real sigue en stand by. Ver PROJECT.md. -->
+    <div class="work-grid work-grid-uno">
+      <article class="card rv">
+        <div class="card-in">
+          <div class="frame frame-bloqueado">
+            <span class="bloqueado-etiqueta" data-es="Bloqueado" data-en="Locked">Bloqueado</span>
+            <span class="bloqueado-grande">CONFIDENTIAL</span>
+          </div>
+          <div class="card-body">
+            <h3 data-es="Reel de animación" data-en="Animation reel">Reel de animación</h3>
+            <p data-es="En producción con material nuevo — vuelve pronto." data-en="In production with new material — coming back soon.">En producción con material nuevo — vuelve pronto.</p>
+          </div>
+        </div>
+      </article>
     </div>
 
     <!-- ⚠️ EN STAND BY a pedido de Rubén (2026-08-13): tanto el reel como
@@ -2104,12 +2217,16 @@
 
           <!-- valores -->
           <polygon class="valor" points="310,60 435.57,132.5 428.04,273.15 310,335.5 199.50,268.80 207.03,145.55"/>
-          <circle class="punto" style="--i:0" cx="310"    cy="60"     r="5.5"/>
-          <circle class="punto" style="--i:1" cx="435.57" cy="132.5"  r="5.5"/>
-          <circle class="punto" style="--i:2" cx="428.04" cy="273.15" r="5.5"/>
-          <circle class="punto" style="--i:3" cx="310"    cy="335.5"  r="5.5"/>
-          <circle class="punto" style="--i:4" cx="199.50" cy="268.80" r="5.5"/>
-          <circle class="punto" style="--i:5" cx="207.03" cy="145.55" r="5.5"/>
+          <!-- data-skill/data-valor: el tooltip los lee de aqui, no de un
+               array duplicado en JS -- el dato vive junto al punto que lo
+               representa, igual que data-cliente en las miniaturas del
+               visor mas abajo en este mismo archivo. -->
+          <circle class="punto" style="--i:0" cx="310"    cy="60"     r="5.5" data-skill="Photoshop"     data-valor="100" tabindex="0"/>
+          <circle class="punto" style="--i:1" cx="435.57" cy="132.5"  r="5.5" data-skill="Illustrator"   data-valor="100" tabindex="0"/>
+          <circle class="punto" style="--i:2" cx="428.04" cy="273.15" r="5.5" data-skill="After Effects" data-valor="94"  tabindex="0"/>
+          <circle class="punto" style="--i:3" cx="310"    cy="335.5"  r="5.5" data-skill="Premiere Pro"  data-valor="90"  tabindex="0"/>
+          <circle class="punto" style="--i:4" cx="199.50" cy="268.80" r="5.5" data-skill="Figma"         data-valor="88"  tabindex="0"/>
+          <circle class="punto" style="--i:5" cx="207.03" cy="145.55" r="5.5" data-skill="Lightroom"     data-valor="82"  tabindex="0"/>
 
           <!-- etiquetas -->
           <text class="eje"   x="310" y="28"  text-anchor="middle">Photoshop</text>
@@ -2441,6 +2558,19 @@
     panel.querySelectorAll('.menu-lista a')
          .forEach(a => a.addEventListener('click', cerrarMenu));
 
+    /* Clic en el fondo oscuro (fuera de la caja de enlaces) tambien cierra.
+       El stopPropagation vive en .menu-lista, no en cada <a> por separado:
+       cualquier clic dentro de esa caja -- en un link o en el espacio entre
+       ellos -- se queda ahi y nunca llega al listener del fondo. Sin esto,
+       cualquier clic en un <a> burbujearia hasta panel y cerraria el menu
+       dos veces (inofensivo pero redundante) o, peor, un clic en el
+       espacio VACIO entre items (que no tiene su propio listener) caeria
+       fuera de esta proteccion y se leeria como "fuera" cuando en realidad
+       el usuario seguia apuntando a la lista. */
+    panel.addEventListener('click', cerrarMenu);
+    panel.querySelector('.menu-lista')
+         ?.addEventListener('click', e => e.stopPropagation());
+
     document.addEventListener('keydown', e => {
       if (panel.dataset.abierto !== 'si') return;
 
@@ -2645,19 +2775,56 @@
   document.querySelectorAll('.cifra b, .stats .stat b.cuenta, .radar .rango')
     .forEach(el => ioCifras.observe(el));
 
-  /* ===== MEDIDOR DE PROGRESO =====
-     Se llena de izquierda a derecha con el avance de la pagina, pegado
-     al filo inferior del nav -- como el rango de un confidente. */
-  const progresoBarra = document.getElementById('progresoBarra');
-  if (progresoBarra) {
-    const pintarProgreso = () => {
-      const total = document.documentElement.scrollHeight - innerHeight;
-      const r = total > 0 ? Math.min(1, Math.max(0, scrollY / total)) : 0;
-      progresoBarra.style.transform = `scaleX(${r})`;
+  /* ===== MEDIDOR DE PROGRESO (por pasos, estilo Confidant Rank) =====
+     Ya no es scroll% continuo -- es un IntersectionObserver por seccion,
+     y el paso salta de golpe cuando la seccion activa cambia. rootMargin
+     colapsa la ventana de deteccion a una franja delgada cerca del centro
+     vertical del viewport: asi funciona igual de bien con #perfil (corta)
+     que con #trabajo (larga con toda la galeria), porque no depende de
+     que un % fijo de la seccion quepa en pantalla a la vez -- solo de
+     que su borde cruce esa franja central. */
+  const pasosProgreso = [...document.querySelectorAll('.progreso .paso')];
+  const seccionesProgreso = ['#trabajo', '#servicios', '#experiencia', '#perfil', '#contacto']
+    .map(sel => document.querySelector(sel))
+    .filter(Boolean);
+  if (pasosProgreso.length && seccionesProgreso.length) {
+    const marcarPaso = (i) => pasosProgreso.forEach((p, idx) => p.classList.toggle('activo', idx <= i));
+    const ioProgreso = new IntersectionObserver((es) => {
+      es.forEach(e => {
+        if (!e.isIntersecting) return;
+        marcarPaso(seccionesProgreso.indexOf(e.target));
+      });
+    }, {rootMargin:'-45% 0px -45% 0px'});
+    seccionesProgreso.forEach(s => ioProgreso.observe(s));
+  }
+
+  /* ===== TOOLTIP DEL RADAR =====
+     Un solo div reutilizado para los 6 puntos, en vez de una etiqueta por
+     circulo -- lee data-skill/data-valor del punto bajo el cursor y se
+     reposiciona con clientX/clientY. focus/blur cubre teclado (los puntos
+     tienen tabindex="0"). */
+  const puntosRadar = document.querySelectorAll('.radar .punto');
+  if (puntosRadar.length) {
+    const tipRadar = document.createElement('div');
+    tipRadar.className = 'p5-tooltip';
+    tipRadar.setAttribute('aria-hidden', 'true');
+    document.body.appendChild(tipRadar);
+    const mostrarTip = (circulo, x, y) => {
+      tipRadar.innerHTML = `${circulo.dataset.skill} <b>${circulo.dataset.valor}</b>`;
+      tipRadar.style.left = x + 'px';
+      tipRadar.style.top = y + 'px';
+      tipRadar.classList.add('activo');
     };
-    pintarProgreso();
-    addEventListener('scroll', pintarProgreso, {passive:true});
-    addEventListener('resize', pintarProgreso);
+    const ocultarTip = () => tipRadar.classList.remove('activo');
+    puntosRadar.forEach(p => {
+      p.addEventListener('mousemove', e => mostrarTip(p, e.clientX, e.clientY));
+      p.addEventListener('mouseleave', ocultarTip);
+      p.addEventListener('focus', () => {
+        const r = p.getBoundingClientRect();
+        mostrarTip(p, r.left + r.width / 2, r.top);
+      });
+      p.addEventListener('blur', ocultarTip);
+    });
   }
 
   /* ===== BARRIDO DE ESCENA =====
