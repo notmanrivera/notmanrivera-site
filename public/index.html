@@ -902,6 +902,13 @@
      todo el peso visual, igual que en los botones. */
   h1 .rota{
     display:inline-block;position:relative;min-height:1.05em;
+    /* max-width, no solo el calc() fijo de la columna en HERO RADIAL: un
+       inline-block por defecto crece al ancho de su texto (fit-content) y
+       se sale de su contenedor en vez de partirse en dos lineas. Con este
+       tope, si algun dia la traduccion mas larga no cabe en una linea,
+       envuelve dentro de su propia caja -- nunca empuja ni se derrama
+       sobre el resto del hero. */
+    max-width:100%;
     font-size:clamp(1.7rem,min(5.2vw,6vh),3.4rem);
     letter-spacing:.06em;color:var(--paper);
     /* el h1 hereda una sombra dura para su propio texto (mas abajo);
@@ -934,8 +941,21 @@
          el kicker, que es la cadena mas larga del hero, ensanchaba su columna
          a 507px contra los 286px de la otra y empujaba el logo 111px fuera
          del centro. Con minmax(0,...) las dos laterales miden igual y la
-         columna del logo queda centrada de verdad. */
-      grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);
+         columna del logo queda centrada de verdad.
+         ⚠️ La columna central YA NO es "auto". Auto la hacia depender del
+         contenido mas ancho de <h1> -- y <h1> tambien contiene .rota, la
+         linea que rota entre los cuatro servicios (ver ROTADOR DE SERVICIOS
+         mas abajo). Cada vez que .rota cambiaba a una palabra mas larga o
+         mas corta, "auto" recalculaba el ancho de la columna entera, y como
+         las dos laterales son minmax(0,1fr) (se reparten lo que sobra), TODO
+         el hero -- kicker, botones, stats -- brincaba de golpe con cada
+         rotacion. La columna central ahora es un calc() fijo que reproduce
+         exactamente el ancho real de .marca (su height:min(27vh,320px) por
+         su relacion de aspecto 16:9, la del propio <img width="1200"
+         height="675">) -- ya no depende de .rota en absoluto, asi que
+         .rota puede cambiar de texto (y hasta partirse en dos lineas si le
+         toca la palabra mas larga) sin mover nada mas a su alrededor. */
+      grid-template-columns:minmax(0,1fr) calc(min(27vh,320px) * 16 / 9) minmax(0,1fr);
       grid-template-areas:
         "kick logo st1"
         "st2  logo st3"

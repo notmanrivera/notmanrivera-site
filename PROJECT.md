@@ -329,6 +329,16 @@ Rubén pidió deshacer el divisor "rasgado" (`mask-image` con SVG dentado) de la
 
 Las cinco piezas se verificaron con Playwright: `navigator.vibrate` mockeado para confirmar la llamada con `15`; partículas contadas antes/después de `animationend`; `animationName`/color computado antes y después de que termine `p5HoverSnap`; menú móvil con capturas de pantalla y medición de overflow; marquesina con `animationPlayState` bajo `reducedMotion:'reduce'` de Playwright.
 
+### Arreglo: brinco del hero al rotar los servicios (2026-08-16)
+
+Rubén reportó que al cambiar la línea de servicios bajo el logo (`.rota`, el badge rojo que alterna "Motion graphics 2D/3D" / "Edición de video" / etc. cada 3.4s), todos los elementos del hero pegaban un pequeño brinco.
+
+**Causa:** `.orbita{grid-template-columns:minmax(0,1fr) auto minmax(0,1fr)}` — la columna central (donde vive `<h1>`, y dentro de `<h1>` tanto `.marca` como `.rota`) medía `auto`, es decir, se ajustaba al contenido más ancho de `<h1>`. Cada vez que `.rota` cambiaba a una palabra más larga o más corta que la anterior, `auto` recalculaba el ancho de esa columna — y como las dos columnas laterales son `minmax(0,1fr)` (se reparten lo que sobra), el recálculo del centro empujaba kicker, botones y stats al mismo tiempo. El mismo patrón que ya rompía la centrado del logo con el kicker (ver la nota de `minmax(0,1fr)` un poco más arriba), pero disparado en vivo cada 3.4 segundos en vez de una sola vez al cargar.
+
+**Arreglo:** la columna central deja de ser `auto` y pasa a `calc(min(27vh,320px) * 16 / 9)` — la misma fórmula que ya determina el ancho real de `.marca` (su `height:min(27vh,320px)` por la relación de aspecto 16:9 del propio `<img width="1200" height="675">`). Con esto la columna depende solo de la altura del logo, nunca del texto de `.rota`. `.rota` gana `max-width:100%` como red de seguridad: si algún día una traducción no cabe en una línea, envuelve dentro de su propia caja en vez de desbordarse.
+
+Verificado con Playwright: posición de `.btn-1` (sin ninguna animación propia, así que sirve de testigo limpio) idéntica a nivel de píxel en 4 capturas espaciadas por rotaciones reales de 3.4s, con tres textos distintos confirmados (`Motion graphics 2D/3D` → `Edición de video` → `Soporte marca blanca` → de vuelta). El `.kicker` sí mostró una deriva de sub-píxel entre lecturas — pero es su propia animación `idleBounce` (de la tanda anterior) siguiendo su curso normal, no una regresión del arreglo: la deriva es continua y gradual, no un salto correlacionado con el cambio de texto.
+
 ## Redes (footer)
 
 Instagram (`@notman.rivera`), LinkedIn y Behance (`/notmanrivera`) como iconos SVG inline en `.social`, dentro de `.foot-in`. Sin librería de íconos — son 3 `<svg>` a mano, glifos genéricos (cámara, "in", "Bē") para no reproducir marcas registradas al pixel.
