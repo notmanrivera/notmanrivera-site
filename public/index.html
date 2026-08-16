@@ -483,24 +483,25 @@
     border-bottom:2px solid transparent;transition:border-color .3s;
   }
   #nav.scrolled{border-bottom-color:var(--violet)}
-  /* Medidor de progreso, como el rango de un confidente en P5: NO es una
-     linea continua que se llena con el porcentaje de scroll, son 5 pasos
-     discretos -- uno por seccion -- que saltan de golpe de un paso al
-     siguiente cuando cruzas a la siguiente seccion. Vive DEBAJO del borde
-     violeta existente del nav (bottom:-2px), asi los dos leen como una
-     sola linea de estado en vez de dos elementos sueltos. */
-  .progreso{
-    position:absolute;left:0;right:0;bottom:-2px;height:2px;
+  /* HUD de scroll, fijo a la esquina inferior derecha del viewport -- no
+     vive dentro de #nav a proposito: #nav tiene backdrop-filter, y un
+     filter/backdrop-filter en un ancestro crea su propio "containing
+     block" para los descendientes position:fixed (los deja fijos AL
+     ANCESTRO, no a la pantalla). Por eso el HTML esta como hermano de
+     <nav>, no adentro. 5 rombos, uno por seccion, que se rellenan de
+     golpe -- sin transition, sin easing -- como los pips de vida de un
+     HUD de juego, no como una barra de carga. */
+  .hud-scroll{
+    position:fixed;right:22px;bottom:22px;z-index:90;
+    display:flex;flex-direction:column;gap:9px;
     pointer-events:none;
   }
-  .progreso .pasos{display:flex;height:100%;gap:3px}
-  .progreso .paso{
-    flex:1;height:100%;background:var(--line);
-    transition:background .18s;
+  .hud-paso{
+    width:12px;height:12px;background:var(--ink);
+    border:2px solid var(--line);transform:rotate(45deg);
   }
-  /* rojo solo hasta la seccion actual (inclusive), como los pips ya
-     alcanzados de un rango -- no un solo paso suelto encendido */
-  .progreso .paso.activo{background:var(--rojo)}
+  .hud-paso.activo{background:var(--rojo);border-color:var(--rojo)}
+  @media(max-width:640px){.hud-scroll{right:14px;bottom:14px;gap:7px}.hud-paso{width:9px;height:9px}}
   .nav-in{
     max-width:var(--max);margin:0 auto;padding:14px 24px;
     display:flex;align-items:center;justify-content:space-between;gap:16px;
@@ -1057,6 +1058,19 @@
   .btn-2{background:transparent;color:var(--paper);box-shadow:inset 0 0 0 2px var(--violet-hi)}
   .btn-2:hover{background:var(--violet-hi);color:var(--ink)}
   .btn:hover i{transform:skewX(10deg) translate(-3px,-3px)}
+  /* Destello de "confirmar" antes de navegar, como aceptar una opcion en un
+     menu de P5. Un solo frame al 50%: 0% y 100% no se declaran a proposito,
+     asi el navegador usa ahi el valor real de fondo/color de .btn-1 o
+     .btn-2 (que no son el mismo), en vez de tener que repetirlo dos veces.
+     El transform SI lleva skewX+rotate(--giro) completos dentro del
+     keyframe -- si no, la animacion pisaria la base mientras corre. */
+  @keyframes p5Confirm{
+    50%{
+      background:var(--paper);color:var(--ink);
+      transform:skewX(-10deg) rotate(var(--giro,0deg)) scale(1.05);
+    }
+  }
+  .btn.confirmando{animation:p5Confirm .15s ease-out}
 
   .stats{
     position:relative;display:flex;flex-wrap:wrap;gap:40px;margin-top:20px;padding-top:20px;
@@ -1090,10 +1104,19 @@
   /* ===== SECTIONS ===== */
   section{position:relative;padding:130px 0;overflow:hidden}
   /* separador inclinado en vez de una linea recta: el corte diagonal es
-     la firma de los menus de Persona */
+     la firma de los menus de Persona. El borde ya no es liso -- un
+     mask-image con un SVG en linea (una tira dentada, como pincelada
+     seca o papel rasgado) recorta el mismo degradado violeta/rojo/violeta
+     de antes, asi que el color no cambia, solo su silueta. mask-size
+     repite el patron cada 40px; el -webkit- es por Safari, que todavia
+     no resuelve mask-image sin el. */
   section + section::before{
-    content:"";position:absolute;top:-3px;left:-4%;right:-4%;height:6px;
+    content:"";position:absolute;top:-6px;left:-4%;right:-4%;height:14px;
     background:linear-gradient(90deg,transparent,var(--violet) 18%,var(--rojo) 50%,var(--violet) 82%,transparent);
+    -webkit-mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 16'%3E%3Cpath d='M0,4 5,2 10,6 15,3 20,7 25,2 30,6 35,3 40,4 40,12 35,15 30,11 25,14 20,10 15,13 10,9 5,12 0,10 Z' fill='%23000'/%3E%3C/svg%3E");
+    mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 16'%3E%3Cpath d='M0,4 5,2 10,6 15,3 20,7 25,2 30,6 35,3 40,4 40,12 35,15 30,11 25,14 20,10 15,13 10,9 5,12 0,10 Z' fill='%23000'/%3E%3C/svg%3E");
+    -webkit-mask-repeat:repeat-x;mask-repeat:repeat-x;
+    -webkit-mask-size:40px 14px;mask-size:40px 14px;
     transform:rotate(-1.1deg);
     pointer-events:none;z-index:1;
   }
@@ -1616,6 +1639,7 @@
   }
   #contacto .wrap{max-width:760px}
   .mail{
+    position:relative;
     display:inline-block;font-family:var(--disp);text-transform:uppercase;
     font-size:clamp(1.8rem,6.8vw,4.2rem);letter-spacing:.01em;
     color:var(--paper);text-decoration:none;background:var(--violet);
@@ -1628,6 +1652,27 @@
   }
   .mail:hover{background:var(--rojo)}
   .mail:hover span{transform:skewX(10deg) translate(-4px,-4px)}
+  /* Micro-glitch al hover: una copia fantasma del correo (attr(data-text),
+     no un span duplicado a mano) que se desfasa y se apaga en .2s, como una
+     impresion mal registrada. steps(2,end) en vez de una curva suave: es un
+     tiron de maquina, no un deslizamiento.
+     ⚠️ El fantasma va en --ink y NO en --rojo: .mail:hover pone el fondo en
+     --rojo, asi que un fantasma tambien rojo queda invisible sobre su
+     propio fondo (rojo sobre rojo). --ink es la sombra "mal registrada" que
+     ya usa el resto del sitio, y se lee bien tanto contra el violeta base
+     como contra el rojo del hover. */
+  .mail::after{
+    content:attr(data-text);
+    position:absolute;top:14px;left:30px;right:30px;
+    transform:skewX(10deg);color:var(--ink);opacity:0;
+    pointer-events:none;white-space:nowrap;
+  }
+  .mail:hover::after{animation:mailGlitch .2s steps(2,end)}
+  @keyframes mailGlitch{
+    0%  {opacity:0;transform:skewX(10deg) translate(0,0)}
+    40% {opacity:.55;transform:skewX(10deg) translate(-2px,2px)}
+    100%{opacity:0;transform:skewX(10deg) translate(0,0)}
+  }
 
   footer{
     border-top:2px solid var(--line);padding:34px 0;color:var(--muted);font-size:.82rem;
@@ -1696,7 +1741,20 @@
     0%  {opacity:0;transform:skewX(-11deg) rotate(var(--giro,0deg)) scale(.62) translateY(10px)}
     100%{opacity:1;transform:skewX(-11deg) rotate(var(--giro,0deg)) scale(1) translateY(0)}
   }
-  .kicker.pop.go, .sec-tag.pop.go{animation-name:popIn}
+  /* Reposo tras aparecer: un vaiven de 3px, casi nada, para que la etiqueta
+     no se sienta pegada a la pagina. Mismo truco de --giro dentro del
+     keyframe que popIn -- .sec-tag no usa --giro, asi que ahi rotate(0deg)
+     simplemente no hace nada. Empieza justo cuando popIn termina (delay
+     .34s) para que no se encimen. */
+  @keyframes idleBounce{
+    0%,100%{transform:skewX(-11deg) rotate(var(--giro,0deg)) translateY(0)}
+    50%    {transform:skewX(-11deg) rotate(var(--giro,0deg)) translateY(-3px)}
+  }
+  .kicker.pop.go, .sec-tag.pop.go{
+    animation:
+      popIn .34s cubic-bezier(.15,1.7,.4,1) both,
+      idleBounce 3.6s ease-in-out .34s infinite;
+  }
 
   /* Red de seguridad: a los 2.5s el contenido del hero se muestra si o si,
      pase lo que pase con las animaciones (pestana en segundo plano, un
@@ -1764,9 +1822,16 @@
     }
     .slam .wd,.slam.go .wd{opacity:1;transform:none;animation:none}
     .pop,.pop.go{opacity:1;animation:none;transform:skewX(-11deg)}
+    /* mas especifico que ".pop.go{animation:none}" de arriba lo seria si
+       no estuviera aqui tambien: .kicker.pop.go/.sec-tag.pop.go pisarian
+       ese animation:none con su propio idleBounce infinito por pura
+       especificidad de selector, sin importar el orden en la hoja. */
+    .kicker.pop.go,.sec-tag.pop.go{animation:none}
     .swipe::after,.swipe.go::after{display:none;animation:none}
     html{scroll-behavior:auto}
-    .btn:hover i,.card:hover,.svc:hover h3,.svc:hover p,.mail:hover span,.logo:hover img{transform:none}
+    .btn:hover i,.card:hover,.svc:hover h3,.svc:hover p,.mail:hover span,.mail:hover::after,.logo:hover img{transform:none}
+    .mail::after{display:none}
+    .btn.confirmando{animation:none}
   }
 </style>
 </head>
@@ -1813,15 +1878,6 @@
 
 
 <nav id="nav">
-  <!-- 5 pasos, uno por seccion (Trabajo/Servicios/Experiencia/Perfil/Contacto).
-       #progresoBarra ahora es el CONTENEDOR de los pasos, no una barra
-       continua: se llena por secciones enteras, como un rango de
-       confidente, no por porcentaje de scroll. -->
-  <div class="progreso" aria-hidden="true">
-    <div id="progresoBarra" class="pasos">
-      <i class="paso"></i><i class="paso"></i><i class="paso"></i><i class="paso"></i><i class="paso"></i>
-    </div>
-  </div>
   <div class="nav-in">
     <a href="#" class="logo" aria-label="NotMan · Rubén Rivera">
       <img src="/assets/logo.webp" alt="NotMan" width="440" height="247">
@@ -1845,6 +1901,14 @@
     </div>
   </div>
 </nav>
+
+<!-- HUD de scroll, esquina inferior derecha, fijo al viewport (no adentro
+     de #nav: ver el comentario junto a .hud-scroll en el CSS). 5 rombos,
+     uno por seccion (Trabajo/Servicios/Experiencia/Perfil/Contacto), que
+     se rellenan de golpe segun el IntersectionObserver de las secciones. -->
+<div class="hud-scroll" id="progresoBarra" aria-hidden="true">
+  <i class="hud-paso"></i><i class="hud-paso"></i><i class="hud-paso"></i><i class="hud-paso"></i><i class="hud-paso"></i>
+</div>
 
 <!-- Menu de pantalla completa en cascada diagonal -->
 <div class="menu-full" id="menuFull" data-abierto="no" role="dialog" aria-modal="true"
@@ -2259,7 +2323,7 @@
     <span class="sec-tag" data-es="Contacto" data-en="Contact">Contacto</span>
     <h2 style="transform:skewX(-9deg)" data-es="¿Tienes un <em>proyecto</em> en mente?" data-en="Got a <em>project</em> in mind?">¿Tienes un <em>proyecto</em> en mente?</h2>
     <p style="color:var(--muted);margin-bottom:22px" data-es="Cuéntame qué necesitas y te respondo el mismo día. Si prefieres, agendamos 15 minutos y te muestro ideas concretas para tu marca." data-en="Tell me what you need and I'll reply the same day. If you prefer, we can book 15 minutes and I'll show you concrete ideas for your brand.">Cuéntame qué necesitas y te respondo el mismo día. Si prefieres, agendamos 15 minutos y te muestro ideas concretas para tu marca.</p>
-    <a href="mailto:hola@notmanrivera.com" class="mail"><span>hola@notmanrivera.com</span></a>
+    <a href="mailto:hola@notmanrivera.com" class="mail" data-text="hola@notmanrivera.com"><span>hola@notmanrivera.com</span></a>
   </div>
 </section>
 
@@ -2775,15 +2839,15 @@
   document.querySelectorAll('.cifra b, .stats .stat b.cuenta, .radar .rango')
     .forEach(el => ioCifras.observe(el));
 
-  /* ===== MEDIDOR DE PROGRESO (por pasos, estilo Confidant Rank) =====
-     Ya no es scroll% continuo -- es un IntersectionObserver por seccion,
-     y el paso salta de golpe cuando la seccion activa cambia. rootMargin
-     colapsa la ventana de deteccion a una franja delgada cerca del centro
-     vertical del viewport: asi funciona igual de bien con #perfil (corta)
-     que con #trabajo (larga con toda la galeria), porque no depende de
-     que un % fijo de la seccion quepa en pantalla a la vez -- solo de
-     que su borde cruce esa franja central. */
-  const pasosProgreso = [...document.querySelectorAll('.progreso .paso')];
+  /* ===== HUD DE SCROLL (por pasos, estilo Confidant Rank) =====
+     IntersectionObserver por seccion: el paso salta de golpe cuando la
+     seccion activa cambia, no por scroll% continuo. rootMargin colapsa la
+     ventana de deteccion a una franja delgada cerca del centro vertical
+     del viewport: asi funciona igual de bien con #perfil (corta) que con
+     #trabajo (larga con toda la galeria), porque no depende de que un %
+     fijo de la seccion quepa en pantalla a la vez -- solo de que su borde
+     cruce esa franja central. */
+  const pasosProgreso = [...document.querySelectorAll('.hud-scroll .hud-paso')];
   const seccionesProgreso = ['#trabajo', '#servicios', '#experiencia', '#perfil', '#contacto']
     .map(sel => document.querySelector(sel))
     .filter(Boolean);
@@ -2862,7 +2926,17 @@
       // 'instant', NO 'auto': con 'auto' hereda el scroll-behavior:smooth
       // global del CSS y el salto se hace visible a medias, deja el
       // destino descuadrado -- justo lo que el barrido tiene que tapar.
-      irConBarrido(() => destino.scrollIntoView({behavior:'instant', block:'start'}));
+      const navegar = () => irConBarrido(() => destino.scrollIntoView({behavior:'instant', block:'start'}));
+      // Los CTA del hero (.btn-1/.btn-2) destellan .15s antes de navegar --
+      // "confirmando" una eleccion, como aceptar una opcion en un menu de
+      // P5. El resto de los links # no lleva este paso, van directo al
+      // barrido de siempre.
+      if (a.matches('.btn-1, .btn-2') && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        a.classList.add('confirmando');
+        setTimeout(() => { a.classList.remove('confirmando'); navegar(); }, 150);
+      } else {
+        navegar();
+      }
     });
   });
 </script>

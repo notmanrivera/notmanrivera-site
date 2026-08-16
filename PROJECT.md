@@ -267,6 +267,28 @@ Lo que sí se hizo:
 
 Las seis piezas se verificaron juntas con Playwright (`getComputedStyle`, capturas recortadas del tooltip y de la tarjeta bloqueada, simulación de teclado y clics) antes de commitear — sin sorpresas ni callejones sin salida esta vez.
 
+## Cinco piezas más de interacción (2026-08-16, segunda tanda)
+
+- **Micro-glitch en `.mail`.** Un `::after` con `content:attr(data-text)` (el link ya llevaba `<span>` para el texto real; el fantasma lee el mismo correo de un atributo nuevo, `data-text="hola@notmanrivera.com"`, en vez de duplicarlo a mano). Al hover, `@keyframes mailGlitch` lo desfasa `translate(-2px,2px)` y sube su opacidad a `.55` a los 80ms, luego vuelve a 0 a los 200ms — con `steps(2,end)`, no una curva suave, para que el salto se sienta mecánico y no como un deslizamiento.
+
+  ⚠️ **Primer intento invisible: el fantasma iba en `--rojo`, tal cual pedía el encargo original.** Pero `.mail:hover` ya pone el fondo del propio botón en `--rojo` — rojo sobre rojo, cero contraste, confirmado con una captura de pantalla en pleno hover donde no se ve nada. Cambiado a `--ink`: se lee bien tanto contra el violeta base como contra el rojo del hover, y de paso encaja con la sombra "mal registrada" que ya usa el resto del sitio (ver `var(--sombra)` arriba) en vez de inventar un color nuevo para esto.
+
+- **HUD de scroll fijo, esquina inferior derecha** (`.hud-scroll`), reemplaza la barra de pasos que vivía pegada al borde del `#nav`. Mismo `IntersectionObserver` y misma lógica de "pasos escalonados" de antes (`rootMargin:'-45% 0px -45% 0px'`) — lo único que cambió es qué elementos pinta: 5 rombos (`<i class="hud-paso">`, cuadrados rotados 45°) en vez de barras, sin `transition` en absoluto, para que el cambio de color se sienta como un pip de vida encendiéndose, no como una barra de carga rellenándose.
+
+  ⚠️ **El HTML se sacó de dentro de `<nav>` a propósito, no solo por prolijidad.** `#nav` tiene `backdrop-filter:blur(12px)`, y un `filter`/`backdrop-filter` en un ancestro crea su propio *containing block* para los descendientes `position:fixed` en la mayoría de los navegadores — es decir, el HUD se habría quedado "fijo" a la caja de `#nav`, no a la ventana, y se habría movido con el scroll en vez de quedarse clavado en la esquina. Se verificó fijándolo como hermano de `<nav>` y confirmando con `getBoundingClientRect()` tras hacer scroll que `right`/`bottom` seguían siendo exactamente `22px` en cualquier punto de la página.
+
+- **Destello "confirmando" en `.btn-1`/`.btn-2`** (`@keyframes p5Confirm`): fondo a `var(--paper)` y `scale(1.05)` en un único keyframe al 50% — 0% y 100% se dejan sin declarar para que el navegador use ahí el fondo real de cada botón (que no es el mismo: `.btn-1` es rojo, `.btn-2` es transparente) en vez de repetirlo dos veces. El `transform` sí lleva `skewX(-10deg) rotate(var(--giro,0deg))` completo dentro del keyframe — el mismo cuidado que ya pedían las placas del hero (ver más arriba): sin eso, la animación pisaría el skew/rotación base mientras dura.
+
+  El JS reaprovecha el listener global que ya interceptaba todos los `a[href^="#"]` para el barrido de escena — no se agregó un segundo listener aparte. Para `.btn-1`/`.btn-2` específicamente: añade `.confirmando`, espera 150ms (`setTimeout`, igual a la duración de `p5Confirm`) y solo entonces llama al mismo `irConBarrido()` de siempre. Así no hay dos mecanismos de navegación peleándose por el mismo clic. Bajo `prefers-reduced-motion`, se salta directo a `irConBarrido()` sin el destello ni la espera.
+
+- **Divisor "rasgado" entre secciones.** `section + section::before` seguía siendo una línea diagonal lisa (gradiente violeta/rojo/violeta). Ahora un `mask-image` con un SVG en línea (una tira dentada, codificada como *data URI*, sin archivo nuevo) recorta esa misma silueta en zigzag — el color no cambió, solo dejó de ser un borde limpio. `mask-repeat:repeat-x` la reincide cada 40px; lleva `-webkit-mask-*` en paralelo porque Safari todavía no resuelve `mask-image` sin el prefijo.
+
+- **Reposo (`idleBounce`) en `.kicker`/`.sec-tag`.** Vaivén de 3px, `3.6s`, que arranca justo cuando termina la animación de entrada (`popIn`, con `animation-delay:.34s` para no encimarse). Mismo cuidado con `--giro` dentro del keyframe que ya usa `popIn` — y como `.sec-tag` no tiene `--giro` propio, el `rotate(var(--giro,0deg))` por defecto no hace nada ahí, sin necesidad de una regla aparte.
+
+  ⚠️ **Encontrado al revisar `prefers-reduced-motion`, no al escribir la regla nueva.** El bloque consolidado de movimiento reducido ya apagaba `.pop.go` en general (`animation:none`), pero `.kicker.pop.go, .sec-tag.pop.go{animation:...}` tiene *más* especificidad de selector (tres clases contra dos) que `.pop.go{animation:none}` — así que sin una línea aparte, el `idleBounce` se habría quedado corriendo infinito incluso con movimiento reducido activo, sin importar que la regla que lo apaga esté más abajo en la hoja: especificidad le gana a orden de aparición cuando no son iguales. Se agregó `.kicker.pop.go,.sec-tag.pop.go{animation:none}` con la misma especificidad exacta dentro del bloque de `prefers-reduced-motion` para que si gane.
+
+Las cinco piezas se verificaron con Playwright antes de commitear, incluyendo capturas de pantalla a mitad de cada animación (no solo al inicio/final) — así se encontró el problema real de contraste del glitch del correo, que `getComputedStyle` por sí solo no habría delatado.
+
 ## Redes (footer)
 
 Instagram (`@notman.rivera`), LinkedIn y Behance (`/notmanrivera`) como iconos SVG inline en `.social`, dentro de `.foot-in`. Sin librería de íconos — son 3 `<svg>` a mano, glifos genéricos (cámara, "in", "Bē") para no reproducir marcas registradas al pixel.
