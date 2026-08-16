@@ -299,6 +299,16 @@ Arreglo de una línea: `addEventListener('scroll', ocultarTip, {passive:true})` 
 
 Verificado disparando un `mousemove` sintético directo sobre un `.punto` (para no depender de si la emulación táctil de Playwright reproduce fielmente el touch-a-mouse de un navegador real) y confirmando `activo` antes y después de un evento `scroll`: `true` → `false`.
 
+### Vuelta a la cuña geométrica entre secciones (2026-08-16)
+
+Rubén pidió deshacer el divisor "rasgado" (`mask-image` con SVG dentado) de la tanda anterior y volver a algo triangular/geométrico — más cerca de los cortes diagonales de `.campo`/`.campo2` del header que de una textura de borde roto.
+
+`section + section::before` se elimina por completo. En su lugar, `section:not(:first-of-type)::before` (un pseudo-elemento nuevo, sin conflicto porque ningún `#id::before` lo pisaba) dibuja un solo triángulo grande y asimétrico con `clip-path:polygon(0 0, 100% 0, 100% 18%, 0 100%)`, relleno en `var(--ink-2)`, mordiendo los primeros 90px del borde superior de cada sección. `:not(:first-of-type)` evita que `#trabajo` (sin una sección previa real de la que "heredar" el corte) se quede con una cuña huérfana justo debajo del header. La mitad de las costuras (`:nth-of-type(even)`) espeja el triángulo con `transform:scaleX(-1)` para que la repetición no se sienta mecánica bajando por el sitio.
+
+⚠️ **90px de altura no es un número decorativo, es el margen de seguridad real contra `.sec-head`.** Cada sección tiene `padding-top:130px`, y `.sec-head` (con `.sec-tag`/`h2`) empieza justo después de ese padding. Se verificó con `getBoundingClientRect()` en las cuatro secciones con cuña que el borde inferior de la cuña (90px desde el top de la sección) queda siempre por encima del borde superior real de `.sec-tag` en pantalla — el margen resultó ser de 54px en las cuatro, consistente porque todas comparten el mismo `padding-top`. Sin ese margen, un triángulo "grande" con la punta mal calculada habría tapado la etiqueta de la sección.
+
+`#perfil` y `#contacto` ya traían su propio `background` (un gradiente y un `--ink` sólido respectivamente) — la cuña no lo reemplaza, solo se pinta encima como capa hija en la esquina superior, así que el resto de esos fondos personalizados sigue intacto.
+
 ## Redes (footer)
 
 Instagram (`@notman.rivera`), LinkedIn y Behance (`/notmanrivera`) como iconos SVG inline en `.social`, dentro de `.foot-in`. Sin librería de íconos — son 3 `<svg>` a mano, glifos genéricos (cámara, "in", "Bē") para no reproducir marcas registradas al pixel.
