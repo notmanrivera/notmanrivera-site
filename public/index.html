@@ -573,7 +573,42 @@
     pointer-events:none;user-select:none;z-index:0;
   }
   .menu-figura img{width:100%;height:auto;display:block}
-  @media(max-width:900px){.menu-figura{display:none}}
+  /* ===== MENU MOVIL: el logo como ancla, no como decorado a un lado =====
+     En escritorio el logo vive a la derecha, recortado por el borde, y la
+     lista cae desde la izquierda alejandose de el. En movil no hay ancho
+     de sobra para las dos cosas por separado -- asi que en vez de esconder
+     el logo (como antes), se vuelve el ancla vertical del menu, pegado al
+     borde IZQUIERDO, y la lista "nace" de su filo, igual que en el menu de
+     Configuracion de P5R. */
+  @media(max-width:900px){
+    .menu-figura{
+      display:block;
+      right:auto;left:-20%;top:0;translate:none;
+      width:78%;max-width:340px;height:100%;
+      opacity:.3;transform:rotate(-4deg);
+    }
+    .menu-figura img{width:100%;height:100%;object-fit:cover;object-position:center}
+    /* padding-left corto: el texto arranca cerca del filo del logo, no al
+       centro de la pantalla como en escritorio */
+    .menu-lista{align-items:flex-start;padding:0 20px}
+    /* Tope duro en vw, no solo el %-de-88 heredado: --sangria + max-width
+       en % pueden sumar mas de 100% del contenedor (20% + 88% = 108%), y en
+       una pantalla angosta eso es texto real saliendose por el borde. Este
+       tope gana porque es mas especifico que la regla base de .menu-lista a. */
+    .menu-lista a{max-width:min(88%, 78vw)}
+    /* Escalon mas corto que en escritorio (4% en vez de 5% por paso): la
+       cascada se sigue alejando del logo, pero sin empujar los items del
+       fondo fuera de una pantalla que ya es angosta de por si. */
+    .menu-lista a:nth-child(1){--sangria:0}
+    .menu-lista a:nth-child(2){--sangria:4%}
+    .menu-lista a:nth-child(3){--sangria:8%}
+    .menu-lista a:nth-child(4){--sangria:12%}
+    .menu-lista a:nth-child(5){--sangria:16%}
+    /* El clamp de escritorio tiene un piso de 2rem que en un telefono
+       angosto ya es grande de mas combinado con el --sangria de arriba;
+       aqui baja a 1.5rem para que el texto tenga a donde encoger de verdad. */
+    .menu-lista a > span{font-size:calc(clamp(1.5rem,8.6vw,3.4rem) * var(--escala))}
+  }
   .cerrar-menu{
     position:absolute;top:26px;right:30px;z-index:3;
     font-family:var(--disp);font-size:2.2rem;line-height:1;
@@ -608,7 +643,6 @@
     background:var(--paper);color:var(--ink);
     clip-path:var(--filo);
     transform:skewX(-11deg) rotate(var(--giro));
-    transition:background .16s, color .16s;
   }
   /* la alternancia: las pares son placa negra con filo blanco */
   .menu-lista a:nth-child(even){
@@ -647,6 +681,7 @@
   /* al pasar encima la placa se vuelve roja, como el item seleccionado */
   .menu-lista a:hover,.menu-lista a:focus-visible{
     background:var(--rojo);color:var(--paper);box-shadow:none;
+    animation:p5HoverSnap .36s steps(1,end);
   }
   .menu-lista a:hover i,.menu-lista a:focus-visible i{
     background:var(--paper);color:var(--rojo);
@@ -986,12 +1021,24 @@
 
      Ninguna mueve su propia caja al hacer hover: el desplazamiento vive en
      los hijos (regla de oro del hover de este sitio). */
+  /* Parpadeo electrico al entrar en hover, compartido por .orbita .sat y
+     .menu-lista a: en vez de un fundido suave de fondo/color, dos golpes
+     de blanco/rojo con steps() (sin interpolar) antes de asentarse.
+     0% y 100% NO se declaran a proposito -- mismo truco que p5Confirm mas
+     abajo: el navegador usa ahi el valor real de :hover de cada selector
+     (rojo para .menu-lista a, blanco para .orbita .sat), asi un solo
+     keyframe sirve para los dos sin repetir el color final dos veces. */
+  @keyframes p5HoverSnap{
+    20% {background:var(--paper);color:var(--rojo)}
+    40% {background:var(--rojo);color:var(--paper)}
+    60% {background:var(--paper);color:var(--rojo)}
+  }
   .orbita .sat{
     clip-path:var(--filo);
     /* ceñidas al texto: en la referencia ninguna placa es mas ancha que su
        etiqueta. Estiradas al ancho de la celda se leian como una tabla */
     width:max-content;max-width:100%;
-    transition:background .18s, box-shadow .18s, color .18s;
+    transition:box-shadow .18s;
   }
   /* con el giro fuerte las esquinas se salen de su celda; el hero ya recorta
      con overflow:hidden, que es justo el encuadre de la referencia */
@@ -1027,7 +1074,10 @@
   /* Al pasar encima TODO se vuelve blanco. El blanco pasa a ser el estado
      seleccionado y el rojo el de reposo, al reves que antes: sobre un hero
      que ya es rojo y negro, el blanco es lo unico que puede destacar mas. */
-  .orbita .sat:hover{background:var(--paper);color:var(--ink);box-shadow:none}
+  .orbita .sat:hover{
+    background:var(--paper);color:var(--ink);box-shadow:none;
+    animation:p5HoverSnap .36s steps(1,end);
+  }
 
   /* ⚠️ Los CTA pierden aqui su sombra dura: clip-path recorta tambien el
      box-shadow exterior, asi que la sombra saldria cortada por el filo.
@@ -1618,6 +1668,21 @@
   }
   .p5-tooltip.activo{opacity:1;transform:translate(14px,-140%) scale(1)}
   .p5-tooltip b{color:var(--rojo);margin-left:6px}
+  /* Particulas de "confirmacion": 2-3 estrellas de 4 puntas, blancas, que
+     el JS inyecta en las coordenadas del clic sobre .btn/.menu-lista a y
+     borra solo cuando 'animationend' dispara -- el keyframe hace todo el
+     trabajo visual, el JS solo posiciona y limpia. */
+  .chispa-confirma{
+    position:fixed;left:0;top:0;width:16px;height:16px;
+    pointer-events:none;z-index:600;fill:var(--paper);
+    transform:translate(-50%,-50%) scale(0) rotate(0deg);
+    animation:confirmaBurst .3s cubic-bezier(.2,1,.3,1) forwards;
+  }
+  @keyframes confirmaBurst{
+    0%  {opacity:1;transform:translate(-50%,-50%) scale(0) rotate(0deg)}
+    55% {opacity:1}
+    100%{opacity:0;transform:translate(-50%,-50%) scale(1.5) rotate(35deg)}
+  }
   /* el poligono crece desde el centro con rebote */
   .js .radar .valor,.js .radar .punto{opacity:0}
   .ficha-radar.go .radar .valor{
@@ -1676,6 +1741,30 @@
     100%{opacity:0;transform:skewX(10deg) translate(0,0)}
   }
 
+  /* Marquesina de advertencia estilo P5: una franja angosta de lado a
+     lado, texto que nunca para -- igual que las cintas de aviso que
+     cruzan la pantalla en las transiciones de menu. */
+  .marquesina{
+    overflow:hidden;white-space:nowrap;
+    background:var(--ink-2);border-bottom:1px solid var(--line);
+    padding:8px 0;
+  }
+  .marquesina-pista{
+    display:inline-flex;width:max-content;
+    animation:marquesinaScroll 22s linear infinite;
+  }
+  .marquesina-pista span{
+    flex:none;
+    font-family:var(--ui);font-weight:900;text-transform:uppercase;
+    letter-spacing:.14em;font-size:.72rem;color:var(--violet-hi);opacity:.45;
+  }
+  @keyframes marquesinaScroll{
+    from{transform:translateX(0)}
+    to  {transform:translateX(-50%)}
+  }
+  @media(prefers-reduced-motion:reduce){
+    .marquesina-pista{animation-play-state:paused}
+  }
   footer{
     border-top:2px solid var(--line);padding:34px 0;color:var(--muted);font-size:.82rem;
   }
@@ -1834,6 +1923,8 @@
     .btn:hover i,.card:hover,.svc:hover h3,.svc:hover p,.mail:hover span,.mail:hover::after,.logo:hover img{transform:none}
     .mail::after{display:none}
     .btn.confirmando{animation:none}
+    .chispa-confirma{display:none}
+    .orbita .sat:hover,.menu-lista a:hover,.menu-lista a:focus-visible{animation:none}
   }
 </style>
 </head>
@@ -2330,6 +2421,18 @@
 </section>
 
 <footer>
+  <!-- Marquesina puramente decorativa: repite la misma marca que ya esta
+       en el logo de al lado, aria-hidden para no duplicarla en lectores
+       de pantalla. Dos copias identicas de .marquesina-pista span, una
+       detras de otra -- animar exactamente translateX(-50%) hace que la
+       segunda copia llegue justo a donde empezo la primera, sin salto
+       visible en el loop. -->
+  <div class="marquesina" aria-hidden="true">
+    <div class="marquesina-pista">
+      <span>NOTMAN RIVERA × MOTION GRAPHICS × WEB DESIGN × </span>
+      <span>NOTMAN RIVERA × MOTION GRAPHICS × WEB DESIGN × </span>
+    </div>
+  </div>
   <div class="wrap foot-in">
     <span style="display:flex;align-items:center;gap:10px">
       <img src="/assets/logo.webp" alt="NotMan" style="height:26px;width:auto;opacity:.7" width="440" height="247" loading="lazy">
@@ -2367,6 +2470,53 @@
   // Marca que el JS esta vivo. El CSS solo esconde contenido si ve esta clase,
   // asi que si algo falla aqui la pagina se ve completa en vez de vacia.
   document.documentElement.classList.add('js');
+
+  /* ===== HAPTICOS =====
+     Vibración muy corta en interacciones clave, como el clic mecánico de
+     un menú de consola. navigator.vibrate no existe en desktop ni en
+     iOS/Safari -- el if lo vuelve un no-op ahí, nunca lanza. Un solo
+     listener delegado en document (closest) en vez de uno por elemento:
+     cubre todos los .btn/.abrir-menu/.cerrar-menu/.visor-thumb/.lang que
+     ya existen, sin tener que tocar cada addEventListener por separado. */
+  function tocHaptico(ms = 15){
+    if (navigator.vibrate) navigator.vibrate(ms);
+  }
+  document.addEventListener('click', e => {
+    if (e.target.closest('.btn, .abrir-menu, .cerrar-menu, .visor-thumb, .lang')) tocHaptico();
+  });
+
+  /* ===== PARTICULAS DE CONFIRMACION =====
+     2-3 estrellas de 4 puntas, blancas, en las coordenadas del clic sobre
+     .btn/.menu-lista a -- @keyframes hace todo el trabajo visual, el JS
+     solo crea los nodos, los posiciona y los borra cuando 'animationend'
+     avisa que ya terminaron (no un setTimeout adivinado).
+     Captura, no burbujeo: .menu-lista hace stopPropagation() en burbujeo
+     para que sus clics no cierren el menu de rebote (ver mas abajo), y eso
+     tambien le habria tapado el paso a un listener delegado normal. En
+     captura el evento pasa por aqui ANTES de llegar a .menu-lista, asi que
+     ese stopPropagation() nunca alcanza a bloquearlo. */
+  const NS_SVG = 'http://www.w3.org/2000/svg';
+  function chispasConfirma(x, y){
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const n = 2 + Math.round(Math.random());
+    for (let i = 0; i < n; i++){
+      const svg = document.createElementNS(NS_SVG, 'svg');
+      svg.setAttribute('viewBox', '0 0 24 24');
+      svg.classList.add('chispa-confirma');
+      svg.style.left = (x + (Math.random() * 24 - 12)) + 'px';
+      svg.style.top  = (y + (Math.random() * 24 - 12)) + 'px';
+      svg.style.animationDelay = (i * 40) + 'ms';
+      const path = document.createElementNS(NS_SVG, 'path');
+      path.setAttribute('d', 'M12 0 14 10 24 12 14 14 12 24 10 14 0 12 10 10 Z');
+      svg.appendChild(path);
+      document.body.appendChild(svg);
+      svg.addEventListener('animationend', () => svg.remove());
+    }
+  }
+  document.addEventListener('click', e => {
+    const el = e.target.closest('.btn, .menu-lista a');
+    if (el) chispasConfirma(e.clientX, e.clientY);
+  }, true);
 
   /* ===== LETRAS SUELTAS (linea base irregular, estilo P5R) =====
      Patrones fijos, NO Math.random(): un patron por indice se ve igual de
