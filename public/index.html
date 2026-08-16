@@ -2889,6 +2889,12 @@
       });
       p.addEventListener('blur', ocultarTip);
     });
+    // En tactil no existe "mouseleave": un tap dispara el mousemove
+    // sintetico que muestra el tooltip, pero al levantar el dedo y hacer
+    // scroll nada lo apaga -- se queda flotando, fijo en la coordenada
+    // donde se tocó, mientras el contenido se mueve debajo. El scroll del
+    // documento es la señal mas simple de "ya no estoy tocando el punto".
+    addEventListener('scroll', ocultarTip, {passive: true});
   }
 
   /* ===== BARRIDO DE ESCENA =====

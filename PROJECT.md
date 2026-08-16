@@ -289,6 +289,16 @@ Las seis piezas se verificaron juntas con Playwright (`getComputedStyle`, captur
 
 Las cinco piezas se verificaron con Playwright antes de commitear, incluyendo capturas de pantalla a mitad de cada animación (no solo al inicio/final) — así se encontró el problema real de contraste del glitch del correo, que `getComputedStyle` por sí solo no habría delatado.
 
+### Arreglo: el tooltip del radar se quedaba pegado en táctil (2026-08-16)
+
+Rubén reportó que al tocar una habilidad del radar (Figma, Photoshop, etc.) y luego hacer scroll, la etiqueta con el nombre/valor se quedaba flotando en pantalla en vez de desaparecer.
+
+Causa: el tooltip (ver "Tooltip del radar" más arriba) solo escuchaba eventos de mouse/teclado — `mousemove`/`mouseleave`/`focus`/`blur`. En táctil no existe un "mouseleave" real: un tap dispara el `mousemove` sintético de compatibilidad que Chrome/Safari móvil generan al tocar (por eso el tooltip sí aparecía), pero al levantar el dedo no hay ningún evento que avise "ya no estás tocando el punto". El div, que es `position:fixed`, se quedaba anclado a esa coordenada de pantalla mientras el usuario scrolleaba el contenido debajo.
+
+Arreglo de una línea: `addEventListener('scroll', ocultarTip, {passive:true})` dentro del mismo bloque del tooltip. El scroll del documento es la señal más simple y confiable de "el dedo ya no está sobre el punto", sin necesitar detectar tipo de input (touch vs mouse) ni añadir un segundo set de listeners táctiles.
+
+Verificado disparando un `mousemove` sintético directo sobre un `.punto` (para no depender de si la emulación táctil de Playwright reproduce fielmente el touch-a-mouse de un navegador real) y confirmando `activo` antes y después de un evento `scroll`: `true` → `false`.
+
 ## Redes (footer)
 
 Instagram (`@notman.rivera`), LinkedIn y Behance (`/notmanrivera`) como iconos SVG inline en `.social`, dentro de `.foot-in`. Sin librería de íconos — son 3 `<svg>` a mano, glifos genéricos (cámara, "in", "Bē") para no reproducir marcas registradas al pixel.
