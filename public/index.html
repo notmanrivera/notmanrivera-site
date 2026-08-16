@@ -1103,23 +1103,25 @@
 
   /* ===== SECTIONS ===== */
   section{position:relative;padding:130px 0;overflow:hidden}
-  /* separador inclinado en vez de una linea recta: el corte diagonal es
-     la firma de los menus de Persona. El borde ya no es liso -- un
-     mask-image con un SVG en linea (una tira dentada, como pincelada
-     seca o papel rasgado) recorta el mismo degradado violeta/rojo/violeta
-     de antes, asi que el color no cambia, solo su silueta. mask-size
-     repite el patron cada 40px; el -webkit- es por Safari, que todavia
-     no resuelve mask-image sin el. */
-  section + section::before{
-    content:"";position:absolute;top:-6px;left:-4%;right:-4%;height:14px;
-    background:linear-gradient(90deg,transparent,var(--violet) 18%,var(--rojo) 50%,var(--violet) 82%,transparent);
-    -webkit-mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 16'%3E%3Cpath d='M0,4 5,2 10,6 15,3 20,7 25,2 30,6 35,3 40,4 40,12 35,15 30,11 25,14 20,10 15,13 10,9 5,12 0,10 Z' fill='%23000'/%3E%3C/svg%3E");
-    mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 16'%3E%3Cpath d='M0,4 5,2 10,6 15,3 20,7 25,2 30,6 35,3 40,4 40,12 35,15 30,11 25,14 20,10 15,13 10,9 5,12 0,10 Z' fill='%23000'/%3E%3C/svg%3E");
-    -webkit-mask-repeat:repeat-x;mask-repeat:repeat-x;
-    -webkit-mask-size:40px 14px;mask-size:40px 14px;
-    transform:rotate(-1.1deg);
-    pointer-events:none;z-index:1;
+  /* Vuelta a la cuña geometrica: un solo triangulo grande y asimetrico en
+     --ink-2 mordiendo el borde superior de cada seccion, en vez de la
+     linea diagonal lisa (o el borde rasgado de mask-image de antes). Mismo
+     espiritu que .campo/.campo2 del header, pero horizontal y en la costura
+     entre secciones. :not(:first-of-type) porque #trabajo no tiene una
+     seccion previa real de la que "heredar" el corte -- una cuña ahi se
+     vería huerfana, flotando justo debajo del header. Altura tope 90px,
+     bien adentro de los 130px de padding-top: .sec-head empieza justo
+     despues de ese padding, y la cuña nunca debe llegar a pisarlo. */
+  section:not(:first-of-type)::before{
+    content:"";position:absolute;top:0;left:0;right:0;height:90px;
+    background:var(--ink-2);
+    clip-path:polygon(0 0, 100% 0, 100% 18%, 0 100%);
+    pointer-events:none;z-index:0;
   }
+  /* La mitad de las costuras la espeja (mismo triangulo, lado contrario)
+     para que la repeticion no se sienta como un patron mecanico al bajar
+     por el sitio. */
+  section:not(:first-of-type):nth-of-type(even)::before{transform:scaleX(-1)}
   /* rayas diagonales de fondo, muy tenues, para que nada quede plano */
   section::after{
     content:"";position:absolute;inset:0;pointer-events:none;z-index:0;
