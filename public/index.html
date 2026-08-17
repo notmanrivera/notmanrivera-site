@@ -1521,39 +1521,6 @@
     font-size:.62rem;letter-spacing:.1em;color:var(--muted);
     writing-mode:vertical-rl;transform:rotate(180deg);
   }
-  /* ===== REEL BLOQUEADO (placeholder "Confidencial") =====
-     El reel de verdad sigue comentado mas abajo (a peticion de Ruben, ver
-     nota "EN STAND BY"). Esta placa NO lo reactiva -- es un teaser aparte
-     que ocupa su lugar mientras tanto, con la estetica de expediente
-     bloqueado de un menu de Persona en vez de dejar un hueco vacio.
-     Rayas en --rojo/--ink y no en amarillo/negro: amarillo no existe en
-     la paleta del sitio (cada color tiene su trabajo asignado, ver
-     PROJECT.md), y meter uno nuevo solo para esta placa rompe el sistema
-     por una sola pieza. */
-  .frame-bloqueado{
-    display:flex;align-items:center;justify-content:center;
-    background:repeating-linear-gradient(-45deg,
-      var(--rojo) 0 18px, var(--ink) 18px 36px);
-    overflow:hidden;
-  }
-  .bloqueado-etiqueta{
-    position:absolute;top:14px;left:-8px;z-index:2;
-    background:var(--ink);color:var(--paper);
-    font-family:var(--ui);font-weight:900;text-transform:uppercase;
-    font-size:.68rem;letter-spacing:.1em;
-    padding:6px 16px;transform:skewX(-6deg);
-    box-shadow:3px 3px 0 var(--sombra);
-  }
-  /* el texto grande, como los numeros de fondo de .svc-bignum: opacidad
-     baja, decorativo, nunca compite con la etiqueta ni con el titulo real
-     de la tarjeta que va debajo en .card-body */
-  .bloqueado-grande{
-    font-family:var(--ui);font-weight:900;text-transform:uppercase;
-    font-size:clamp(1.8rem,7vw,3.2rem);letter-spacing:.06em;
-    color:var(--ink);opacity:.34;
-    transform:rotate(-11deg);white-space:nowrap;
-    pointer-events:none;user-select:none;
-  }
   .cinta-proximamente{
     position:absolute;top:14px;left:-8px;z-index:2;
     background:var(--rojo);color:var(--paper);
@@ -2585,41 +2552,37 @@
       <p data-es="Animación, edición deportiva y diseño de interfaz. Dale play." data-en="Animation, sports editing and interface design. Hit play.">Animación, edición deportiva y diseño de interfaz. Dale play.</p>
     </div>
 
-    <!-- Placeholder del reel, estetica "expediente bloqueado" -- NO es el
-         reel comentado mas abajo, es una placa aparte que ocupa su lugar
-         mientras el reel real sigue en stand by. Ver PROJECT.md. -->
+    <!-- Reel real, en Vimeo (2026-08-17) -- reactivado, ya no es el
+         placeholder "expediente bloqueado". work-grid-uno porque el reel
+         vive solo (el teaser de "Próximamente" de abajo sigue en stand
+         by): un solo hijo en un grid auto-fit se estira a todo el ancho
+         de la fila y se ve como cartel de banco, no tarjeta. -->
     <div class="work-grid work-grid-uno">
       <article class="card rv">
         <div class="card-in">
-          <div class="frame frame-bloqueado">
-            <span class="bloqueado-etiqueta" data-es="Bloqueado" data-en="Locked">Bloqueado</span>
-            <span class="bloqueado-grande">CONFIDENTIAL</span>
+          <div class="frame">
+            <iframe src="https://player.vimeo.com/video/1218963729?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479"
+                    allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share"
+                    title="Reel - NotMan"></iframe>
           </div>
-          <div class="card-body">
-            <h3 data-es="Reel de animación" data-en="Animation reel">Reel de animación</h3>
-            <p data-es="En producción con material nuevo — vuelve pronto." data-en="In production with new material — coming back soon.">En producción con material nuevo — vuelve pronto.</p>
-          </div>
-        </div>
-      </article>
-    </div>
-
-    <!-- ⚠️ EN STAND BY a pedido de Rubén (2026-08-13): tanto el reel como
-         el teaser de "Próximamente" del portafolio web se retiran de la
-         vista hasta que el pase material nuevo para las dos. El markup se
-         queda completo aqui adentro, comentado, para reactivarlo con solo
-         quitar este comentario -- no se borro nada, no hay que reconstruir
-         las tarjetas desde cero cuando llegue el contenido.
-    <div class="work-grid">
-      <article class="card rv">
-        <div class="card-in">
-          <div class="frame"><iframe src="https://drive.google.com/file/d/1siqcAjyDYzRYeVd0EKn1E4dbUBghV-18/preview" allow="autoplay" allowfullscreen title="Animation Reel"></iframe></div>
           <div class="card-body">
             <h3 data-es="Reel de animación" data-en="Animation reel">Reel de animación</h3>
             <p data-es="Motion graphics 2D y 3D: intros, transiciones, piezas para redes y anuncios animados." data-en="2D and 3D motion graphics: intros, transitions, social pieces and animated ads.">Motion graphics 2D y 3D: intros, transiciones, piezas para redes y anuncios animados.</p>
           </div>
         </div>
       </article>
+    </div>
 
+    <!-- ⚠️ EN STAND BY a pedido de Rubén (2026-08-13): el teaser de
+         "Próximamente" del portafolio web (sitios sin lanzar todavia).
+         El reel de arriba YA SE REACTIVO (2026-08-17, ahora en Vimeo en
+         vez del placeholder bloqueado) -- esto es contenido aparte, sigue
+         en pausa. El markup se queda completo aqui adentro, comentado,
+         para reactivarlo con solo quitar este comentario -- no se borro
+         nada, no hay que reconstruir la tarjeta desde cero cuando llegue
+         el contenido. work-grid-uno ya incluido: al reactivarse tambien
+         vive sola.
+    <div class="work-grid work-grid-uno">
       <article class="card rv">
         <div class="card-in">
           <div class="frame frame-proximas">
