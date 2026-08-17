@@ -136,7 +136,6 @@
   :root{
     --ink:#000000;
     --ink-2:#1A1A1A;          /* paneles: gris grafito, profundidad sobre negro puro */
-    --p5-yellow:#FCEE0A;      /* acento de alerta -- solo en contadores y nivel del radar, no compite con el sistema rojo/morado/blanco de arriba */
     --violet:#8B3FFF;
     --violet-hi:#A96BFF;
     --violet-deep:#4A1391;
@@ -1132,11 +1131,28 @@
     font-family:var(--body);color:var(--paper);
     font-size:clamp(1.05rem,1.9vw,1.3rem);line-height:1.6;
   }
+  /* Maquina de escribir: cada caracter del dialogo entra por su cuenta,
+     no todo el parrafo de un tiron -- el gesto que hace que la caja se
+     sienta como dialogo de RPG y no solo un parrafo con fade-in.
+     ⚠️ Un intento anterior usaba 274 animaciones CSS independientes, una
+     por caracter, escalonadas con animation-delay. Se veia bien en teoria
+     pero en la practica Chromium dejaba de disparar animaciones pasado
+     cierto punto (reproducido dos veces seguidas, siempre en el mismo
+     caracter) -- demasiadas animaciones cortas y simultaneas para que el
+     navegador las sostenga todas. Se cambio a un solo bucle de
+     requestAnimationFrame en JS (ver MAQUINA DE ESCRIBIR mas abajo) que
+     calcula cuantos caracteres deberian estar visibles segun el tiempo
+     transcurrido, y les agrega la clase .v -- un mecanismo, no 274. */
+  .lede p .ch{opacity:0}
+  .lede p .ch.v{opacity:1}
   /* La placa de nombre, como un letrero de dialogo que se asoma por
-     encima del cuadro de texto. */
+     encima del cuadro de texto. --rojo y no amarillo: --p5-yellow se quitó
+     del sistema (ver "Se retira --p5-yellow" más abajo en PROJECT.md) --
+     texto en --paper porque --rojo ya es oscuro, blanco es el par que usa
+     el resto del sitio sobre fondo rojo (.menu-lista a:hover, etc.). */
   .dialog-name{
     position:absolute;top:-15px;left:10px;z-index:2;
-    background:var(--p5-yellow);color:var(--ink);
+    background:var(--rojo);color:var(--paper);
     font-family:var(--disp);font-weight:400;text-transform:uppercase;
     font-size:1.3rem;letter-spacing:.02em;
     padding:4px 16px;
@@ -1213,12 +1229,6 @@
     font-size:3.6rem;line-height:1;color:var(--violet-hi);
     transform:skewX(-8deg);transform-origin:left;
   }
-  /* Solo el contador real (el "9+" que cuenta hacia arriba al entrar en
-     pantalla, ver ioCifras mas abajo) va en --p5-yellow -- las otras dos
-     placas del hero ("2D/3D", "MX·ES·MENA") son texto estatico, no cifras,
-     y se quedan en violeta. Mas especifico que .stat b de arriba para
-     ganarle sin tocar esa regla general. */
-  .stat b.cuenta{color:var(--p5-yellow)}
   .stat span{
     font-family:var(--ui);font-weight:300;font-size:.62rem;
     color:var(--muted);text-transform:uppercase;letter-spacing:.14em;
@@ -1678,11 +1688,8 @@
   .cifras{display:flex;gap:34px;flex-wrap:wrap;margin-bottom:20px}
   .cifra b{
     display:block;font-family:var(--disp);font-weight:400;
-    font-size:3.4rem;line-height:1;color:var(--p5-yellow);
+    font-size:3.4rem;line-height:1;color:var(--violet-hi);
     transform:skewX(-8deg);transform-origin:left;
-    /* la sombra dura en --ink se queda: negro solido detras de amarillo no
-       le resta legibilidad (el glifo en si sigue siendo amarillo plano),
-       y es la misma sombra de comic que usa el resto del sitio */
     text-shadow:3px 3px 0 var(--ink);
   }
   .cifra span{
@@ -1751,14 +1758,14 @@
     stroke-linejoin:round;
     transform-box:view-box;transform-origin:310px 205px;
   }
-  .radar .punto{fill:var(--p5-yellow);stroke:var(--paper);stroke-width:2.5}
+  .radar .punto{fill:var(--rojo);stroke:var(--paper);stroke-width:2.5}
   .radar .eje{
     font-family:var(--disp);font-size:20px;letter-spacing:.05em;
     fill:#fff;text-transform:uppercase;
   }
   .radar .rango{
     font-family:var(--ui);font-size:11px;font-weight:300;letter-spacing:.08em;
-    fill:var(--p5-yellow);text-transform:uppercase;
+    fill:rgba(255,255,255,.74);text-transform:uppercase;
   }
   .radar .punto{cursor:pointer}
   /* etiqueta estilo Persona 5: fondo --ink, texto --paper, filo diagonal.
@@ -2044,6 +2051,7 @@
     .chispa-confirma{display:none}
     .orbita .sat:hover,.menu-lista a:hover,.menu-lista a:focus-visible{animation:none}
     .dialog-next{animation:none;opacity:.8}
+    .lede p .ch{opacity:1}
   }
 </style>
 </head>
@@ -2212,7 +2220,7 @@
          entre idiomas, igual que "Rubén Rivera" en el logo. -->
     <div class="lede">
       <span class="dialog-name">NotMan</span>
-      <p data-es="Soy el refuerzo táctico que tu agencia necesita. 9 años de experiencia diseñando y animando para agencias, jugadores y representantes de élite. Cuando a tu equipo le falta capacidad o tiempo, yo entro en acción. Motion graphics, video y diseño web. Listo para el despliegue." data-en="I am the tactical backup your agency needs. 9 years of experience designing and animating for agencies, elite players and representatives. When your team runs out of capacity or time, I step in. Motion graphics, video, and web design. Ready for deployment.">Soy el refuerzo táctico que tu agencia necesita. 9 años de experiencia diseñando y animando para agencias, jugadores y representantes de élite. Cuando a tu equipo le falta capacidad o tiempo, yo entro en acción. Motion graphics, video y diseño web. Listo para el despliegue.</p>
+      <p class="dialog-texto" data-es="Soy el refuerzo táctico que tu agencia necesita. 9 años de experiencia diseñando y animando para agencias, jugadores y representantes de élite. Cuando a tu equipo le falta capacidad o tiempo, yo entro en acción. Motion graphics, video y diseño web. Listo para el despliegue." data-en="I am the tactical backup your agency needs. 9 years of experience designing and animating for agencies, elite players and representatives. When your team runs out of capacity or time, I step in. Motion graphics, video, and web design. Ready for deployment.">Soy el refuerzo táctico que tu agencia necesita. 9 años de experiencia diseñando y animando para agencias, jugadores y representantes de élite. Cuando a tu equipo le falta capacidad o tiempo, yo entro en acción. Motion graphics, video y diseño web. Listo para el despliegue.</p>
       <i class="dialog-next" aria-hidden="true"></i>
     </div>
 
@@ -2750,7 +2758,56 @@
 
   function dispararTexto(el){ el.classList.add('go'); }
 
+  /* ===== MAQUINA DE ESCRIBIR EN LA CAJA DE DIALOGO =====
+     Envuelve cada caracter del parrafo del dialogo en un span.ch y un solo
+     bucle de requestAnimationFrame le agrega la clase .v (visible) segun
+     cuanto tiempo real ha pasado -- no 274 animaciones CSS independientes
+     con animation-delay (se probo asi primero: Chromium dejaba de disparar
+     animaciones pasado cierto punto, siempre el mismo caracter, reproducido
+     dos veces seguidas -- demasiadas para sostener a la vez). Un solo rAF
+     que calcula "cuantos caracteres tocan ya" es autocorrectivo si el
+     navegador salta un frame, y si la pestaña queda oculta simplemente deja
+     de pedir frames -- al volver, calcula el tiempo real transcurrido y
+     salta al punto que corresponda, no se queda atascado.
+     Arranca cuando .lede consigue .go (via MutationObserver, para no tener
+     que tocar entradaHero/dispararTexto) con un colchon de 300ms para que
+     la caja aterrice primero. Bajo prefers-reduced-motion no se envuelve
+     nada, el texto se queda plano y completo desde el principio. */
+  function maquinaEscribir(p){
+    if (!p || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const texto = p.textContent;
+    p.innerHTML = '';
+    const spans = [...texto].map(ch => {
+      const s = document.createElement('span');
+      s.className = 'ch';
+      s.textContent = ch;
+      p.appendChild(s);
+      return s;
+    });
+
+    const CPS = 70; // caracteres por segundo, ritmo de tecleo
+    let t0 = null;
+    function paso(ahora){
+      if (t0 === null) t0 = ahora;
+      const visibles = Math.floor((ahora - t0) / (1000 / CPS));
+      for (let i = 0; i < spans.length && i < visibles; i++) spans[i].classList.add('v');
+      if (visibles < spans.length) requestAnimationFrame(paso);
+    }
+    function iniciar(){ setTimeout(() => requestAnimationFrame(paso), 300); }
+
+    const lede = p.closest('.lede');
+    if (!lede || lede.classList.contains('go')) {
+      iniciar();
+    } else {
+      const mo = new MutationObserver(() => {
+        if (lede.classList.contains('go')) { mo.disconnect(); iniciar(); }
+      });
+      mo.observe(lede, {attributes: true, attributeFilter: ['class']});
+    }
+  }
+
   prepararTexto();
+  maquinaEscribir(document.querySelector('.dialog-texto'));
 
   // Lo del hero entra solo al cargar; lo demas al llegar con el scroll
   const enHero = el => el.closest('header') !== null;
@@ -3033,6 +3090,10 @@
         void el.offsetWidth;          // reinicia la animacion
         el.classList.add('go');       // en el acto: rAF no corre si la pestana esta oculta
       }
+      // .lede ya tiene .go (nunca se le quita), asi que maquinaEscribir
+      // arranca su bucle de inmediato con el texto nuevo -- no hace falta
+      // el remove/re-add de arriba, eso es solo para el sistema de .slam
+      if (el.classList.contains('dialog-texto')) maquinaEscribir(el);
     });
 
     // el rotador y el visor de la galeria no tienen data-es/data-en, se avisan aparte
