@@ -515,6 +515,18 @@ Rubén: "ya no me encantan las líneas que aparecen detrás del hero, las que pa
 
 Verificado con Playwright: cero elementos `.slab` en el DOM; `.lede` con `background-color` sólido y el `clip-path` de `--filo`; `.dialog-name` con `opacity:1` tras la entrada y su caja completa asomando por encima de `.lede` sin recortarse, en desktop y móvil; mismo resultado bajo `reduced-motion:reduce`; el tecleo del diálogo llega a los 274 caracteres completos sin cortarse; sin errores de consola; sin overflow horizontal en 390px.
 
+### Placa roja detrás de `.lede`, y un bug real de `clip-path` + `filter:drop-shadow` (2026-08-17)
+
+Rubén, ya con el borde engrosado: "o añade detrás un poco más o un rojo" — las dos cosas a la vez, una placa roja asomando por detrás de la caja de diálogo.
+
+El primer intento fue el enfoque obvio: un segundo `drop-shadow()` en rojo encadenado al filtro existente (`filter:drop-shadow(6px 6px 0 var(--ink)) drop-shadow(13px 13px 0 var(--rojo))`), calcado del doble `drop-shadow` que ya usa `.marca` (el logo del hero) para dar profundidad. **No se veía nada — ni rastro del rojo.** Se aisló con una página de prueba mínima: `clip-path` + `filter:drop-shadow` en el mismo elemento no pinta ninguna sombra en este motor, ni siquiera un negro sólido sobre fondo gris claro (donde sería imposible no verlo si se pintara). Sin `clip-path`, el mismo `filter` se ve perfecto.
+
+Esto quiere decir que el comentario original de `.card-in`/`.p5-tooltip` ("drop-shadow se calcula sobre la silueta ya recortada y sigue el filo real") **daba por sentado que funcionaba y nunca se verificó visualmente** — su sombra es `var(--ink)` sobre fondos ya oscuros, así que la ausencia de sombra y una sombra negra invisible se ven exactamente igual. No se tocó esa nota ni esos componentes (no era lo que se pidió), pero queda anotado por si alguna vez hace falta una sombra visible sobre un elemento con `clip-path` en el sitio — `filter:drop-shadow` no es el camino.
+
+La solución real para `.lede`: una placa de verdad detrás, no un filtro. `.dialogo::before` (el envoltorio, no `.lede`) del mismo tamaño que `.lede`, en `var(--rojo)`, recortada con el mismo `--filo`, corrida con `transform:translate(10px,10px)`. `isolation:isolate` va en `.dialogo`, no en `.lede`: puesto en `.lede`, su propio `z-index:-1` se queda POR ENCIMA del fondo de `.lede` (así es como `.placa-negra` logra su capa "inset", el efecto contrario al que se busca aquí) — la placa roja tiene que ser hermana de `.lede`, no su pseudo-elemento, para quedar genuinamente detrás.
+
+Verificado con Playwright + inspección de píxeles: la placa roja es visible y del color correcto en la esquina inferior derecha, sin overlap raro con `.dialog-name` ni con `.dialog-next`, en desktop y móvil.
+
 ## Trabajar desde una sesión remota (no desde la Mac)
 
 El repo es autosuficiente: un `index.html` sin build step. Editar, revisar y pushear funciona igual en cualquier máquina. **Lo único que no viaja es el despliegue**, y conviene saber exactamente por qué antes de perder tiempo:
