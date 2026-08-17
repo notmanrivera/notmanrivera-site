@@ -1338,6 +1338,63 @@
     0%,100%{transform:scale(1);opacity:.6}
     50%    {transform:scale(1.2);opacity:1}
   }
+  /* ===== MENU DE RESPUESTAS (estilo P5: el turno del jugador) =====
+     Oculto hasta que termina de teclearse la pregunta -- lo revela el
+     callback de maquinaEscribir() en el JS, agregando .go. max-height y
+     no height:auto/display:block: la transicion necesita un numero con el
+     que animar, y el contenido real (2-3 lineas cortas) nunca se acerca
+     al tope de 260px, asi que no se corta. */
+  .dialog-opciones{
+    list-style:none;margin:18px 0 0;padding:16px 0 0;
+    border-top:2px dashed var(--line);
+    display:flex;flex-direction:column;gap:2px;
+    opacity:0;max-height:0;overflow:hidden;
+    transition:opacity .25s,max-height .35s;
+  }
+  .dialog-opciones.go{opacity:1;max-height:260px}
+  /* El cursor de "seguir" (.dialog-next) deja de tener sentido en cuanto
+     aparecen las opciones -- ya no hay mas texto que revelar, le toca al
+     visitante elegir. Mismo truco de selector de hermano que .dialog-name
+     (".lede.go ~ .dialog-name"): por eso .dialog-opciones va ANTES que
+     .dialog-next en el HTML, aunque los dos son position:absolute/normal
+     y el orden en el DOM no mueve nada visualmente. */
+  /* opacity:0 solo no alcanza -- .dialog-next sigue con dialogBlink
+     corriendo (infinite), y una animacion activa le gana a cualquier valor
+     estatico de la misma propiedad sin importar especificidad. Hay que
+     apagar la animacion tambien. */
+  .dialog-opciones.go ~ .dialog-next{opacity:0;animation:none}
+  .dialog-opciones a{
+    position:relative;display:block;
+    font-family:var(--body);color:var(--paper);text-decoration:none;
+    font-size:1rem;padding:8px 4px 8px 22px;
+    transition:color .15s;
+  }
+  /* Cursor de seleccion: el mismo triangulo apuntando a la derecha que ya
+     usa el resto del sitio para "aqui hay accion" (.visor-full, etc.),
+     invisible hasta el hover -- entra deslizandose, no aparece de golpe. */
+  .dialog-opciones a::before{
+    content:"";position:absolute;left:2px;top:50%;
+    width:0;height:0;
+    border-style:solid;border-width:6px 0 6px 9px;
+    border-color:transparent transparent transparent var(--rojo);
+    opacity:0;transform:translate(-4px,-50%);
+    transition:opacity .15s,transform .15s;
+  }
+  .dialog-opciones a:hover,.dialog-opciones a:focus-visible{color:var(--rojo)}
+  .dialog-opciones a:hover::before,.dialog-opciones a:focus-visible::before{
+    opacity:1;transform:translate(0,-50%);
+  }
+  /* Mismo destello de "confirmar" que .btn-1/.btn-2 (p5Confirm), una
+     variante propia porque aqui el color de reposo es texto blanco sobre
+     fondo transparente, no una placa solida -- p5Confirm asume un fondo
+     real que invertir. */
+  @keyframes p5ConfirmOpcion{50%{color:var(--ink);background:var(--rojo)}}
+  .dialog-opciones a.confirmando{animation:p5ConfirmOpcion .15s ease-out}
+  @media(prefers-reduced-motion:reduce){
+    .dialog-opciones{transition:none}
+    .dialog-opciones a::before{transition:none}
+    .dialog-opciones a.confirmando{animation:none}
+  }
   .cta-row{display:flex;flex-wrap:wrap;gap:14px}
   .btn{
     position:relative;
@@ -3119,7 +3176,36 @@
   <div class="wrap rv">
     <span class="sec-tag" data-es="Contacto" data-en="Contact">Contacto</span>
     <h2 style="transform:skewX(-6deg)" data-es="¿Tienes un <em>proyecto</em> en mente?" data-en="Got a <em>project</em> in mind?">¿Tienes un <em>proyecto</em> en mente?</h2>
-    <p style="color:var(--muted);margin-bottom:22px" data-es="Cuéntame qué necesitas y te respondo el mismo día. Si prefieres, agendamos 15 minutos y te muestro ideas concretas para tu marca." data-en="Tell me what you need and I'll reply the same day. If you prefer, we can book 15 minutes and I'll show you concrete ideas for your brand.">Cuéntame qué necesitas y te respondo el mismo día. Si prefieres, agendamos 15 minutos y te muestro ideas concretas para tu marca.</p>
+
+    <!-- Segunda caja de dialogo (2026-08-17, a peticion de Ruben): "vamos a
+         usar la misma caja de dialogo del hero, con el giro de que NOTMAN
+         pregunta en que puede ayudar y el usuario tiene la posibilidad de
+         contestar". Mismo componente .dialogo/.lede/.dialog-name que el
+         hero, sin CSS nuevo para la caja en si -- toda la maquinaria de
+         revelado ya es generica (.lede esta en el selector FADE, el
+         IntersectionObserver ya observa cualquier .lede fuera de <header>,
+         maquinaEscribir() ya recibe cualquier .dialog-texto) asi que esta
+         segunda caja funciona sola, sin cablear nada especifico por ID.
+         Lo unico realmente nuevo es .dialog-opciones: un menu de respuestas
+         al estilo P5 (aparece SOLO cuando termina de teclearse la pregunta,
+         ver el callback de maquinaEscribir en el JS), cada opcion es un
+         mailto real con el asunto tomado de su propio texto -- funciona
+         sin JS (va a hola@notmanrivera.com sin asunto), y con JS se lee el
+         texto visible (ya en el idioma correcto) para armar el asunto,
+         asi no hace falta duplicar copy traducido en un atributo aparte. -->
+    <div class="dialogo">
+      <div class="lede">
+        <p class="dialog-texto" data-es="¿En qué puedo ayudarte?" data-en="What can I help you with?">¿En qué puedo ayudarte?</p>
+        <ul class="dialog-opciones">
+          <li><a href="mailto:hola@notmanrivera.com" data-es="Tengo un proyecto. Hablemos." data-en="I've got a project. Let's talk.">Tengo un proyecto. Hablemos.</a></li>
+          <li><a href="mailto:hola@notmanrivera.com" data-es="Esto es lo que necesitaba ver." data-en="This is what I needed to see.">Esto es lo que necesitaba ver.</a></li>
+          <li><a href="mailto:hola@notmanrivera.com" data-es="Cuéntame cómo empezamos." data-en="Tell me how we start.">Cuéntame cómo empezamos.</a></li>
+        </ul>
+        <i class="dialog-next" aria-hidden="true"></i>
+      </div>
+      <span class="dialog-name">NotMan</span>
+    </div>
+
     <a href="mailto:hola@notmanrivera.com" class="mail" data-text="hola@notmanrivera.com"><span>hola@notmanrivera.com</span></a>
   </div>
 </section>
@@ -3303,7 +3389,7 @@
   /* ===== Animacion de texto estilo Persona ===== */
   const SLAM = 'header h1 .l, h2, .svc h3, .card-body h3, .cred h3, .yo-nombre, .radar-tit';
   const POP  = '.kicker, .sec-tag, .btn, .mail';
-  const FADE = '.lede, .sec-head p, .svc p, .card-body p, .cred p, #contacto .wrap > p, .foot-in > span, .yo-datos li';
+  const FADE = '.lede, .sec-head p, .svc p, .card-body p, .cred p, .foot-in > span, .yo-datos li';
   // traen animacion propia, solo piden .go
   const SOLO = '.stats, .ficha-yo, .ficha-radar';
   const TODO = [SLAM, POP, FADE, SOLO].join(', ');
@@ -3377,9 +3463,14 @@
      Arranca cuando .lede consigue .go (via MutationObserver, para no tener
      que tocar entradaHero/dispararTexto) con un colchon de 300ms para que
      la caja aterrice primero. Bajo prefers-reduced-motion no se envuelve
-     nada, el texto se queda plano y completo desde el principio. */
-  function maquinaEscribir(p){
-    if (!p || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+     nada, el texto se queda plano y completo desde el principio.
+     `alTerminar` (2026-08-17): callback opcional que dispara cuando el
+     ultimo caracter se vuelve visible -- lo usa la caja de #contacto para
+     revelar el menu de respuestas solo despues de que NOTMAN termina de
+     preguntar, nunca antes. Bajo reduced-motion tambien se llama (no hay
+     animacion que esperar, pero el menu igual tiene que aparecer). */
+  function maquinaEscribir(p, alTerminar){
+    if (!p || matchMedia('(prefers-reduced-motion: reduce)').matches) { alTerminar?.(); return; }
     const texto = p.textContent;
     p.innerHTML = '';
     const spans = [...texto].map(ch => {
@@ -3397,6 +3488,7 @@
       const visibles = Math.floor((ahora - t0) / (1000 / CPS));
       for (let i = 0; i < spans.length && i < visibles; i++) spans[i].classList.add('v');
       if (visibles < spans.length) requestAnimationFrame(paso);
+      else alTerminar?.();
     }
     function iniciar(){ setTimeout(() => requestAnimationFrame(paso), 300); }
 
@@ -3411,8 +3503,33 @@
     }
   }
 
+  // Revela el menu de opciones de una caja de dialogo (si la tiene) cuando
+  // termina de teclearse su pregunta -- una funcion propia porque se llama
+  // desde dos sitios (aqui abajo, al cargar, y en el toggle de idioma).
+  function revelarOpciones(p){
+    const opciones = p.closest('.lede')?.querySelector('.dialog-opciones');
+    opciones?.classList.add('go');
+    return opciones;
+  }
+
   prepararTexto();
-  maquinaEscribir(document.querySelector('.dialog-texto'));
+  document.querySelectorAll('.dialog-texto').forEach(p => maquinaEscribir(p, () => revelarOpciones(p)));
+
+  // Menu de respuestas del dialogo: cada opcion es un mailto real (funciona
+  // sin JS), y con JS arma el asunto a partir de su propio texto visible --
+  // ya esta en el idioma correcto, no hace falta duplicarlo en un atributo
+  // aparte. Mismo destello de "confirmar" que los CTA del hero (150ms)
+  // antes de navegar, ver la nota junto a .btn.confirmando en el CSS.
+  document.querySelectorAll('.dialog-opciones a').forEach(a => {
+    a.addEventListener('click', e => {
+      e.preventDefault();
+      const asunto = encodeURIComponent(a.textContent.trim());
+      const ir = () => { location.href = 'mailto:hola@notmanrivera.com?subject=' + asunto; };
+      if (matchMedia('(prefers-reduced-motion: reduce)').matches) { ir(); return; }
+      a.classList.add('confirmando');
+      setTimeout(() => { a.classList.remove('confirmando'); ir(); }, 150);
+    });
+  });
 
   // Lo del hero entra solo al cargar; lo demas al llegar con el scroll
   const enHero = el => el.closest('header') !== null;
@@ -3788,8 +3905,15 @@
       }
       // .lede ya tiene .go (nunca se le quita), asi que maquinaEscribir
       // arranca su bucle de inmediato con el texto nuevo -- no hace falta
-      // el remove/re-add de arriba, eso es solo para el sistema de .slam
-      if (el.classList.contains('dialog-texto')) maquinaEscribir(el);
+      // el remove/re-add de arriba, eso es solo para el sistema de .slam.
+      // El menu de opciones (si esta caja tiene uno) se oculta primero y
+      // solo vuelve a aparecer cuando termina de teclearse la pregunta en
+      // el nuevo idioma -- si no, se quedaria mostrando respuestas mientras
+      // la pregunta todavia se esta reescribiendo encima.
+      if (el.classList.contains('dialog-texto')) {
+        el.closest('.lede')?.querySelector('.dialog-opciones')?.classList.remove('go');
+        maquinaEscribir(el, () => revelarOpciones(el));
+      }
     });
 
     // el rotador y el visor de la galeria no tienen data-es/data-en, se avisan aparte
