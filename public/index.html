@@ -1898,43 +1898,36 @@
   footer{
     border-top:2px solid var(--line);color:var(--muted);font-size:.82rem;
   }
-  /* ===== FOOTER: LOGO GRANDE + CASCADA REAL DEL MENU =====
-     Primer intento: pildoras horizontales chicas. Rubén mandó una
-     referencia mostrando lo que de verdad quería -- las mismas placas
-     numeradas del menú de pantalla completa (num + título + subtítulo,
-     blanco/negro alterno, filo diagonal), en cascada VERTICAL junto al
-     logo grande, no una barra de navegación genérica. Esto reconstruye
-     esa referencia: mismo mecanismo de "nace de atrás del logo" que el
-     menú móvil (logo en z-index:2, la cascada en z-index:1 con
-     margin-left negativo), pero con las placas reales a escala reducida
-     en vez de pildoras. */
+  /* ===== FOOTER: LOGO GRANDE + MINIATURA DEL MENU =====
+     Segundo ajuste: la v2 hacía nacer la cascada de atrás del logo, pero
+     en pantalla el logo tapaba el "01" y el subtítulo de la primera
+     placa -- Rubén lo marcó con una captura. Esta versión ya no solapa
+     con el logo (gap real entre ambos) y quita el subtítulo: ya no es
+     una réplica 1:1 del menú a pantalla completa, es una miniatura
+     simplificada (num + título nada más) que solo evoca esa referencia. */
   .foot-menu{
     display:flex;align-items:center;justify-content:center;
-    flex-wrap:wrap;gap:0;padding:56px 24px 16px;
+    flex-wrap:wrap;gap:28px;padding:56px 24px 16px;
   }
   .foot-logo{
     width:min(300px,42vw);height:auto;
-    position:relative;z-index:2;
   }
   .foot-mini{
     display:flex;flex-direction:column;
-    position:relative;z-index:1;
-    margin-left:-46px;
   }
-  /* Mismo recorte diagonal, la misma alternancia blanco/negro y la misma
-     estructura num+titulo+subtitulo que .menu-lista a (ver MENU EN
-     CASCADA DIAGONAL mas abajo) -- clases propias, a escala de footer, en
-     vez de reusar .menu-lista a directamente: esa clase vive dentro del
-     layout a pantalla completa del menú (flex column al 100% de la
-     altura, etc.), contexto que aquí no aplica. */
+  /* Mismo recorte diagonal y la misma alternancia blanco/negro que
+     .menu-lista a (ver MENU EN CASCADA DIAGONAL mas abajo), pero sin el
+     subtítulo y con clases propias a escala de footer -- esa clase vive
+     dentro del layout a pantalla completa del menú, contexto que aquí no
+     aplica. */
   .foot-mini a{
     display:grid;
     grid-template-columns:auto 1fr;
-    grid-template-areas:"num tit" "num sub";
-    align-items:baseline;column-gap:8px;
+    grid-template-areas:"num tit";
+    align-items:center;column-gap:8px;
     text-decoration:none;width:max-content;max-width:100%;
     position:relative;isolation:isolate;
-    padding:7px 16px 6px 10px;margin-bottom:-7px;
+    padding:7px 16px 7px 10px;margin-bottom:-7px;
     background:var(--paper);color:var(--ink);
     clip-path:var(--filo);
     transform:skewX(-6deg) rotate(var(--giro,0deg));
@@ -1949,14 +1942,9 @@
     line-height:.9;font-size:1.15rem;
   }
   .foot-mini a i{
-    grid-area:num;align-self:center;font-style:normal;
+    grid-area:num;font-style:normal;
     font-family:var(--ui);font-weight:900;font-size:.5rem;letter-spacing:.04em;
     background:var(--rojo);color:#fff;padding:3px 5px;transform:skewX(6deg);
-  }
-  .foot-mini a em{
-    grid-area:sub;font-style:normal;
-    font-family:var(--ui);font-weight:300;text-transform:uppercase;
-    font-size:.42rem;letter-spacing:.09em;opacity:.72;margin-top:2px;line-height:1.2;
   }
   .foot-mini a:hover,.foot-mini a:focus-visible{background:var(--rojo);color:var(--paper)}
   .foot-mini a:hover i{background:var(--paper);color:var(--rojo)}
@@ -1968,17 +1956,17 @@
   .foot-mini a:nth-child(4){margin-left:44px}
   .foot-mini a:nth-child(5){margin-left:58px}
   @media(max-width:760px){
-    /* el solape "detras del logo" y la cascada diagonal solo leen bien
-       con espacio horizontal de sobra; apilado se simplifica a una lista
-       recta y centrada. Sin rotate(var(--giro)) en el transform, el
-       --giro de cada placa (puesto inline en el HTML, imposible de anular
-       desde una hoja de estilos) queda sin efecto sin necesitar
-       !important. Los nth-child de margin-left se repiten aqui con la
-       MISMA especificidad que las reglas base -- ganan por ir despues en
-       la hoja, tampoco hace falta !important para esos. */
+    /* la cascada diagonal solo lee bien con espacio horizontal de sobra;
+       apilado se simplifica a una lista recta y centrada. Sin
+       rotate(var(--giro)) en el transform, el --giro de cada placa
+       (puesto inline en el HTML, imposible de anular desde una hoja de
+       estilos) queda sin efecto sin necesitar !important. Los nth-child
+       de margin-left se repiten aqui con la MISMA especificidad que las
+       reglas base -- ganan por ir despues en la hoja, tampoco hace falta
+       !important para esos. */
     .foot-menu{flex-direction:column;gap:22px;padding:44px 24px 10px}
     .foot-logo{width:min(220px,60vw)}
-    .foot-mini{margin-left:0;align-items:center}
+    .foot-mini{align-items:center}
     .foot-mini a{transform:skewX(-6deg)}
     .foot-mini a:nth-child(1),.foot-mini a:nth-child(2),.foot-mini a:nth-child(3),
     .foot-mini a:nth-child(4),.foot-mini a:nth-child(5){margin-left:0}
@@ -2665,38 +2653,34 @@
       <span>NOTMAN RIVERA × MOTION GRAPHICS × WEB DESIGN × </span>
     </div>
   </div>
-  <!-- Logo grande + version miniatura REAL de las placas del menu de
-       pantalla completa (num + titulo + subtitulo, blanco/negro alterno)
-       en cascada vertical, naciendo de atras del logo -- no la version en
-       pildoras horizontales del primer intento, que se sentia como una
-       barra de navegacion cualquiera y no como el menu de batalla. -->
+  <!-- Logo grande + miniatura simplificada de las placas del menu de
+       pantalla completa (num + titulo, sin subtitulo) en cascada
+       vertical, con espacio propio junto al logo -- ya no nace de atras
+       del logo (v2 lo tapaba, ver PROJECT.md), y ya no lleva el
+       subtitulo: es una evocacion en miniatura del menu grande, no una
+       réplica 1:1. -->
   <div class="wrap foot-menu">
     <img class="foot-logo" src="/assets/logo-lg.webp" alt="NotMan" width="1200" height="675" loading="lazy">
     <nav class="foot-mini" aria-label="Atajos">
       <a href="#trabajo" style="--giro:-2deg">
         <i>01</i>
         <span data-es="Trabajo" data-en="Work">Trabajo</span>
-        <em data-es="Reel y casos" data-en="Reel and case work">Reel y casos</em>
       </a>
       <a href="#servicios" style="--giro:1.6deg">
         <i>02</i>
         <span data-es="Servicios" data-en="Services">Servicios</span>
-        <em data-es="Cuatro formas de trabajar" data-en="Four ways to work">Cuatro formas de trabajar</em>
       </a>
       <a href="#experiencia" style="--giro:-1.4deg">
         <i>03</i>
         <span data-es="Experiencia" data-en="Experience">Experiencia</span>
-        <em data-es="Dónde he trabajado" data-en="Where I've worked">Dónde he trabajado</em>
       </a>
       <a href="#perfil" style="--giro:1.8deg">
         <i>04</i>
         <span data-es="Perfil" data-en="Profile">Perfil</span>
-        <em data-es="Formación y herramientas" data-en="Training and tools">Formación y herramientas</em>
       </a>
       <a href="#contacto" style="--giro:-1.2deg">
         <i>05</i>
         <span data-es="Contacto" data-en="Contact">Contacto</span>
-        <em data-es="Hablemos de tu proyecto" data-en="Let's talk about your project">Hablemos de tu proyecto</em>
       </a>
     </nav>
   </div>
