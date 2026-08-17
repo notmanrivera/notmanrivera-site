@@ -423,6 +423,10 @@ Rubén preguntó dos cosas por separado: si a la caja de diálogo le faltaba alg
 
 Verificado con Playwright: barrido del conteo de caracteres visibles cada 500ms confirmando progreso estable hasta 274/274 sin detenerse (a diferencia del intento anterior); reinicio limpio a 0 visibles con el texto nuevo justo después del toggle de idioma, y 256/256 (el inglés es más corto) al terminar; cero `span.ch` creados y texto visible de inmediato bajo `reducedMotion:'reduce'` de Playwright.
 
+### Ajuste: `.sec-num` un poco más visible (2026-08-17, noche)
+
+Rubén reportó, ya viendo el sitio real desplegado (no una captura recortada), que los números gigantes de fondo (01, 02, 03, 04) casi no se notaban. Tenía razón: `.04` de opacidad para el contorno era el valor elegido en la tanda anterior ("arquitectura de fondo, no numero que compite con el titulo"), pero resultó demasiado sutil en pantalla real. Subido a `.11` de opacidad y el trazo de `2px` a `2.5px` — sigue leyéndose como textura de fondo, detrás de los títulos y sin competir con ellos, pero ahora se nota que está ahí. Verificado con capturas de pantalla en `#servicios` y `#experiencia`.
+
 ## Redes (footer)
 
 Instagram (`@notman.rivera`), LinkedIn y Behance (`/notmanrivera`) como iconos SVG inline en `.social`, dentro de `.foot-in`. Sin librería de íconos — son 3 `<svg>` a mano, glifos genéricos (cámara, "in", "Bē") para no reproducir marcas registradas al pixel.

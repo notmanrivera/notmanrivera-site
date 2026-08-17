@@ -1282,10 +1282,15 @@
      Contorno casi invisible (.04 de opacidad) a proposito -- a este tamaño
      un trazo mas marcado compite con el titulo real en vez de quedarse
      como textura de fondo. */
+  /* .04 de opacidad (el valor original) resultó demasiado sutil en el
+     sitio real -- Rubén lo vio casi invisible en pantalla. Sube a .11 y el
+     trazo de 2px a 2.5px: sigue leyendo como arquitectura de fondo, no
+     como un numero que compite con el titulo, pero ahora se nota que
+     esta ahi. */
   .sec-num{
     position:absolute;top:-10%;right:-10%;font-family:var(--ui);font-weight:900;
     font-size:clamp(10rem,25vw,25rem);line-height:.8;color:transparent;
-    -webkit-text-stroke:2px rgba(255,255,255,.04);
+    -webkit-text-stroke:2.5px rgba(255,255,255,.11);
     transform:skewX(-10deg) rotate(-15deg);
     pointer-events:none;z-index:0;user-select:none;
   }
