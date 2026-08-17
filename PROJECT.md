@@ -564,6 +564,21 @@ Rubén mandó su PDF de portafolio web (7 proyectos 2019-2023: Moser Café Kultu
 
 Verificado con Playwright: cambio de pestaña oculta/muestra el panel correcto, clic en miniatura del tab Web actualiza imagen/cliente/caption, el lightbox abre la pieza correcta desde cualquiera de las dos pestañas, volver a Deportivo lo deja intacto, el toggle de idioma actualiza el caption del tab Web aunque esté oculto, sin overflow horizontal en 390px, sin errores de consola.
 
+## Amplía la galería Deportivo con el PDF de Sports Portfolio (2026-08-17)
+
+Rubén mandó un segundo PDF ("Sports Portfolio", también una sola página gigante — 1920×5591pt esta vez) y explicó de antemano cómo leerlo: los primeros 9 cuadros (grid 3×3) eran presentaciones/transferencias/firmas de jugadores; 3 piezas sueltas promocionaban la Euro, a CR7 y esa final de Champions; los siguientes 9 eran matchdays de Hugo González; los últimos 8, del torneo de voleibol de Al-Arabi. Se verificó ese mapeo contra el PDF renderizado antes de tocar nada, y coincidió exacto.
+
+- **Extracción por detección de huecos negros, no coordenadas a ojo:** brillo promedio por fila (`arr.mean(axis=(1,2))`) para partir la página en bloques, y brillo promedio por columna dentro de cada bloque para partir en celdas — el mismo método de la extracción del PDF web, aplicado dos veces (filas, luego columnas dentro de cada franja). 20 imágenes nuevas, recortadas y a 440px de ancho (piezas de exhibición a 760px, son fotografía real, no gráfico plano, y se ven en el lightbox).
+- **De-duplicación contra lo que ya estaba en el sitio:** de las 26 piezas del PDF, 6 ya vivían en `/assets/galeria/` (Andrea Velarde-Transferencia, Nayrobi García-Firma, Al-Arabi Group Stage/Line-Up/Matchday-4, Hugo González Puebla/Tijuana/Monterrey/Leagues Cup-Nashville). Se compararon visualmente antes de extraer para no duplicar archivo ni miniatura.
+- **Antes de sumar nada se le preguntó a Rubén** qué hacer con las 3 piezas sin cliente (Euro/CR7/Champions) y cómo renombrar el grupo de firmas, porque el nombre viejo ("Sub-17 · Liga BBVA") ya no describía a los 9 -- hay Sub-17 y Sub-21, hombres y mujeres, de clubes distintos (Cruz Azul, Puebla, Chivas, Pumas, Necaxa, Tigres). Eligió: grupo nuevo "Piezas de exhibición" para las 3 sueltas, y renombrar el grupo de firmas.
+- **`.visor-grupo-tit` de "Presentaciones"/"Piezas de exhibición" lleva `data-es`/`data-en` con HTML embebido** (`"Presentaciones <small>Firmas y nuevos contratos</small>"`), igual que ya hace `.galeria-tit` — el toggle de idioma genérico hace `el.innerHTML = ...`, así que el `<small>` anidado sobrevive al cambio de idioma. Los grupos viejos (Al-Arabi SC, Hugo González) no lo necesitan porque su nombre es un cliente real, no se traduce.
+- **`data-cliente` de las 9 presentaciones va con el nombre real de cada jugador**, no un rótulo de categoría genérico (`"Andrea Velarde"`, no `"Sub-17 · Liga BBVA"`) — con 9 personas distintas bajo un mismo grupo, el nombre real en el panel grande es más útil que un bucket compartido.
+- **Al-Arabi sigue siendo "Voleibol · Catar/Baréin"** sin cambios — Rubén confirmó que las 8 piezas (Next Match ×5, Group Stage, Match Schedule, Line-Up) son del mismo torneo de voleibol ya etiquetado.
+
+Resultado: `#galeriaDeportivo` pasa de 9 miniaturas (3 grupos) a 29 (4 grupos) — Al-Arabi SC (8), Hugo González · Mazatlán FC (9), Presentaciones (9), Piezas de exhibición (3).
+
+Verificado con Playwright: conteo exacto por grupo (8/9/9/3 = 29), cero 404 en las 20 imágenes nuevas, clic en miniaturas de los grupos nuevos actualiza cliente/caption/imagen grande, el lightbox abre correctamente una pieza de exhibición, el toggle de idioma traduce los dos títulos de grupo nuevos (con el `<small>` intacto) y el caption activo, sin overflow horizontal en 390px, sin errores de consola.
+
 ## Trabajar desde una sesión remota (no desde la Mac)
 
 El repo es autosuficiente: un `index.html` sin build step. Editar, revisar y pushear funciona igual en cualquier máquina. **Lo único que no viaja es el despliegue**, y conviene saber exactamente por qué antes de perder tiempo:
