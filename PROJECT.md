@@ -486,7 +486,6 @@ Verificado con Playwright: sin solape logo↔menú (`gapLogoAMenu` positivo), ce
 
 ## Pendientes conocidos
 
-- Los tres videos del portafolio son **embeds de Google Drive** y se ven con la marca de Google. Conviene subir el reel a Vimeo y cambiar el `src` del `<iframe>`.
 - Cerrar el envío desde el dominio propio (Workspace o SMTP externo) para que la firma de los correos de prospección coincida con `hola@notmanrivera.com`.
 
 ## Botón "volver arriba" (2026-08-17)
@@ -603,6 +602,16 @@ La causa era el mismo tipo de bug que ya se había corregido para el ANCHO de la
 - **`.orbita h1 .rota` pasa a `position:absolute`** (solo en el layout radial de escritorio, `@media(min-width:1000px)` -- en móvil no hay rejilla, es flujo normal, y ahí nunca hubo el bug). Sacado del flujo, ya no aporta nada a la altura de `<h1>`, que vuelve a depender solo de `.marca` (altura fija). `.rota` se reposiciona con `left:50%` + `translateX(-50%)` (para seguir centrado bajo el logo, ya que `text-align:center` del padre no alcanza a un elemento posicionado) y `top:100%` (el borde inferior de `<h1>`, que ahora coincide con el borde inferior de `.marca`).
 
 Verificado con Playwright: se trazó la posición Y de `.marca` a lo largo de 4 rotaciones completas (16 muestras, ~14s) -- antes del fix, diferencia de 20.8px entre el mínimo y el máximo; después, diferencia de 0px exacto, pese a que la altura de `.rota` seguía variando entre 103px y 146px según el texto. Capturas confirmando que `.rota` se sigue viendo centrada y con el mismo sesgo bajo el logo en dos rotaciones distintas. Sin overflow horizontal en 390px, sin cambios visuales en móvil.
+
+## El reel ya está en Vimeo, se quita el placeholder "Bloqueado" (2026-08-17)
+
+Rubén subió el reel de animación a Vimeo (video `1218963729`) y pasó el embed. Se reemplaza la tarjeta "Bloqueado" (placeholder que ocupaba el lugar del reel mientras no había video final) por la tarjeta real:
+
+- **Se borra `.frame-bloqueado`/`.bloqueado-etiqueta`/`.bloqueado-grande` del CSS** — sin usos restantes en el HTML tras el cambio, así que se quitan en vez de dejarlos muertos.
+- **El wrapper de padding-hack (`padding:56.25% 0 0 0`) y el `<script src="player.js">` que trae el embed de Vimeo por defecto no hacen falta** — `.frame` ya es `aspect-ratio:16/9` con el `<iframe>` en `position:absolute;inset:0`, el mismo patrón responsive que ya usaban los embeds de Drive. Se usa solo el `<iframe src="https://player.vimeo.com/video/1218963729...">` dentro de la estructura `.card`/`.card-in`/`.frame` existente.
+- Sigue pendiente (comentado, sin tocar) la tarjeta "Próximamente" del portafolio web (SASIMA / Zero Limits Marketing) — esa es la única pieza que sigue en stand by; el reel ya no lo está.
+
+Verificado con Playwright: cero elementos `.frame-bloqueado` en el DOM, `src` del iframe apunta al video de Vimeo correcto, la tarjeta conserva las clases `work-grid work-grid-uno` (no se estira a ancho completo sola), título y descripción correctos, sin errores de consola. El video en sí se ve como imagen rota en las pruebas locales porque el entorno sandbox bloquea iframes de terceros (mismo límite ya documentado para Drive) — no es un bug, en el sitio real debería cargar bien.
 
 ## Trabajar desde una sesión remota (no desde la Mac)
 
