@@ -502,6 +502,26 @@
   }
   .hud-paso.activo{background:var(--rojo);border-color:var(--rojo)}
   @media(max-width:640px){.hud-scroll{right:14px;bottom:14px;gap:7px}.hud-paso{width:9px;height:9px}}
+  /* Mismo rombo que .hud-paso, mas grande, apilado justo encima de los 5
+     pips -- ver el HTML junto a .hud-scroll para el porque. Oculto hasta
+     que hay algo de que volver (JS agrega/quita .visible segun scrollY). */
+  .volver-arriba{
+    position:fixed;right:16px;bottom:134px;z-index:90;
+    width:34px;height:34px;
+    display:flex;align-items:center;justify-content:center;
+    background:var(--violet);border:2px solid var(--violet);
+    color:#fff;text-decoration:none;
+    transform:rotate(45deg) scale(.001);
+    transition:background .18s,border-color .18s,transform .25s;
+    opacity:0;pointer-events:none;
+  }
+  .volver-arriba.visible{opacity:1;pointer-events:auto;transform:rotate(45deg) scale(1)}
+  .volver-arriba:hover,.volver-arriba:focus-visible{background:var(--rojo);border-color:var(--rojo)}
+  .volver-arriba svg{width:16px;height:16px;transform:rotate(-45deg)}
+  @media(max-width:640px){
+    .volver-arriba{right:11px;bottom:100px;width:28px;height:28px}
+    .volver-arriba svg{width:13px;height:13px}
+  }
   .nav-in{
     max-width:var(--max);margin:0 auto;padding:14px 24px;
     display:flex;align-items:center;justify-content:space-between;gap:16px;
@@ -2213,6 +2233,19 @@
   <i class="hud-paso"></i><i class="hud-paso"></i><i class="hud-paso"></i><i class="hud-paso"></i><i class="hud-paso"></i>
 </div>
 
+<!-- Volver arriba: un rombo mas grande justo encima de los 5 pips del HUD,
+     como si fuera un sexto paso que te regresa al inicio -- mismo lenguaje
+     visual, no un boton generico suelto en la esquina. Morado por defecto
+     (identidad: te devuelve al origen), rojo al hover como cualquier accion
+     del sitio. href="#inicio" lo engancha al mismo listener de a[href^="#"]
+     de mas abajo (barrido incluido): no hace falta JS de clic nuevo, solo
+     mostrar/ocultar segun el scroll. -->
+<a href="#inicio" class="volver-arriba" id="volverArriba" aria-label="Volver arriba">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true">
+    <path d="M6 15l6-6 6 6"/>
+  </svg>
+</a>
+
 <!-- Menu de pantalla completa en cascada diagonal -->
 <div class="menu-full" id="menuFull" data-abierto="no" role="dialog" aria-modal="true"
      aria-label="Menú de navegación">
@@ -2257,7 +2290,7 @@
   <span class="menu-pie" data-es="Rubén Rivera · NotMan" data-en="Rubén Rivera · NotMan">Rubén Rivera · NotMan</span>
 </div>
 
-<header>
+<header id="inicio">
   <div class="campo"></div>
   <div class="campo2"></div>
   <div class="slab slab-a"></div>
@@ -2795,6 +2828,15 @@
   const onScroll = () => nav.classList.toggle('scrolled', window.scrollY > 8);
   onScroll();
   addEventListener('scroll', onScroll, {passive:true});
+
+  // Volver arriba solo aparece cuando ya te alejaste del inicio -- el
+  // clic ya lo maneja el listener generico de a[href^="#"] mas abajo.
+  const volverArriba = document.getElementById('volverArriba');
+  if (volverArriba) {
+    const onScrollVolver = () => volverArriba.classList.toggle('visible', window.scrollY > innerHeight * .6);
+    onScrollVolver();
+    addEventListener('scroll', onScrollVolver, {passive:true});
+  }
 
   // Snap-in reveal, escalonado dentro de cada grupo
   const io = new IntersectionObserver((es) => {
