@@ -1469,6 +1469,17 @@
      para la placa bloqueada eso se ve como un cartel de banco en vez de
      una tarjeta de portafolio, asi que se acota al ancho de una columna */
   .work-grid-uno{max-width:420px;margin-bottom:28px}
+  /* Reel general (2026-08-17): Rubén, tras ver el video ya funcionando --
+     "creo que es muy pequeño... ¿centrarlo en una especie de cinema look
+     como el que usa YouTube?". No es una tarjeta más del portafolio, es
+     el remate de la sección: ocupa el ancho completo de .wrap en vez de
+     acotarse a una columna, y queda centrado (ya lo esta, .wrap mismo se
+     centra). Misma .card/.card-in que el resto -- ningun componente
+     nuevo, "manteniendo su estetica actual" como pidio, solo mas grande. */
+  .work-grid-cine{max-width:100%;margin:56px auto 8px}
+  .work-grid-cine .card-body{padding:30px 34px 34px}
+  .work-grid-cine .card-body h3{font-size:clamp(2.2rem,3.4vw,2.8rem)}
+  .work-grid-cine .card-body p{max-width:70ch}
   /* .card es SOLO el area que detecta el hover: nunca se transforma.
      Todo lo visual (borde, fondo, tilt 3D) vive en .card-in. Si la caja
      que detecta el hover se moviera, se saldria de debajo del cursor y
@@ -2570,69 +2581,8 @@
       <span class="sec-num">01<span class="chispa-sec" aria-hidden="true"></span></span>
       <span class="sec-tag" data-es="Portafolio" data-en="Portfolio">Portafolio</span>
       <h2 data-es="Reel y <em>casos</em>" data-en="Reel and <em>case work</em>">Reel y <em>casos</em></h2>
-      <p data-es="Un reel general de mi trabajo como animador. Debajo, casos reales por categoría — deportivo y web." data-en="A general reel of my work as an animator. Real case work by category — sports and web — below.">Un reel general de mi trabajo como animador. Debajo, casos reales por categoría — deportivo y web.</p>
+      <p data-es="Casos reales, por categoría — deportivo y web. Al final, el reel general con todo junto." data-en="Real case work, by category — sports and web. At the end, the general reel with it all together.">Casos reales, por categoría — deportivo y web. Al final, el reel general con todo junto.</p>
     </div>
-
-    <!-- Reel real, en Vimeo (2026-08-17) -- reactivado, ya no es el
-         placeholder "expediente bloqueado". work-grid-uno porque el reel
-         vive solo (el teaser de "Próximamente" de abajo sigue en stand
-         by): un solo hijo en un grid auto-fit se estira a todo el ancho
-         de la fila y se ve como cartel de banco, no tarjeta.
-         Rubén: el reel es un demo general de su trabajo como animador, no
-         una pieza enfocada en deportes ni en ningun sector -- de ahi la
-         etiqueta .cinta-general y el copy de abajo, que ya no mencionan
-         un tipo de proyecto en particular. -->
-    <div class="work-grid work-grid-uno">
-      <article class="card rv">
-        <div class="card-in">
-          <div class="frame">
-            <span class="cinta-general" data-es="Reel general" data-en="General reel">Reel general</span>
-            <iframe src="https://player.vimeo.com/video/1218963729?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479"
-                    allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share"
-                    referrerpolicy="strict-origin-when-cross-origin"
-                    title="Reel - NotMan"></iframe>
-          </div>
-          <div class="card-body">
-            <h3 data-es="Reel de animación" data-en="Animation reel">Reel de animación</h3>
-            <p data-es="Un resumen de mi trabajo como animador: motion graphics, edición y diseño de interfaz — sin enfocarme en un sector en particular." data-en="A summary of my work as an animator: motion graphics, editing and interface design — not focused on any one field.">Un resumen de mi trabajo como animador: motion graphics, edición y diseño de interfaz — sin enfocarme en un sector en particular.</p>
-          </div>
-        </div>
-        <span class="chispa-btn" aria-hidden="true"></span>
-      </article>
-    </div>
-
-    <!-- ⚠️ EN STAND BY a pedido de Rubén (2026-08-13): el teaser de
-         "Próximamente" del portafolio web (sitios sin lanzar todavia).
-         El reel de arriba YA SE REACTIVO (2026-08-17, ahora en Vimeo en
-         vez del placeholder bloqueado) -- esto es contenido aparte, sigue
-         en pausa. El markup se queda completo aqui adentro, comentado,
-         para reactivarlo con solo quitar este comentario -- no se borro
-         nada, no hay que reconstruir la tarjeta desde cero cuando llegue
-         el contenido. work-grid-uno ya incluido: al reactivarse tambien
-         vive sola.
-    <div class="work-grid work-grid-uno">
-      <article class="card rv">
-        <div class="card-in">
-          <div class="frame frame-proximas">
-            <span class="cinta-proximamente" data-es="Próximamente" data-en="Coming soon">Próximamente</span>
-            <div class="tira">
-              <img src="/assets/web-proximamente/sasima.webp" alt="Vista previa del sitio de SASIMA" width="900" height="562" loading="lazy" decoding="async">
-            </div>
-            <div class="tira">
-              <img src="/assets/web-proximamente/zlm-agency.webp" alt="Vista previa del sitio de Zero Limits Marketing" width="900" height="562" loading="lazy" decoding="async">
-            </div>
-            <div class="tira confidencial">
-              <span data-es="Cliente confidencial" data-en="Confidential client">Cliente confidencial</span>
-            </div>
-          </div>
-          <div class="card-body">
-            <h3 data-es="Portafolio web (UI/UX)" data-en="Web portfolio (UI/UX)">Portafolio web (UI/UX)</h3>
-            <p data-es="Tres sitios en desarrollo — SASIMA, Zero Limits Marketing y un tercer cliente. Landing pages y media kits modernizados. Lanzan pronto." data-en="Three sites in development — SASIMA, Zero Limits Marketing and a third client. Landing pages and modernized media kits. Launching soon.">Tres sitios en desarrollo — SASIMA, Zero Limits Marketing y un tercer cliente. Landing pages y media kits modernizados. Lanzan pronto.</p>
-          </div>
-        </div>
-      </article>
-    </div>
-    -->
 
     <div class="galeria">
       <h3 class="galeria-tit rv" data-es="Piezas <em>reales</em>, entregadas a clientes" data-en="<em>Real</em> pieces, delivered to clients">Piezas <em>reales</em>, entregadas a clientes</h3>
@@ -2818,6 +2768,74 @@
         </div>
       </div>
     </div>
+
+    <!-- Reel real, en Vimeo (2026-08-17) -- reactivado, ya no es el
+         placeholder "expediente bloqueado".
+         Se mueve DESPUES de .galeria (2026-08-17, a petición de Rubén):
+         primero los casos reales por categoría, el reel general cierra
+         la sección como remate. El subtítulo de sec-head ya lo anuncia
+         ("al final, el reel general").
+         work-grid-cine (no work-grid-uno) -- Rubén: "muy pequeño, ¿un
+         cinema look como el de YouTube?". Mismo componente .card que el
+         resto del portafolio (misma estética, filo, sombra dura, chispa),
+         solo que .work-grid-cine ocupa el ancho completo de .wrap en vez
+         de acotarse a una columna -- ver la nota junto a esa clase en el
+         CSS. Rubén: el reel es un demo general de su trabajo como
+         animador, no una pieza enfocada en deportes ni en ningun sector
+         -- de ahi la etiqueta .cinta-general y el copy, que ya no
+         mencionan un tipo de proyecto en particular. -->
+    <div class="work-grid work-grid-cine">
+      <article class="card rv">
+        <div class="card-in">
+          <div class="frame">
+            <span class="cinta-general" data-es="Reel general" data-en="General reel">Reel general</span>
+            <iframe src="https://player.vimeo.com/video/1218963729?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479"
+                    allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share"
+                    referrerpolicy="strict-origin-when-cross-origin"
+                    title="Reel - NotMan"></iframe>
+          </div>
+          <div class="card-body">
+            <h3 data-es="Reel de animación" data-en="Animation reel">Reel de animación</h3>
+            <p data-es="Un resumen de mi trabajo como animador: motion graphics, edición y diseño de interfaz — sin enfocarme en un sector en particular." data-en="A summary of my work as an animator: motion graphics, editing and interface design — not focused on any one field.">Un resumen de mi trabajo como animador: motion graphics, edición y diseño de interfaz — sin enfocarme en un sector en particular.</p>
+          </div>
+        </div>
+        <span class="chispa-btn" aria-hidden="true"></span>
+      </article>
+    </div>
+
+    <!-- ⚠️ EN STAND BY a pedido de Rubén (2026-08-13): el teaser de
+         "Próximamente" del portafolio web (sitios sin lanzar todavia).
+         El reel de arriba YA SE REACTIVO (2026-08-17, ahora en Vimeo en
+         vez del placeholder bloqueado) -- esto es contenido aparte, sigue
+         en pausa. El markup se queda completo aqui adentro, comentado,
+         para reactivarlo con solo quitar este comentario -- no se borro
+         nada, no hay que reconstruir la tarjeta desde cero cuando llegue
+         el contenido. work-grid-uno (y no work-grid-cine, que ahora usa
+         el reel): esta tarjeta sigue viviendo como columna acotada, no
+         a ancho completo, al reactivarse.
+    <div class="work-grid work-grid-uno">
+      <article class="card rv">
+        <div class="card-in">
+          <div class="frame frame-proximas">
+            <span class="cinta-proximamente" data-es="Próximamente" data-en="Coming soon">Próximamente</span>
+            <div class="tira">
+              <img src="/assets/web-proximamente/sasima.webp" alt="Vista previa del sitio de SASIMA" width="900" height="562" loading="lazy" decoding="async">
+            </div>
+            <div class="tira">
+              <img src="/assets/web-proximamente/zlm-agency.webp" alt="Vista previa del sitio de Zero Limits Marketing" width="900" height="562" loading="lazy" decoding="async">
+            </div>
+            <div class="tira confidencial">
+              <span data-es="Cliente confidencial" data-en="Confidential client">Cliente confidencial</span>
+            </div>
+          </div>
+          <div class="card-body">
+            <h3 data-es="Portafolio web (UI/UX)" data-en="Web portfolio (UI/UX)">Portafolio web (UI/UX)</h3>
+            <p data-es="Tres sitios en desarrollo — SASIMA, Zero Limits Marketing y un tercer cliente. Landing pages y media kits modernizados. Lanzan pronto." data-en="Three sites in development — SASIMA, Zero Limits Marketing and a third client. Landing pages and modernized media kits. Launching soon.">Tres sitios en desarrollo — SASIMA, Zero Limits Marketing y un tercer cliente. Landing pages y media kits modernizados. Lanzan pronto.</p>
+          </div>
+        </div>
+      </article>
+    </div>
+    -->
   </div>
 </section>
 
