@@ -1259,7 +1259,13 @@
     position:relative;max-width:54ch;margin-bottom:22px;
     background:var(--ink);border:5px solid var(--paper);
     clip-path:var(--filo);
-    padding:32px clamp(24px,5vw,40px);
+    /* padding-top a 60px, no 32px: al agrandar .dialog-name (2026-08-17,
+       "hazlo mas grande, es el personaje principal") la placa quedo mas
+       alta y su borde inferior le ganaba a donde arrancaba el texto --
+       Ruben lo vio en vivo, "la tarjeta de NOTMAN choca con el texto".
+       60px deja aire real bajo el punto mas bajo de la placa (~52px desde
+       el borde de .lede al tamaño nuevo). */
+    padding:60px clamp(24px,5vw,40px) 32px;
     transition:border-color .22s;
   }
   .dialogo:hover .lede{border-color:var(--rojo)}
