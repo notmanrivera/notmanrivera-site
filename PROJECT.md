@@ -489,6 +489,17 @@ Verificado con Playwright: sin solape logo↔menú (`gapLogoAMenu` positivo), ce
 - Los tres videos del portafolio son **embeds de Google Drive** y se ven con la marca de Google. Conviene subir el reel a Vimeo y cambiar el `src` del `<iframe>`.
 - Cerrar el envío desde el dominio propio (Workspace o SMTP externo) para que la firma de los correos de prospección coincida con `hola@notmanrivera.com`.
 
+## Botón "volver arriba" (2026-08-17)
+
+Rubén pidió un botón de volver arriba "basado en nuestra estética" — sin más dirección que esa, así que en vez de un FAB genérico se reusó el lenguaje visual que ya existía en la esquina inferior derecha: el HUD de scroll (`.hud-scroll`, los 5 rombos que marcan la sección activa).
+
+- **`.volver-arriba` es el mismo rombo que `.hud-paso`, más grande, apilado justo encima de los 5 pips** — se lee como un sexto paso que te regresa al origen, no como un elemento suelto nuevo en la esquina.
+- **Morado por defecto, rojo al hover** — seguro el color por su significado ya establecido: morado es "quién es" (identidad, estructura), y volver al inicio es literalmente volver a la identidad; rojo es la acción/"mira aquí" que ya usan todos los estados de hover del sitio.
+- **`href="#inicio"` (id nuevo en `<header>`) engancha el clic al mismo listener genérico de `a[href^="#"]`** que ya intercepta toda la navegación interna — hereda gratis el barrido de transición (`irConBarrido`) que usan los demás links del menú, sin JS de clic nuevo. Solo se agregó un listener de `scroll` que alterna `.visible` cuando `scrollY` pasa el 60% de la altura de pantalla.
+- **`aria-label="Volver arriba"` estático, sin `data-es`/`data-en`** — mismo patrón que los íconos de `.social`: los aria-label de elementos solo-ícono no los toca el toggle de idioma.
+
+Verificado con Playwright: oculto en el tope, aparece al bajar, sin solape con el HUD de scroll (`bBox.bottom <= hudBox.top`) en desktop y móvil, hover pasa a rojo, el clic regresa `scrollY` a 0 y el botón vuelve a ocultarse, sin overflow horizontal en 390px.
+
 ## Trabajar desde una sesión remota (no desde la Mac)
 
 El repo es autosuficiente: un `index.html` sin build step. Editar, revisar y pushear funciona igual en cualquier máquina. **Lo único que no viaja es el despliegue**, y conviene saber exactamente por qué antes de perder tiempo:
