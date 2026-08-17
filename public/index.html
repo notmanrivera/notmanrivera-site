@@ -1373,15 +1373,31 @@
      quien responde tiene su lista a la derecha, cerca de su propio
      retrato. En columna por default (asi ya funcionaba en movil, y una
      fila de dos cajas angostas no cabe comoda ahi); de 900px para arriba
-     pasa a fila, NOTMAN mas ancho (lleva la pregunta completa) y TÚ mas
-     angosto (solo 3 lineas cortas), con un pequeño desfase vertical para
-     que no se vean como un par perfectamente alineado -- mismo espiritu
-     desalineado a proposito que ya usan las placas del hero (--giro). */
+     pasa a fila con las dos columnas del MISMO ancho (grid, no flex --
+     Rubén: "hazlos del mismo tamaño"), con un pequeño desfase vertical
+     para que no se vean como un par perfectamente alineado -- mismo
+     espiritu desalineado a proposito que ya usan las placas del hero
+     (--giro).
+     ⚠️ .lede llevaba max-width:54ch (pensado para el parrafo del hero,
+     mas angosto que su columna). Con flex:1 en vez de grid, .dialogo (el
+     item flexible, dueño de la sombra roja via .dialogo::before) crecia a
+     todo el ancho disponible, pero .lede -- mas angosta por su max-width --
+     no lo llenaba: quedaba una franja de sombra roja huerfana a la derecha
+     de la caja negra, "el cuadro rojo del fondo ocupa mucho espacio" como
+     lo vio Ruben. En grid con columnas iguales, .dialogo (el item de grid)
+     mide EXACTO lo que mide su columna -- solo faltaba que .lede tambien
+     llegara a ese ancho completo en vez de quedarse corta. */
   .dialogo-doble{display:flex;flex-direction:column;gap:32px;margin:20px 0 30px}
   @media(min-width:900px){
-    .dialogo-doble{flex-direction:row;align-items:flex-start;gap:24px}
-    .dialogo-doble > .dialogo{flex:1 1 0;min-width:0}
-    .dialogo-doble > .dialogo-tu{flex:0 1 300px;margin-top:44px}
+    /* align-items:start, no el "stretch" que trae grid por default -- con
+       stretch, .dialogo (el item de grid) crece hasta igualar la altura
+       de su hermano mas alto, pero .lede adentro NO crece con el (su alto
+       es el de su propio contenido, una sola linea corta) -- vuelve a
+       quedar sombra roja huerfana, esta vez ABAJO en vez de a la derecha.
+       Mismo bug de fondo que el del ancho, en el otro eje. */
+    .dialogo-doble{display:grid;grid-template-columns:1fr 1fr;align-items:start;gap:24px}
+    .dialogo-doble .lede,.dialogo-doble .lede-tu{max-width:none}
+    .dialogo-doble > .dialogo-tu{margin-top:44px}
   }
   /* Toda la caja (fondo, borde, placa Y lista) aparece de golpe cuando
      NOTMAN termina de preguntar -- no solo la lista de adentro. Si solo la
@@ -1404,20 +1420,24 @@
     font-size:1rem;padding:8px 4px 8px 22px;
     transition:color .15s;
   }
-  /* Cursor de seleccion: el mismo triangulo apuntando a la derecha que ya
-     usa el resto del sitio para "aqui hay accion" (.visor-full, etc.),
-     invisible hasta el hover -- entra deslizandose, no aparece de golpe. */
+  /* Cursor de seleccion (2026-08-17, mas "feeling de RPG" a peticion de
+     Ruben): a diferencia del triangulo de .visor-full (invisible hasta el
+     hover), este queda tenue y blanco EN REPOSO -- asi el menu se lee como
+     menu desde que aparece, con sus 3 opciones marcadas, no como texto
+     plano que "esconde" que es clicleable. Al hover/focus se pone rojo,
+     crece y se desliza -- el gesto de "seleccionar" un renglon del menu. */
   .dialog-opciones a::before{
     content:"";position:absolute;left:2px;top:50%;
     width:0;height:0;
-    border-style:solid;border-width:6px 0 6px 9px;
-    border-color:transparent transparent transparent var(--rojo);
-    opacity:0;transform:translate(-4px,-50%);
-    transition:opacity .15s,transform .15s;
+    border-style:solid;border-width:5px 0 5px 7px;
+    border-color:transparent transparent transparent var(--muted);
+    opacity:.55;transform:translate(0,-50%);
+    transition:opacity .15s,transform .15s,border-color .15s,border-width .15s;
   }
   .dialog-opciones a:hover,.dialog-opciones a:focus-visible{color:var(--rojo)}
   .dialog-opciones a:hover::before,.dialog-opciones a:focus-visible::before{
-    opacity:1;transform:translate(0,-50%);
+    opacity:1;border-width:6px 0 6px 9px;border-color:transparent transparent transparent var(--rojo);
+    transform:translate(2px,-50%);
   }
   /* Mismo destello de "confirmar" que .btn-1/.btn-2 (p5Confirm), una
      variante propia porque aqui el color de reposo es texto blanco sobre
@@ -3569,9 +3589,13 @@
   // ya esta en el idioma correcto, no hace falta duplicarlo en un atributo
   // aparte. Mismo destello de "confirmar" que los CTA del hero (150ms)
   // antes de navegar, ver la nota junto a .btn.confirmando en el CSS.
+  // blip(660,.045) al confirmar: el mismo tono que ya usa irConBarrido()
+  // para "elegiste algo, se navega" -- no uno nuevo solo para esto, es la
+  // misma accion en espiritu (blip() ya revisa sonidoActivo por su cuenta).
   document.querySelectorAll('.dialog-opciones a').forEach(a => {
     a.addEventListener('click', e => {
       e.preventDefault();
+      blip(660, .045);
       const asunto = encodeURIComponent(a.textContent.trim());
       const ir = () => { location.href = 'mailto:hola@notmanrivera.com?subject=' + asunto; };
       if (matchMedia('(prefers-reduced-motion: reduce)').matches) { ir(); return; }
@@ -4016,7 +4040,7 @@
      falta duplicar el chequeo aqui.
      mouseenter y no mouseover: mouseenter no burbujea y no se repite
      mientras el cursor se queda quieto dentro del elemento. */
-  document.querySelectorAll('.menu-lista a, .btn').forEach(el => {
+  document.querySelectorAll('.menu-lista a, .btn, .dialog-opciones a').forEach(el => {
     el.addEventListener('mouseenter', () => blip(740, .03));
   });
 

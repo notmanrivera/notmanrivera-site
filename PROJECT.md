@@ -716,6 +716,21 @@ Rubén mandó una captura real de Persona 3 Reload (el salón de clases, la preg
 
 Verificado con Playwright: la caja de NOTMAN queda a la izquierda de la de "Tú" en escritorio (comparando `getBoundingClientRect().left`), la caja de respuestas permanece con `opacity:0` hasta que termina de teclearse la pregunta y luego pasa a `opacity:1` como unidad completa, `.dialog-next` se oculta y reaparece correctamente en el toggle de idioma, las dos cajas se apilan en columna sin overflow en 390px, sin regresión en la caja del hero, sin errores de consola.
 
+## Mismo tamaño, la sombra roja huérfana (dos veces), y más feeling de RPG (2026-08-17)
+
+Rubén, viendo las dos cajas ya desplegadas: "hazlos del mismo tamaño, cuidado con los cuadros rojos del fondo, el de la caja de NOTMAN ocupa mucho espacio. Idea algo para darle más feeling de RPG."
+
+**El "cuadro rojo" era un bug real, y salió en dos ejes distintos según se iba corrigiendo:**
+
+1. **Ancho.** `.dialogo-doble` usaba `flex` con `.dialogo` de NOTMAN en `flex:1 1 0` (crece a llenar el espacio) y el de "Tú" en `flex:0 1 300px` (ancho fijo). `.dialogo` es quien dibuja la sombra roja (`.dialogo::before`, del tamaño de su propia caja) -- pero adentro, `.lede` seguía con `max-width:54ch` (pensado para el párrafo del hero, más angosto que la columna). Con `.dialogo` estirado a todo el ancho disponible y `.lede` topada por su max-width, quedaba una franja de sombra roja huérfana a la derecha de la caja negra, sin nada encima. **Arreglo:** `.dialogo-doble` pasa de `flex` a `grid` con dos columnas iguales (`1fr 1fr` -- de paso resuelve "hazlos del mismo tamaño"), y `.lede`/`.lede-tu` sueltan su `max-width` dentro de este contexto para llenar la columna completa.
+2. **Alto.** El primer arreglo introdujo el mismo bug en el otro eje: `grid` estira sus items a la altura del más alto por default (`align-items:stretch`), así que la caja de NOTMAN (una sola línea corta) crecía hasta igualar la de "Tú" (3 líneas) -- pero `.lede` adentro NO crecía con ella, así que la sombra roja volvía a quedar huérfana, esta vez abajo. **Arreglo:** `align-items:start` en el grid, cada caja mide lo que pide su propio contenido.
+
+**Feeling de RPG, reusando sistemas que ya existían en vez de inventar uno nuevo:**
+- **El marcador de cada opción (el triángulo) ya no aparece solo al hover** -- queda tenue y blanco en reposo (`opacity:.55`, color `--muted`) desde que se revela el menú, y se pone rojo/crece al pasar el cursor. Antes era invisible hasta el hover, como cualquier link; ahora se lee como menú de elección desde el primer instante, no como texto plano que "esconde" que es clicleable.
+- **Sonido de interfaz**, reusando `blip()` (ya existía para el menú de pantalla completa y los CTA del hero, apagado por default): tono de hover (740Hz, el mismo que ya usan `.btn`/`.menu-lista a`) y tono de confirmación al elegir una respuesta (660Hz, el mismo que ya usa `irConBarrido()` para "elegiste algo, se navega" -- mismo significado, mismo tono, no uno nuevo).
+
+Verificado con Playwright: las dos cajas miden el mismo ancho exacto (0px de diferencia), `.lede`/`.lede-tu` llenan por completo su `.dialogo` (sin franja de sombra huérfana en ningún eje), el marcador de opción tiene `opacity:.55` en reposo, y con sonido activado y un `AudioContext` espiado, se confirmó que el hover dispara 740Hz y el clic dispara 660Hz. Sin overflow horizontal en escritorio ni en 390px, sin errores de consola.
+
 ## Trabajar desde una sesión remota (no desde la Mac)
 
 El repo es autosuficiente: un `index.html` sin build step. Editar, revisar y pushear funciona igual en cualquier máquina. **Lo único que no viaja es el despliegue**, y conviene saber exactamente por qué antes de perder tiempo:
