@@ -594,6 +594,16 @@ Rubén mandó una referencia de un destello de 8 puntas y preguntó si valía la
 
 Verificado con Playwright: opacidad de `.btn-1` fija en 1 durante TODO el hover (antes caía a 0 y se quedaba ahí); las tres chispas nuevas alcanzan opacidad ~1 en algún punto de su animación (con trazas de opacidad cada 50-80ms, no una sola captura a ciegas); capturas a escala 2x confirmando visibilidad real de la chispa del botón contra su fondo asentado; `.chispa-logo{display:none}` por debajo de 820px; sin overflow horizontal en 390px; suite completa de regresión (pestañas de galería, ambos grupos deportivos, lightbox) sigue en verde tras el cambio a `.pop.go`.
 
+## El logo saltaba de posición vertical al rotar el servicio (2026-08-17)
+
+Rubén, en vivo: "el logo de hero cambia de posición cuando cambia el servicio debajo de él, no debería".
+
+La causa era el mismo tipo de bug que ya se había corregido para el ANCHO de la columna del hero radial ("La columna central YA NO es 'auto'", ver esa nota mas arriba en este archivo), pero sin corregir para el ALTO: `.rota` (la línea que rota entre los 4 servicios) vive en flujo normal dentro de `<h1>`, junto a `.marca`. Como las traducciones tienen largos distintos ("Motion graphics 2D/3D" vs "Soporte marca blanca"), a veces `.rota` ocupa una línea y a veces dos -- y `<h1>` ocupa el area "logo" de la rejilla, que abarca 3 filas con `align-items:center`. Cada vez que la altura de `.rota` cambiaba, la altura total de `<h1>` cambiaba con ella, la rejilla recalculaba esas 3 filas, y el punto de centrado vertical se movía -- el logo entero saltaba hasta ~21px de una rotación a la siguiente (medido con Playwright antes del fix).
+
+- **`.orbita h1 .rota` pasa a `position:absolute`** (solo en el layout radial de escritorio, `@media(min-width:1000px)` -- en móvil no hay rejilla, es flujo normal, y ahí nunca hubo el bug). Sacado del flujo, ya no aporta nada a la altura de `<h1>`, que vuelve a depender solo de `.marca` (altura fija). `.rota` se reposiciona con `left:50%` + `translateX(-50%)` (para seguir centrado bajo el logo, ya que `text-align:center` del padre no alcanza a un elemento posicionado) y `top:100%` (el borde inferior de `<h1>`, que ahora coincide con el borde inferior de `.marca`).
+
+Verificado con Playwright: se trazó la posición Y de `.marca` a lo largo de 4 rotaciones completas (16 muestras, ~14s) -- antes del fix, diferencia de 20.8px entre el mínimo y el máximo; después, diferencia de 0px exacto, pese a que la altura de `.rota` seguía variando entre 103px y 146px según el texto. Capturas confirmando que `.rota` se sigue viendo centrada y con el mismo sesgo bajo el logo en dos rotaciones distintas. Sin overflow horizontal en 390px, sin cambios visuales en móvil.
+
 ## Trabajar desde una sesión remota (no desde la Mac)
 
 El repo es autosuficiente: un `index.html` sin build step. Editar, revisar y pushear funciona igual en cualquier máquina. **Lo único que no viaja es el despliegue**, y conviene saber exactamente por qué antes de perder tiempo:
