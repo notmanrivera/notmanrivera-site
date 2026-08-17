@@ -500,6 +500,21 @@ Rubén pidió un botón de volver arriba "basado en nuestra estética" — sin m
 
 Verificado con Playwright: oculto en el tope, aparece al bajar, sin solape con el HUD de scroll (`bBox.bottom <= hudBox.top`) en desktop y móvil, hover pasa a rojo, el clic regresa `scrollY` a 0 y el botón vuelve a ocultarse, sin overflow horizontal en 390px.
 
+## Se quitan las bandas diagonales del hero, se pule la caja de diálogo (2026-08-17)
+
+Rubén: "ya no me encantan las líneas que aparecen detrás del hero, las que parecen marcas de llanta" y "necesito que pulamos el diálogo de rpg, no me encanta el diseño". Se le preguntó qué hacer con cada cosa antes de tocar nada — pidió quitar las líneas del todo, y del diálogo señaló tres problemas concretos: las muescas del contenedor se ven ruidosas más que ornamentales, el color rojizo no le gusta, y el nombre "NOTMAN" se corta.
+
+**Líneas del hero (`.slab-a`/`.slab-b`):** se quitan por completo — CSS, los dos `<div>` en `<header>`, y el listener de `scroll` que las movía en paralelo. El halftone punteado y los campos de color (`.campo`/`.campo2`) ya daban textura de sobra sin ellas.
+
+**Caja de diálogo (`.lede`):**
+- **El recorte a medida (9 puntos, con una muesca extra en el borde superior) se reemplaza por `var(--filo)`** — el mismo corte de 4 esquinas que ya usa botones, placas y tarjetas en todo el sitio. Una caja de diálogo no necesitaba su propio lenguaje de recorte; el custom era justo el ruido que Rubén señaló.
+- **El fondo pasa de `rgba(0,0,0,.85)` a `var(--ink)` sólido, y la sombra dura de `var(--rojo)` a `var(--ink)`** — la transparencia dejaba pasar el rojo/morado de detrás y el conjunto se leía rojizo en vez de negro. Mismo tratamiento que ya usa `.p5-tooltip` (negro + borde blanco de 3px + sombra dura negra), que ya estaba probado que se lee bien sin importar qué hay detrás.
+- **"El nombre se corta" era un bug real, no percepción:** `clip-path` en un elemento recorta también a sus descendientes, y el polígono de `.lede` nunca baja de `y:0` — así que la etiqueta `.dialog-name`, que se asomaba por ENCIMA del borde superior con `top:-15px` siendo hija de `.lede`, perdía ese pedazo. Se saca `.dialog-name` de `.lede` a un nuevo contenedor hermano sin recorte (`.dialogo`, envuelve a los dos), así puede asomar entera. Esto obligó a mover el `grid-area` y las reglas de ancho/centrado del layout radial de escritorio de `.orbita > .lede` a `.orbita > .dialogo` (`.lede` ya no es hijo directo de `.orbita`).
+- **La etiqueta "NOTMAN" deja de ser un rótulo plano en `--rojo`** y pasa a usar el mismo truco de `.placa-negra` (placa blanca + capa interior negra vía `::after` con `z-index:-1`, ambas recortadas con el mismo `--filo`) — las "cajas superpuestas" que Rubén pidió, reusando el componente que el sitio ya usa en sus estados normales en vez de inventar uno nuevo.
+- **Efecto secundario de sacar `.dialog-name` de `.lede`:** ya no hereda gratis el fundido de entrada (`.fade`/`.go`, `opacity`+`translateY`) que sí sigue aplicando a `.lede`. Se sincroniza aparte con un selector de hermano (`.lede.go ~ .dialog-name{opacity:1}`), sin animación propia — por eso en el HTML `.lede` va antes que `.dialog-name` dentro de `.dialogo` (el orden visual no depende del DOM porque la etiqueta es `position:absolute`). Cubierto también en `prefers-reduced-motion:reduce`.
+
+Verificado con Playwright: cero elementos `.slab` en el DOM; `.lede` con `background-color` sólido y el `clip-path` de `--filo`; `.dialog-name` con `opacity:1` tras la entrada y su caja completa asomando por encima de `.lede` sin recortarse, en desktop y móvil; mismo resultado bajo `reduced-motion:reduce`; el tecleo del diálogo llega a los 274 caracteres completos sin cortarse; sin errores de consola; sin overflow horizontal en 390px.
+
 ## Trabajar desde una sesión remota (no desde la Mac)
 
 El repo es autosuficiente: un `index.html` sin build step. Editar, revisar y pushear funciona igual en cualquier máquina. **Lo único que no viaja es el despliegue**, y conviene saber exactamente por qué antes de perder tiempo:

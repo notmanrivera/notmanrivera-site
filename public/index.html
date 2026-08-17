@@ -774,27 +774,10 @@
   /* El .wrap es item flex: sin width:100% se encoge al ancho de su contenido
      y el hero se descuadra respecto a las demas secciones. */
   header .wrap{width:100%}
-  /* Bandas diagonales rayadas. Sustituyen a los bloques solidos de color,
-     que con los mesh gradients detras leian como un rectangulo suelto en
-     vez de como decoracion. Las rayas si se sienten intencionales. */
-  .slab{
-    position:absolute;z-index:0;pointer-events:none;
-    mask-image:linear-gradient(90deg,transparent,#000 22%,#000 74%,transparent);
-    -webkit-mask-image:linear-gradient(90deg,transparent,#000 22%,#000 74%,transparent);
-  }
-  /* acentos, no fondo: bajas y discretas, si no se comen la pantalla */
-  .slab-a{
-    top:20%;left:-14%;right:-14%;height:13%;
-    transform:rotate(-8deg);
-    background:repeating-linear-gradient(90deg,
-      rgba(169,107,255,.16) 0 3px, transparent 3px 16px);
-  }
-  .slab-b{
-    bottom:14%;left:-14%;right:-14%;height:9%;
-    transform:rotate(6deg);
-    background:repeating-linear-gradient(90deg,
-      rgba(229,0,18,.3) 0 3px, transparent 3px 15px);
-  }
+  /* Las bandas diagonales rayadas (.slab-a/.slab-b) se quitaron -- a
+     Ruben dejaron de gustarle, se leian como marcas de llanta y no como
+     decoracion intencional. El halftone punteado y los campos de color
+     (.campo/.campo2) ya dan textura de sobra sin ellas. */
 
   /* El logo ya no es marca de agua: es el titular. Ya no hay .watermark. */
 
@@ -1005,7 +988,7 @@
        alguna esquina puede acercarse al logo, y el logo es la pieza que no
        se tapa nunca */
     .orbita > h1           {grid-area:logo;margin-bottom:0;position:relative;z-index:2}
-    .orbita > .lede        {grid-area:lede}
+    .orbita > .dialogo     {grid-area:lede}
     .cta-row .btn-1        {grid-area:b1;justify-self:end;  margin-right:var(--empuje,0)}
     .cta-row .btn-2        {grid-area:b2;justify-self:start; margin-left:var(--empuje,0)}
     .stats .stat:nth-child(1){grid-area:st1;justify-self:start;margin-left:var(--empuje,0)}
@@ -1030,9 +1013,10 @@
        linea, pero todas saldrian del mismo color -- son fragmentos de una
        misma caja inline -- y alternar exigiria saltos de linea a mano, que
        se rompen al cambiar el ancho o el idioma. */
-    .orbita > .lede{
-      justify-self:center;max-width:62ch;margin:30px 0 0;text-align:center;
+    .orbita > .dialogo{
+      justify-self:center;margin:30px 0 0;text-align:center;
     }
+    .orbita > .dialogo .lede{max-width:62ch}
 
     /* la linea divisoria de .stats no existe con display:contents (no hay
        caja que la pinte) y en radial tampoco pinta nada: fuera */
@@ -1127,24 +1111,26 @@
   .orbita .btn-1:hover,.orbita .btn-2:hover{box-shadow:none}
 
   /* ===== CAJA DE DIALOGO (estilo RPG, P5) =====
-     .lede deja de ser el parrafo y pasa a ser la caja entera: placa de
-     nombre + texto + cursor de continuar, como un dialogo de Persona.
-     El filo NO es var(--filo) -- ese es el corte de 4 esquinas que ya usa
-     todo el sitio (botones, placas, tarjetas); esta caja necesita leerse
-     como un elemento aparte, mas agresivo, con una muesca real en el
-     borde superior y no solo esquinas cortadas. */
+     .lede deja de ser el parrafo y pasa a ser la caja entera: texto +
+     cursor de continuar, como un dialogo de Persona. Primera version:
+     fondo semitransparente (dejaba pasar el rojo de detras, se leia
+     rojizo en vez de negro) y un recorte a medida con una muesca extra
+     en el borde superior -- Ruben lo marco como "ruidoso, no ornamental".
+     Ahora usa el MISMO var(--filo) de 4 esquinas que ya usa todo el sitio
+     (esta caja no necesita su propio lenguaje de recorte) y fondo solido:
+     el mismo tratamiento que .p5-tooltip (negro + borde blanco + sombra
+     dura negra, ver esa nota mas abajo), que ya esta probado que se lee
+     bien sin importar que hay detras. */
+  .dialogo{position:relative}
   .lede{
     position:relative;max-width:54ch;margin-bottom:22px;
-    background:rgba(0,0,0,.85);border:3px solid var(--paper);
-    clip-path:polygon(
-      0% 22px, 18px 0%, 40% 0%, 46% 10px, 52% 0%, 100% 0%,
-      100% calc(100% - 24px), calc(100% - 32px) 100%, 0% 100%
-    );
+    background:var(--ink);border:3px solid var(--paper);
+    clip-path:var(--filo);
     /* drop-shadow y no box-shadow: mismo motivo que .card-in/.p5-tooltip
        (ver esas notas mas abajo) -- un box-shadow exterior se recorta
        junto con el clip-path, drop-shadow se calcula sobre la silueta ya
        recortada y sigue el filo real. */
-    filter:drop-shadow(6px 6px 0 var(--rojo));
+    filter:drop-shadow(6px 6px 0 var(--ink));
     padding:32px clamp(24px,5vw,40px);
   }
   .lede p{
@@ -1166,17 +1152,34 @@
   .lede p .ch{opacity:0}
   .lede p .ch.v{opacity:1}
   /* La placa de nombre, como un letrero de dialogo que se asoma por
-     encima del cuadro de texto. --rojo y no amarillo: --p5-yellow se quitó
-     del sistema (ver "Se retira --p5-yellow" más abajo en PROJECT.md) --
-     texto en --paper porque --rojo ya es oscuro, blanco es el par que usa
-     el resto del sitio sobre fondo rojo (.menu-lista a:hover, etc.). */
+     encima del cuadro de texto. Ya no es un rotulo plano en --rojo: usa
+     el mismo truco de "placa blanca + capa interior negra" que
+     .placa-negra (ver esa nota mas abajo) -- las mismas dos cajas
+     superpuestas que ya usa el resto del sitio en su estado normal, no
+     una pieza nueva.
+     Vive en .dialogo, no dentro de .lede: el clip-path de .lede solo
+     cubre su propio rectangulo (nunca baja de y:0), asi que esta placa,
+     que se asoma por ENCIMA del borde superior de .lede, se cortaba
+     cuando era su hija -- "el nombre se corta", como lo describio Ruben.
+     Como hermana en .dialogo (que no recorta nada) puede asomar entera. */
   .dialog-name{
-    position:absolute;top:-15px;left:10px;z-index:2;
-    background:var(--rojo);color:var(--paper);
+    position:absolute;top:-16px;left:14px;z-index:2;
+    background:var(--paper);color:var(--paper);isolation:isolate;
     font-family:var(--disp);font-weight:400;text-transform:uppercase;
     font-size:1.3rem;letter-spacing:.02em;
-    padding:4px 16px;
+    padding:6px 18px 5px;
+    clip-path:var(--filo);
     transform:rotate(-3deg);
+    pointer-events:none;
+    /* al ser hermana y no hija de .lede, ya no hereda gratis el fundido de
+       entrada de .lede (.fade/.go, ver mas abajo) -- se sincroniza a mano
+       con un selector de hermano, sin duplicar la animacion de .lede. */
+    opacity:0;transition:opacity .3s;
+  }
+  .lede.go ~ .dialog-name{opacity:1}
+  .dialog-name::after{
+    content:"";position:absolute;inset:3px;z-index:-1;
+    background:var(--ink);clip-path:var(--filo);
   }
   /* Cursor de "seguir": triangulo puro en CSS (border-width, sin imagen),
      apuntando hacia abajo, que parpadea imitando la espera de input del
@@ -2131,6 +2134,7 @@
 
   @media(prefers-reduced-motion:reduce){
     .fade,.fade.go{opacity:1;animation:none;transform:none}
+    .dialog-name{opacity:1;transition:none}
     .stats::before,.stats.go::before{transform:scaleX(1);animation:none}
     .stat,.stats.go .stat{opacity:1;animation:none;transform:none}
     .rv,.rv.in{opacity:1;transform:none;transition:none}
@@ -2293,8 +2297,6 @@
 <header id="inicio">
   <div class="campo"></div>
   <div class="campo2"></div>
-  <div class="slab slab-a"></div>
-  <div class="slab slab-b"></div>
   <div class="halftone"></div>
   <!-- La × en rojo, no el · neutro: es una lista de tres oficios pares, como
        "NEW GAME × LOAD GAME × THIEVES DEN" en el menu de P5R. Los demas ·
@@ -2334,10 +2336,18 @@
          lo que lee el toggle de idioma generico) -- "NotMan" en la placa
          de arriba no lleva data-es/data-en porque es un nombre, no cambia
          entre idiomas, igual que "Rubén Rivera" en el logo. -->
-    <div class="lede">
+    <div class="dialogo">
+      <!-- .lede antes que .dialog-name en el DOM: el CSS usa un selector de
+           hermano (.lede.go ~ .dialog-name) para que la placa de nombre
+           aparezca sincronizada con el fundido de .lede, sin animacion
+           propia -- ver la nota junto a .dialog-name mas abajo. El orden
+           visual no depende del DOM porque .dialog-name es position:absolute
+           con su propio z-index. -->
+      <div class="lede">
+        <p class="dialog-texto" data-es="Soy el refuerzo táctico que tu agencia necesita. 9 años de experiencia diseñando y animando para agencias, jugadores y representantes de élite. Cuando a tu equipo le falta capacidad o tiempo, yo entro en acción. Motion graphics, video y diseño web. Listo para el despliegue." data-en="I am the tactical backup your agency needs. 9 years of experience designing and animating for agencies, elite players and representatives. When your team runs out of capacity or time, I step in. Motion graphics, video, and web design. Ready for deployment.">Soy el refuerzo táctico que tu agencia necesita. 9 años de experiencia diseñando y animando para agencias, jugadores y representantes de élite. Cuando a tu equipo le falta capacidad o tiempo, yo entro en acción. Motion graphics, video y diseño web. Listo para el despliegue.</p>
+        <i class="dialog-next" aria-hidden="true"></i>
+      </div>
       <span class="dialog-name">NotMan</span>
-      <p class="dialog-texto" data-es="Soy el refuerzo táctico que tu agencia necesita. 9 años de experiencia diseñando y animando para agencias, jugadores y representantes de élite. Cuando a tu equipo le falta capacidad o tiempo, yo entro en acción. Motion graphics, video y diseño web. Listo para el despliegue." data-en="I am the tactical backup your agency needs. 9 years of experience designing and animating for agencies, elite players and representatives. When your team runs out of capacity or time, I step in. Motion graphics, video, and web design. Ready for deployment.">Soy el refuerzo táctico que tu agencia necesita. 9 años de experiencia diseñando y animando para agencias, jugadores y representantes de élite. Cuando a tu equipo le falta capacidad o tiempo, yo entro en acción. Motion graphics, video y diseño web. Listo para el despliegue.</p>
-      <i class="dialog-next" aria-hidden="true"></i>
     </div>
 
     <!-- .cta-row y .stats van con display:contents: siguen existiendo en el
@@ -3034,17 +3044,6 @@
     else addEventListener('load', alTerminar, {once:true});
     setTimeout(cerrar, TOPE);
   })();
-
-  // Parallax suave de los bloques diagonales
-  const slabA = document.querySelector('.slab-a');
-  const slabB = document.querySelector('.slab-b');
-  if (slabA && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
-    addEventListener('scroll', () => {
-      const y = window.scrollY;
-      slabA.style.transform = `rotate(13deg) translateY(${y * 0.06}px)`;
-      slabB.style.transform = `rotate(-9deg) translateY(${y * -0.04}px)`;
-    }, {passive:true});
-  }
 
   /* ===== INTERACTIVIDAD CON EL MOUSE =====
      El cursor ya no vive aqui: es nativo, definido con CSS. Aqui solo
