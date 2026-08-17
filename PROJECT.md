@@ -660,6 +660,8 @@ Rubén, en vivo: "los servicios bajo el logo no deberían romperse a tres línea
 
 **NOTMAN más grande:** `.dialog-name` sube de `1.3rem` a `2rem` (mismo piso que el texto más grande del hero), con el padding y el offset (`top:-16px` → `-22px`) ajustados para que la placa no se vea apretada. Sin sorpresas aquí -- ya vivía fuera del `clip-path` de `.lede` desde el bug que se documentó antes ("el nombre se corta"), así que crecer no la puso en riesgo de cortarse otra vez.
 
+**Efecto secundario, encontrado por Rubén después de ver el cambio en vivo: "la tarjeta de NOTMAN choca con el texto".** La placa más alta (77px de alto ahora, contra ~50px antes) ya no cabía en el `padding-top:32px` de `.lede` -- su borde inferior quedaba ~15px por debajo de donde arrancaba el párrafo del diálogo, montándose sobre la primera línea. Se sube el `padding-top` de `.lede` a `60px` (solo el de arriba -- los otros tres lados se quedan igual), dejando el aire real que pide el tamaño nuevo de la placa. Mismo bug en desktop y móvil (la placa no tiene variante por breakpoint), un solo ajuste lo resuelve en los dos.
+
 **El rotador de servicios (`.rota`) a 3 líneas -- esto sí costó varios intentos fallidos antes de encontrar la causa real:**
 
 - Primer intento: subir `max-width` (100% → 640px → 820px). **No cambió NADA visible.** Se investigó por qué con una página de prueba aislada en vez de seguir adivinando.
