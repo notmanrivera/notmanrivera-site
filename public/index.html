@@ -1484,6 +1484,13 @@
      visor de contactos, no una cuadricula suelta. En movil (abajo) se
      apila: imagen arriba, tiras horizontales de miniaturas por cliente.
 
+     Dos pestañas, dos instancias de .visor -- Deportivo (el original) y
+     Web (portafolio de sitios entregados). El JS de mas abajo generaliza
+     initVisor()/el lightbox para operar sobre CUALQUIER .visor por
+     recorrido del DOM (closest/querySelector scoped a esa instancia), en
+     vez de IDs fijos -- asi la misma pieza sirve para las dos pestañas
+     sin duplicar logica.
+
      Las miniaturas son <button>, no <a>: cambian la imagen grande en el
      sitio en vez de navegar. El icono de "tamaño completo" vive aparte,
      sobre la imagen grande, y abre esa misma pieza en un lightbox (ver
@@ -1498,6 +1505,24 @@
   }
   .galeria-tit em{font-style:normal;color:var(--paper)}
 
+  /* mismo lenguaje que .lang/.abrir-menu: sesgado, Monument, mayusculas.
+     Activa en --rojo (la accion ya elegida), inactiva en placa oscura. */
+  .galeria-tabs{display:flex;gap:10px;margin-bottom:28px}
+  .galeria-tab{
+    font-family:var(--ui);font-weight:900;text-transform:uppercase;
+    font-size:.82rem;letter-spacing:.08em;
+    background:var(--ink-2);color:var(--muted);border:1px solid var(--line);
+    padding:10px 22px;cursor:pointer;transform:skewX(-8deg);
+    transition:background .18s,color .18s,border-color .18s;
+  }
+  .galeria-tab:hover{color:var(--paper);border-color:var(--rojo)}
+  .galeria-tab.activo{background:var(--rojo);color:#fff;border-color:var(--rojo)}
+  /* ⚠️ .visor.oculto, no .oculto solo: .oculto{display:none} y
+     .visor{display:flex} tienen la MISMA especificidad (una clase), y
+     .visor va despues en la hoja -- ganaria por orden y el panel oculto
+     se seguiria viendo. Con dos clases la especificidad ya no empata. */
+  .visor.oculto{display:none}
+
   .visor{display:flex;flex-direction:column;gap:20px}
 
   /* 3/4, no 16/11: casi todas las piezas son carteles verticales. Con una
@@ -1511,6 +1536,12 @@
     display:flex;align-items:center;justify-content:center;
     aspect-ratio:3/4;overflow:hidden;
   }
+  /* la pestaña Web son collages en paisaje (capturas de escritorio), no
+     carteles verticales -- 3/4 los dejaba con franjas vacias enormes
+     arriba y abajo. Se anula de vuelta a "auto" dentro del media query
+     de escritorio, igual que la regla de abajo hace con .visor-grande. */
+  .visor--web .visor-grande{aspect-ratio:4/3}
+  .visor--web .visor-thumb{aspect-ratio:4/3}
   .visor-grande img{
     max-width:100%;max-height:100%;width:auto;height:auto;
     object-fit:contain;
@@ -1575,6 +1606,7 @@
   @media(min-width:900px){
     .visor{flex-direction:row;align-items:flex-stretch}
     .visor-grande{flex:1 1 62%;aspect-ratio:auto}
+    .visor--web .visor-grande{aspect-ratio:auto}
     .visor-miniaturas{
       flex:0 0 280px;max-height:520px;overflow-y:auto;padding-right:4px;
     }
@@ -2509,17 +2541,22 @@
     <div class="galeria">
       <h3 class="galeria-tit rv" data-es="Piezas <em>reales</em>, entregadas a clientes" data-en="<em>Real</em> pieces, delivered to clients">Piezas <em>reales</em>, entregadas a clientes</h3>
 
-      <div class="visor rv">
+      <div class="galeria-tabs rv" role="tablist" aria-label="Tipo de trabajo">
+        <button type="button" class="galeria-tab activo" role="tab" aria-selected="true" aria-controls="galeriaDeportivo" data-galeria="deportivo" data-es="Deportivo" data-en="Sports">Deportivo</button>
+        <button type="button" class="galeria-tab" role="tab" aria-selected="false" aria-controls="galeriaWeb" data-galeria="web" data-es="Web" data-en="Web">Web</button>
+      </div>
+
+      <div class="visor rv" id="galeriaDeportivo" data-galeria-panel="deportivo" role="tabpanel">
         <div class="visor-grande">
-          <img id="visorImg" src="/assets/galeria/al-arabi-grupo.webp" alt="Al-Arabi SC — gráfico de fase de grupos" width="431" height="538" decoding="async">
-          <a id="visorFull" class="visor-full" href="/assets/galeria/al-arabi-grupo.webp" target="_blank" rel="noopener" aria-label="Ver tamaño completo">
+          <img class="visor-img" src="/assets/galeria/al-arabi-grupo.webp" alt="Al-Arabi SC — gráfico de fase de grupos" width="431" height="538" decoding="async">
+          <a class="visor-full" href="/assets/galeria/al-arabi-grupo.webp" target="_blank" rel="noopener" aria-label="Ver tamaño completo">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
               <path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5"/>
             </svg>
           </a>
           <div class="visor-info">
-            <b id="visorCliente">Al-Arabi SC</b>
-            <span id="visorCaption" data-es="Fase de grupos" data-en="Group stage">Fase de grupos</span>
+            <b class="visor-cliente">Al-Arabi SC</b>
+            <span class="visor-caption" data-es="Fase de grupos" data-en="Group stage">Fase de grupos</span>
           </div>
         </div>
 
@@ -2567,6 +2604,54 @@
                 <img src="/assets/galeria/sub17-nayrobi-garcia.webp" alt="" width="289" height="334" loading="lazy" decoding="async">
               </button>
             </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Portafolio web: capturas extraidas del PDF de portafolio que mandó
+           Rubén (proyectos 2019-2023, ya entregados -- no confundir con el
+           teaser "Próximamente" de mas arriba, que sigue en stand-by y es
+           sobre sitios sin lanzar todavia). Un solo collage por proyecto
+           (asi vienen las piezas del PDF), asi que va plano -- sin
+           .visor-grupo-tit, que es para varias imagenes bajo un mismo
+           cliente. -->
+      <div class="visor visor--web oculto" id="galeriaWeb" data-galeria-panel="web" role="tabpanel">
+        <div class="visor-grande">
+          <img class="visor-img" src="/assets/portafolio-web/moser-cafe-kultur.webp" alt="Moser Café Kultur — sitio web y kit de redes" decoding="async">
+          <a class="visor-full" href="/assets/portafolio-web/moser-cafe-kultur.webp" target="_blank" rel="noopener" aria-label="Ver tamaño completo">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+              <path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5"/>
+            </svg>
+          </a>
+          <div class="visor-info">
+            <b class="visor-cliente">Moser Café Kultur</b>
+            <span class="visor-caption" data-es="2019 · Café con conciertos de jazz — sitio y kit de redes" data-en="2019 · Jazz café — website and social kit">2019 · Café con conciertos de jazz — sitio y kit de redes</span>
+          </div>
+        </div>
+
+        <div class="visor-miniaturas">
+          <div class="visor-grid">
+            <button type="button" class="visor-thumb activo" data-cliente="Moser Café Kultur" data-cap-es="2019 · Café con conciertos de jazz — sitio y kit de redes" data-cap-en="2019 · Jazz café — website and social kit" data-full="/assets/portafolio-web/moser-cafe-kultur.webp" aria-label="Moser Café Kultur">
+              <img src="/assets/portafolio-web/moser-cafe-kultur.webp" alt="" loading="lazy" decoding="async">
+            </button>
+            <button type="button" class="visor-thumb" data-cliente="Café Amadeus" data-cap-es="2019 · Restaurante — sitio responsive" data-cap-en="2019 · Restaurant — responsive website" data-full="/assets/portafolio-web/cafe-amadeus.webp" aria-label="Café Amadeus">
+              <img src="/assets/portafolio-web/cafe-amadeus.webp" alt="" loading="lazy" decoding="async">
+            </button>
+            <button type="button" class="visor-thumb" data-cliente="Grupo Uno22" data-cap-es="2020 · Holding de marcas — sitio corporativo" data-cap-en="2020 · Brand holding — corporate website" data-full="/assets/portafolio-web/grupo-uno22.webp" aria-label="Grupo Uno22">
+              <img src="/assets/portafolio-web/grupo-uno22.webp" alt="" loading="lazy" decoding="async">
+            </button>
+            <button type="button" class="visor-thumb" data-cliente="Saxodia" data-cap-es="2020 · Cuarteto de saxofones — sitio y app" data-cap-en="2020 · Saxophone quartet — website and app" data-full="/assets/portafolio-web/saxodia.webp" aria-label="Saxodia">
+              <img src="/assets/portafolio-web/saxodia.webp" alt="" loading="lazy" decoding="async">
+            </button>
+            <button type="button" class="visor-thumb" data-cliente="V-Dental" data-cap-es="2021 · Insumos dentales — ecommerce y app" data-cap-en="2021 · Dental supplies — ecommerce and app" data-full="/assets/portafolio-web/v-dental.webp" aria-label="V-Dental">
+              <img src="/assets/portafolio-web/v-dental.webp" alt="" loading="lazy" decoding="async">
+            </button>
+            <button type="button" class="visor-thumb" data-cliente="Viterbo 68" data-cap-es="2023 · Bienes raíces — sitio y app" data-cap-en="2023 · Real estate — website and app" data-full="/assets/portafolio-web/viterbo-68.webp" aria-label="Viterbo 68">
+              <img src="/assets/portafolio-web/viterbo-68.webp" alt="" loading="lazy" decoding="async">
+            </button>
+            <button type="button" class="visor-thumb" data-cliente="Incómodo" data-cap-es="2023 · Estudio creativo — portafolio web" data-cap-en="2023 · Creative studio — web portfolio" data-full="/assets/portafolio-web/incomodo.webp" aria-label="Incómodo">
+              <img src="/assets/portafolio-web/incomodo.webp" alt="" loading="lazy" decoding="async">
+            </button>
           </div>
         </div>
       </div>
@@ -3239,22 +3324,30 @@
      miniaturas son <button>, no <a>, precisamente para eso. El icono de
      "tamaño completo" vive aparte, sobre la imagen grande: abre el
      lightbox de abajo en vez de navegar (el href/target de la <a> se
-     quedan como respaldo si JS no corre). */
-  const visorImg = document.getElementById('visorImg');
-  if (visorImg) {
-    const visorFull    = document.getElementById('visorFull');
-    const visorCliente = document.getElementById('visorCliente');
-    const visorCaption = document.getElementById('visorCaption');
-    const thumbs = [...document.querySelectorAll('.visor-thumb')];
+     quedan como respaldo si JS no corre).
+     initVisor() opera sobre UN .visor a la vez, todo por recorrido del
+     DOM dentro de esa raiz (sin IDs) -- hay dos instancias en la pagina
+     (Deportivo y Web, ver pestañas mas abajo) y esto evita duplicar la
+     logica o pisar IDs repetidos entre ambas. */
+  const visores = [...document.querySelectorAll('.galeria .visor')];
+  const repintarVisores = [];
+
+  function initVisor(root){
+    const visorImg     = root.querySelector('.visor-img');
+    const visorCliente = root.querySelector('.visor-cliente');
+    const visorCaption = root.querySelector('.visor-caption');
+    const visorFull    = root.querySelector('.visor-full');
+    const thumbs = [...root.querySelectorAll('.visor-thumb')];
+    if (!visorImg || !thumbs.length) return;
     let activo = thumbs[0];
 
     function pintarVisor(thumb){
       const full = thumb.dataset.full;
       visorImg.src = full;
       visorImg.alt = thumb.getAttribute('aria-label') || '';
-      visorFull.href = full;
-      visorCliente.textContent = thumb.dataset.cliente;
-      visorCaption.textContent = thumb.dataset['cap' + (lang === 'es' ? 'Es' : 'En')];
+      if (visorFull) visorFull.href = full;
+      if (visorCliente) visorCliente.textContent = thumb.dataset.cliente;
+      if (visorCaption) visorCaption.textContent = thumb.dataset['cap' + (lang === 'es' ? 'Es' : 'En')];
       // reinicia el cruce de entrada de la imagen grande
       visorImg.style.animation = 'none';
       void visorImg.offsetWidth;
@@ -3273,31 +3366,62 @@
 
     // el toggle de idioma solo repinta la miniatura activa: las demas
     // no tienen texto visible hasta que se seleccionan
-    visorImg.addEventListener('idioma', () => pintarVisor(activo));
+    repintarVisores.push(() => pintarVisor(activo));
+  }
+
+  visores.forEach(initVisor);
+  // un solo listener de idioma para todas las instancias, en vez de uno
+  // por visor -- el evento 'idioma' ya lo dispara el toggle generico
+  // mas abajo sobre document
+  if (repintarVisores.length) {
+    document.addEventListener('idioma', () => repintarVisores.forEach(fn => fn()));
+  }
+
+  /* ===== PESTAÑAS DE LA GALERIA (Deportivo / Web) =====
+     Alternan que .visor es visible dentro de .galeria -- ambos existen
+     siempre en el DOM (asi el lightbox y el toggle de idioma no tienen
+     que reconstruir nada al cambiar de pestaña), solo se oculta uno con
+     la clase .oculto. */
+  const galeriaTabs = [...document.querySelectorAll('.galeria-tab')];
+  if (galeriaTabs.length) {
+    const paneles = [...document.querySelectorAll('.galeria [data-galeria-panel]')];
+    function activarGaleria(nombre){
+      galeriaTabs.forEach(t => {
+        const on = t.dataset.galeria === nombre;
+        t.classList.toggle('activo', on);
+        t.setAttribute('aria-selected', on ? 'true' : 'false');
+      });
+      paneles.forEach(p => p.classList.toggle('oculto', p.dataset.galeriaPanel !== nombre));
+    }
+    galeriaTabs.forEach(t => t.addEventListener('click', () => activarGaleria(t.dataset.galeria)));
   }
 
   /* ===== LIGHTBOX DE LA GALERIA =====
      Mismo patron que el menu de pantalla completa mas arriba (funcion
      abrir/cerrar, foco atrapado con Tab, Escape cierra, overflow:hidden
      en <body> mientras esta abierto, el foco vuelve a quien abrio) -- ver
-     esa nota junto a MENU DE PANTALLA COMPLETA, no se reinventa nada. */
+     esa nota junto a MENU DE PANTALLA COMPLETA, no se reinventa nada.
+     Un solo lightbox compartido por las dos instancias del visor: cada
+     .visor-full dispara abrirLightbox(this), que lee la info del propio
+     .visor-grande que lo contiene (closest), no de IDs fijos. */
   (() => {
     const panel   = document.getElementById('lightbox');
     const cerrar  = document.getElementById('lightboxCerrar');
     const img     = document.getElementById('lightboxImg');
     const caption = document.getElementById('lightboxCaption');
-    const trigger = document.getElementById('visorFull');
-    if (!panel || !cerrar || !img || !trigger) return;
+    const triggers = [...document.querySelectorAll('.visor-full')];
+    if (!panel || !cerrar || !img || !triggers.length) return;
 
     const enfocables = () => [...panel.querySelectorAll('a[href], button')];
     let devolverFoco = null;
 
-    function abrirLightbox(){
+    function abrirLightbox(trigger){
+      const grande = trigger.closest('.visor-grande');
       devolverFoco = document.activeElement;
       img.src = trigger.href;
-      img.alt = document.getElementById('visorImg')?.alt || '';
-      const cliente = document.getElementById('visorCliente')?.textContent || '';
-      const cap     = document.getElementById('visorCaption')?.textContent || '';
+      img.alt = grande?.querySelector('.visor-img')?.alt || '';
+      const cliente = grande?.querySelector('.visor-cliente')?.textContent || '';
+      const cap     = grande?.querySelector('.visor-caption')?.textContent || '';
       caption.textContent = [cliente, cap].filter(Boolean).join(' — ');
       panel.dataset.abierto = 'si';
       document.body.style.overflow = 'hidden';
@@ -3309,11 +3433,13 @@
       document.body.style.overflow = '';
       img.src = '';
       const destino = (devolverFoco && devolverFoco !== document.body
-                       && document.contains(devolverFoco)) ? devolverFoco : trigger;
+                       && document.contains(devolverFoco)) ? devolverFoco : triggers[0];
       destino.focus();
     }
 
-    trigger.addEventListener('click', e => { e.preventDefault(); abrirLightbox(); });
+    triggers.forEach(trigger => {
+      trigger.addEventListener('click', e => { e.preventDefault(); abrirLightbox(trigger); });
+    });
     cerrar.addEventListener('click', cerrarLightbox);
     // clic en el fondo oscuro cierra; clic en la figura (imagen o pie) no
     // burbujea hasta el fondo, mismo truco que .menu-lista en el menu.
@@ -3398,7 +3524,7 @@
 
     // el rotador y el visor de la galeria no tienen data-es/data-en, se avisan aparte
     if (rota) rota.dispatchEvent(new Event('idioma'));
-    if (visorImg) visorImg.dispatchEvent(new Event('idioma'));
+    if (repintarVisores.length) document.dispatchEvent(new Event('idioma'));
   });
 
   /* ===== SONIDO DE INTERFAZ =====
