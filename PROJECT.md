@@ -361,6 +361,26 @@ Rubén pidió un giro deliberado hacia "más sobrio y elegante": menos textura, 
 
 Verificado con Playwright en cada frente: opacidades computadas de grano/trama/rayas; matriz de `transform` de `h2` confirmando `tan(-6°)` exacto; los 6 valores de `--giro`/`--giro-d` halved leídos directo del atributo `style`; `background`/`color` computados de las 4 tarjetas `.svc` y las 3 `.cred` confirmando blanco/negro uniforme en reposo y el intercambio correcto en `:hover`; altura computada de la cuña en `40px`; `font-size`/`line-height` computados de los cuatro párrafos y los dos titulares recortados. Capturas de pantalla de `#servicios` y `#experiencia` confirmando el resultado visual.
 
+## Cuatro ajustes más, ejecutados uno por uno (2026-08-17, tarde)
+
+Rubén pidió explícitamente ejecutar estas cuatro correcciones en secuencia, verificando cada una antes de empezar la siguiente — así se hizo, incluyendo un ajuste sobre la marcha en la última cuando la verificación de la tercera reveló un problema real.
+
+- **Variables nuevas en `:root`.** `--ink-2` pasa de `#12081f` (negro con morado) a `#1A1A1A` (gris grafito puro) — más profundidad sobre el negro real sin el tinte violeta. Nueva `--p5-yellow:#FCEE0A`, aplicada a `.cifra b`, `.stat b.cuenta` (no `.stat b` en general — esa clase también cubre los otros dos números del hero, que son texto estático, no contadores; se agregó `.stat b.cuenta` como regla aparte, más específica, para no tocarlos), y `.radar .rango`/`.radar .punto`. La sombra dura existente en `.cifra b` (`text-shadow:3px 3px 0 var(--ink)`) se dejó intacta a propósito: negro sólido detrás de amarillo no le resta nada de legibilidad al glifo en sí, y es la misma sombra de cómic que usa el resto del sitio — quitarla habría sido inconsistente sin necesidad.
+
+- **`.card-in` y `.p5-tooltip`, estilo cómic con peso físico.** El anillo `box-shadow:inset` se cambia por `border:3px solid` + `filter:drop-shadow(6px 6px 0 var(--ink))`.
+
+  ⚠️ **No hizo falta el contenedor envolvente que sugería el pedido.** La instrucción anticipaba correctamente el problema (`box-shadow` exterior se recorta junto con `clip-path`, ver las notas de clip-path más arriba en este archivo) y ofrecía envolver el elemento en un padre aparte como solución. Pero `filter:drop-shadow` no es lo mismo que `box-shadow`: se calcula sobre la silueta *ya recortada* del elemento, no sobre su caja rectangular original — aplicado directamente en el mismo elemento que ya lleva `clip-path`, el recorte ocurre primero y el filtro solo ve (y sigue) la forma resultante. Verificado con una captura de pantalla recortada de una tarjeta real: la sombra sigue el filo diagonal exacto, sin ningún rectángulo asomando por fuera del corte.
+
+  ⚠️ **`.p5-tooltip` lleva el borde en `--paper`, no en `--ink` como pedía el texto literal.** El fondo de ese elemento ya es `--ink` — un borde también `--ink` habría sido invisible contra su propio relleno. Se cambió a `--paper` (blanco), que sí se ve, y se dejó la sombra proyectada en `--ink` como se pidió (esa sí lee bien sin importar qué haya detrás). `.card-in` sí usa `--ink` tal cual porque su fondo es `--ink-2` (gris grafito), donde un borde negro puro todavía se distingue, aunque sea sutil.
+
+- **`.sec-num` como arquitectura de fondo.** `font-size` sube a `clamp(10rem,25vw,25rem)` (antes `clamp(6.4rem,17vw,15rem)`), reposicionado a `top:-10%;right:-10%` y rotado a `-15deg` (antes `-3deg`), con el contorno bajado a `rgba(255,255,255,.04)` — casi invisible, que es justo el punto: a este tamaño, un trazo más marcado compite con el título real en vez de quedarse como textura. Verificado que `overflow:hidden` de `<section>` contiene el sangrado sin generar scroll horizontal en la página.
+
+- **Divisor rasgado, de vuelta.** Mismo mecanismo de `mask-image` con SVG en línea que ya se había usado (y luego reemplazado por la cuña triangular) en una tanda anterior — reconstruido con un patrón nuevo (borde superior recto, inferior dentado a profundidad irregular) a 50px de alto, dentro del rango de 40–60px pedido.
+
+  ⚠️ **`--ink-2` no funcionó como relleno, a pesar de que el pedido lo daba como primera opción.** Con `--ink-2` ya cambiado a gris grafito `#1A1A1A` en este mismo lote (ver arriba) y el fondo de la sección siendo negro puro, la diferencia de luminancia es de solo 26/255 — el mordisco quedaba prácticamente invisible, confirmado comparando capturas de pantalla antes/después del cambio. Se usó `--rojo` (la segunda opción que el pedido ya autorizaba) en su lugar, que sí se lee con fuerza real.
+
+Cada una de las cuatro se implementó y se verificó por separado (valores computados + capturas de pantalla) antes de pasar a la siguiente, tal como se pidió explícitamente.
+
 ## Redes (footer)
 
 Instagram (`@notman.rivera`), LinkedIn y Behance (`/notmanrivera`) como iconos SVG inline en `.social`, dentro de `.foot-in`. Sin librería de íconos — son 3 `<svg>` a mano, glifos genéricos (cámara, "in", "Bē") para no reproducir marcas registradas al pixel.

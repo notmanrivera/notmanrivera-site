@@ -135,7 +135,8 @@
      mismo color mal impreso, y cinco colores ya no son un sistema. */
   :root{
     --ink:#000000;
-    --ink-2:#12081f;          /* paneles: negro con morado dentro */
+    --ink-2:#1A1A1A;          /* paneles: gris grafito, profundidad sobre negro puro */
+    --p5-yellow:#FCEE0A;      /* acento de alerta -- solo en contadores y nivel del radar, no compite con el sistema rojo/morado/blanco de arriba */
     --violet:#8B3FFF;
     --violet-hi:#A96BFF;
     --violet-deep:#4A1391;
@@ -1166,6 +1167,12 @@
     font-size:3.6rem;line-height:1;color:var(--violet-hi);
     transform:skewX(-8deg);transform-origin:left;
   }
+  /* Solo el contador real (el "9+" que cuenta hacia arriba al entrar en
+     pantalla, ver ioCifras mas abajo) va en --p5-yellow -- las otras dos
+     placas del hero ("2D/3D", "MX·ES·MENA") son texto estatico, no cifras,
+     y se quedan en violeta. Mas especifico que .stat b de arriba para
+     ganarle sin tocar esa regla general. */
+  .stat b.cuenta{color:var(--p5-yellow)}
   .stat span{
     font-family:var(--ui);font-weight:300;font-size:.62rem;
     color:var(--muted);text-transform:uppercase;letter-spacing:.14em;
@@ -1173,24 +1180,32 @@
 
   /* ===== SECTIONS ===== */
   section{position:relative;padding:130px 0;overflow:hidden}
-  /* Vuelta a la cuña geometrica: un solo triangulo grande y asimetrico en
-     --ink-2 mordiendo el borde superior de cada seccion, en vez de la
-     linea diagonal lisa (o el borde rasgado de mask-image de antes). Mismo
-     espiritu que .campo/.campo2 del header, pero horizontal y en la costura
-     entre secciones. :not(:first-of-type) porque #trabajo no tiene una
-     seccion previa real de la que "heredar" el corte -- una cuña ahi se
-     vería huerfana, flotando justo debajo del header.
-     Altura bajada de 90px a 40px (pasada de sobriedad, 2026-08-17): sigue
-     bien adentro de los 130px de padding-top -- .sec-head empieza justo
-     despues de ese padding, y la cuña nunca debe llegar a pisarlo -- pero
-     ahora es un acento discreto, no una masa de color. */
+  /* Vuelta al borde rasgado (2026-08-17): la cuña triangular geometrica se
+     cambia otra vez por una pincelada seca, dentada y asimetrica, via
+     mask-image con un SVG en linea. :not(:first-of-type) porque #trabajo
+     no tiene una seccion previa real de la que "heredar" el mordisco -- se
+     veria huerfano, flotando justo debajo del header. El SVG (viewBox
+     0 0 60 24) tiene el borde superior recto y el inferior dentado a
+     profundidad irregular -- no un sawtooth uniforme -- para que se lea
+     como un corte a mano, no como un patron mecanico. mask-size repite el
+     tile cada 60px; el ancho fijo left:0/right:0 (no un % negativo como en
+     el intento anterior) es lo que pide "cubra todo el ancho de la
+     pantalla" al pie de la letra.
+     ⚠️ --rojo y no --ink-2, aunque el pedido daba a elegir entre los dos:
+     probado en pantalla, --ink-2 ahora es gris grafito #1A1A1A (ver el
+     cambio de :root mas arriba) contra un fondo de seccion que tambien es
+     casi negro -- 26 de diferencia en luminancia, el mordisco quedaba
+     invisible. --rojo es la opcion que realmente se ve. */
   section:not(:first-of-type)::before{
-    content:"";position:absolute;top:0;left:0;right:0;height:40px;
-    background:var(--ink-2);
-    clip-path:polygon(0 0, 100% 0, 100% 18%, 0 100%);
+    content:"";position:absolute;top:0;left:0;right:0;height:50px;
+    background:var(--rojo);
+    -webkit-mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 24'%3E%3Cpath d='M0,0 60,0 60,16 54,22 48,15 42,20 36,14 30,21 24,16 18,23 12,17 6,20 0,15 Z' fill='%23000'/%3E%3C/svg%3E");
+    mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 24'%3E%3Cpath d='M0,0 60,0 60,16 54,22 48,15 42,20 36,14 30,21 24,16 18,23 12,17 6,20 0,15 Z' fill='%23000'/%3E%3C/svg%3E");
+    -webkit-mask-repeat:repeat-x;mask-repeat:repeat-x;
+    -webkit-mask-size:60px 50px;mask-size:60px 50px;
     pointer-events:none;z-index:0;
   }
-  /* La mitad de las costuras la espeja (mismo triangulo, lado contrario)
+  /* La mitad de las costuras la espeja (mismo mordisco, lado contrario)
      para que la repeticion no se sienta como un patron mecanico al bajar
      por el sitio. */
   section:not(:first-of-type):nth-of-type(even)::before{transform:scaleX(-1)}
@@ -1212,11 +1227,16 @@
      encierra mucho mas aire y se lee como una placa de fondo, no como texto
      enorme. El clamp baja de 22rem a 15rem porque la extendida ocupa a lo
      ancho lo que la condensada ocupaba a lo alto. */
+  /* Arquitectura visual gigante de fondo (2026-08-17): ya no es un numero
+     de esquina, es una masa tipografica que sangra fuera de la seccion.
+     Contorno casi invisible (.04 de opacidad) a proposito -- a este tamaño
+     un trazo mas marcado compite con el titulo real en vez de quedarse
+     como textura de fondo. */
   .sec-num{
-    position:absolute;top:-42px;right:-6%;font-family:var(--ui);font-weight:900;
-    font-size:clamp(6.4rem,17vw,15rem);line-height:.8;color:transparent;
-    -webkit-text-stroke:3px rgba(139,63,255,.34);
-    transform:skewX(-10deg) rotate(-3deg);
+    position:absolute;top:-10%;right:-10%;font-family:var(--ui);font-weight:900;
+    font-size:clamp(10rem,25vw,25rem);line-height:.8;color:transparent;
+    -webkit-text-stroke:2px rgba(255,255,255,.04);
+    transform:skewX(-10deg) rotate(-15deg);
     pointer-events:none;z-index:0;user-select:none;
   }
   h2{position:relative}
@@ -1259,14 +1279,25 @@
      dentro y una placa blanca detras de un reproductor no tiene sentido.
      El filo sustituye al borde recto, y el realce de hover pasa a ser un
      anillo INSET -- clip-path recorta el box-shadow exterior. */
+  /* Estilo comic con peso fisico (2026-08-17): el anillo inset se cambia
+     por un borde real + una sombra proyectada dura, como una viñeta de
+     comic con su propio grosor. filter:drop-shadow y no box-shadow: un
+     box-shadow exterior en un elemento con clip-path se recorta junto con
+     la caja (ver notas de clip-path arriba) -- drop-shadow, en cambio, se
+     calcula sobre la silueta YA recortada, asi que sigue el filo diagonal
+     en vez de salir como un rectangulo por fuera de el. No hizo falta el
+     contenedor envolvente que suele pedir esta técnica: aplicado en el
+     MISMO elemento que ya lleva el clip-path, el recorte ya ocurrió antes
+     de que el filtro se calcule, y el resultado sigue el filo tal cual. */
   .card-in{
     display:block;height:100%;position:relative;
-    background:var(--ink-2);box-shadow:inset 0 0 0 3px var(--line);
+    background:var(--ink-2);border:3px solid var(--ink);
     clip-path:var(--filo);
-    transition:box-shadow .22s,transform .22s;
+    filter:drop-shadow(6px 6px 0 var(--ink));
+    transition:border-color .22s,transform .22s;
     transform-style:preserve-3d;will-change:transform;
   }
-  .card:hover .card-in{box-shadow:inset 0 0 0 3px var(--rojo)}
+  .card:hover .card-in{border-color:var(--rojo)}
   .frame{position:relative;width:100%;aspect-ratio:16/9;background:#000;border-bottom:2px solid var(--line)}
   .frame iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
 
@@ -1617,8 +1648,11 @@
   .cifras{display:flex;gap:34px;flex-wrap:wrap;margin-bottom:20px}
   .cifra b{
     display:block;font-family:var(--disp);font-weight:400;
-    font-size:3.4rem;line-height:1;color:var(--violet-hi);
+    font-size:3.4rem;line-height:1;color:var(--p5-yellow);
     transform:skewX(-8deg);transform-origin:left;
+    /* la sombra dura en --ink se queda: negro solido detras de amarillo no
+       le resta legibilidad (el glifo en si sigue siendo amarillo plano),
+       y es la misma sombra de comic que usa el resto del sitio */
     text-shadow:3px 3px 0 var(--ink);
   }
   .cifra span{
@@ -1687,20 +1721,27 @@
     stroke-linejoin:round;
     transform-box:view-box;transform-origin:310px 205px;
   }
-  .radar .punto{fill:var(--rojo);stroke:var(--paper);stroke-width:2.5}
+  .radar .punto{fill:var(--p5-yellow);stroke:var(--paper);stroke-width:2.5}
   .radar .eje{
     font-family:var(--disp);font-size:20px;letter-spacing:.05em;
     fill:#fff;text-transform:uppercase;
   }
   .radar .rango{
     font-family:var(--ui);font-size:11px;font-weight:300;letter-spacing:.08em;
-    fill:rgba(255,255,255,.74);text-transform:uppercase;
+    fill:var(--p5-yellow);text-transform:uppercase;
   }
   .radar .punto{cursor:pointer}
   /* etiqueta estilo Persona 5: fondo --ink, texto --paper, filo diagonal.
      position:fixed + clientX/clientY del mouse directo, sin convertir
      coordenadas del viewBox del SVG -- el offset visual (14px,-140%) lo
      pone el transform, no el JS. */
+  /* Mismo cambio de peso fisico que .card-in (ver el comentario ahi):
+     border real + filter:drop-shadow en vez de box-shadow, para que la
+     sombra sobreviva al clip-path en vez de recortarse con la caja.
+     ⚠️ El borde va en --paper y NO en --ink como en .card-in: el fondo de
+     este elemento YA es --ink, asi que un borde tambien --ink seria
+     invisible contra su propio relleno. La sombra proyectada si se queda
+     en --ink -- esa lee bien sin importar que hay detras. */
   .p5-tooltip{
     position:fixed;left:0;top:0;z-index:500;pointer-events:none;
     background:var(--ink);color:var(--paper);
@@ -1708,7 +1749,8 @@
     font-size:.72rem;letter-spacing:.06em;white-space:nowrap;
     padding:8px 14px;
     clip-path:var(--filo);
-    box-shadow:0 0 0 2px var(--rojo);
+    border:3px solid var(--paper);
+    filter:drop-shadow(6px 6px 0 var(--ink));
     opacity:0;transform:translate(14px,-140%) scale(.92);
     transition:opacity .12s,transform .12s;
   }
