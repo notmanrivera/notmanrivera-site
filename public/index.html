@@ -1306,27 +1306,31 @@
      que se salga del rectangulo propio (mismo hallazgo que .dialog-name
      mas arriba: "el nombre se corta"). Una chispa asomando por FUERA del
      borde, como se hizo primero, se cortaba sin avisar. */
-  /* --ink, no --paper: tanto .btn-1 (placa-negra) como .btn-2 (placa-roja)
-     asientan en blanco una vez que el snap de hover termina (.orbita
-     .sat:hover), asi que una chispa blanca se perdia contra su propio
-     fondo justo en el estado donde mas tiempo se queda. Negra se ve bien
-     ahi Y durante el parpadeo rojo/blanco de p5HoverSnap. */
+  /* Reusado en .svc, .cred y .card (2026-08-17) -- mismo destello, no una
+     pieza nueva por sitio. Color por defecto --paper: pensado para .card,
+     cuyo fondo (.card-in, --ink-2) es oscuro siempre, nunca voltea a
+     blanco. .btn/.svc/.cred sí voltean a blanco en su estado "activo"
+     (el snap de hover en botones, el ::after en placas) y ahi --paper
+     se perderia -- por eso esos tres se sobreescriben a --ink justo abajo. */
   .chispa-btn{
     position:absolute;top:6px;right:8px;width:14px;height:14px;z-index:1;
     clip-path:polygon(50% 0%,58% 42%,100% 50%,58% 58%,50% 100%,42% 58%,0% 50%,42% 42%);
-    background:var(--ink);pointer-events:none;opacity:0;
+    background:var(--paper);pointer-events:none;opacity:0;
     transform:scale(0) rotate(0deg);
   }
+  .btn .chispa-btn,.svc .chispa-btn,.cred .chispa-btn{background:var(--ink)}
   @keyframes chispaTwinkle{
     0%  {opacity:0;transform:scale(0) rotate(0deg)}
     40% {opacity:1}
     100%{opacity:0;transform:scale(1.4) rotate(35deg)}
   }
-  .btn:hover .chispa-btn,.btn:focus-visible .chispa-btn{
+  .btn:hover .chispa-btn,.btn:focus-visible .chispa-btn,
+  .svc:hover .chispa-btn,.cred:hover .chispa-btn,.card:hover .chispa-btn{
     animation:chispaTwinkle .9s cubic-bezier(.2,1,.3,1) infinite;
   }
   @media(prefers-reduced-motion:reduce){
-    .btn:hover .chispa-btn,.btn:focus-visible .chispa-btn{display:none}
+    .btn:hover .chispa-btn,.btn:focus-visible .chispa-btn,
+    .svc:hover .chispa-btn,.cred:hover .chispa-btn,.card:hover .chispa-btn{display:none}
   }
 
   .stats{
@@ -1527,6 +1531,23 @@
     font-family:var(--ui);font-weight:900;text-transform:uppercase;
     font-size:.68rem;letter-spacing:.1em;
     padding:6px 16px;transform:skewX(-6deg);
+    box-shadow:3px 3px 0 var(--sombra);
+  }
+  /* Etiqueta del reel (2026-08-17): violeta y no rojo -- rojo es "mira
+     aqui"/hover en todo el sitio, y esto no es una urgencia, es identidad
+     ("quien soy", el trabajo del violeta). Aclara que el reel es un
+     resumen general y no una pieza de un solo sector, sin depender solo
+     del texto del parrafo de abajo para decirlo.
+     top/left POSITIVOS -- .cinta-proximamente de arriba usa left:-8px y
+     vive dentro de .card-in, que tiene clip-path: en cuanto se reactive
+     va a cortarse igual que le paso a .dialog-name y a la primera version
+     de .chispa-btn (ver esas notas). Esta no repite el error. */
+  .cinta-general{
+    position:absolute;top:10px;left:10px;z-index:2;pointer-events:none;
+    background:var(--violet);color:var(--paper);
+    font-family:var(--ui);font-weight:900;text-transform:uppercase;
+    font-size:.66rem;letter-spacing:.09em;
+    padding:6px 14px;transform:skewX(-6deg);
     box-shadow:3px 3px 0 var(--sombra);
   }
   .card-body{padding:22px 24px 26px}
@@ -2549,27 +2570,33 @@
       <span class="sec-num">01<span class="chispa-sec" aria-hidden="true"></span></span>
       <span class="sec-tag" data-es="Portafolio" data-en="Portfolio">Portafolio</span>
       <h2 data-es="Reel y <em>casos</em>" data-en="Reel and <em>case work</em>">Reel y <em>casos</em></h2>
-      <p data-es="Animación, edición deportiva y diseño de interfaz. Dale play." data-en="Animation, sports editing and interface design. Hit play.">Animación, edición deportiva y diseño de interfaz. Dale play.</p>
+      <p data-es="Un reel general de mi trabajo como animador. Debajo, casos reales por categoría — deportivo y web." data-en="A general reel of my work as an animator. Real case work by category — sports and web — below.">Un reel general de mi trabajo como animador. Debajo, casos reales por categoría — deportivo y web.</p>
     </div>
 
     <!-- Reel real, en Vimeo (2026-08-17) -- reactivado, ya no es el
          placeholder "expediente bloqueado". work-grid-uno porque el reel
          vive solo (el teaser de "Próximamente" de abajo sigue en stand
          by): un solo hijo en un grid auto-fit se estira a todo el ancho
-         de la fila y se ve como cartel de banco, no tarjeta. -->
+         de la fila y se ve como cartel de banco, no tarjeta.
+         Rubén: el reel es un demo general de su trabajo como animador, no
+         una pieza enfocada en deportes ni en ningun sector -- de ahi la
+         etiqueta .cinta-general y el copy de abajo, que ya no mencionan
+         un tipo de proyecto en particular. -->
     <div class="work-grid work-grid-uno">
       <article class="card rv">
         <div class="card-in">
           <div class="frame">
+            <span class="cinta-general" data-es="Reel general" data-en="General reel">Reel general</span>
             <iframe src="https://player.vimeo.com/video/1218963729?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479"
                     allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share"
                     title="Reel - NotMan"></iframe>
           </div>
           <div class="card-body">
             <h3 data-es="Reel de animación" data-en="Animation reel">Reel de animación</h3>
-            <p data-es="Motion graphics 2D y 3D: intros, transiciones, piezas para redes y anuncios animados." data-en="2D and 3D motion graphics: intros, transitions, social pieces and animated ads.">Motion graphics 2D y 3D: intros, transiciones, piezas para redes y anuncios animados.</p>
+            <p data-es="Un resumen de mi trabajo como animador: motion graphics, edición y diseño de interfaz — sin enfocarme en un sector en particular." data-en="A summary of my work as an animator: motion graphics, editing and interface design — not focused on any one field.">Un resumen de mi trabajo como animador: motion graphics, edición y diseño de interfaz — sin enfocarme en un sector en particular.</p>
           </div>
         </div>
+        <span class="chispa-btn" aria-hidden="true"></span>
       </article>
     </div>
 
@@ -2818,21 +2845,25 @@
         <span class="svc-bignum">01</span>
         <h3 data-es="Motion graphics 2D/3D" data-en="2D/3D motion graphics">Motion graphics 2D/3D</h3>
         <p data-es="Anuncios animados, intros de jugadores, paquetes gráficos para transmisión y piezas verticales optimizadas para Reels y TikTok." data-en="Animated ads, player intros, broadcast graphics packages and vertical pieces optimized for Reels and TikTok.">Anuncios animados, intros de jugadores, paquetes gráficos para transmisión y piezas verticales optimizadas para Reels y TikTok.</p>
+        <span class="chispa-btn" aria-hidden="true"></span>
       </div>
       <div class="svc rv placa-negra" style="--giro-d:2.4deg">
         <span class="svc-bignum">02</span>
         <h3 data-es="Edición de video deportiva" data-en="Sports video editing">Edición de video deportiva</h3>
         <p data-es="Reels publicitarios, contenido de matchday, highlights de atletas y video case studies que traducen resultados en historia." data-en="Ad reels, matchday content, athlete highlights and video case studies that turn results into a story.">Reels publicitarios, contenido de matchday, highlights de atletas y video case studies que traducen resultados en historia.</p>
+        <span class="chispa-btn" aria-hidden="true"></span>
       </div>
       <div class="svc rv" style="--giro-d:-2.6deg">
         <span class="svc-bignum">03</span>
         <h3 data-es="Diseño web UI/UX" data-en="Web design UI/UX">Diseño web UI/UX</h3>
         <p data-es="Landing pages interactivas y modernización de media kits, para que la presencia digital esté a la altura del talento que representas." data-en="Interactive landing pages and media kit modernization, so the digital presence matches the talent you represent.">Landing pages interactivas y modernización de media kits, para que la presencia digital esté a la altura del talento que representas.</p>
+        <span class="chispa-btn" aria-hidden="true"></span>
       </div>
       <div class="svc rv placa-negra" style="--giro-d:3.4deg">
         <span class="svc-bignum">04</span>
         <h3 data-es="Soporte marca blanca" data-en="White-label support">Soporte marca blanca</h3>
         <p data-es="Aliado externo para agencias: absorbo picos de trabajo sin que tengas que elevar costos fijos ni contratar de más." data-en="External ally for agencies: I absorb workload peaks without you raising fixed costs or over-hiring.">Aliado externo para agencias: absorbo picos de trabajo sin que tengas que elevar costos fijos ni contratar de más.</p>
+        <span class="chispa-btn" aria-hidden="true"></span>
       </div>
     </div>
   </div>
@@ -2851,14 +2882,17 @@
       <div class="cred rv" style="--giro-d:3.6deg">
         <h3>Victorem Sports Marketing</h3>
         <p data-es="Nueve años de experiencia en agencia, con especialización en el sector deportivo." data-en="Nine years of agency experience, specialized in the sports sector.">Nueve años de experiencia en agencia, con especialización en el sector deportivo.</p>
+        <span class="chispa-btn" aria-hidden="true"></span>
       </div>
       <div class="cred rv placa-negra" style="--giro-d:-4.4deg">
         <h3>Hugo González · Mazatlán FC</h3>
         <p data-es="Branding e imagen digital para el arquero profesional durante su etapa en el club." data-en="Branding and digital image for the professional goalkeeper during his time at the club.">Branding e imagen digital para el arquero profesional durante su etapa en el club.</p>
+        <span class="chispa-btn" aria-hidden="true"></span>
       </div>
       <div class="cred rv" style="--giro-d:2.8deg">
         <h3>Al-Arabi SC Volleyball · Catar</h3>
         <p data-es="Diseño visual y piezas gráficas para una propiedad deportiva internacional en Doha." data-en="Visual design and graphic assets for an international sports property in Doha.">Diseño visual y piezas gráficas para una propiedad deportiva internacional en Doha.</p>
+        <span class="chispa-btn" aria-hidden="true"></span>
       </div>
     </div>
   </div>
