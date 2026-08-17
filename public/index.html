@@ -1135,17 +1135,30 @@
      efecto contrario al que se busca aqui), asi que la placa tiene que
      ser hermana de .lede y no su pseudo-elemento. */
   .dialogo{position:relative;isolation:isolate}
+  /* Menos rojo que el primer intento (6px en vez de 10px de corrida --
+     Ruben: "no tanto rojo jaja") y con transition para el hover de abajo:
+     al pasar el mouse, la placa se corre un poco mas y el borde de .lede
+     se pone rojo, como si la caja "despegara" un poco de su sombra.
+     El :hover vive en .dialogo, no en .lede ni en .dialogo::before -- la
+     regla de oro del sitio es que ningun elemento con :hover mueva su
+     PROPIA caja (si no, se sale de debajo del cursor y el hover parpadea);
+     aqui ninguna de las dos piezas que cambian (el ::before, el borde de
+     .lede) es la que detecta el :hover, asi que no hay riesgo de eso. */
   .dialogo::before{
     content:"";position:absolute;inset:0;z-index:-1;
     background:var(--rojo);clip-path:var(--filo);
-    transform:translate(10px,10px);
+    transform:translate(6px,6px);
+    transition:transform .22s;
   }
+  .dialogo:hover::before{transform:translate(10px,10px)}
   .lede{
     position:relative;max-width:54ch;margin-bottom:22px;
     background:var(--ink);border:5px solid var(--paper);
     clip-path:var(--filo);
     padding:32px clamp(24px,5vw,40px);
+    transition:border-color .22s;
   }
+  .dialogo:hover .lede{border-color:var(--rojo)}
   .lede p{
     font-family:var(--body);color:var(--paper);
     font-size:clamp(1.05rem,1.9vw,1.3rem);line-height:1.6;
@@ -2148,6 +2161,8 @@
   @media(prefers-reduced-motion:reduce){
     .fade,.fade.go{opacity:1;animation:none;transform:none}
     .dialog-name{opacity:1;transition:none}
+    .dialogo::before{transition:none}
+    .dialogo:hover::before{transform:translate(6px,6px)}
     .stats::before,.stats.go::before{transform:scaleX(1);animation:none}
     .stat,.stats.go .stat{opacity:1;animation:none;transform:none}
     .rv,.rv.in{opacity:1;transform:none;transition:none}

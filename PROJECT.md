@@ -527,6 +527,17 @@ La solución real para `.lede`: una placa de verdad detrás, no un filtro. `.dia
 
 Verificado con Playwright + inspección de píxeles: la placa roja es visible y del color correcto en la esquina inferior derecha, sin overlap raro con `.dialog-name` ni con `.dialog-next`, en desktop y móvil.
 
+### Menos rojo, y hover animado (2026-08-17)
+
+Reacción de Rubén al ver la placa roja en vivo: "no tanto rojo jaja y añadamos un efecto de animación en hover".
+
+- **Menos rojo:** la corrida de `.dialogo::before` baja de `10px` a `6px` — mismo gesto, menos superficie roja expuesta.
+- **Hover:** al pasar el mouse sobre `.dialogo`, la placa se corre a los `10px` originales (con `transition:transform .22s`) y el borde de `.lede` pasa a `var(--rojo)` (`transition:border-color .22s`) — como si la caja "despegara" un poco de su sombra. Mismo tratamiento de borde-a-rojo que ya usa `.card-in` en su hover, no una idea nueva.
+- **Regla de oro del hover respetada:** el elemento que detecta `:hover` es `.dialogo`, y lo que cambia son su `::before` (hermano) y el borde de `.lede` (hijo) — ninguno de los dos ES `.dialogo`, así que nada mueve la caja que el cursor está sobre, y el `:hover` no puede parpadear.
+- `prefers-reduced-motion:reduce` quita la `transition` y fija el `::before` a los `6px` de reposo incluso en hover — el color del borde sigue cambiando (no es una animación de movimiento), pero nada se desliza.
+
+Verificado con Playwright: `border-color` de `.lede` pasa de blanco a `rgb(229,0,18)` al hacer `hover('.dialogo')`, capturas de pantalla confirmando menos rojo en reposo y la placa más expuesta en hover, sin errores de consola.
+
 ## Trabajar desde una sesión remota (no desde la Mac)
 
 El repo es autosuficiente: un `index.html` sin build step. Editar, revisar y pushear funciona igual en cualquier máquina. **Lo único que no viaja es el despliegue**, y conviene saber exactamente por qué antes de perder tiempo:
