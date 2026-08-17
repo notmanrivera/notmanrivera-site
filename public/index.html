@@ -1255,8 +1255,16 @@
     transition:transform .22s;
   }
   .dialogo:hover::before{transform:translate(10px,10px)}
-  .lede{
-    position:relative;max-width:54ch;margin-bottom:22px;
+  /* .lede-tu (2026-08-17): la caja de respuestas de #contacto comparte
+     TODO el cromado visual de .lede -- mismo fondo/borde/filo/padding,
+     misma placa de nombre -- pero es una clase aparte a propósito: .lede
+     vive en el selector FADE (se revela con el scroll, ver mas abajo), y
+     esta caja no debe -- se revela cuando NOTMAN termina de preguntar
+     (.dialogo-tu.go, ver el JS), no cuando el visitante hace scroll hasta
+     ella. Meterla en el selector FADE haria que dos mecanismos de opacidad
+     (scroll vs. "termino de teclear") compitieran por la misma caja. */
+  .lede,.lede-tu{
+    position:relative;max-width:54ch;
     background:var(--ink);border:5px solid var(--paper);
     clip-path:var(--filo);
     /* padding-top a 60px, no 32px: al agrandar .dialog-name (2026-08-17,
@@ -1268,7 +1276,8 @@
     padding:60px clamp(24px,5vw,40px) 32px;
     transition:border-color .22s;
   }
-  .dialogo:hover .lede{border-color:var(--rojo)}
+  .lede{margin-bottom:22px}
+  .dialogo:hover .lede,.dialogo:hover .lede-tu{border-color:var(--rojo)}
   .lede p{
     font-family:var(--body);color:var(--paper);
     font-size:clamp(1.05rem,1.9vw,1.3rem);line-height:1.6;
@@ -1319,6 +1328,14 @@
     opacity:0;transition:opacity .3s;
   }
   .lede.go ~ .dialog-name{opacity:1}
+  /* La placa de "TÚ" (2026-08-17): referencia real de P3R -- quien
+     pregunta ancla su caja/placa a la izquierda, quien responde a la
+     derecha. Mismo .dialog-name, espejado: right en vez de left, giro en
+     sentido contrario. Se revela junto con toda la caja (.dialogo-tu.go),
+     no con el selector de hermano de arriba -- esta placa vive dentro de
+     .dialogo-tu junto con .lede-tu, ambas controladas por el mismo .go. */
+  .dialog-name-tu{left:auto;right:14px;transform:rotate(3deg)}
+  .dialogo-tu.go .dialog-name{opacity:1}
   .dialog-name::after{
     content:"";position:absolute;inset:5px;z-index:-1;
     background:var(--ink);clip-path:var(--filo);
@@ -1338,31 +1355,49 @@
     0%,100%{transform:scale(1);opacity:.6}
     50%    {transform:scale(1.2);opacity:1}
   }
-  /* ===== MENU DE RESPUESTAS (estilo P5: el turno del jugador) =====
-     Oculto hasta que termina de teclearse la pregunta -- lo revela el
-     callback de maquinaEscribir() en el JS, agregando .go. max-height y
-     no height:auto/display:block: la transicion necesita un numero con el
-     que animar, y el contenido real (2-3 lineas cortas) nunca se acerca
-     al tope de 260px, asi que no se corta. */
-  .dialog-opciones{
-    list-style:none;margin:18px 0 0;padding:16px 0 0;
-    border-top:2px dashed var(--line);
-    display:flex;flex-direction:column;gap:2px;
-    opacity:0;max-height:0;overflow:hidden;
-    transition:opacity .25s,max-height .35s;
+  /* .dialog-next deja de tener sentido en cuanto aparecen las opciones --
+     ya no hay mas texto que revelar, le toca al visitante elegir. Clase
+     explicita en vez del truco de selector de hermano que usa .dialog-name
+     (".lede.go ~ .dialog-name"): .dialog-next y la caja de opciones ya NO
+     son hermanos en el DOM (viven en cajas .dialogo separadas, ver
+     .dialogo-doble mas abajo), asi que el combinador ~ no puede llegar de
+     una a la otra -- el JS agrega/quita .oculto directo sobre .dialog-next.
+     opacity:0 solo no alcanza -- dialogBlink sigue corriendo (infinite), y
+     una animacion activa le gana a cualquier valor estatico de la misma
+     propiedad sin importar especificidad. Hay que apagar la animacion
+     tambien. */
+  .dialog-next.oculto{opacity:0;animation:none}
+
+  /* ===== DOS CAJAS DE DIALOGO, UNA JUNTO A LA OTRA (#contacto) =====
+     Referencia real de P3R: quien pregunta ancla su caja a la izquierda,
+     quien responde tiene su lista a la derecha, cerca de su propio
+     retrato. En columna por default (asi ya funcionaba en movil, y una
+     fila de dos cajas angostas no cabe comoda ahi); de 900px para arriba
+     pasa a fila, NOTMAN mas ancho (lleva la pregunta completa) y TÚ mas
+     angosto (solo 3 lineas cortas), con un pequeño desfase vertical para
+     que no se vean como un par perfectamente alineado -- mismo espiritu
+     desalineado a proposito que ya usan las placas del hero (--giro). */
+  .dialogo-doble{display:flex;flex-direction:column;gap:32px;margin:20px 0 30px}
+  @media(min-width:900px){
+    .dialogo-doble{flex-direction:row;align-items:flex-start;gap:24px}
+    .dialogo-doble > .dialogo{flex:1 1 0;min-width:0}
+    .dialogo-doble > .dialogo-tu{flex:0 1 300px;margin-top:44px}
   }
-  .dialog-opciones.go{opacity:1;max-height:260px}
-  /* El cursor de "seguir" (.dialog-next) deja de tener sentido en cuanto
-     aparecen las opciones -- ya no hay mas texto que revelar, le toca al
-     visitante elegir. Mismo truco de selector de hermano que .dialog-name
-     (".lede.go ~ .dialog-name"): por eso .dialog-opciones va ANTES que
-     .dialog-next en el HTML, aunque los dos son position:absolute/normal
-     y el orden en el DOM no mueve nada visualmente. */
-  /* opacity:0 solo no alcanza -- .dialog-next sigue con dialogBlink
-     corriendo (infinite), y una animacion activa le gana a cualquier valor
-     estatico de la misma propiedad sin importar especificidad. Hay que
-     apagar la animacion tambien. */
-  .dialog-opciones.go ~ .dialog-next{opacity:0;animation:none}
+  /* Toda la caja (fondo, borde, placa Y lista) aparece de golpe cuando
+     NOTMAN termina de preguntar -- no solo la lista de adentro. Si solo la
+     lista tuviera su propio fundido, el rectangulo vacio (fondo+borde+
+     sombra roja de .dialogo::before) se veria flotando ahi desde el
+     principio, sin nada dentro, como una caja rota en vez de una caja que
+     todavia no le toca aparecer. */
+  .dialogo-tu{opacity:0;transform:translateY(10px);transition:opacity .3s,transform .3s}
+  .dialogo-tu.go{opacity:1;transform:translateY(0)}
+  @media(prefers-reduced-motion:reduce){.dialogo-tu{transition:none}}
+
+  /* ===== MENU DE RESPUESTAS (estilo P5: el turno del jugador) ===== */
+  .dialog-opciones{
+    list-style:none;margin:0;
+    display:flex;flex-direction:column;gap:2px;
+  }
   .dialog-opciones a{
     position:relative;display:block;
     font-family:var(--body);color:var(--paper);text-decoration:none;
@@ -1391,7 +1426,6 @@
   @keyframes p5ConfirmOpcion{50%{color:var(--ink);background:var(--rojo)}}
   .dialog-opciones a.confirmando{animation:p5ConfirmOpcion .15s ease-out}
   @media(prefers-reduced-motion:reduce){
-    .dialog-opciones{transition:none}
     .dialog-opciones a::before{transition:none}
     .dialog-opciones a.confirmando{animation:none}
   }
@@ -3177,33 +3211,44 @@
     <span class="sec-tag" data-es="Contacto" data-en="Contact">Contacto</span>
     <h2 style="transform:skewX(-6deg)" data-es="¿Tienes un <em>proyecto</em> en mente?" data-en="Got a <em>project</em> in mind?">¿Tienes un <em>proyecto</em> en mente?</h2>
 
-    <!-- Segunda caja de dialogo (2026-08-17, a peticion de Ruben): "vamos a
-         usar la misma caja de dialogo del hero, con el giro de que NOTMAN
-         pregunta en que puede ayudar y el usuario tiene la posibilidad de
-         contestar". Mismo componente .dialogo/.lede/.dialog-name que el
-         hero, sin CSS nuevo para la caja en si -- toda la maquinaria de
-         revelado ya es generica (.lede esta en el selector FADE, el
-         IntersectionObserver ya observa cualquier .lede fuera de <header>,
-         maquinaEscribir() ya recibe cualquier .dialog-texto) asi que esta
-         segunda caja funciona sola, sin cablear nada especifico por ID.
-         Lo unico realmente nuevo es .dialog-opciones: un menu de respuestas
-         al estilo P5 (aparece SOLO cuando termina de teclearse la pregunta,
-         ver el callback de maquinaEscribir en el JS), cada opcion es un
-         mailto real con el asunto tomado de su propio texto -- funciona
-         sin JS (va a hola@notmanrivera.com sin asunto), y con JS se lee el
-         texto visible (ya en el idioma correcto) para armar el asunto,
-         asi no hace falta duplicar copy traducido en un atributo aparte. -->
-    <div class="dialogo">
-      <div class="lede">
-        <p class="dialog-texto" data-es="¿En qué puedo ayudarte?" data-en="What can I help you with?">¿En qué puedo ayudarte?</p>
-        <ul class="dialog-opciones">
+    <!-- Segunda caja de dialogo (2026-08-17, a peticion de Ruben) -- v2, tras
+         ver una referencia real de P3R (el salon de clases con la pregunta
+         de Junpei a la izquierda y las opciones de respuesta a la derecha,
+         cerca del propio retrato del jugador): "nota como el personaje que
+         pregunta tiene su caja a la izquierda, mientras el que responde
+         tiene la lista de respuestas a la derecha". Dos cajas .dialogo
+         separadas espacialmente (.dialogo-doble las pone en fila en
+         escritorio), no una sola caja con todo apilado adentro como en el
+         primer intento.
+         Sigue sin CSS nuevo para el CROMADO de las cajas: la de NOTMAN
+         reusa .lede tal cual (sigue en el selector FADE generico, se revela
+         con el scroll igual que la del hero). La de la derecha usa
+         .lede-tu, una clase hermana con el mismo fondo/borde/filo/padding
+         (mismas reglas, ver el CSS) pero deliberadamente FUERA de FADE:
+         esta caja no se revela con el scroll, se revela cuando NOTMAN
+         termina de preguntar (.dialogo-tu.go, ver el callback de
+         maquinaEscribir en el JS) -- meterla en el sistema de scroll
+         genérico haria que dos mecanismos de opacidad compitieran por la
+         misma caja. La etiqueta "TÚ" reusa .dialog-name (mismo truco de
+         placa blanca + capa negra) con un modificador que la espeja a la
+         derecha en vez de a la izquierda. -->
+    <div class="dialogo-doble">
+      <div class="dialogo">
+        <div class="lede">
+          <p class="dialog-texto" data-es="¿En qué puedo ayudarte?" data-en="What can I help you with?">¿En qué puedo ayudarte?</p>
+          <i class="dialog-next" aria-hidden="true"></i>
+        </div>
+        <span class="dialog-name">NotMan</span>
+      </div>
+
+      <div class="dialogo dialogo-tu">
+        <ul class="lede-tu dialog-opciones">
           <li><a href="mailto:hola@notmanrivera.com" data-es="Tengo un proyecto. Hablemos." data-en="I've got a project. Let's talk.">Tengo un proyecto. Hablemos.</a></li>
           <li><a href="mailto:hola@notmanrivera.com" data-es="Esto es lo que necesitaba ver." data-en="This is what I needed to see.">Esto es lo que necesitaba ver.</a></li>
           <li><a href="mailto:hola@notmanrivera.com" data-es="Cuéntame cómo empezamos." data-en="Tell me how we start.">Cuéntame cómo empezamos.</a></li>
         </ul>
-        <i class="dialog-next" aria-hidden="true"></i>
+        <span class="dialog-name dialog-name-tu" data-es="Tú" data-en="You">Tú</span>
       </div>
-      <span class="dialog-name">NotMan</span>
     </div>
 
     <a href="mailto:hola@notmanrivera.com" class="mail" data-text="hola@notmanrivera.com"><span>hola@notmanrivera.com</span></a>
@@ -3503,13 +3548,17 @@
     }
   }
 
-  // Revela el menu de opciones de una caja de dialogo (si la tiene) cuando
-  // termina de teclearse su pregunta -- una funcion propia porque se llama
+  // Revela la caja de respuestas HERMANA de una pregunta (si la tiene)
+  // cuando termina de teclearse -- una funcion propia porque se llama
   // desde dos sitios (aqui abajo, al cargar, y en el toggle de idioma).
+  // .dialogo-tu vive en la caja .dialogo de al lado, no dentro de la misma
+  // .lede -- por eso se busca a partir de .dialogo-doble, el contenedor
+  // que envuelve a las dos, y no con .closest('.lede').
   function revelarOpciones(p){
-    const opciones = p.closest('.lede')?.querySelector('.dialog-opciones');
-    opciones?.classList.add('go');
-    return opciones;
+    const tu = p.closest('.dialogo-doble')?.querySelector('.dialogo-tu');
+    tu?.classList.add('go');
+    p.closest('.lede')?.querySelector('.dialog-next')?.classList.add('oculto');
+    return tu;
   }
 
   prepararTexto();
@@ -3906,12 +3955,14 @@
       // .lede ya tiene .go (nunca se le quita), asi que maquinaEscribir
       // arranca su bucle de inmediato con el texto nuevo -- no hace falta
       // el remove/re-add de arriba, eso es solo para el sistema de .slam.
-      // El menu de opciones (si esta caja tiene uno) se oculta primero y
-      // solo vuelve a aparecer cuando termina de teclearse la pregunta en
-      // el nuevo idioma -- si no, se quedaria mostrando respuestas mientras
-      // la pregunta todavia se esta reescribiendo encima.
+      // La caja de respuestas (si esta pregunta tiene una hermana) se
+      // oculta primero, y el cursor de "seguir" reaparece -- los dos solo
+      // vuelven a su estado de "esperando" cuando termina de teclearse la
+      // pregunta en el nuevo idioma; si no, se veria la caja de respuestas
+      // vieja mientras la pregunta todavia se esta reescribiendo.
       if (el.classList.contains('dialog-texto')) {
-        el.closest('.lede')?.querySelector('.dialog-opciones')?.classList.remove('go');
+        el.closest('.dialogo-doble')?.querySelector('.dialogo-tu')?.classList.remove('go');
+        el.closest('.lede')?.querySelector('.dialog-next')?.classList.remove('oculto');
         maquinaEscribir(el, () => revelarOpciones(el));
       }
     });
