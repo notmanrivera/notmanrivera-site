@@ -1036,7 +1036,18 @@
       margin:0 auto 10px;object-position:center;transform-origin:center;
     }
     .orbita h1{text-align:center}
-    .orbita h1 .rota{margin:.3em 0 0}
+    /* ⚠️ position:absolute, no solo texto centrado -- mismo motivo que el
+       calc() fijo de las columnas mas arriba, pero en vertical: .rota
+       normal-flow suma su propia altura a la de <h1>, y como <h1> ocupa
+       3 filas de la rejilla con align-items:center, cada vez que .rota
+       cambiaba de una linea a dos (una traduccion mas larga que otra) el
+       logo entero saltaba de posicion vertical -- Ruben lo señalo en vivo.
+       Sacando a .rota del flujo, la altura de <h1> vuelve a depender solo
+       de .marca (fija), y .rota ya no puede mover nada a su alrededor. */
+    .orbita h1 .rota{
+      position:absolute;left:50%;top:100%;margin:.3em 0 0;
+      transform:translateX(-50%) skewX(-6deg) rotate(-1.4deg);
+    }
 
     /* el parrafo cierra la composicion sobre su propia placa. Va de una
        pieza y NO con fondo por linea: box-decoration-break sabe pintar por
