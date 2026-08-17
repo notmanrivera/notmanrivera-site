@@ -739,6 +739,16 @@ Verificado con Playwright: las dos cajas miden el mismo ancho exacto (0px de dif
 
 Verificado con Playwright: alto y ancho de las dos cajas coinciden exactamente (mismo `getBoundingClientRect()`), y sus `top` también coinciden (alineadas, sin desfase). Sin regresión en el marcador tenue ni en los tonos de hover/confirmación. Sin overflow horizontal, sin errores de consola.
 
+## El glitch del botón de correo ensuciaba el texto en vez de acompañarlo (2026-08-17)
+
+Rubén: "al hacer hover en hola@notmanrivera.com, por unos frames la animación del texto se hace negra y estorba con transparencia con el color blanco que siempre debería ser."
+
+Se verificó con Playwright que el texto real (`.mail span`) nunca cambia de color -- se queda en `--paper` (blanco) todo el hover, confirmado con un trazo de computed styles cada 30ms. El problema era el fantasma de `.mail::after` (el micro-glitch de "impresión mal registrada" que ya documentaba este archivo): a un desfase de solo 2px y opacidad pico de .55, y con un `font-size` que llega a `4.2rem`, esos pocos px de diferencia con el texto real (que a su vez se mueve -4px,-4px en hover) no alcanzaban para separarse -- las dos capas casi se pisaban, y el resultado se leía como el propio texto blanco ensuciándose de gris, no como una sombra fantasma aparte. Se comprobó capturando el fotograma exacto del pico de la animación (forzando el estado vía CSS en vez de esperar el timing real, que con `steps(2,end)` en .2s es demasiado corto para cazarlo a ojo) -- la captura confirmó el problema con claridad.
+
+**Arreglo:** se sube el desfase del fantasma de 2px a 7px y se baja la opacidad pico de .55 a .35. Con más separación y menos opacidad, el fantasma se lee como un eco tenue detrás del texto (el efecto "mal registrado" que se buscaba desde el principio) en vez de una segunda capa compitiendo por legibilidad con el texto real.
+
+Verificado con Playwright: el texto real sigue en `rgb(255,255,255)` durante todo el hover (sin regresión), capturado el nuevo pico de la animación con el mismo método de estado forzado -- el fantasma ahora se ve claramente separado, sin ensuciar el blanco. Sin overflow horizontal, sin errores de consola.
+
 ## Trabajar desde una sesión remota (no desde la Mac)
 
 El repo es autosuficiente: un `index.html` sin build step. Editar, revisar y pushear funciona igual en cualquier máquina. **Lo único que no viaja es el despliegue**, y conviene saber exactamente por qué antes de perder tiempo:

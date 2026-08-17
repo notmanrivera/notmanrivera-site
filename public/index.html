@@ -2268,7 +2268,18 @@
      --rojo, asi que un fantasma tambien rojo queda invisible sobre su
      propio fondo (rojo sobre rojo). --ink es la sombra "mal registrada" que
      ya usa el resto del sitio, y se lee bien tanto contra el violeta base
-     como contra el rojo del hover. */
+     como contra el rojo del hover.
+     ⚠️ Rubén, en vivo: "por unos frames la animación del texto se hace
+     negra y estorba con transparencia con el color blanco". El texto real
+     (.mail span) nunca cambia de color -- se verificó con Playwright,
+     sigue en --paper todo el hover -- pero a 2px/.55 de opacidad el
+     fantasma casi no se separaba del texto real (que a su vez se mueve
+     -4px,-4px en hover), y a un tamaño de fuente tan grande (clamp hasta
+     4.2rem) esos pocos px de diferencia se leian como el propio texto
+     ensuciándose de gris en vez de una sombra fantasma aparte. Se sube el
+     desfase (2px→7px) para que se separe de verdad del texto real, y baja
+     la opacidad pico (.55→.35) para que sea un eco tenue detrás, no una
+     segunda capa compitiendo por legibilidad con la real. */
   .mail::after{
     content:attr(data-text);
     position:absolute;top:14px;left:30px;right:30px;
@@ -2278,7 +2289,7 @@
   .mail:hover::after{animation:mailGlitch .2s steps(2,end)}
   @keyframes mailGlitch{
     0%  {opacity:0;transform:skewX(6deg) translate(0,0)}
-    40% {opacity:.55;transform:skewX(6deg) translate(-2px,2px)}
+    40% {opacity:.35;transform:skewX(6deg) translate(-7px,7px)}
     100%{opacity:0;transform:skewX(6deg) translate(0,0)}
   }
 
