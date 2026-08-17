@@ -731,6 +731,14 @@ Rubén, viendo las dos cajas ya desplegadas: "hazlos del mismo tamaño, cuidado 
 
 Verificado con Playwright: las dos cajas miden el mismo ancho exacto (0px de diferencia), `.lede`/`.lede-tu` llenan por completo su `.dialogo` (sin franja de sombra huérfana en ningún eje), el marcador de opción tiene `opacity:.55` en reposo, y con sonido activado y un `AudioContext` espiado, se confirmó que el hover dispara 740Hz y el clic dispara 660Hz. Sin overflow horizontal en escritorio ni en 390px, sin errores de consola.
 
+**Corrección inmediata: "mismo tamaño" también era alto, no solo ancho.** Rubén, viendo el resultado: "me refiero a que la caja que contiene '¿en qué puedo ayudarte?' sea del mismo tamaño que la de las respuestas, se ve desequilibrado si ambos son distintos". El ancho ya estaba igualado (arriba), pero el alto no -- la caja de NOTMAN (una línea) seguía siendo más baja que la de "Tú" (3 líneas).
+
+- **`align-items:stretch`** (el default de grid, ya no hacía falta escribirlo) iguala el alto de `.dialogo` -- pero, mismo patrón que con el ancho, había que llevar ese alto hasta la caja NEGRA de adentro a propósito: `.lede`/`.lede-tu` pasan a `height:100%` dentro de `.dialogo-doble`. Sin esto, se repite el bug de la sombra huérfana una tercera vez (ahora abajo, otra vez).
+- **El texto corto de NOTMAN, ya con una caja más alta, se centra verticalmente** (`.lede{display:flex;flex-direction:column;justify-content:center}` en este contexto) en vez de quedar pegado arriba con un hueco vacío abajo.
+- **Se quita el desfase vertical de 44px** que tenían las dos cajas: con ambas ya del mismo tamaño exacto, un desnivel entre ellas se leía como descuadre, no como la composición desalineada a propósito que se buscaba antes.
+
+Verificado con Playwright: alto y ancho de las dos cajas coinciden exactamente (mismo `getBoundingClientRect()`), y sus `top` también coinciden (alineadas, sin desfase). Sin regresión en el marcador tenue ni en los tonos de hover/confirmación. Sin overflow horizontal, sin errores de consola.
+
 ## Trabajar desde una sesión remota (no desde la Mac)
 
 El repo es autosuficiente: un `index.html` sin build step. Editar, revisar y pushear funciona igual en cualquier máquina. **Lo único que no viaja es el despliegue**, y conviene saber exactamente por qué antes de perder tiempo:

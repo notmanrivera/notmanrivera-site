@@ -1386,18 +1386,28 @@
      de la caja negra, "el cuadro rojo del fondo ocupa mucho espacio" como
      lo vio Ruben. En grid con columnas iguales, .dialogo (el item de grid)
      mide EXACTO lo que mide su columna -- solo faltaba que .lede tambien
-     llegara a ese ancho completo en vez de quedarse corta. */
+     llegara a ese ancho completo en vez de quedarse corta.
+     Mismo bug, ahora en el alto: Ruben, viendo las dos cajas ya con el
+     mismo ancho -- "me refiero a que la caja de NOTMAN sea del mismo
+     tamaño que la de las respuestas, se ve desequilibrado si ambos son
+     distintos". No bastaba con iguales anchos: pidio tambien igual alto.
+     `align-items:stretch` (el default de grid, ya no hace falta
+     escribirlo) hace que .dialogo -- el item de grid -- iguale la altura
+     del hermano mas alto, pero para que la caja NEGRA (.lede/.lede-tu)
+     tambien llegue a esa altura completa (y no vuelva a dejar sombra roja
+     huerfana, esta vez abajo) hace falta darle `height:100%` a proposito.
+     El texto corto de NOTMAN queda con aire de sobra dentro de su caja ya
+     mas alta -- se centra verticalmente (.lede queda flex/align-items:
+     center en este contexto) en vez de dejarlo pegado arriba con un hueco
+     grande abajo. El pequeño desfase vertical que tenian antes las dos
+     cajas se quita: con las dos ya del mismo tamaño, un desnivel entre
+     ellas se leia como descuadre, no como composicion desalineada
+     a proposito. */
   .dialogo-doble{display:flex;flex-direction:column;gap:32px;margin:20px 0 30px}
   @media(min-width:900px){
-    /* align-items:start, no el "stretch" que trae grid por default -- con
-       stretch, .dialogo (el item de grid) crece hasta igualar la altura
-       de su hermano mas alto, pero .lede adentro NO crece con el (su alto
-       es el de su propio contenido, una sola linea corta) -- vuelve a
-       quedar sombra roja huerfana, esta vez ABAJO en vez de a la derecha.
-       Mismo bug de fondo que el del ancho, en el otro eje. */
-    .dialogo-doble{display:grid;grid-template-columns:1fr 1fr;align-items:start;gap:24px}
-    .dialogo-doble .lede,.dialogo-doble .lede-tu{max-width:none}
-    .dialogo-doble > .dialogo-tu{margin-top:44px}
+    .dialogo-doble{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+    .dialogo-doble .lede,.dialogo-doble .lede-tu{max-width:none;height:100%}
+    .dialogo-doble .lede{display:flex;flex-direction:column;justify-content:center}
   }
   /* Toda la caja (fondo, borde, placa Y lista) aparece de golpe cuando
      NOTMAN termina de preguntar -- no solo la lista de adentro. Si solo la
