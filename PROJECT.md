@@ -431,6 +431,18 @@ Rubén reportó, ya viendo el sitio real desplegado (no una captura recortada), 
 
 Instagram (`@notman.rivera`), LinkedIn y Behance (`/notmanrivera`) como iconos SVG inline en `.social`, dentro de `.foot-in`. Sin librería de íconos — son 3 `<svg>` a mano, glifos genéricos (cámara, "in", "Bē") para no reproducir marcas registradas al pixel.
 
+### Rediseño del footer: logo + mini menú (2026-08-17, noche)
+
+Rubén reportó que el footer se sentía apretado — todo amontonado en una sola fila (logo chico + copyright a la izquierda, redes a la derecha) — y propuso su propia idea: el logo a la izquierda y una versión miniatura del menú de pantalla completa a la derecha, inclinada, como si naciera de atrás del logo, con la composición entera centrada.
+
+- **`.foot-menu`** es la fila nueva, entre la marquesina y la fila de siempre: `.foot-logo` (el logo, ahora a 56px de alto en vez de los 26px que tenía metido en el texto de copyright) y `.foot-mini` (los 5 accesos directos a las secciones), los dos centrados como un solo bloque — ninguno se justifica por separado.
+- **El efecto "nace de atrás del logo"** es el mismo mecanismo que ya usa el menú móvil (el logo como ancla, los links saliendo de su filo): `.foot-logo` en `z-index:2`, `.foot-mini` en `z-index:1` con `margin-left:-22px` para que el primer link (Trabajo) se meta parcialmente detrás del logo, y cada link siguiente se solapa con el anterior (`margin-left:-10px`) igual que las placas del menú grande, solo que en miniatura y en horizontal. Alternan rojo/negro con el mismo `skewX(-6deg)` unificado del resto del sitio, y cada uno con su propia rotación fija (`--giro` por `nth-child`, sin el sistema `--giro-d` de la rejilla radial del hero — aquí no hace falta, no cambia de layout entre anchos).
+- **Se quitó el logo chico duplicado** de la fila de copyright: con el logo grande ya presente arriba, mantenerlo también ahí abajo era ruido — la fila de copyright quedó con solo el texto `© 2026 Rubén Rivera`.
+- **"Redistribuir, muy poco espacio"** se resolvió dándole a cada fila su propio respiro: `.foot-menu` con su padding propio arriba, y `.foot-in` con `border-top` + `margin-top` + `padding-top` para separarse visualmente de la fila nueva en vez de las dos apretadas una contra la otra.
+- **Móvil (`≤700px`):** el solape "detrás del logo" solo se lee bien en una fila horizontal — apilado (`flex-direction:column`) se ve simplemente como una lista centrada de accesos, sin el gesto de superposición, que es la concesión correcta ahí (no hay espacio horizontal para preservarlo sin que se vea apretado).
+
+Verificado con Playwright: `z-index` de logo/mini-menú, que el primer link efectivamente se superpone en pantalla con el logo (`getBoundingClientRect`), los 5 labels correctos y su traducción al cambiar de idioma, que un clic en un link del footer navega de verdad (usa el mismo listener global de `a[href^="#"]` que ya intercepta toda la navegación interna del sitio), y sin overflow horizontal en 390px de ancho. Capturas de pantalla en desktop y móvil confirmando el resultado visual.
+
 ## Infraestructura
 
 - **Hosting:** Cloudflare Pages, proyecto `notmanrivera`
