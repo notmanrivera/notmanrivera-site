@@ -377,7 +377,7 @@
      paneles, nunca ensucia una placa blanca o roja encima. */
   body::before{
     content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
-    opacity:.09;
+    opacity:.04;
     background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   }
 
@@ -613,7 +613,7 @@
     position:absolute;top:26px;right:30px;z-index:3;
     font-family:var(--disp);font-size:2.2rem;line-height:1;
     background:var(--rojo);color:#fff;border:0;cursor:pointer;
-    padding:8px 18px;transform:skewX(-10deg);transition:background .18s;
+    padding:8px 18px;transform:skewX(-6deg);transition:background .18s;
   }
   .cerrar-menu:hover{background:var(--paper);color:var(--ink)}
 
@@ -642,7 +642,7 @@
     margin-bottom:-6px;                       /* se encabalgan un poco */
     background:var(--paper);color:var(--ink);
     clip-path:var(--filo);
-    transform:skewX(-11deg) rotate(var(--giro));
+    transform:skewX(-6deg) rotate(var(--giro));
   }
   /* la alternancia: las pares son placa negra con filo blanco */
   .menu-lista a:nth-child(even){
@@ -668,7 +668,7 @@
     font-style:normal;font-family:var(--ui);font-weight:900;
     font-size:calc(.72rem * var(--escala));letter-spacing:.04em;
     background:var(--rojo);color:#fff;
-    padding:6px 8px;transform:skewX(11deg);
+    padding:6px 8px;transform:skewX(6deg);
   }
   /* la segunda linea diminuta: el papel del subtitulo japones */
   .menu-lista a em{
@@ -738,8 +738,8 @@
      solo declara skew+translate, machaca el rotate y las placas aterrizan
      todas alineadas -- justo lo que la referencia no hace. */
   @keyframes menuEntra{
-    from{opacity:0;transform:skewX(-11deg) rotate(var(--giro)) translateX(-60px)}
-    to  {opacity:1;transform:skewX(-11deg) rotate(var(--giro)) translateX(0)}
+    from{opacity:0;transform:skewX(-6deg) rotate(var(--giro)) translateX(-60px)}
+    to  {opacity:1;transform:skewX(-6deg) rotate(var(--giro)) translateX(0)}
   }
   @media(prefers-reduced-motion:reduce){
     .menu-full[data-abierto="si"] .menu-lista a{animation:none;opacity:1}
@@ -805,7 +805,7 @@
   .kicker{
     display:inline-block;font-family:var(--ui);font-weight:900;text-transform:uppercase;
     font-size:.92rem;letter-spacing:.12em;color:#fff;background:var(--rojo);
-    padding:9px 16px;transform:skewX(-11deg) rotate(var(--giro,0deg));margin-bottom:20px;
+    padding:9px 16px;transform:skewX(-6deg) rotate(var(--giro,0deg));margin-bottom:20px;
   }
   /* En movil "Rubén Rivera · Querétaro, México" competia en tamaño con
      el logo de abajo. Mucho mas chica: es una etiqueta de contexto, no
@@ -918,7 +918,7 @@
     background:var(--rojo);
     padding:.16em .55em .1em;
     clip-path:var(--filo);
-    transform:skewX(-10deg) rotate(-1.4deg);
+    transform:skewX(-6deg) rotate(-1.4deg);
     margin:.25em 0 0 .1em;
   }
 
@@ -1107,27 +1107,27 @@
   .orbita .btn-1:hover,.orbita .btn-2:hover{box-shadow:none}
 
   .lede{
-    position:relative;font-size:clamp(1rem,1.9vw,1.2rem);color:#DED4F2;
-    max-width:54ch;margin-bottom:22px;
+    position:relative;font-size:clamp(1.05rem,1.9vw,1.3rem);color:#DED4F2;
+    line-height:1.7;max-width:54ch;margin-bottom:22px;
   }
   .cta-row{display:flex;flex-wrap:wrap;gap:14px}
   .btn{
     font-family:var(--disp);text-transform:uppercase;letter-spacing:.05em;
     font-size:1.62rem;text-decoration:none;padding:15px 30px;
-    transform:skewX(-10deg) rotate(var(--giro,0deg));display:inline-block;
+    transform:skewX(-6deg) rotate(var(--giro,0deg));display:inline-block;
     transition:background .18s,color .18s;
   }
   /* el shift de hover vive en <i>, no en .btn: el area de hover nunca
      se mueve, asi que no puede parpadear al perder/recuperar el hover */
   .btn i{
-    display:inline-block;transform:skewX(10deg);font-style:normal;
+    display:inline-block;transform:skewX(6deg);font-style:normal;
     transition:transform .18s cubic-bezier(.2,1.4,.3,1);
   }
   .btn-1{background:var(--rojo);color:var(--paper)}
   .btn-1:hover{background:var(--violet)}
   .btn-2{background:transparent;color:var(--paper);box-shadow:inset 0 0 0 2px var(--violet-hi)}
   .btn-2:hover{background:var(--violet-hi);color:var(--ink)}
-  .btn:hover i{transform:skewX(10deg) translate(-3px,-3px)}
+  .btn:hover i{transform:skewX(6deg) translate(-3px,-3px)}
   /* Destello de "confirmar" antes de navegar, como aceptar una opcion en un
      menu de P5. Un solo frame al 50%: 0% y 100% no se declaran a proposito,
      asi el navegador usa ahi el valor real de fondo/color de .btn-1 o
@@ -1137,7 +1137,7 @@
   @keyframes p5Confirm{
     50%{
       background:var(--paper);color:var(--ink);
-      transform:skewX(-10deg) rotate(var(--giro,0deg)) scale(1.05);
+      transform:skewX(-6deg) rotate(var(--giro,0deg)) scale(1.05);
     }
   }
   .btn.confirmando{animation:p5Confirm .15s ease-out}
@@ -1179,11 +1179,13 @@
      espiritu que .campo/.campo2 del header, pero horizontal y en la costura
      entre secciones. :not(:first-of-type) porque #trabajo no tiene una
      seccion previa real de la que "heredar" el corte -- una cuña ahi se
-     vería huerfana, flotando justo debajo del header. Altura tope 90px,
-     bien adentro de los 130px de padding-top: .sec-head empieza justo
-     despues de ese padding, y la cuña nunca debe llegar a pisarlo. */
+     vería huerfana, flotando justo debajo del header.
+     Altura bajada de 90px a 40px (pasada de sobriedad, 2026-08-17): sigue
+     bien adentro de los 130px de padding-top -- .sec-head empieza justo
+     despues de ese padding, y la cuña nunca debe llegar a pisarlo -- pero
+     ahora es un acento discreto, no una masa de color. */
   section:not(:first-of-type)::before{
-    content:"";position:absolute;top:0;left:0;right:0;height:90px;
+    content:"";position:absolute;top:0;left:0;right:0;height:40px;
     background:var(--ink-2);
     clip-path:polygon(0 0, 100% 0, 100% 18%, 0 100%);
     pointer-events:none;z-index:0;
@@ -1192,12 +1194,17 @@
      para que la repeticion no se sienta como un patron mecanico al bajar
      por el sitio. */
   section:not(:first-of-type):nth-of-type(even)::before{transform:scaleX(-1)}
-  /* rayas diagonales de fondo, muy tenues, para que nada quede plano */
+  /* Rayas diagonales de fondo -- DESACTIVADAS (2026-08-17): pasada de
+     sobriedad, Rubén las quiso fuera. Se dejan comentadas (no borradas) por
+     si alguna vez se quiere volver a la textura completa; el selector
+     section::after queda libre para lo que sea que necesite el fondo de
+     una sección en el futuro.
   section::after{
     content:"";position:absolute;inset:0;pointer-events:none;z-index:0;
     background:repeating-linear-gradient(115deg,
       rgba(169,107,255,.055) 0 2px, transparent 2px 22px);
   }
+  */
 
   .sec-head{margin-bottom:58px;position:relative}
   /* el numero se sale del borde derecho a proposito: rompe la caja */
@@ -1215,18 +1222,18 @@
   h2{position:relative}
   h2::before{
     content:"";position:absolute;left:-26px;top:14%;bottom:14%;width:7px;
-    background:var(--rojo);transform:skewX(-9deg);
+    background:var(--rojo);transform:skewX(-6deg);
   }
   @media(max-width:640px){h2::before{left:-14px;width:5px}}
   .sec-tag{
     display:inline-block;font-family:var(--ui);font-weight:900;text-transform:uppercase;
     font-size:.88rem;letter-spacing:.12em;background:var(--rojo);color:var(--paper);
-    padding:8px 14px;transform:skewX(-11deg);margin-bottom:18px;
+    padding:8px 14px;transform:skewX(-6deg);margin-bottom:18px;
   }
   h2{
     font-family:var(--disp);font-weight:400;text-transform:uppercase;
-    font-size:clamp(3.6rem,9.6vw,7.1rem);line-height:.88;letter-spacing:.01em;
-    transform:skewX(-9deg);transform-origin:left;margin-bottom:16px;position:relative;z-index:1;
+    font-size:clamp(3.6rem,9.6vw,5.5rem);line-height:.88;letter-spacing:.01em;
+    transform:skewX(-6deg);transform-origin:left;margin-bottom:16px;position:relative;z-index:1;
   }
   /* El enfasis de un h2 es el mismo rol que ya tiene el rojo: "esta palabra
      es la que grita". En las referencias de P5R ese rol nunca lo comparten
@@ -1308,7 +1315,7 @@
     background:var(--ink);color:var(--paper);
     font-family:var(--ui);font-weight:900;text-transform:uppercase;
     font-size:.68rem;letter-spacing:.1em;
-    padding:6px 16px;transform:skewX(-11deg);
+    padding:6px 16px;transform:skewX(-6deg);
     box-shadow:3px 3px 0 var(--sombra);
   }
   /* el texto grande, como los numeros de fondo de .svc-bignum: opacidad
@@ -1326,7 +1333,7 @@
     background:var(--rojo);color:var(--paper);
     font-family:var(--ui);font-weight:900;text-transform:uppercase;
     font-size:.68rem;letter-spacing:.1em;
-    padding:6px 16px;transform:skewX(-11deg);
+    padding:6px 16px;transform:skewX(-6deg);
     box-shadow:3px 3px 0 var(--sombra);
   }
   .card-body{padding:22px 24px 26px}
@@ -1335,7 +1342,7 @@
     font-size:2.2rem;letter-spacing:.02em;transform:skewX(-8deg);
     transform-origin:left;margin-bottom:9px;
   }
-  .card-body p{color:var(--muted);font-size:.9rem}
+  .card-body p{color:var(--muted);font-size:1rem;line-height:1.7}
 
   /* ===== GALERIA / VISOR (piezas reales, agrupadas por cliente) =====
      Grande a la izquierda, miniaturas a la derecha en desktop -- como un
@@ -1403,7 +1410,7 @@
     font-family:var(--ui);font-weight:900;text-transform:uppercase;
     font-size:.76rem;letter-spacing:.1em;color:var(--paper);
     background:var(--ink-2);border:1px solid var(--line);
-    padding:6px 12px;transform:skewX(-11deg);margin-bottom:12px;
+    padding:6px 12px;transform:skewX(-6deg);margin-bottom:12px;
   }
   .visor-grupo-tit small{
     font-weight:300;letter-spacing:.06em;color:var(--muted);font-size:.86em;
@@ -1437,17 +1444,28 @@
 
   /* ===== SERVICES ===== */
   .svc-list{display:grid;gap:18px}
-  /* Placas, igual que el menu y el hero: alternan blanca y negra, y al pasar
-     encima la fila entera se vuelve roja. El slide de hover sigue viviendo en
-     h3/p y nunca en .svc -- la fila que detecta el hover no se mueve jamas. */
+  /* Uso quirúrgico del color (2026-08-17): ya no alternan roja/negra por
+     posición -- TODAS las placas reposan en la variante placa-negra (fondo
+     blanco, capa interior negra, ver PLACA NEGRA CON BORDE mas abajo) y solo
+     se vuelven blancas al pasar el cursor. El rojo deja de ser un color de
+     reposo aqui: reaparece nada mas en el acento de .cred (::before) y en
+     quien SI sigue usando rojo=reposo en el resto del sitio. El slide de
+     hover sigue viviendo en h3/p y nunca en .svc -- la fila que detecta el
+     hover no se mueve jamas. */
   .svc{
     position:relative;padding:30px 34px;overflow:hidden;
     clip-path:var(--filo);
     transform:rotate(var(--giro,0deg));
     transition:background .2s,color .2s,box-shadow .2s;
+    background:var(--paper);color:var(--paper);isolation:isolate;
   }
-  .svc:nth-child(odd){background:var(--rojo);color:var(--paper)}
-  .svc:nth-child(odd):hover{background:var(--paper);color:var(--ink)}
+  .svc::after{
+    content:"";position:absolute;inset:3px;z-index:-1;
+    background:var(--ink);clip-path:var(--filo);
+    transition:background .2s;
+  }
+  .svc:hover{color:var(--ink)}
+  .svc:hover::after{background:var(--paper)}
   .svc-bignum{
     position:absolute;right:14px;top:50%;translate:0 -50%;
     font-family:var(--ui);font-weight:900;font-size:5.4rem;line-height:1;
@@ -1462,9 +1480,6 @@
        sin pelearse); la transicion solo anima lo que agrega el hover */
     transition:transform .22s cubic-bezier(.2,1.4,.3,1),-webkit-text-stroke-color .18s;
   }
-  /* la impar ya no es blanca sino ROJA: el contorno oscuro se perdia encima.
-     En hover la placa se vuelve blanca, asi que ahi el trazo se oscurece. */
-  .svc:nth-child(odd) .svc-bignum{-webkit-text-stroke-color:rgba(255,255,255,.32)}
   /* Parallax inverso: el numero de fondo se retira 10px en sentido contrario
      al texto (h3/p avanzan +9px, ver mas abajo), como si el titulo se
      despegara del fondo al pasar el cursor -- misma sensacion de profundidad
@@ -1477,24 +1492,33 @@
   }
   .svc h3{
     font-family:var(--disp);font-weight:400;text-transform:uppercase;
-    font-size:clamp(2.1rem,4.9vw,3rem);letter-spacing:.02em;color:inherit;
+    font-size:clamp(2.1rem,4.9vw,2.4rem);letter-spacing:.02em;color:inherit;
     transform:skewX(-8deg);transform-origin:left;margin-bottom:16px;
   }
   .svc p{
-    color:inherit;opacity:.92;font-size:.95rem;max-width:62ch;position:relative;z-index:1;
+    color:inherit;opacity:.92;font-size:1.05rem;line-height:1.7;max-width:62ch;position:relative;z-index:1;
     transition:transform .24s cubic-bezier(.2,1.4,.3,1);
   }
 
   /* ===== EXPERIENCE ===== */
   .creds{display:grid;gap:24px;grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+  /* Mismo cambio de uso quirúrgico del color que .svc: reposa siempre en
+     placa-negra, blanco solo al hover -- ver el comentario junto a .svc
+     mas arriba. */
   .cred{
     position:relative;padding:26px 24px;
     clip-path:var(--filo);
     transform:rotate(var(--giro,0deg));
     transition:background .2s,color .2s,box-shadow .2s;
+    background:var(--paper);color:var(--paper);isolation:isolate;
   }
-  .cred:nth-child(odd){background:var(--rojo);color:var(--paper)}
-  .cred:nth-child(odd):hover{background:var(--paper);color:var(--ink)}
+  .cred::after{
+    content:"";position:absolute;inset:3px;z-index:-1;
+    background:var(--ink);clip-path:var(--filo);
+    transition:background .2s;
+  }
+  .cred:hover{color:var(--ink)}
+  .cred:hover::after{background:var(--paper)}
 
   /* ===== PLACA NEGRA CON BORDE =====
      ⚠️ El anillo blanco NO puede ser box-shadow:inset. El inset se dibuja en
@@ -1530,19 +1554,21 @@
      linea. Lo que si es de escritorio es la posicion en la rejilla. */
   .lede.placa-negra{padding:24px clamp(20px,5vw,32px)}
   .lede.placa-negra{clip-path:var(--filo)}
-  /* el acento rojo se corre a left:8%: pegado al borde lo cortaba el filo */
+  /* el acento rojo se corre a left:8%: pegado al borde lo cortaba el filo.
+     Ya no varia por posicion ni por hover -- con el fondo de la placa
+     siempre negro (ver arriba), rojo contrasta bien en los dos estados,
+     asi que la regla que lo volvia blanco en las impares y las que lo
+     revertian en :hover quedaron muertas y se quitaron. */
   .cred::before{
     content:"";position:absolute;top:0;left:8%;width:46px;height:7px;
     background:var(--rojo);z-index:2;
   }
-  .cred:nth-child(odd)::before{background:var(--paper)}
-  .cred:hover::before{background:var(--rojo)}
   .cred h3{
     font-family:var(--disp);font-weight:400;text-transform:uppercase;font-size:1.9rem;
     letter-spacing:.02em;margin-bottom:9px;transform:skewX(-8deg);transform-origin:left;
     color:inherit;
   }
-  .cred p{color:inherit;opacity:.92;font-size:.9rem}
+  .cred p{color:inherit;opacity:.92;font-size:1rem;line-height:1.7}
 
   /* ===== STATUS (ficha de personaje, tipo pantalla de Persona) ===== */
   #perfil{background:linear-gradient(180deg,var(--ink) 0%,#12081f 55%,var(--ink) 100%)}
@@ -1643,7 +1669,7 @@
   .ficha-radar::before{
     content:"";position:absolute;inset:0;pointer-events:none;
     background-image:radial-gradient(rgba(255,255,255,.16) 1.2px, transparent 1.2px);
-    background-size:9px 9px;opacity:.5;
+    background-size:9px 9px;opacity:.15;
   }
   .radar-tit{
     position:relative;font-family:var(--disp);font-weight:400;text-transform:uppercase;
@@ -1730,15 +1756,15 @@
     display:inline-block;font-family:var(--disp);text-transform:uppercase;
     font-size:clamp(1.8rem,6.8vw,4.2rem);letter-spacing:.01em;
     color:var(--paper);text-decoration:none;background:var(--violet);
-    padding:14px 30px;transform:skewX(-10deg);margin-top:12px;
+    padding:14px 30px;transform:skewX(-6deg);margin-top:12px;
     transition:background .18s;word-break:break-all;
   }
   .mail span{
-    display:inline-block;transform:skewX(10deg);
+    display:inline-block;transform:skewX(6deg);
     transition:transform .2s cubic-bezier(.2,1.4,.3,1);
   }
   .mail:hover{background:var(--rojo)}
-  .mail:hover span{transform:skewX(10deg) translate(-4px,-4px)}
+  .mail:hover span{transform:skewX(6deg) translate(-4px,-4px)}
   /* Micro-glitch al hover: una copia fantasma del correo (attr(data-text),
      no un span duplicado a mano) que se desfasa y se apaga en .2s, como una
      impresion mal registrada. steps(2,end) en vez de una curva suave: es un
@@ -1751,14 +1777,14 @@
   .mail::after{
     content:attr(data-text);
     position:absolute;top:14px;left:30px;right:30px;
-    transform:skewX(10deg);color:var(--ink);opacity:0;
+    transform:skewX(6deg);color:var(--ink);opacity:0;
     pointer-events:none;white-space:nowrap;
   }
   .mail:hover::after{animation:mailGlitch .2s steps(2,end)}
   @keyframes mailGlitch{
-    0%  {opacity:0;transform:skewX(10deg) translate(0,0)}
-    40% {opacity:.55;transform:skewX(10deg) translate(-2px,2px)}
-    100%{opacity:0;transform:skewX(10deg) translate(0,0)}
+    0%  {opacity:0;transform:skewX(6deg) translate(0,0)}
+    40% {opacity:.55;transform:skewX(6deg) translate(-2px,2px)}
+    100%{opacity:0;transform:skewX(6deg) translate(0,0)}
   }
 
   /* Marquesina de advertencia estilo P5: una franja angosta de lado a
@@ -1823,7 +1849,7 @@
     animation-delay:calc(var(--i,0) * 52ms);
   }
   @keyframes slamIn{
-    0%  {opacity:0;transform:translateX(-.5em) skewX(-30deg) scaleX(1.45)}
+    0%  {opacity:0;transform:translateX(-.5em) skewX(-15deg) scaleX(1.15)}
     55% {opacity:1}
     100%{opacity:1;transform:translateX(0) skewX(0) scaleX(1)}
   }
@@ -1849,8 +1875,8 @@
      machacaria cualquier transform de base. Para lo que no tiene --giro,
      rotate(0deg) no hace nada. */
   @keyframes popIn{
-    0%  {opacity:0;transform:skewX(-11deg) rotate(var(--giro,0deg)) scale(.62) translateY(10px)}
-    100%{opacity:1;transform:skewX(-11deg) rotate(var(--giro,0deg)) scale(1) translateY(0)}
+    0%  {opacity:0;transform:skewX(-6deg) rotate(var(--giro,0deg)) scale(.62) translateY(10px)}
+    100%{opacity:1;transform:skewX(-6deg) rotate(var(--giro,0deg)) scale(1) translateY(0)}
   }
   /* Reposo tras aparecer: un vaiven de 3px, casi nada, para que la etiqueta
      no se sienta pegada a la pagina. Mismo truco de --giro dentro del
@@ -1858,8 +1884,8 @@
      simplemente no hace nada. Empieza justo cuando popIn termina (delay
      .34s) para que no se encimen. */
   @keyframes idleBounce{
-    0%,100%{transform:skewX(-11deg) rotate(var(--giro,0deg)) translateY(0)}
-    50%    {transform:skewX(-11deg) rotate(var(--giro,0deg)) translateY(-3px)}
+    0%,100%{transform:skewX(-6deg) rotate(var(--giro,0deg)) translateY(0)}
+    50%    {transform:skewX(-6deg) rotate(var(--giro,0deg)) translateY(-3px)}
   }
   .kicker.pop.go, .sec-tag.pop.go{
     animation:
@@ -1932,7 +1958,7 @@
       opacity:1;transform:none;animation:none;
     }
     .slam .wd,.slam.go .wd{opacity:1;transform:none;animation:none}
-    .pop,.pop.go{opacity:1;animation:none;transform:skewX(-11deg)}
+    .pop,.pop.go{opacity:1;animation:none;transform:skewX(-6deg)}
     /* mas especifico que ".pop.go{animation:none}" de arriba lo seria si
        no estuviera aqui tambien: .kicker.pop.go/.sec-tag.pop.go pisarian
        ese animation:none con su propio idleBounce infinito por pura
@@ -2037,27 +2063,27 @@
        comparte linea de base. La segunda linea diminuta hace el papel del
        subtitulo japones -- es lo que da la densidad. -->
   <nav class="menu-lista" aria-label="Principal">
-    <a href="#trabajo" style="--i:0;--giro:-2.4deg">
+    <a href="#trabajo" style="--i:0;--giro:-1.2deg">
       <i>01</i>
       <span data-es="Trabajo" data-en="Work">Trabajo</span>
       <em data-es="Reel y casos" data-en="Reel and case work">Reel y casos</em>
     </a>
-    <a href="#servicios" style="--i:1;--giro:1.6deg">
+    <a href="#servicios" style="--i:1;--giro:.8deg">
       <i>02</i>
       <span data-es="Servicios" data-en="Services">Servicios</span>
       <em data-es="Cuatro formas de trabajar" data-en="Four ways to work">Cuatro formas de trabajar</em>
     </a>
-    <a href="#experiencia" style="--i:2;--giro:-3.1deg">
+    <a href="#experiencia" style="--i:2;--giro:-1.55deg">
       <i>03</i>
       <span data-es="Experiencia" data-en="Experience">Experiencia</span>
       <em data-es="Dónde he trabajado" data-en="Where I've worked">Dónde he trabajado</em>
     </a>
-    <a href="#perfil" style="--i:3;--giro:2.2deg">
+    <a href="#perfil" style="--i:3;--giro:1.1deg">
       <i>04</i>
       <span data-es="Perfil" data-en="Profile">Perfil</span>
       <em data-es="Formación y herramientas" data-en="Training and tools">Formación y herramientas</em>
     </a>
-    <a href="#contacto" style="--i:4;--giro:-1.3deg">
+    <a href="#contacto" style="--i:4;--giro:-.65deg">
       <i>05</i>
       <span data-es="Contacto" data-en="Contact">Contacto</span>
       <em data-es="Hablemos de tu proyecto" data-en="Let's talk about your project">Hablemos de tu proyecto</em>
@@ -2087,7 +2113,7 @@
        la izquierda, asi que las dos columnas arrancan pegadas al logo y
        crecen alejandose de el. -->
   <div class="wrap orbita">
-    <span class="kicker sat placa-negra" style="--giro-d:10.1deg;--empuje:26px" data-es="Rubén Rivera · Querétaro, México" data-en="Rubén Rivera · Querétaro, Mexico">Rubén Rivera · Querétaro, México</span>
+    <span class="kicker sat placa-negra" style="--giro-d:5.05deg;--empuje:26px" data-es="Rubén Rivera · Querétaro, México" data-en="Rubén Rivera · Querétaro, Mexico">Rubén Rivera · Querétaro, México</span>
 
     <h1>
       <!-- El logo ES el titular. Su alt carga el texto que leen Google y los
@@ -2111,14 +2137,14 @@
          DOM (el JS de entrada los busca por nombre) pero no ponen caja, asi
          que sus hijos entran como celdas de .orbita. -->
     <div class="cta-row">
-      <a href="#trabajo" class="btn btn-1 sat placa-negra" style="--giro-d:-22.6deg;--empuje:58px"><i data-es="Ver mi trabajo" data-en="See my work">Ver mi trabajo</i></a>
-      <a href="#contacto" class="btn btn-2 sat placa-roja" style="--giro-d:22deg;--empuje:50px"><i data-es="Trabajemos juntos" data-en="Let's work together">Trabajemos juntos</i></a>
+      <a href="#trabajo" class="btn btn-1 sat placa-negra" style="--giro-d:-11.3deg;--empuje:58px"><i data-es="Ver mi trabajo" data-en="See my work">Ver mi trabajo</i></a>
+      <a href="#contacto" class="btn btn-2 sat placa-roja" style="--giro-d:11deg;--empuje:50px"><i data-es="Trabajemos juntos" data-en="Let's work together">Trabajemos juntos</i></a>
     </div>
 
     <div class="stats">
-      <div class="stat sat placa-roja" style="--giro-d:-11.6deg;--empuje:66px"><b class="cuenta">9+</b><span data-es="años en agencias" data-en="years in agencies">años en agencias</span></div>
-      <div class="stat sat placa-roja" style="--giro-d:-8.6deg;--empuje:44px"><b>2D / 3D</b><span data-es="motion graphics" data-en="motion graphics">motion graphics</span></div>
-      <div class="stat sat placa-negra" style="--giro-d:7.6deg;--empuje:52px"><b>MX · ES · MENA</b><span data-es="mercados" data-en="markets">mercados</span><em data-es="México · España · Medio Oriente y Norte de África" data-en="Mexico · Spain · Middle East &amp; North Africa">México · España · Medio Oriente y Norte de África</em></div>
+      <div class="stat sat placa-roja" style="--giro-d:-5.8deg;--empuje:66px"><b class="cuenta">9+</b><span data-es="años en agencias" data-en="years in agencies">años en agencias</span></div>
+      <div class="stat sat placa-roja" style="--giro-d:-4.3deg;--empuje:44px"><b>2D / 3D</b><span data-es="motion graphics" data-en="motion graphics">motion graphics</span></div>
+      <div class="stat sat placa-negra" style="--giro-d:3.8deg;--empuje:52px"><b>MX · ES · MENA</b><span data-es="mercados" data-en="markets">mercados</span><em data-es="México · España · Medio Oriente y Norte de África" data-en="Mexico · Spain · Middle East &amp; North Africa">México · España · Medio Oriente y Norte de África</em></div>
     </div>
   </div>
 </header>
@@ -2434,7 +2460,7 @@
   <div class="halftone"></div>
   <div class="wrap rv">
     <span class="sec-tag" data-es="Contacto" data-en="Contact">Contacto</span>
-    <h2 style="transform:skewX(-9deg)" data-es="¿Tienes un <em>proyecto</em> en mente?" data-en="Got a <em>project</em> in mind?">¿Tienes un <em>proyecto</em> en mente?</h2>
+    <h2 style="transform:skewX(-6deg)" data-es="¿Tienes un <em>proyecto</em> en mente?" data-en="Got a <em>project</em> in mind?">¿Tienes un <em>proyecto</em> en mente?</h2>
     <p style="color:var(--muted);margin-bottom:22px" data-es="Cuéntame qué necesitas y te respondo el mismo día. Si prefieres, agendamos 15 minutos y te muestro ideas concretas para tu marca." data-en="Tell me what you need and I'll reply the same day. If you prefer, we can book 15 minutes and I'll show you concrete ideas for your brand.">Cuéntame qué necesitas y te respondo el mismo día. Si prefieres, agendamos 15 minutos y te muestro ideas concretas para tu marca.</p>
     <a href="mailto:hola@notmanrivera.com" class="mail" data-text="hola@notmanrivera.com"><span>hola@notmanrivera.com</span></a>
   </div>
