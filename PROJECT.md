@@ -644,6 +644,16 @@ Verificado con Playwright: la chispa anima (`animationName:chispaTwinkle`, `opac
 - `public/_headers` es fácil de olvidar porque no aparece al revisar `index.html` -- cualquier cambio que agregue o cambie el dominio de un iframe (embeds de video, mapas, lo que sea) tiene que revisar también el CSP del `frame-src` ahí, o el navegador lo bloquea en silencio sin que el HTML tenga nada mal.
 - Los atributos que trae un snippet oficial de un tercero (Vimeo, YouTube, etc.) casi nunca son decorativos -- si no se entiende para qué sirve uno en concreto, se deja, no se asume que es innecesario. (Cierto en general aunque en este caso puntual no haya sido la causa.)
 
+## El reel pasa a "cinema look" y se mueve al final de la sección (2026-08-17)
+
+Con el video ya funcionando, Rubén: "creo que es muy pequeño... ¿centrarlo en una especie de cinema look como el que usa YouTube?", y pidió moverlo después de las galerías de deportes y web en vez de antes.
+
+- **Nueva clase `.work-grid-cine`** (junto a `.work-grid-uno`, no en su lugar -- el teaser de "Próximamente" comentado sigue usando `.work-grid-uno`, sigue viviendo como columna acotada si algún día se reactiva). Ocupa el ancho completo de `.wrap` (`max-width:100%`) en vez de acotarse a una columna de 420px. Mismo `.card`/`.card-in` que el resto del portafolio -- ningún componente nuevo, "manteniendo su estética actual" tal como lo pidió, solo mucho más grande.
+- Ajustes de tipografía y padding solo para la variante grande (`.work-grid-cine .card-body`): más aire y un `h3` que escala con el viewport (`clamp`), para que no se vea desproporcionadamente chico dentro de una tarjeta tan ancha. El párrafo se acota a `70ch` para que la línea no se estire de más solo porque la tarjeta ahora es ancha.
+- **Se mueve el bloque completo del reel (y el comentario del teaser "Próximamente" que vive junto a él) de antes de `.galeria` a después** -- ahora la sección abre con los casos reales por categoría y cierra con el reel general como remate. El subtítulo de `sec-head` se reescribe para anunciar el nuevo orden ("casos reales... al final, el reel general").
+
+Verificado con Playwright: el reel queda después de `.galeria` en el DOM y visualmente (posición `top` > `bottom` de la galería), centrado dentro de `.wrap`, sin overflow horizontal en escritorio ni en 390px.
+
 ## Trabajar desde una sesión remota (no desde la Mac)
 
 El repo es autosuficiente: un `index.html` sin build step. Editar, revisar y pushear funciona igual en cualquier máquina. **Lo único que no viaja es el despliegue**, y conviene saber exactamente por qué antes de perder tiempo:
