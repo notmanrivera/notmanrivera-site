@@ -749,6 +749,22 @@ Se verificó con Playwright que el texto real (`.mail span`) nunca cambia de col
 
 Verificado con Playwright: el texto real sigue en `rgb(255,255,255)` durante todo el hover (sin regresión), capturado el nuevo pico de la animación con el mismo método de estado forzado -- el fantasma ahora se ve claramente separado, sin ensuciar el blanco. Sin overflow horizontal, sin errores de consola.
 
+## Firma de correo en HTML (2026-08-17)
+
+Rubén: "teniendo en cuenta la estética que estamos manejando en este proyecto, puedes crear una firma para mis correos en html?" (a raíz de haber activado Google Workspace para el dominio).
+
+El HTML de un cliente de correo no es el HTML del sitio: Outlook de escritorio renderiza con el motor de Word (sin `clip-path`, sin `transform`, sin flexbox/grid confiables) y la mayoría de los clientes no cargan `@font-face`. En vez de portar el sistema visual completo (el filo diagonal `--filo`, el skew de las placas, Kenyan Coffee/Monument), se tradujo a lo que sí sobrevive en un correo:
+
+- **Layout con tablas** (`role="presentation"`, `cellpadding/cellspacing/border=0`) y estilos en línea, no en un `<style>` de cabecera -- el método de instalación es abrir la página y copiar el bloque ya renderizado hacia el editor de firma de Gmail/Outlook, así que lo único que importa es cómo llega al portapapeles.
+- **Las mismas tres fuentes, pero como respaldo, no como fuente real**: se reusan literalmente los *fallback stacks* que el sitio ya define para cuando Kenyan Coffee/Monument no cargan (`Impact, Haettenschweiler, "Arial Narrow Bold"` para el nombre; `"Arial Black"` para el kicker) -- ya estaban pensados para "si la fuente real no llega", que es exactamente la situación normal en un correo.
+- **Paleta y jerarquía del sitio, sin los verbos que no traducen**: franjas negro/rojo arriba y abajo (el borde entintado del sitio, aplanado), el logo sobre una placa negra en vez de flotando, y el divisor morado como el único acento de "marca" -- morado es identidad, rojo es "mira aquí", igual que en `:root`.
+- **Copy reusado del propio sitio**, no inventado: "Diseño × Animación × Web" y "Querétaro, México" vienen tal cual del hero (`data-es` del `<h1>` y el kicker).
+- El logo (`public/assets/firma-logo.png`) se exportó a PNG plano desde `logo.webp`: WebP no es confiable en Outlook de escritorio, y las imágenes de firma necesitan URL absoluta y pública (`https://notmanrivera.com/assets/...`) porque los clientes de correo no empaquetan el archivo, lo cargan remoto cada vez.
+
+Vive en `public/firma.html`, servida por el propio sitio pero sin enlaces desde la navegación -- es una herramienta para Rubén, no una página del portafolio.
+
+Verificado con Playwright: capturada la página con la imagen interceptada hacia el archivo local (para poder revisarla antes de publicar el asset), sin overflow horizontal, sin errores de consola.
+
 ## Trabajar desde una sesión remota (no desde la Mac)
 
 El repo es autosuficiente: un `index.html` sin build step. Editar, revisar y pushear funciona igual en cualquier máquina. **Lo único que no viaja es el despliegue**, y conviene saber exactamente por qué antes de perder tiempo:
