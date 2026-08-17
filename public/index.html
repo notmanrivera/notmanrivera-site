@@ -1046,6 +1046,42 @@
        de .marca (fija), y .rota ya no puede mover nada a su alrededor. */
     .orbita h1 .rota{
       position:absolute;left:50%;top:100%;margin:.3em 0 0;
+      /* Rubén: "no deberían romperse a tres líneas, interfieren con el
+         diálogo" -- dos causas reales, y una pista falsa que costo varios
+         intentos antes de dar con ellas:
+         1) ⚠️ max-width no alcanza aqui, y `width:fit-content(N)` -- el
+            arreglo "correcto" en teoria -- tampoco: `CSS.supports('width',
+            'fit-content(700px)')` da `false` en el motor de este sitio, la
+            forma-funcion no esta soportada para `width` (si para
+            grid-template-columns, es otro contexto). Se comprobo con una
+            pagina de prueba aislada antes de asumir que "ya deberia
+            funcionar".
+            La causa real: un elemento position:absolute con SOLO `left`
+            (sin `right`) calcula su ancho automatico por shrink-to-fit, y
+            el "ancho disponible" de esa formula NO es el max-width que se
+            le ponga -- es el espacio entre el punto `left` y el borde
+            derecho de su bloque contenedor (aqui, <h1>, la columna angosta
+            del logo). Con left:50%, ese disponible es la MITAD del ancho
+            de <h1> (~240px), y max-width solo puede ENCOGER el resultado,
+            nunca superar ese techo. Por eso subirlo a 640px y luego a
+            820px no cambiaba nada visible.
+            La salida real: `width:max-content` + `max-width:N`. A
+            diferencia de `width:auto` (que es el que dispara el calculo
+            shrink-to-fit-por-offset de arriba), `width:max-content` pide
+            explicitamente el ancho intrinseco del contenido, sin pasar por
+            esa formula -- y `max-width` si actua como tope normal sobre un
+            valor ya explicito. Sigue abrazando el texto corto (no deja
+            hueco vacio en traducciones breves), pero ya no se topa contra
+            la columna del logo. 760px es lo mas ancho que cabe sin invadir
+            los botones/placas de las columnas laterales a esta altura, en
+            el viewport mas angosto de este breakpoint (1000px).
+         2) Con el font-size que traia (hasta 3.4rem en pantallas bajas,
+            clamp cede a 6vh), incluso con el ancho ya corregido "Motion
+            graphics 2D/3D" seguia sin caber en 2 lineas comodas -- se
+            reduce el techo del clamp a 2.5rem. */
+      width:max-content;
+      max-width:min(760px,84vw);
+      font-size:clamp(1.6rem,min(3.8vw,4.4vh),2.5rem);
       transform:translateX(-50%) skewX(-6deg) rotate(-1.4deg);
     }
 
@@ -1229,12 +1265,18 @@
      que se asoma por ENCIMA del borde superior de .lede, se cortaba
      cuando era su hija -- "el nombre se corta", como lo describio Ruben.
      Como hermana en .dialogo (que no recorta nada) puede asomar entera. */
+  /* Rubén: "hazlo más grande, es el personaje principal el que está
+     hablando, hay que hacerlo especial" -- 1.3rem lo dejaba del mismo
+     peso que una etiqueta cualquiera (.sec-tag, .galeria-tab), y quien
+     habla en el dialogo no es un rotulo mas, es NOTMAN. Sube a 2rem
+     (mismo tamaño de piso que .rota, el texto mas grande del hero) y el
+     padding crece con el para que la placa no se vea apretada. */
   .dialog-name{
-    position:absolute;top:-16px;left:14px;z-index:2;
+    position:absolute;top:-22px;left:14px;z-index:2;
     background:var(--paper);color:var(--paper);isolation:isolate;
     font-family:var(--disp);font-weight:400;text-transform:uppercase;
-    font-size:1.3rem;letter-spacing:.02em;
-    padding:8px 18px 7px;
+    font-size:2rem;letter-spacing:.02em;
+    padding:10px 24px 9px;
     clip-path:var(--filo);
     transform:rotate(-3deg);
     pointer-events:none;

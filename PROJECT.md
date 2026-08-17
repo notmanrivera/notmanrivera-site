@@ -654,6 +654,24 @@ Con el video ya funcionando, Rubén: "creo que es muy pequeño... ¿centrarlo en
 
 Verificado con Playwright: el reel queda después de `.galeria` en el DOM y visualmente (posición `top` > `bottom` de la galería), centrado dentro de `.wrap`, sin overflow horizontal en escritorio ni en 390px.
 
+## El rotador de servicios se partía a 3 líneas, y un bug real de `position:absolute` (2026-08-17)
+
+Rubén, en vivo: "los servicios bajo el logo no deberían romperse a tres líneas, ya que interfieren con el diálogo" -- y aparte, "haz más grande NOTMAN, es el personaje principal el que está hablando, hay que hacerlo especial".
+
+**NOTMAN más grande:** `.dialog-name` sube de `1.3rem` a `2rem` (mismo piso que el texto más grande del hero), con el padding y el offset (`top:-16px` → `-22px`) ajustados para que la placa no se vea apretada. Sin sorpresas aquí -- ya vivía fuera del `clip-path` de `.lede` desde el bug que se documentó antes ("el nombre se corta"), así que crecer no la puso en riesgo de cortarse otra vez.
+
+**El rotador de servicios (`.rota`) a 3 líneas -- esto sí costó varios intentos fallidos antes de encontrar la causa real:**
+
+- Primer intento: subir `max-width` (100% → 640px → 820px). **No cambió NADA visible.** Se investigó por qué con una página de prueba aislada en vez de seguir adivinando.
+- Causa real: `.orbita h1 .rota` es `position:absolute` con **solo `left:50%`** (sin `right`) -- necesario para centrarlo bajo el logo con `translateX(-50%)`. Pero un elemento así calcula su ancho automático por *shrink-to-fit*, y el "ancho disponible" de esa fórmula **no es el `max-width` que se le ponga** -- es el espacio entre el punto `left` y el borde derecho de su bloque contenedor (aquí, `<h1>`, la columna angosta reservada para el logo). Con `left:50%`, ese disponible es la MITAD del ancho de `<h1>` (~240px), y `max-width` solo puede *encoger* el resultado, nunca superar ese techo que ya viene dado por el propio cálculo del navegador.
+- Segundo intento: `width:fit-content(760px)` -- la solución "de libro" para este caso exacto. **Tampoco funcionó.** Antes de asumir que "ya debería andar", se comprobó con `CSS.supports('width','fit-content(700px)')`: `false`. La forma-función de `fit-content()` no está soportada para `width` en el motor de este sitio (Chromium 141) -- sí para `grid-template-columns`, que es un contexto distinto.
+- **Arreglo real: `width:max-content` + `max-width:min(760px,84vw)`.** A diferencia de `width:auto` (el que dispara el cálculo shrink-to-fit-por-offset de arriba), `width:max-content` pide explícitamente el ancho intrínseco del contenido, sin pasar por esa fórmula -- y `max-width` sí actúa como tope normal sobre un valor ya explícito. Sigue abrazando el texto corto (sin dejar hueco vacío en las traducciones breves), pero ya no se topa contra la columna del logo.
+- De paso, se bajó el techo del `clamp()` del `font-size` de 3.4rem a 2.5rem: con el ancho ya corregido, la traducción más larga ("Motion graphics 2D/3D") todavía no cabía cómoda en una sola línea al tamaño viejo.
+
+Verificado con Playwright, forzando las 4 traducciones en varios viewports (830px a 1000px de alto, bordes del breakpoint en 1010-1050px de ancho): **las 4 caben en una sola línea** (antes, hasta 3), sin invadir el `.dialog-name` de abajo ni las placas de `.kicker`/`.stats`/`.cta-row` a los lados, sin overflow horizontal. Confirmado también que el layout de móvil (`<1000px`, flujo normal sin `position:absolute`) no tenía este bug y no se tocó.
+
+**Lección:** cuando un ajuste de CSS "no hace nada" visible, no asumir que hace falta más de lo mismo (subir el número otra vez) -- puede que la propiedad no sea la que realmente controla el resultado. Aislar en una página de prueba mínima y comprobar con `CSS.supports()` antes de asumir que una solución de manual "ya debería funcionar" en el motor real que sirve el sitio.
+
 ## Trabajar desde una sesión remota (no desde la Mac)
 
 El repo es autosuficiente: un `index.html` sin build step. Editar, revisar y pushear funciona igual en cualquier máquina. **Lo único que no viaja es el despliegue**, y conviene saber exactamente por qué antes de perder tiempo:
