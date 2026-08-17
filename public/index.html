@@ -1107,9 +1107,55 @@
   .orbita .btn-1,.orbita .btn-2{box-shadow:none}
   .orbita .btn-1:hover,.orbita .btn-2:hover{box-shadow:none}
 
+  /* ===== CAJA DE DIALOGO (estilo RPG, P5) =====
+     .lede deja de ser el parrafo y pasa a ser la caja entera: placa de
+     nombre + texto + cursor de continuar, como un dialogo de Persona.
+     El filo NO es var(--filo) -- ese es el corte de 4 esquinas que ya usa
+     todo el sitio (botones, placas, tarjetas); esta caja necesita leerse
+     como un elemento aparte, mas agresivo, con una muesca real en el
+     borde superior y no solo esquinas cortadas. */
   .lede{
-    position:relative;font-size:clamp(1.05rem,1.9vw,1.3rem);color:#DED4F2;
-    line-height:1.7;max-width:54ch;margin-bottom:22px;
+    position:relative;max-width:54ch;margin-bottom:22px;
+    background:rgba(0,0,0,.85);border:3px solid var(--paper);
+    clip-path:polygon(
+      0% 22px, 18px 0%, 40% 0%, 46% 10px, 52% 0%, 100% 0%,
+      100% calc(100% - 24px), calc(100% - 32px) 100%, 0% 100%
+    );
+    /* drop-shadow y no box-shadow: mismo motivo que .card-in/.p5-tooltip
+       (ver esas notas mas abajo) -- un box-shadow exterior se recorta
+       junto con el clip-path, drop-shadow se calcula sobre la silueta ya
+       recortada y sigue el filo real. */
+    filter:drop-shadow(6px 6px 0 var(--rojo));
+    padding:32px clamp(24px,5vw,40px);
+  }
+  .lede p{
+    font-family:var(--body);color:var(--paper);
+    font-size:clamp(1.05rem,1.9vw,1.3rem);line-height:1.6;
+  }
+  /* La placa de nombre, como un letrero de dialogo que se asoma por
+     encima del cuadro de texto. */
+  .dialog-name{
+    position:absolute;top:-15px;left:10px;z-index:2;
+    background:var(--p5-yellow);color:var(--ink);
+    font-family:var(--disp);font-weight:400;text-transform:uppercase;
+    font-size:1.3rem;letter-spacing:.02em;
+    padding:4px 16px;
+    transform:rotate(-3deg);
+  }
+  /* Cursor de "seguir": triangulo puro en CSS (border-width, sin imagen),
+     apuntando hacia abajo, que parpadea imitando la espera de input del
+     jugador en un dialogo de RPG. */
+  .dialog-next{
+    position:absolute;bottom:10px;right:15px;z-index:2;
+    width:0;height:0;
+    border-style:solid;border-width:10px 7px 0 7px;
+    border-color:var(--paper) transparent transparent transparent;
+    opacity:.7;
+    animation:dialogBlink 1s ease-in-out infinite;
+  }
+  @keyframes dialogBlink{
+    0%,100%{transform:scale(1);opacity:.6}
+    50%    {transform:scale(1.2);opacity:1}
   }
   .cta-row{display:flex;flex-wrap:wrap;gap:14px}
   .btn{
@@ -1569,16 +1615,6 @@
     transition:background .2s;
   }
   .placa-negra:hover::after{background:var(--paper)}
-  /* el parrafo lleva la placa pero no es accionable: no enrojece */
-  .lede.placa-negra:hover::after{background:var(--ink)}
-  .lede.placa-negra:hover{color:var(--paper)}
-  /* ⚠️ El relleno y el filo van FUERA del media query de escritorio. La clase
-     .placa-negra se aplica en todos los anchos, asi que si la geometria vive
-     solo en el media query, en movil queda la capa interior sin relleno y el
-     texto se sale por los bordes -- se comia las primeras letras de cada
-     linea. Lo que si es de escritorio es la posicion en la rejilla. */
-  .lede.placa-negra{padding:24px clamp(20px,5vw,32px)}
-  .lede.placa-negra{clip-path:var(--filo)}
   /* el acento rojo se corre a left:8%: pegado al borde lo cortaba el filo.
      Ya no varia por posicion ni por hover -- con el fondo de la placa
      siempre negro (ver arriba), rojo contrasta bien en los dos estados,
@@ -2007,6 +2043,7 @@
     .btn.confirmando{animation:none}
     .chispa-confirma{display:none}
     .orbita .sat:hover,.menu-lista a:hover,.menu-lista a:focus-visible{animation:none}
+    .dialog-next{animation:none;opacity:.8}
   }
 </style>
 </head>
@@ -2167,7 +2204,17 @@
             data-rot-en="2D/3D motion graphics|Video editing|Web design UI/UX|White-label support">Motion graphics 2D/3D</span>
     </h1>
 
-    <p class="lede placa-negra" data-es="Nueve años diseñando y animando para agencias de marketing, representantes y jugadores profesionales. Motion graphics, edición de video, diseño web y soporte de marca blanca cuando a tu equipo le falta capacidad." data-en="Nine years designing and animating for marketing agencies, representatives and professional athletes. Motion graphics, video editing, web design and white-label support when your team runs out of capacity.">Nueve años diseñando y animando para agencias de marketing, representantes y jugadores profesionales. Motion graphics, edición de video, diseño web y soporte de marca blanca cuando a tu equipo le falta capacidad.</p>
+    <!-- Caja de dialogo estilo RPG (P5): .lede pasa de <p> a contenedor,
+         con placa de nombre flotante y cursor de "continuar" parpadeante.
+         El texto real vive en el <p> interno (con data-es/data-en, que es
+         lo que lee el toggle de idioma generico) -- "NotMan" en la placa
+         de arriba no lleva data-es/data-en porque es un nombre, no cambia
+         entre idiomas, igual que "Rubén Rivera" en el logo. -->
+    <div class="lede">
+      <span class="dialog-name">NotMan</span>
+      <p data-es="Soy el refuerzo táctico que tu agencia necesita. 9 años de experiencia diseñando y animando para agencias, jugadores y representantes de élite. Cuando a tu equipo le falta capacidad o tiempo, yo entro en acción. Motion graphics, video y diseño web. Listo para el despliegue." data-en="I am the tactical backup your agency needs. 9 years of experience designing and animating for agencies, elite players and representatives. When your team runs out of capacity or time, I step in. Motion graphics, video, and web design. Ready for deployment.">Soy el refuerzo táctico que tu agencia necesita. 9 años de experiencia diseñando y animando para agencias, jugadores y representantes de élite. Cuando a tu equipo le falta capacidad o tiempo, yo entro en acción. Motion graphics, video y diseño web. Listo para el despliegue.</p>
+      <i class="dialog-next" aria-hidden="true"></i>
+    </div>
 
     <!-- .cta-row y .stats van con display:contents: siguen existiendo en el
          DOM (el JS de entrada los busca por nombre) pero no ponen caja, asi

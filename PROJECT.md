@@ -387,6 +387,24 @@ El divisor rasgado de la sección anterior duró poco: Rubén pidió volver a "l
 
 Verificado: `clip-path` de vuelta (sin `mask-image`), `background` en `--rojo`, altura en `40px`, captura de pantalla confirmando la figura visible con fuerza real, y un recorrido completo de scroll sin errores nuevos en consola.
 
+## Caja de diálogo RPG en el hero (2026-08-17, noche)
+
+El párrafo `.lede` del hero (el que presenta a Rubén, debajo del logo) se convierte en una caja de diálogo literal, estilo Persona 5: placa de nombre flotante, texto dentro de un cuadro con borde real, y un cursor triangular parpadeante de "continuar" en la esquina, como esperando input del jugador.
+
+- **Texto nuevo, en los dos idiomas** — tono más directo ("Soy el refuerzo táctico que tu agencia necesita...", "I am the tactical backup your agency needs..."), reemplazando la presentación anterior más plana.
+
+- **`.lede` pasa de `<p>` a `<div>` contenedor**, con tres hijos: `<span class="dialog-name">NotMan</span>` (sin `data-es`/`data-en` — es un nombre propio, no cambia entre idiomas, igual que "Rubén Rivera" en el logo), el `<p>` real con el texto y sus atributos de idioma, y `<i class="dialog-next">` como cursor decorativo. Verificado que ninguno de los dos sistemas de JS que tocan estos elementos le importa el cambio de etiqueta: el toggle de idioma busca `[data-es][data-en]` por atributo, no por tag, y la animación de entrada (`FADE`) solo añade una clase (`.fade`) sin tocar el `innerHTML` — a diferencia de `SLAM`, que sí reescribe el contenido y habría roto algo si `.lede` estuviera en esa lista (no lo está).
+
+- **Filo propio, no `var(--filo)`.** El corte de 4 esquinas que usa el resto del sitio (botones, placas, tarjetas) se sentiría genérico aquí — la caja de diálogo necesita leerse como *su propio* elemento. El `clip-path` nuevo tiene una muesca real en el borde superior (no solo esquinas cortadas) para un aire más "roto a mano".
+
+- **Misma técnica de sombra dura que `.card-in`/`.p5-tooltip`** (de una tanda anterior): `filter:drop-shadow(6px 6px 0 var(--rojo))` en vez de `box-shadow`, para que la sombra siga el `clip-path` irregular en vez de recortarse en un rectángulo. Verificado con una captura de pantalla recortada a la caja completa: la sombra roja seguía el filo dentado exacto, sin fugas.
+
+- **Cursor de continuar** (`.dialog-next`): triángulo puro en CSS (`border-width`, sin imagen ni SVG), con `@keyframes dialogBlink` alternando `scale(1)→scale(1.2)` y opacidad — apagado bajo `prefers-reduced-motion`, como el resto de animaciones del sitio, con una opacidad estática de respaldo para que no desaparezca del todo.
+
+- **Limpieza de paso:** `.lede` llevaba la clase `.placa-negra` antes de este cambio, y existían cuatro reglas CSS específicas para la combinación `.lede.placa-negra` (padding, clip-path, y dos de `:hover`). Como `.lede` es el único elemento del sitio que alguna vez llevó esa combinación de clases, quitarle `.placa-negra` dejó esas cuatro reglas completamente inalcanzables — se borraron en vez de dejarlas como código muerto.
+
+Verificado con Playwright: texto correcto en español al cargar y en inglés tras el toggle de idioma; `"NotMan"` sin cambios en los dos idiomas; `background`/`border`/`clip-path`/`filter` computados de `.lede`; color/line-height/font-family del `<p>` interno; fondo/color/rotación/tipografía de `.dialog-name`; `animationName` de `.dialog-next`; capturas de pantalla de la caja completa confirmando el resultado visual.
+
 ## Redes (footer)
 
 Instagram (`@notman.rivera`), LinkedIn y Behance (`/notmanrivera`) como iconos SVG inline en `.social`, dentro de `.foot-in`. Sin librería de íconos — son 3 `<svg>` a mano, glifos genéricos (cámara, "in", "Bē") para no reproducir marcas registradas al pixel.
