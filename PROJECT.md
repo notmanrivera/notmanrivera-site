@@ -454,6 +454,15 @@ El primer intento (arriba) no era lo que Rubén tenía en mente — "no es a lo 
 
 Verificado con Playwright: los 5 números, títulos y subtítulos correctos; alternancia de fondo blanco/negro confirmada por color computado; superposición real del primer link con el logo; `clip-path` aplicado; hover a rojo; clic navega de verdad; traducción de título Y subtítulo al cambiar de idioma; sin overflow horizontal en móvil. Capturas de pantalla en desktop y móvil confirmando que el resultado se acerca mucho a la referencia.
 
+### Tercer ajuste: sin solape con el logo, sin subtítulo (2026-08-17)
+
+Con la v2 ya en vivo, Rubén mandó una captura de `notmanrivera.com`: el logo tapaba de verdad el "01" y el subtítulo "Reel y casos" de la primera placa, no era solo un roce decorativo. Pidió adaptarlo para que el logo no tape nada del menú, y quitar el texto descriptivo — la idea es una miniatura simplificada del menú grande, no una réplica exacta.
+
+- **Se quitó el solape físico:** `.foot-mini` ya no lleva `margin-left` negativo ni `z-index` para nacer "detrás" del logo; `.foot-menu` ahora tiene `gap:28px` entre logo y cascada. Verificado que `firstLinkBox.left >= logoBox.right` (antes daba `true` de solape, ahora hay ~27px de aire real).
+- **Se quitó el `<em>` (subtítulo) de las 5 placas y de `.foot-mini a`:** el grid pasó de `"num tit" "num sub"` a solo `"num tit"`, y `align-items` de `baseline` a `center` porque ya no hay dos líneas que alinear. La cascada diagonal (`margin-left`/`margin-bottom` crecientes por `nth-child`) se mantiene igual — sigue evocando el menú grande, solo que ahora es una miniatura de verdad y no un clon 1:1.
+
+Verificado con Playwright: sin solape logo↔menú (`gapLogoAMenu` positivo), cero `<em>` en el DOM del footer, los 5 números/títulos y su traducción correctos, alternancia blanco/negro, `clip-path` aplicado, hover a rojo, clic navega, sin overflow horizontal en móvil. Capturas de desktop y móvil confirman que el logo ya no tapa ninguna placa.
+
 ## Infraestructura
 
 - **Hosting:** Cloudflare Pages, proyecto `notmanrivera`
