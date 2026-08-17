@@ -381,6 +381,12 @@ Rubén pidió explícitamente ejecutar estas cuatro correcciones en secuencia, v
 
 Cada una de las cuatro se implementó y se verificó por separado (valores computados + capturas de pantalla) antes de pasar a la siguiente, tal como se pidió explícitamente.
 
+### Vuelta a la cuña triangular (2026-08-17, misma tarde)
+
+El divisor rasgado de la sección anterior duró poco: Rubén pidió volver a "los divisores de figura diagonal" de antes — la cuña triangular (`clip-path:polygon`), no la textura de mask-image. Se restauró tal cual estaba, con un solo cambio deliberado: **`--rojo` en vez de `--ink-2`**. La última vez que existió esta cuña usaba `--ink-2`, pero esa variable ya cambió a gris grafito `#1A1A1A` en la pasada de sobriedad — restaurar la cuña con su color original la habría dejado prácticamente invisible contra el fondo casi negro de las secciones, el mismo problema de contraste ya encontrado (y corregido) para el divisor rasgado que esta cuña reemplaza. Se aplicó la misma corrección de manera proactiva en vez de reintroducir el mismo bug a sabiendas.
+
+Verificado: `clip-path` de vuelta (sin `mask-image`), `background` en `--rojo`, altura en `40px`, captura de pantalla confirmando la figura visible con fuerza real, y un recorrido completo de scroll sin errores nuevos en consola.
+
 ## Redes (footer)
 
 Instagram (`@notman.rivera`), LinkedIn y Behance (`/notmanrivera`) como iconos SVG inline en `.social`, dentro de `.foot-in`. Sin librería de íconos — son 3 `<svg>` a mano, glifos genéricos (cámara, "in", "Bē") para no reproducir marcas registradas al pixel.
