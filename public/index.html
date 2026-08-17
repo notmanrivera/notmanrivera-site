@@ -897,6 +897,36 @@
     .marca.go{animation:none;opacity:1;transform:scale(var(--marca-escala,1))}
     .rafaga,.marca.go ~ .rafaga{display:none}
   }
+  /* ===== CHISPAS DEL LOGO (mismo destello que ya usan los clics) =====
+     El JS ya inyecta 2-3 estrellas de 4 puntas en las coordenadas del
+     clic sobre .btn/.menu-lista a (ver PARTICULAS DE CONFIRMACION mas
+     abajo) -- Ruben las señalo como poco visibles (duran .3s en el pixel
+     exacto del clic) y pidio probarlas en sitios con mas tiempo en
+     pantalla. El logo es el momento de mayor impacto del sitio (aparece
+     una sola vez al cargar, ver la nota de .rafaga arriba), asi que se
+     gana el primer intento: 3 estrellas fijas en el HTML, mismo poligono
+     de 4 puntas que el path SVG del JS, disparadas por el mismo selector
+     de hermano que ya usa .rafaga -- nada de JS nuevo. */
+  /* z-index:2, no -1: a diferencia de .rafaga (que solo se ve en las
+     puntas que asoman fuera de la silueta del logo), estas chispas caen
+     casi todas DENTRO del area que pinta .marca -- en -1 el propio logo
+     (sin z-index, pinta por encima de los hijos negativos de <h1>) las
+     tapaba por completo. En positivo quedan encima del arte, como un
+     destello real de P5 y no un brillo escondido detras. */
+  .chispa-logo{
+    position:absolute;width:16px;height:16px;z-index:2;
+    clip-path:polygon(50% 0%,58% 42%,100% 50%,58% 58%,50% 100%,42% 58%,0% 50%,42% 42%);
+    background:var(--paper);pointer-events:none;opacity:0;
+    transform:translate(-50%,-50%) scale(0) rotate(0deg);
+  }
+  .marca.go ~ .chispa-logo{
+    animation:confirmaBurst .5s cubic-bezier(.2,1,.3,1) both;
+    animation-delay:calc(.2s + var(--i,0) * 90ms);
+  }
+  @media(max-width:820px){.chispa-logo{display:none}}
+  @media(prefers-reduced-motion:reduce){
+    .chispa-logo,.marca.go ~ .chispa-logo{display:none}
+  }
   /* La linea de servicios ahora vive en su propia placa -- mismo lenguaje
      que el resto del hero (filo cortado, rojo = lo que esta activo ahora
      mismo) en vez de texto violeta suelto bajo el logo. Sin box-shadow a
@@ -1224,6 +1254,7 @@
   }
   .cta-row{display:flex;flex-wrap:wrap;gap:14px}
   .btn{
+    position:relative;
     font-family:var(--disp);text-transform:uppercase;letter-spacing:.05em;
     font-size:1.62rem;text-decoration:none;padding:15px 30px;
     transform:skewX(-6deg) rotate(var(--giro,0deg));display:inline-block;
@@ -1253,6 +1284,39 @@
     }
   }
   .btn.confirmando{animation:p5Confirm .15s ease-out}
+  /* Chispa de hover en los CTA: segundo intento del mismo destello del
+     logo (ver CHISPAS DEL LOGO mas arriba), esta vez mientras el mouse
+     se queda encima en vez de una sola vez al cargar. Vive en un hijo
+     absoluto en la esquina, nunca en .btn mismo -- la regla de oro del
+     hover del sitio es que el elemento que detecta :hover no puede
+     mover su propia caja, o pierde el hover y parpadea. */
+  /* top/right POSITIVOS, dentro de la caja -- .btn tambien lleva .sat
+     (clip-path:var(--filo)), y clip-path recorta a cualquier descendiente
+     que se salga del rectangulo propio (mismo hallazgo que .dialog-name
+     mas arriba: "el nombre se corta"). Una chispa asomando por FUERA del
+     borde, como se hizo primero, se cortaba sin avisar. */
+  /* --ink, no --paper: tanto .btn-1 (placa-negra) como .btn-2 (placa-roja)
+     asientan en blanco una vez que el snap de hover termina (.orbita
+     .sat:hover), asi que una chispa blanca se perdia contra su propio
+     fondo justo en el estado donde mas tiempo se queda. Negra se ve bien
+     ahi Y durante el parpadeo rojo/blanco de p5HoverSnap. */
+  .chispa-btn{
+    position:absolute;top:6px;right:8px;width:14px;height:14px;z-index:1;
+    clip-path:polygon(50% 0%,58% 42%,100% 50%,58% 58%,50% 100%,42% 58%,0% 50%,42% 42%);
+    background:var(--ink);pointer-events:none;opacity:0;
+    transform:scale(0) rotate(0deg);
+  }
+  @keyframes chispaTwinkle{
+    0%  {opacity:0;transform:scale(0) rotate(0deg)}
+    40% {opacity:1}
+    100%{opacity:0;transform:scale(1.4) rotate(35deg)}
+  }
+  .btn:hover .chispa-btn,.btn:focus-visible .chispa-btn{
+    animation:chispaTwinkle .9s cubic-bezier(.2,1,.3,1) infinite;
+  }
+  @media(prefers-reduced-motion:reduce){
+    .btn:hover .chispa-btn,.btn:focus-visible .chispa-btn{display:none}
+  }
 
   .stats{
     position:relative;display:flex;flex-wrap:wrap;gap:40px;margin-top:20px;padding-top:20px;
@@ -1343,6 +1407,22 @@
     transform:skewX(-10deg) rotate(-15deg);
     pointer-events:none;z-index:0;user-select:none;
   }
+  /* Tercer intento del mismo destello (ver CHISPAS DEL LOGO mas arriba):
+     remata la revelacion del numero gigante de fondo cuando .sec-head
+     entra en pantalla, en vez de competir con el titulo real -- por eso
+     vive dentro de .sec-num (hereda su plano sesgado/rotado) y no de h2.
+     .sec-head ya es .rv, asi que .in ya existe y llega gratis por el
+     IntersectionObserver generico -- no hace falta JS nuevo tampoco aqui. */
+  .chispa-sec{
+    position:absolute;top:6%;right:6%;width:22px;height:22px;
+    clip-path:polygon(50% 0%,58% 42%,100% 50%,58% 58%,50% 100%,42% 58%,0% 50%,42% 42%);
+    background:var(--paper);pointer-events:none;opacity:0;
+    transform:scale(0) rotate(0deg);
+  }
+  .sec-head.in .chispa-sec{
+    animation:chispaTwinkle .6s cubic-bezier(.2,1,.3,1) .35s both;
+  }
+  @media(prefers-reduced-motion:reduce){.chispa-sec{display:none}}
   h2{position:relative}
   h2::before{
     content:"";position:absolute;left:-26px;top:14%;bottom:14%;width:7px;
@@ -2156,7 +2236,18 @@
 
   /* etiquetas y botones: golpe seco con sobre-escala */
   .pop{opacity:0}
-  .pop.go{animation:popIn .34s cubic-bezier(.15,1.7,.4,1) both}
+  /* ⚠️ opacity:1 aparte del animation -- hallazgo real al montar las
+     chispas de hover en los CTA (2026-08-17), no algo que ya estuviera
+     cubierto. .orbita .sat:hover dispara p5HoverSnap sobre el MISMO
+     boton, y como animation es una sola propiedad, p5HoverSnap
+     REEMPLAZA a popIn por completo mientras dura el hover -- p5HoverSnap
+     nunca toca opacity, asi que sin este respaldo estatico la opacidad
+     caia de vuelta a .pop{opacity:0} (popIn ya no la sostiene) y el CTA
+     se volvia invisible mientras el mouse seguia encima. Con esta regla,
+     opacity queda fija en 1 pase lo que pase con --animation--, y sigue
+     sin pisar el propio popIn mientras corre (una animacion activa gana
+     sobre un valor estatico de la MISMA propiedad). */
+  .pop.go{opacity:1;animation:popIn .34s cubic-bezier(.15,1.7,.4,1) both}
   /* El --giro de cada placa del hero va DENTRO del keyframe: la animacion
      corre con fill-mode both, o sea que su estado final se queda pegado y
      machacaria cualquier transform de base. Para lo que no tiene --giro,
@@ -2426,6 +2517,9 @@
            alt="NotMan Rivera — Rubén Rivera, motion graphics, video y diseño web"
            width="1200" height="675" fetchpriority="high" decoding="async">
       <i class="rafaga" aria-hidden="true"></i>
+      <i class="chispa-logo" aria-hidden="true" style="left:16%;top:14%;--i:0"></i>
+      <i class="chispa-logo" aria-hidden="true" style="left:82%;top:30%;--i:1"></i>
+      <i class="chispa-logo" aria-hidden="true" style="left:66%;top:80%;--i:2"></i>
       <!-- Esta linea rota entre los cuatro servicios. Usa data-rot-*
            para que el toggle de idioma generico (que busca [data-es][data-en])
            no la pise: la maneja su propia rutina. -->
@@ -2458,8 +2552,8 @@
          DOM (el JS de entrada los busca por nombre) pero no ponen caja, asi
          que sus hijos entran como celdas de .orbita. -->
     <div class="cta-row">
-      <a href="#trabajo" class="btn btn-1 sat placa-negra" style="--giro-d:-11.3deg;--empuje:58px"><i data-es="Ver mi trabajo" data-en="See my work">Ver mi trabajo</i></a>
-      <a href="#contacto" class="btn btn-2 sat placa-roja" style="--giro-d:11deg;--empuje:50px"><i data-es="Trabajemos juntos" data-en="Let's work together">Trabajemos juntos</i></a>
+      <a href="#trabajo" class="btn btn-1 sat placa-negra" style="--giro-d:-11.3deg;--empuje:58px"><i data-es="Ver mi trabajo" data-en="See my work">Ver mi trabajo</i><span class="chispa-btn" aria-hidden="true"></span></a>
+      <a href="#contacto" class="btn btn-2 sat placa-roja" style="--giro-d:11deg;--empuje:50px"><i data-es="Trabajemos juntos" data-en="Let's work together">Trabajemos juntos</i><span class="chispa-btn" aria-hidden="true"></span></a>
     </div>
 
     <div class="stats">
@@ -2474,7 +2568,7 @@
   <div class="halftone"></div>
   <div class="wrap">
     <div class="sec-head rv">
-      <span class="sec-num">01</span>
+      <span class="sec-num">01<span class="chispa-sec" aria-hidden="true"></span></span>
       <span class="sec-tag" data-es="Portafolio" data-en="Portfolio">Portafolio</span>
       <h2 data-es="Reel y <em>casos</em>" data-en="Reel and <em>case work</em>">Reel y <em>casos</em></h2>
       <p data-es="Animación, edición deportiva y diseño de interfaz. Dale play." data-en="Animation, sports editing and interface design. Hit play.">Animación, edición deportiva y diseño de interfaz. Dale play.</p>
@@ -2739,7 +2833,7 @@
   <div class="halftone"></div>
   <div class="wrap">
     <div class="sec-head rv">
-      <span class="sec-num">02</span>
+      <span class="sec-num">02<span class="chispa-sec" aria-hidden="true"></span></span>
       <span class="sec-tag" data-es="Qué hago" data-en="What I do">Qué hago</span>
       <h2 data-es="Cuatro formas de <em>trabajar juntos</em>" data-en="Four ways to <em>work together</em>">Cuatro formas de <em>trabajar juntos</em></h2>
       <p data-es="Con agencias de marketing, representantes y jugadores profesionales." data-en="With marketing agencies, representatives and professional athletes.">Con agencias de marketing, representantes y jugadores profesionales.</p>
@@ -2774,7 +2868,7 @@
   <div class="halftone"></div>
   <div class="wrap">
     <div class="sec-head rv">
-      <span class="sec-num">03</span>
+      <span class="sec-num">03<span class="chispa-sec" aria-hidden="true"></span></span>
       <span class="sec-tag" data-es="Trayectoria" data-en="Track record">Trayectoria</span>
       <h2 data-es="Dónde he <em>trabajado</em>" data-en="Where I've <em>worked</em>">Dónde he <em>trabajado</em></h2>
     </div>
@@ -2800,7 +2894,7 @@
   <div class="halftone"></div>
   <div class="wrap">
     <div class="sec-head rv">
-      <span class="sec-num">04</span>
+      <span class="sec-num">04<span class="chispa-sec" aria-hidden="true"></span></span>
       <span class="sec-tag" data-es="Perfil" data-en="Profile">Perfil</span>
       <h2 data-es="Formación y <em>herramientas</em>" data-en="Training and <em>tools</em>">Formación y <em>herramientas</em></h2>
       <p data-es="Con qué trabajo y de dónde vengo. Todo lo de abajo es verificable." data-en="What I work with and where I come from. Everything below is verifiable.">Con qué trabajo y de dónde vengo. Todo lo de abajo es verificable.</p>
