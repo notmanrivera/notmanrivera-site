@@ -1121,16 +1121,29 @@
      el mismo tratamiento que .p5-tooltip (negro + borde blanco + sombra
      dura negra, ver esa nota mas abajo), que ya esta probado que se lee
      bien sin importar que hay detras. */
-  .dialogo{position:relative}
+  /* ⚠️ filter:drop-shadow NO funciona junto con clip-path en este motor --
+     se probo por separado (drop-shadow negro sobre fondo claro: sin
+     clip-path se ve perfecto, con clip-path desaparece por completo, no
+     solo se atenua). El comentario viejo de .card-in/.p5-tooltip asumia
+     que si funcionaba porque su sombra es --ink sobre fondos oscuros --
+     invisible de cualquier forma, nunca se noto que en realidad no se
+     pintaba. Placa roja de verdad detras de .lede, no un filtro: un
+     ::before en .dialogo (el envoltorio, NO .lede) del mismo tamaño,
+     corrido con transform. isolation:isolate va en .dialogo -- si
+     estuviera en .lede, su propio z-index:-1 se quedaria POR ENCIMA del
+     fondo de .lede (asi es como .placa-negra logra su capa "inset", el
+     efecto contrario al que se busca aqui), asi que la placa tiene que
+     ser hermana de .lede y no su pseudo-elemento. */
+  .dialogo{position:relative;isolation:isolate}
+  .dialogo::before{
+    content:"";position:absolute;inset:0;z-index:-1;
+    background:var(--rojo);clip-path:var(--filo);
+    transform:translate(10px,10px);
+  }
   .lede{
     position:relative;max-width:54ch;margin-bottom:22px;
     background:var(--ink);border:5px solid var(--paper);
     clip-path:var(--filo);
-    /* drop-shadow y no box-shadow: mismo motivo que .card-in/.p5-tooltip
-       (ver esas notas mas abajo) -- un box-shadow exterior se recorta
-       junto con el clip-path, drop-shadow se calcula sobre la silueta ya
-       recortada y sigue el filo real. */
-    filter:drop-shadow(6px 6px 0 var(--ink));
     padding:32px clamp(24px,5vw,40px);
   }
   .lede p{
