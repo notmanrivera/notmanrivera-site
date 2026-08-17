@@ -672,6 +672,20 @@ Verificado con Playwright, forzando las 4 traducciones en varios viewports (830p
 
 **Lección:** cuando un ajuste de CSS "no hace nada" visible, no asumir que hace falta más de lo mismo (subir el número otra vez) -- puede que la propiedad no sea la que realmente controla el resultado. Aislar en una página de prueba mínima y comprobar con `CSS.supports()` antes de asumir que una solución de manual "ya debería funcionar" en el motor real que sirve el sitio.
 
+## "Scene Rail": el nombre de sección junto al HUD de scroll (2026-08-17)
+
+Rubén mandó tres ideas inspiradas en otro sitio con estética Persona (HESC): una consola de terminal "hacker" para `#contacto`, un "Scene Rail" que muestre el nombre de la sección junto al indicador de scroll, y un carrusel de tarjetas 2.5D para el portafolio. Se le dio opinión de las tres antes de tocar nada -- la consola de terminal usaba `var(--p5-yellow)` (una variable que ya no existe, se retiró en una sesión anterior por romper "un color, un trabajo") y es un lenguaje visual ajeno a P5; el carrusel 2.5D competía con el sistema de galería (`.visor`) ya construido, mucho más complejo que el prompt asumía. El Scene Rail sí se implementó: es una extensión de un componente que ya existe, no una pieza nueva.
+
+- **No un componente nuevo, una extensión del HUD que ya había.** `.hud-scroll` pasa de ser solo los 5 rombos a un contenedor `flex` con el rótulo de texto (`.hud-seccion`) más los rombos envueltos en `.hud-pasos`. Mismo `IntersectionObserver` que ya movía los rombos -- se le agrega una función (`actualizarHudSeccion`) en vez de duplicar la lógica de detección de sección activa.
+- **El texto no trae su propia lista de traducciones.** Lee `.textContent` del `.sec-tag` de la sección activa (que ya existe, bilingüe, en cada `sec-head`) en vez de mantener una segunda lista de nombres de sección que se desincronizaría en cuanto alguien cambie un rótulo y olvide esta copia.
+- **Texto vertical (`writing-mode:vertical-rl`)** -- mismo truco que ya usaba `.frame-proximas .tira.confidencial span`, reusado en vez de inventado, y resuelve el problema de espacio: un rótulo horizontal ahí competiría con los rombos por ancho en la esquina.
+- **Animación mecánica, no orgánica:** Rubén pidió explícitamente que el cambio "se sienta mecánico y físico". El resto del sitio usa `cubic-bezier` con rebote para los reveals (una sensación de resorte, orgánica); aquí se usa `steps(5,end)` -- salta entre fotogramas discretos, como un marcador de puntaje, no como un elemento que aterriza suave. Es la primera vez que se usa `steps()` para algo que no sea el cursor de "seguir" del diálogo (`dialogBlink`) -- una distinción de movimiento tan deliberada como la de color.
+- **Solo dispara en cambios reales de sección** (`indiceHudActivo` guarda el último índice) -- el `IntersectionObserver` de por sí dispara varias veces por el mismo cruce de sección, y sin esta guarda la animación se hubiera repetido en cada evento en vez de solo cuando la sección activa cambia de verdad.
+- **Oculto en móvil** (`display:none` bajo 640px): el HUD ya es diminuto ahí (rombos de 9px), y no hay espacio cómodo para un rótulo de texto sin apretar la esquina.
+- Se sincroniza con el toggle de idioma releyendo el `.sec-tag` ya traducido (el bucle genérico de `[data-es][data-en]` corre primero), sin necesitar su propio bloque de traducción ni el patrón de evento `idioma` que usan `.rota`/el visor (que sí necesitan ese patrón porque su contenido NO vive en un `.sec-tag` que el bucle genérico ya toque).
+
+Verificado con Playwright: el texto lee correctamente las 5 secciones en orden de scroll (incluido saltar de #contacto de vuelta a #trabajo), se traduce con el toggle de idioma, dispara la clase `.cambia` en cada cambio real de sección, oculto en 390px, sin overflow horizontal, sin errores de consola.
+
 ## Trabajar desde una sesión remota (no desde la Mac)
 
 El repo es autosuficiente: un `index.html` sin build step. Editar, revisar y pushear funciona igual en cualquier máquina. **Lo único que no viaja es el despliegue**, y conviene saber exactamente por qué antes de perder tiempo:
