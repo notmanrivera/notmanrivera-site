@@ -443,6 +443,17 @@ Rubén reportó que el footer se sentía apretado — todo amontonado en una sol
 
 Verificado con Playwright: `z-index` de logo/mini-menú, que el primer link efectivamente se superpone en pantalla con el logo (`getBoundingClientRect`), los 5 labels correctos y su traducción al cambiar de idioma, que un clic en un link del footer navega de verdad (usa el mismo listener global de `a[href^="#"]` que ya intercepta toda la navegación interna del sitio), y sin overflow horizontal en 390px de ancho. Capturas de pantalla en desktop y móvil confirmando el resultado visual.
 
+### Segundo intento: la cascada real del menú, no píldoras (2026-08-17, noche)
+
+El primer intento (arriba) no era lo que Rubén tenía en mente — "no es a lo que me refería jaja" — y mandó una referencia: el logo grande (el wordmark chrome del hero, no el ícono chico) a la izquierda, y las placas REALES del menú de pantalla completa (número + título + subtítulo, blanco/negro alterno, filo diagonal) en cascada vertical a la derecha, naciendo de atrás del logo.
+
+- **Logo grande de verdad:** `logo-lg.webp` (el wordmark chrome de 1200×675 que ya usa el hero), no `logo.webp` (el ícono chico que se había usado en el primer intento).
+- **`.foot-mini a` reconstruye la estructura exacta de `.menu-lista a`** — grid `num`/`tit`/`sub`, `clip-path:var(--filo)`, alternancia blanco/negro con `:nth-child(even)`, badge numerado en `--rojo` — pero como clase propia, a escala de footer, en vez de reusar `.menu-lista a` directamente: esa clase vive dentro del layout a pantalla completa del menú (columna flex al 100% de alto), un contexto que aquí no aplica.
+- **La cascada es vertical, no horizontal** (a diferencia del primer intento): cada placa baja con `margin-bottom` negativo (solape) y se corre a la derecha con `margin-left` creciente por `nth-child` — el equivalente vertical del `--sangria` que ya usa el menú grande.
+- **Móvil (`≤760px`):** la cascada diagonal se endereza — el `transform` deja de incluir `rotate(var(--giro))` (el `--giro` vive en un atributo `style` inline, así que no se puede anular desde una media query; simplemente se deja de referenciar en el `transform`) y los `margin-left` de la cascada se resetean a `0` con la misma especificidad que las reglas base, sin necesitar `!important` en ningún punto.
+
+Verificado con Playwright: los 5 números, títulos y subtítulos correctos; alternancia de fondo blanco/negro confirmada por color computado; superposición real del primer link con el logo; `clip-path` aplicado; hover a rojo; clic navega de verdad; traducción de título Y subtítulo al cambiar de idioma; sin overflow horizontal en móvil. Capturas de pantalla en desktop y móvil confirmando que el resultado se acerca mucho a la referencia.
+
 ## Infraestructura
 
 - **Hosting:** Cloudflare Pages, proyecto `notmanrivera`
