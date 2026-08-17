@@ -405,6 +405,24 @@ El párrafo `.lede` del hero (el que presenta a Rubén, debajo del logo) se conv
 
 Verificado con Playwright: texto correcto en español al cargar y en inglés tras el toggle de idioma; `"NotMan"` sin cambios en los dos idiomas; `background`/`border`/`clip-path`/`filter` computados de `.lede`; color/line-height/font-family del `<p>` interno; fondo/color/rotación/tipografía de `.dialog-name`; `animationName` de `.dialog-next`; capturas de pantalla de la caja completa confirmando el resultado visual.
 
+## Se retira `--p5-yellow`, y máquina de escribir en el diálogo (2026-08-17, noche)
+
+Rubén preguntó dos cosas por separado: si a la caja de diálogo le faltaba algún otro efecto, y qué opinaba yo del uso del amarillo (`--p5-yellow`) que se había agregado horas antes — "en lo personal no me gusta". Las dos se resolvieron juntas porque ambas tocan `.lede`.
+
+**El amarillo se quita del sistema por completo.** No fue solo cuestión de gusto: este sitio tiene una regla explícita de "un color, un trabajo" (morado = identidad, rojo = qué mirar, blanco = seleccionado, negro = todo lo demás), y ya había *retirado* un quinto color una vez antes — el magenta original, cortado porque al lado del rojo de P5 se leía como el mismo color mal impreso ("cinco colores ya no son un sistema", ver la nota de paleta al principio de este archivo). `--p5-yellow` competía por el mismo rol que el rojo (llamar la atención) en vez de tener un trabajo propio. Se revirtieron los cuatro usos a sus colores originales:
+- `.cifra b` y `.stat b.cuenta` → `var(--violet-hi)` (la regla `.stat b.cuenta` completa se borró; sin ella, `.stat b` ya cae de vuelta al violeta general).
+- `.radar .punto` → `var(--rojo)`, `.radar .rango` → `rgba(255,255,255,.74)`.
+- `.dialog-name` → fondo `var(--rojo)`, texto `var(--paper)` (no `var(--ink)`: sobre rojo, blanco es el par que ya usa el resto del sitio — `.menu-lista a:hover`, etc. — texto negro sobre rojo casi no tiene contraste).
+- La variable `--p5-yellow` se borra de `:root`.
+
+**Máquina de escribir**, como respuesta a "¿le falta algún efecto?" — la sugerencia que se ofreció y Rubén aceptó: el texto del diálogo aparece caracter por caracter en vez de con un fundido de todo el párrafo junto, la seña más reconocible de una caja de diálogo de RPG.
+
+⚠️ **El primer intento (CSS puro) falló en producción, no en teoría.** La idea inicial: envolver cada caracter en un `span.ch` con una variable `--i`, y dejar que 274 animaciones CSS independientes (una por caracter) se dispararan con `animation-delay:calc(300ms + var(--i) * 14ms)`. Se ve bien en el papel — es la misma técnica de `--i`/`animation-delay` que ya usa el sistema de letras sueltas del cargador. Verificado con Playwright, el conteo de caracteres visibles subía con normalidad… y se detenía en seco siempre en el mismo caracter (123 de 274), sin importar cuánto se esperara después. Reproducido dos veces seguidas, mismo punto exacto las dos veces: Chromium dejaba de disparar animaciones pasado cierto número de animaciones cortas simultáneas — no es una condición de carrera aleatoria, es un límite real de cuántas puede sostener a la vez.
+
+**Arreglo:** un solo bucle de `requestAnimationFrame` en JS reemplaza las 274 animaciones. Calcula, en cada frame, cuántos caracteres *deberían* estar visibles según el tiempo real transcurrido (`Math.floor(transcurrido / (1000/70))`, ritmo de 70 caracteres por segundo) y les agrega la clase `.v`. Un mecanismo en vez de 274 es automáticamente autocorrectivo: si el navegador salta un frame no pasa nada, el siguiente frame calcula el número correcto igual. Arranca cuando `.lede` consigue su clase `.go` (detectado con un `MutationObserver` sobre el atributo `class`, para no tener que tocar `entradaHero()`/`dispararTexto()`), con un colchón de 300ms para que la caja termine de aterrizar antes de que el texto empiece a "teclearse". Al cambiar de idioma, `.lede` nunca pierde su `.go`, así que `maquinaEscribir()` simplemente vuelve a arrancar el bucle con el texto nuevo de inmediato. Bajo `prefers-reduced-motion` no se envuelve nada — el párrafo se queda con su texto plano de siempre, completo desde el principio.
+
+Verificado con Playwright: barrido del conteo de caracteres visibles cada 500ms confirmando progreso estable hasta 274/274 sin detenerse (a diferencia del intento anterior); reinicio limpio a 0 visibles con el texto nuevo justo después del toggle de idioma, y 256/256 (el inglés es más corto) al terminar; cero `span.ch` creados y texto visible de inmediato bajo `reducedMotion:'reduce'` de Playwright.
+
 ## Redes (footer)
 
 Instagram (`@notman.rivera`), LinkedIn y Behance (`/notmanrivera`) como iconos SVG inline en `.social`, dentro de `.foot-in`. Sin librería de íconos — son 3 `<svg>` a mano, glifos genéricos (cámara, "in", "Bē") para no reproducir marcas registradas al pixel.
