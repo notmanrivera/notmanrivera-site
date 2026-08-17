@@ -1485,9 +1485,10 @@
      apila: imagen arriba, tiras horizontales de miniaturas por cliente.
 
      Las miniaturas son <button>, no <a>: cambian la imagen grande en el
-     sitio en vez de navegar. "Ver tamaño completo" vive aparte, como un
-     link suelto sobre la imagen grande, para quien de verdad quiera la
-     pieza completa en su propia pestaña. */
+     sitio en vez de navegar. El icono de "tamaño completo" vive aparte,
+     sobre la imagen grande, y abre esa misma pieza en un lightbox (ver
+     LIGHTBOX DE LA GALERIA mas abajo) en vez de navegar a una pestaña
+     nueva -- discreto en reposo, se define al pasar el mouse. */
   .galeria{margin-top:56px}
   .galeria-tit{
     font-family:var(--disp);font-weight:400;text-transform:uppercase;
@@ -1517,15 +1518,23 @@
   /* la pieza cambia con un cruce corto, no con un salto seco */
   .visor-grande img{opacity:0;animation:visorEntra .32s ease-out both}
   @keyframes visorEntra{from{opacity:0}to{opacity:1}}
+  /* Icono discreto, no la pastilla de texto de antes -- Ruben: "más sutil,
+     o cambiarlo por un ícono". En reposo casi se pierde contra la imagen
+     (fondo translúcido, opacity baja); se define solo al pasar el mouse
+     o enfocarlo. Ya no navega a una pestaña nueva -- abre el lightbox de
+     mas abajo, con el href/target de respaldo por si JS no corre. */
   .visor-full{
     position:absolute;top:10px;right:10px;z-index:2;
-    display:flex;align-items:center;gap:6px;
-    background:rgba(0,0,0,.72);color:var(--paper);text-decoration:none;
-    font-family:var(--ui);font-weight:900;text-transform:uppercase;
-    font-size:.62rem;letter-spacing:.08em;padding:8px 11px;
-    border:1px solid var(--line);transition:background .18s,border-color .18s;
+    display:flex;align-items:center;justify-content:center;
+    width:32px;height:32px;
+    background:rgba(0,0,0,.5);color:var(--paper);text-decoration:none;
+    border:1px solid rgba(255,255,255,.22);opacity:.75;
+    transition:background .18s,border-color .18s,opacity .18s;
   }
-  .visor-full:hover,.visor-full:focus-visible{background:var(--rojo);border-color:var(--rojo)}
+  .visor-full svg{width:15px;height:15px}
+  .visor-full:hover,.visor-full:focus-visible{
+    background:var(--rojo);border-color:var(--rojo);opacity:1;
+  }
   .visor-info{
     position:absolute;left:0;right:0;bottom:0;z-index:1;
     padding:34px 18px 12px;
@@ -1575,6 +1584,41 @@
 
   @media(prefers-reduced-motion:reduce){
     .visor-grande img{animation:none;opacity:1}
+  }
+
+  /* ===== LIGHTBOX DE LA GALERIA =====
+     Mismo mecanismo que #menuFull mas arriba (data-abierto, display
+     none/flex, overflow:hidden en <body> mientras esta abierto, foco
+     atrapado con Tab, Escape cierra, clic en el fondo cierra) -- otro
+     modal en el sitio, no un patron nuevo que mantener por separado. */
+  .lightbox{
+    position:fixed;inset:0;z-index:300;display:none;
+    background:rgba(0,0,0,.94);
+    align-items:center;justify-content:center;padding:40px;
+  }
+  .lightbox[data-abierto="si"]{display:flex}
+  .lightbox-fig{
+    max-width:100%;max-height:100%;
+    display:flex;flex-direction:column;align-items:center;gap:14px;
+  }
+  .lightbox-fig img{
+    display:block;max-width:100%;max-height:80vh;width:auto;height:auto;
+    object-fit:contain;box-shadow:inset 0 0 0 2px var(--line);
+  }
+  .lightbox-fig figcaption{color:var(--muted);font-size:.86rem;text-align:center}
+  /* mismo botón que .cerrar-menu: rojo, sesgado, texto "✕" en Kenyan
+     Coffee -- otro punto de salida de un overlay a pantalla completa,
+     misma pieza. */
+  .lightbox-cerrar{
+    position:absolute;top:20px;right:24px;z-index:1;
+    font-family:var(--disp);font-size:1.8rem;line-height:1;
+    background:var(--rojo);color:#fff;border:0;cursor:pointer;
+    padding:8px 16px;transform:skewX(-6deg);transition:background .18s;
+  }
+  .lightbox-cerrar:hover{background:var(--paper);color:var(--ink)}
+  @media(max-width:640px){
+    .lightbox{padding:20px}
+    .lightbox-cerrar{top:12px;right:14px;padding:6px 12px;font-size:1.4rem}
   }
 
   /* ===== SERVICES ===== */
@@ -2468,7 +2512,11 @@
       <div class="visor rv">
         <div class="visor-grande">
           <img id="visorImg" src="/assets/galeria/al-arabi-grupo.webp" alt="Al-Arabi SC — gráfico de fase de grupos" width="431" height="538" decoding="async">
-          <a id="visorFull" class="visor-full" href="/assets/galeria/al-arabi-grupo.webp" target="_blank" rel="noopener" data-es="Tamaño completo" data-en="Full size">Tamaño completo</a>
+          <a id="visorFull" class="visor-full" href="/assets/galeria/al-arabi-grupo.webp" target="_blank" rel="noopener" aria-label="Ver tamaño completo">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+              <path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5"/>
+            </svg>
+          </a>
           <div class="visor-info">
             <b id="visorCliente">Al-Arabi SC</b>
             <span id="visorCaption" data-es="Fase de grupos" data-en="Group stage">Fase de grupos</span>
@@ -2525,6 +2573,16 @@
     </div>
   </div>
 </section>
+
+<!-- Lightbox de la galeria: se abre desde .visor-full (el icono de
+     esquina sobre la imagen grande), no navega a una pestaña nueva. -->
+<div class="lightbox" id="lightbox" data-abierto="no" role="dialog" aria-modal="true" aria-label="Imagen en tamaño completo">
+  <button class="lightbox-cerrar" id="lightboxCerrar" aria-label="Cerrar">✕</button>
+  <figure class="lightbox-fig">
+    <img id="lightboxImg" src="" alt="">
+    <figcaption id="lightboxCaption"></figcaption>
+  </figure>
+</div>
 
 <section id="servicios">
   <div class="halftone"></div>
@@ -3178,9 +3236,10 @@
 
   /* ===== VISOR DE LA GALERIA =====
      Clic en una miniatura cambia la imagen grande en el sitio -- las
-     miniaturas son <button>, no <a>, precisamente para eso. "Ver tamaño
-     completo" vive aparte como link suelto, para quien de verdad quiera
-     la pieza en su propia pestaña. */
+     miniaturas son <button>, no <a>, precisamente para eso. El icono de
+     "tamaño completo" vive aparte, sobre la imagen grande: abre el
+     lightbox de abajo en vez de navegar (el href/target de la <a> se
+     quedan como respaldo si JS no corre). */
   const visorImg = document.getElementById('visorImg');
   if (visorImg) {
     const visorFull    = document.getElementById('visorFull');
@@ -3216,6 +3275,66 @@
     // no tienen texto visible hasta que se seleccionan
     visorImg.addEventListener('idioma', () => pintarVisor(activo));
   }
+
+  /* ===== LIGHTBOX DE LA GALERIA =====
+     Mismo patron que el menu de pantalla completa mas arriba (funcion
+     abrir/cerrar, foco atrapado con Tab, Escape cierra, overflow:hidden
+     en <body> mientras esta abierto, el foco vuelve a quien abrio) -- ver
+     esa nota junto a MENU DE PANTALLA COMPLETA, no se reinventa nada. */
+  (() => {
+    const panel   = document.getElementById('lightbox');
+    const cerrar  = document.getElementById('lightboxCerrar');
+    const img     = document.getElementById('lightboxImg');
+    const caption = document.getElementById('lightboxCaption');
+    const trigger = document.getElementById('visorFull');
+    if (!panel || !cerrar || !img || !trigger) return;
+
+    const enfocables = () => [...panel.querySelectorAll('a[href], button')];
+    let devolverFoco = null;
+
+    function abrirLightbox(){
+      devolverFoco = document.activeElement;
+      img.src = trigger.href;
+      img.alt = document.getElementById('visorImg')?.alt || '';
+      const cliente = document.getElementById('visorCliente')?.textContent || '';
+      const cap     = document.getElementById('visorCaption')?.textContent || '';
+      caption.textContent = [cliente, cap].filter(Boolean).join(' — ');
+      panel.dataset.abierto = 'si';
+      document.body.style.overflow = 'hidden';
+      cerrar.focus();
+    }
+
+    function cerrarLightbox(){
+      panel.dataset.abierto = 'no';
+      document.body.style.overflow = '';
+      img.src = '';
+      const destino = (devolverFoco && devolverFoco !== document.body
+                       && document.contains(devolverFoco)) ? devolverFoco : trigger;
+      destino.focus();
+    }
+
+    trigger.addEventListener('click', e => { e.preventDefault(); abrirLightbox(); });
+    cerrar.addEventListener('click', cerrarLightbox);
+    // clic en el fondo oscuro cierra; clic en la figura (imagen o pie) no
+    // burbujea hasta el fondo, mismo truco que .menu-lista en el menu.
+    panel.addEventListener('click', cerrarLightbox);
+    panel.querySelector('.lightbox-fig')?.addEventListener('click', e => e.stopPropagation());
+
+    document.addEventListener('keydown', e => {
+      if (panel.dataset.abierto !== 'si') return;
+      if (e.key === 'Escape'){ cerrarLightbox(); return; }
+      if (e.key === 'Tab'){
+        const lista = enfocables();
+        if (!lista.length) return;
+        const primero = lista[0], ultimo = lista[lista.length - 1];
+        if (e.shiftKey && document.activeElement === primero){
+          e.preventDefault(); ultimo.focus();
+        } else if (!e.shiftKey && document.activeElement === ultimo){
+          e.preventDefault(); primero.focus();
+        }
+      }
+    });
+  })();
 
   /* ===== ROTADOR DE SERVICIOS EN EL HERO =====
      Cambia la primera linea del titulo entre los cuatro servicios,
