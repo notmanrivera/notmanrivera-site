@@ -1180,32 +1180,26 @@
 
   /* ===== SECTIONS ===== */
   section{position:relative;padding:130px 0;overflow:hidden}
-  /* Vuelta al borde rasgado (2026-08-17): la cuña triangular geometrica se
-     cambia otra vez por una pincelada seca, dentada y asimetrica, via
-     mask-image con un SVG en linea. :not(:first-of-type) porque #trabajo
-     no tiene una seccion previa real de la que "heredar" el mordisco -- se
-     veria huerfano, flotando justo debajo del header. El SVG (viewBox
-     0 0 60 24) tiene el borde superior recto y el inferior dentado a
-     profundidad irregular -- no un sawtooth uniforme -- para que se lea
-     como un corte a mano, no como un patron mecanico. mask-size repite el
-     tile cada 60px; el ancho fijo left:0/right:0 (no un % negativo como en
-     el intento anterior) es lo que pide "cubra todo el ancho de la
-     pantalla" al pie de la letra.
-     ⚠️ --rojo y no --ink-2, aunque el pedido daba a elegir entre los dos:
-     probado en pantalla, --ink-2 ahora es gris grafito #1A1A1A (ver el
-     cambio de :root mas arriba) contra un fondo de seccion que tambien es
-     casi negro -- 26 de diferencia en luminancia, el mordisco quedaba
-     invisible. --rojo es la opcion que realmente se ve. */
+  /* Vuelta a la cuña triangular geometrica (2026-08-17): el borde rasgado
+     de mask-image dura una tanda, Rubén pidió volver a la figura
+     diagonal de antes. Mismo mecanismo que la vez anterior: un triangulo
+     grande y asimetrico via clip-path, mordiendo los primeros 40px del
+     borde superior de cada seccion. :not(:first-of-type) porque #trabajo
+     no tiene una seccion previa real de la que "heredar" el corte -- se
+     veria huerfano, flotando debajo del header.
+     ⚠️ --rojo y no --ink-2 esta vez: la vez anterior que existio esta cuña
+     usaba --ink-2, pero esa variable cambio a gris grafito #1A1A1A en la
+     pasada de sobriedad -- contra el fondo casi negro de las secciones
+     queda casi invisible (26 de diferencia en luminancia, el mismo
+     problema ya encontrado y corregido para el divisor rasgado que
+     reemplaza esta regla). --rojo es la opcion que de verdad se ve. */
   section:not(:first-of-type)::before{
-    content:"";position:absolute;top:0;left:0;right:0;height:50px;
+    content:"";position:absolute;top:0;left:0;right:0;height:40px;
     background:var(--rojo);
-    -webkit-mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 24'%3E%3Cpath d='M0,0 60,0 60,16 54,22 48,15 42,20 36,14 30,21 24,16 18,23 12,17 6,20 0,15 Z' fill='%23000'/%3E%3C/svg%3E");
-    mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 24'%3E%3Cpath d='M0,0 60,0 60,16 54,22 48,15 42,20 36,14 30,21 24,16 18,23 12,17 6,20 0,15 Z' fill='%23000'/%3E%3C/svg%3E");
-    -webkit-mask-repeat:repeat-x;mask-repeat:repeat-x;
-    -webkit-mask-size:60px 50px;mask-size:60px 50px;
+    clip-path:polygon(0 0, 100% 0, 100% 18%, 0 100%);
     pointer-events:none;z-index:0;
   }
-  /* La mitad de las costuras la espeja (mismo mordisco, lado contrario)
+  /* La mitad de las costuras la espeja (mismo triangulo, lado contrario)
      para que la repeticion no se sienta como un patron mecanico al bajar
      por el sitio. */
   section:not(:first-of-type):nth-of-type(even)::before{transform:scaleX(-1)}
