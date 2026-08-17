@@ -538,6 +538,17 @@ Reacción de Rubén al ver la placa roja en vivo: "no tanto rojo jaja y añadamo
 
 Verificado con Playwright: `border-color` de `.lede` pasa de blanco a `rgb(229,0,18)` al hacer `hover('.dialogo')`, capturas de pantalla confirmando menos rojo en reposo y la placa más expuesta en hover, sin errores de consola.
 
+## Galería: icono discreto + lightbox (2026-08-17)
+
+Rubén: "quiero que el botón de tamaño completo en la galería sea más sutil, o cambiarlo por un ícono y que la imagen se abra en un modal de lightbox" — las dos cosas a la vez.
+
+- **`.visor-full` pasa de pastilla de texto ("Tamaño completo") a icono solo** (SVG de cuatro esquinas, el símbolo estándar de "expandir"), `32×32px`, fondo translúcido y `opacity:.75` en reposo -- casi se pierde contra la imagen a propósito. Al hover/focus, `opacity:1` y fondo a `var(--rojo)`, mismo lenguaje de hover que el resto del sitio. Sigue siendo una `<a>` con `href`/`target="_blank"` reales (no un `<button>`): si JS no corre, sigue abriendo la pieza en una pestaña nueva. El `aria-label` va estático en español, sin `data-es`/`data-en` — mismo patrón que `.social`/`.volver-arriba` (los aria-label de elementos solo-ícono no los toca el toggle de idioma).
+- **Lightbox nuevo (`#lightbox`), mismo mecanismo que `#menuFull`** (el menú de pantalla completa): `data-abierto="si"/"no"`, `display:none`→`flex`, `overflow:hidden` en `<body>` mientras está abierto, foco atrapado con `Tab` dentro del modal, `Escape` cierra, clic en el fondo cierra (con `stopPropagation` en la figura para que un clic en la imagen o el pie no cierre), y el foco regresa a quien abrió el modal al cerrar. No se inventó un patrón de modal nuevo — es el mismo que ya existía, reutilizado.
+- El clic en `.visor-full` hace `preventDefault()` y llama `abrirLightbox()`, que toma la imagen/caption/cliente ya pintados por `pintarVisor()` (misma fuente de verdad que la imagen grande del visor, nada duplicado).
+- Botón de cerrar (`✕`) con el mismo estilo que `.cerrar-menu` (rojo, sesgado, invierte a blanco/negro en hover) — otro punto de salida de un overlay a pantalla completa, misma pieza visual.
+
+Verificado con Playwright: el botón mide 32px, sin texto visible, `aria-label` correcto, `opacity:.75` en reposo y fondo rojo en hover/focus; el lightbox abre con la imagen y el caption correctos, foco en el botón de cerrar, `overflow:hidden` en `<body>`; `Escape` cierra y regresa el foco a `.visor-full`; clic en el fondo cierra; clic en la imagen NO cierra; sin overflow horizontal en 390px; sin errores de consola.
+
 ## Trabajar desde una sesión remota (no desde la Mac)
 
 El repo es autosuficiente: un `index.html` sin build step. Editar, revisar y pushear funciona igual en cualquier máquina. **Lo único que no viaja es el despliegue**, y conviene saber exactamente por qué antes de perder tiempo:
