@@ -493,15 +493,42 @@
      HUD de juego, no como una barra de carga. */
   .hud-scroll{
     position:fixed;right:22px;bottom:22px;z-index:90;
-    display:flex;flex-direction:column;gap:9px;
+    display:flex;align-items:flex-end;gap:10px;
     pointer-events:none;
   }
+  .hud-pasos{display:flex;flex-direction:column;gap:9px}
   .hud-paso{
     width:12px;height:12px;background:var(--ink);
     border:2px solid var(--line);transform:rotate(45deg);
   }
   .hud-paso.activo{background:var(--rojo);border-color:var(--rojo)}
-  @media(max-width:640px){.hud-scroll{right:14px;bottom:14px;gap:7px}.hud-paso{width:9px;height:9px}}
+  /* Nombre de la seccion activa, "Scene Rail" (2026-08-17, a peticion de
+     Ruben): no una pieza suelta nueva, texto vertical junto a los pips --
+     mismo truco de writing-mode que ya usa .frame-proximas .tira.confidencial
+     span para una etiqueta angosta de lectura vertical, reusado aqui. */
+  .hud-seccion{
+    font-family:var(--ui);font-weight:900;text-transform:uppercase;
+    font-size:.64rem;letter-spacing:.14em;color:var(--paper);
+    writing-mode:vertical-rl;transform:rotate(180deg);
+    padding-bottom:1px;
+  }
+  /* "que el cambio de seccion se sienta mecanico y fisico" -- steps() y no
+     una curva suave: un HUD no hace ease-out, salta entre estados como un
+     contador de marcador. scaleY (no X) porque el texto es vertical, asi
+     el "golpe" cae en el mismo eje que la lectura. */
+  @keyframes hudSlam{
+    0%,35%{opacity:.25;transform:rotate(180deg) scaleY(.4)}
+    55%   {opacity:1;transform:rotate(180deg) scaleY(1.15)}
+    100%  {opacity:1;transform:rotate(180deg) scaleY(1)}
+  }
+  .hud-seccion.cambia{animation:hudSlam .3s steps(5,end)}
+  @media(prefers-reduced-motion:reduce){.hud-seccion.cambia{animation:none}}
+  @media(max-width:640px){
+    .hud-scroll{right:14px;bottom:14px;gap:7px}
+    .hud-pasos{gap:7px}
+    .hud-paso{width:9px;height:9px}
+    .hud-seccion{display:none}
+  }
   /* Mismo rombo que .hud-paso, mas grande, apilado justo encima de los 5
      pips -- ver el HTML junto a .hud-scroll para el porque. Oculto hasta
      que hay algo de que volver (JS agrega/quita .visible segun scrollY). */
@@ -2479,9 +2506,17 @@
 <!-- HUD de scroll, esquina inferior derecha, fijo al viewport (no adentro
      de #nav: ver el comentario junto a .hud-scroll en el CSS). 5 rombos,
      uno por seccion (Trabajo/Servicios/Experiencia/Perfil/Contacto), que
-     se rellenan de golpe segun el IntersectionObserver de las secciones. -->
+     se rellenan de golpe segun el IntersectionObserver de las secciones.
+     .hud-seccion (2026-08-17, "Scene Rail"): el nombre de la seccion activa,
+     texto vertical junto a los pips -- mismo IntersectionObserver, ver el
+     JS mas abajo. Arranca en "Portafolio" a mano en el HTML (la seccion 01,
+     la primera que cruza el centro al cargar) para que no se vea vacio
+     antes de que el observer dispare la primera vez. -->
 <div class="hud-scroll" id="progresoBarra" aria-hidden="true">
-  <i class="hud-paso"></i><i class="hud-paso"></i><i class="hud-paso"></i><i class="hud-paso"></i><i class="hud-paso"></i>
+  <span class="hud-seccion" id="hudSeccion">Portafolio</span>
+  <div class="hud-pasos">
+    <i class="hud-paso"></i><i class="hud-paso"></i><i class="hud-paso"></i><i class="hud-paso"></i><i class="hud-paso"></i>
+  </div>
 </div>
 
 <!-- Volver arriba: un rombo mas grande justo encima de los 5 pips del HUD,
@@ -3754,6 +3789,9 @@
     // el rotador y el visor de la galeria no tienen data-es/data-en, se avisan aparte
     if (rota) rota.dispatchEvent(new Event('idioma'));
     if (repintarVisores.length) document.dispatchEvent(new Event('idioma'));
+    // el rotulo del Scene Rail tampoco -- copia el texto de .sec-tag, que
+    // el bucle de arriba ya tradujo, asi que solo hace falta releerlo
+    if (indiceHudActivo >= 0) actualizarHudSeccion(indiceHudActivo);
   });
 
   /* ===== SONIDO DE INTERFAZ =====
@@ -3848,8 +3886,29 @@
   const seccionesProgreso = ['#trabajo', '#servicios', '#experiencia', '#perfil', '#contacto']
     .map(sel => document.querySelector(sel))
     .filter(Boolean);
+  // "Scene Rail" (2026-08-17): el nombre de la seccion activa junto a los
+  // pips. Lee el texto de .sec-tag de cada seccion en vez de traer su
+  // propia lista traducida -- ya existe, ya esta en los dos idiomas, no
+  // hay que duplicarlo (y se desincronizaria si alguien cambia un rotulo
+  // y olvida esta lista aparte).
+  const hudSeccion = document.getElementById('hudSeccion');
+  let indiceHudActivo = -1;
+  function actualizarHudSeccion(i) {
+    if (!hudSeccion) return;
+    const tag = seccionesProgreso[i]?.querySelector('.sec-tag');
+    if (!tag) return;
+    hudSeccion.textContent = tag.textContent;
+    hudSeccion.classList.remove('cambia');
+    void hudSeccion.offsetWidth; // reinicia la animacion
+    hudSeccion.classList.add('cambia');
+  }
   if (pasosProgreso.length && seccionesProgreso.length) {
-    const marcarPaso = (i) => pasosProgreso.forEach((p, idx) => p.classList.toggle('activo', idx <= i));
+    const marcarPaso = (i) => {
+      pasosProgreso.forEach((p, idx) => p.classList.toggle('activo', idx <= i));
+      if (i === indiceHudActivo) return;
+      indiceHudActivo = i;
+      actualizarHudSeccion(i);
+    };
     const ioProgreso = new IntersectionObserver((es) => {
       es.forEach(e => {
         if (!e.isIntersecting) return;
