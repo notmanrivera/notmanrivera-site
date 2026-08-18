@@ -765,6 +765,24 @@ Vive en `public/firma.html`, servida por el propio sitio pero sin enlaces desde 
 
 Verificado con Playwright: capturada la página con la imagen interceptada hacia el archivo local (para poder revisarla antes de publicar el asset), sin overflow horizontal, sin errores de consola.
 
+## El hero se reagrupa: la info de Rubén deja de estar en abanico (2026-08-18)
+
+Rubén: "quiero reorganizar el hero, ya no me gustó que mi info salga inclinada, quizás cambiar lo un poco para tener más consistencia y facilidad de lectura. quizás algo más apegado a estas referencias" (pantallas de perfil de personaje de Persona 5 Royal -- Morgana, Ann Takamaki).
+
+Antes, el kicker ("Rubén Rivera · Querétaro, México") y las 3 stats vivían cada una en su propia celda de una rejilla radial, cada una con su propio `--giro-d` (hasta 5.8deg en cualquier dirección) -- un abanico de 6 placas alrededor del logo. Las referencias de P5R muestran el mismo espiritu grafico (fondo diagonal, sombras duras, placas de colores) pero la INFORMACION en si se lee siempre de corrido, sin girar placa por placa.
+
+**Alcance, decidido con Rubén de antemano:** solo su info personal (kicker + 3 stats) pierde el giro individual y se reagrupa en un solo bloque. Los CTA ("Ver mi trabajo" / "Trabajemos juntos") conservan el suyo a proposito -- son accion, no informacion, y ese contraste plano-vs-inclinado es el propio lenguaje P5R, no algo que hubiera que igualar.
+
+**Como quedó:** un nuevo `.perfil-hero` envuelve el kicker y `.stats` (antes eran hermanos sueltos de `.orbita`, con `.stats` ademas repartida via `display:contents` en 3 celdas separadas). Sin `--giro-d` ni `--empuje` inline en ninguno de los 4 elementos -- ya no hace falta abanicarlos, solo agruparlos.
+
+Dos vueltas hasta dar con el ancho correcto:
+
+1. Primer intento: meter `.perfil-hero` en la MISMA columna donde vivía el kicker (la lateral, junto al logo). Rompía en cualquier viewport por debajo de ~1400px: esa columna mide apenas ~300px con el limite de `--max:1180px` y el logo comiendose la columna central, y ni el kicker ni las 3 stats caben ahi sin desbordar. El desborde era ademas INVISIBLE en la comprobacion de `scrollWidth` normal porque el header recorta con `overflow:hidden` -- solo se veia mirando el `getBoundingClientRect()` real o la captura de pantalla, no un chequeo automático superficial.
+2. Causa de fondo, aparte del ancho: el mismo patrón de shrink-to-fit circular que ya documentaba este archivo para `.rota` (arriba) -- un item de grid con ancho automático (fit-content) crea una dependencia circular con el `max-width:100%` de sus hijos, y el navegador termina ignorando el tope y dejando que el texto se dibuje a su ancho SIN partir.
+3. Arreglo real: `.perfil-hero` pasa a ocupar una fila de ANCHO COMPLETO (`"info info info"` en vez de compartir columna con el logo), el mismo ancho disponible que ya usa `.lede` mas abajo -- ahi es donde ya sabíamos que un párrafo largo cabe cómodo. Con eso, las 3 stats caben en una sola fila desde 1000px (el breakpoint del layout de escritorio) hasta 1920px+, sin partirse, y el kicker nunca necesita mas de una línea salvo en el propio caso de partirse limpio si hiciera falta.
+
+Verificado con Playwright en 10 anchos (375 a 1920px): sin overflow horizontal, sin ningún elemento del bloque de info fuera de pantalla, sin errores de consola, y el toggle de idioma sigue actualizando kicker y stats correctamente. (De paso: se confirmó que el ligero desborde del botón "Trabajemos juntos" a 1000-1024px ya existía ANTES de este cambio -- no es una regresión, y queda fuera del alcance de esta tarea.)
+
 ## Trabajar desde una sesión remota (no desde la Mac)
 
 El repo es autosuficiente: un `index.html` sin build step. Editar, revisar y pushear funciona igual en cualquier máquina. **Lo único que no viaja es el despliegue**, y conviene saber exactamente por qué antes de perder tiempo:
