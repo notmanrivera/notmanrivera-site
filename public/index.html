@@ -1016,11 +1016,21 @@
          .rota puede cambiar de texto (y hasta partirse en dos lineas si le
          toca la palabra mas larga) sin mover nada mas a su alrededor. */
       grid-template-columns:minmax(0,1fr) calc(min(27vh,320px) * 16 / 9) minmax(0,1fr);
+      /* Antes cuatro filas (kicker y las 3 stats cada una en su propia
+         celda, abanicadas a los lados del logo). Ahora "info" es una sola
+         fila de ANCHO COMPLETO que contiene el bloque kicker+stats ya
+         agrupado -- ver la nota junto a .perfil-hero mas abajo.
+         ⚠️ Se probo primero metiendo ese bloque solo en la columna
+         izquierda (donde vivia el kicker), pero esa columna mide apenas
+         ~300px con el limite de --max:1180px y el logo comiendose la
+         columna central -- ni el kicker ni las 3 stats caben ahi sin
+         partirse en varias lineas cada una. Dandole la fila completa el
+         bloque tiene el mismo ancho disponible que .lede mas abajo, que es
+         justo donde ya sabiamos que un parrafo largo cabe comodo. */
       grid-template-areas:
-        "kick logo st1"
-        "st2  logo st3"
-        "b1   logo b2"
-        "lede lede lede";
+        "info info info"
+        "b1   logo  b2"
+        "lede lede  lede";
       align-items:center;
       /* pegadas: en la referencia las placas casi se tocan y alguna se monta
          sobre la de al lado. El hueco generoso las volvia una lista */
@@ -1031,16 +1041,18 @@
          diseno. */
       row-gap:40px;
     }
-    /* .orbita delante a proposito: .cta-row{display:flex} y .stats{display:flex}
-       viven MAS ABAJO en esta hoja, asi que con la misma especificidad ganaban
-       por orden y los hijos nunca llegaban a ser celdas de la rejilla. */
-    .orbita .cta-row,.orbita .stats{display:contents}
+    /* .orbita delante a proposito: .cta-row{display:flex} vive MAS ABAJO en
+       esta hoja, asi que con la misma especificidad ganaria por orden y sus
+       hijos nunca llegarian a ser celdas de la rejilla. .stats YA NO entra
+       aqui: sigue siendo una caja real (display:flex), no celdas sueltas --
+       es la pieza clave de que ahora se vea agrupada y no repartida. */
+    .orbita .cta-row{display:contents}
 
-    /* Empuje horizontal: las de arriba y abajo se abren hacia afuera y las
-       del medio se meten hacia el logo. Eso es lo que convierte dos columnas
-       rectas en un abanico. Va en MARGEN y no en transform, porque popIn y
-       statIn fijan el transform al terminar y se lo comerian. */
-    .orbita > .kicker      {grid-area:kick;justify-self:end;margin:0 var(--empuje,0) 0 0}
+    /* justify-self:start (no end): el bloque de info se ancla al borde
+       izquierdo de la fila completa, igual que .lede se centra en la suya
+       -- una composicion, no una placa perdida en medio del ancho libre.
+       Sigue sin --empuje: ya no se abanica, solo se ancla. */
+    .orbita > .perfil-hero {grid-area:info;justify-self:start}
     /* z-index por encima de las placas (que van en 1): con giros fuertes
        alguna esquina puede acercarse al logo, y el logo es la pieza que no
        se tapa nunca */
@@ -1048,13 +1060,6 @@
     .orbita > .dialogo     {grid-area:lede}
     .cta-row .btn-1        {grid-area:b1;justify-self:end;  margin-right:var(--empuje,0)}
     .cta-row .btn-2        {grid-area:b2;justify-self:start; margin-left:var(--empuje,0)}
-    .stats .stat:nth-child(1){grid-area:st1;justify-self:start;margin-left:var(--empuje,0)}
-    .stats .stat:nth-child(2){grid-area:st2;justify-self:end;text-align:right;margin-right:var(--empuje,0)}
-    .stats .stat:nth-child(3){grid-area:st3;justify-self:start;margin-left:var(--empuje,0)}
-
-    /* la cifra hereda la alineacion de su placa en vez de anclarse siempre
-       a la izquierda, si no la de la columna izquierda queda descolgada */
-    .stats .stat:nth-child(2) b{transform-origin:right}
 
     /* el logo deja de estar anclado a la izquierda y se centra en su celda */
     .orbita .marca{
@@ -1065,10 +1070,11 @@
     .orbita h1{text-align:center}
     /* ⚠️ position:absolute, no solo texto centrado -- mismo motivo que el
        calc() fijo de las columnas mas arriba, pero en vertical: .rota
-       normal-flow suma su propia altura a la de <h1>, y como <h1> ocupa
-       3 filas de la rejilla con align-items:center, cada vez que .rota
-       cambiaba de una linea a dos (una traduccion mas larga que otra) el
-       logo entero saltaba de posicion vertical -- Ruben lo señalo en vivo.
+       normal-flow suma su propia altura a la de <h1>, y aunque ahora <h1>
+       ocupa solo 1 fila de la rejilla (antes 3), el punto sigue en pie:
+       cada vez que .rota cambiaba de una linea a dos (una traduccion mas
+       larga que otra) el logo entero saltaba de posicion vertical dentro
+       de esa fila -- Ruben lo señalo en vivo.
        Sacando a .rota del flujo, la altura de <h1> vuelve a depender solo
        de .marca (fija), y .rota ya no puede mover nada a su alrededor. */
     .orbita h1 .rota{
@@ -1121,11 +1127,15 @@
       justify-self:center;margin:30px 0 0;text-align:center;
     }
     .orbita > .dialogo .lede{max-width:62ch}
-
-    /* la linea divisoria de .stats no existe con display:contents (no hay
-       caja que la pinte) y en radial tampoco pinta nada: fuera */
-    .orbita .stats::before{display:none}
   }
+
+  /* ===== BLOQUE DE PERFIL (kicker + stats agrupados) =====
+     La caja que reune "quien soy" en un solo sitio, en vez de repartida.
+     display:contents en .cta-row hace que sus <a> entren sueltos a la
+     rejilla del .orbita; aqui es lo opuesto a proposito: .perfil-hero SI
+     es una caja real (columna, kicker arriba y stats abajo), porque lo que
+     se busca es que kicker+stats se vean como una sola pieza compacta. */
+  .perfil-hero{display:flex;flex-direction:column}
 
   /* ⚠️ Un giro puesto en style="" NO se puede anular desde una media query:
      el estilo en linea gana a cualquier regla de hoja. Por eso el valor en
@@ -2732,7 +2742,23 @@
        la izquierda, asi que las dos columnas arrancan pegadas al logo y
        crecen alejandose de el. -->
   <div class="wrap orbita">
-    <span class="kicker sat placa-negra" style="--giro-d:5.05deg;--empuje:26px" data-es="Rubén Rivera · Querétaro, México" data-en="Rubén Rivera · Querétaro, Mexico">Rubén Rivera · Querétaro, México</span>
+    <!-- Bloque de perfil: kicker + stats agrupados y SIN giro individual --
+         antes cada placa se abria en abanico con su propio angulo (--giro-d),
+         y Ruben lo señalo como poco legible/inconsistente. Ahora es un solo
+         grupo plano, como la placa "MORGANA / Voice: Ikue Ohtani" de
+         Persona 5 Royal: el fondo sigue diagonal y con energia, pero la
+         info en si se lee de corrido. Los CTA (accion, no info) conservan
+         su giro -- ese contraste plano-vs-inclinado es el propio lenguaje
+         P5R, no algo que haya que igualar. -->
+    <div class="perfil-hero">
+      <span class="kicker sat placa-negra" data-es="Rubén Rivera · Querétaro, México" data-en="Rubén Rivera · Querétaro, Mexico">Rubén Rivera · Querétaro, México</span>
+
+      <div class="stats">
+        <div class="stat sat placa-roja"><b class="cuenta">9+</b><span data-es="años en agencias" data-en="years in agencies">años en agencias</span></div>
+        <div class="stat sat placa-roja"><b>2D / 3D</b><span data-es="motion graphics" data-en="motion graphics">motion graphics</span></div>
+        <div class="stat sat placa-negra"><b>MX · ES · MENA</b><span data-es="mercados" data-en="markets">mercados</span><em data-es="México · España · Medio Oriente y Norte de África" data-en="Mexico · Spain · Middle East &amp; North Africa">México · España · Medio Oriente y Norte de África</em></div>
+      </div>
+    </div>
 
     <h1>
       <!-- El logo ES el titular. Su alt carga el texto que leen Google y los
@@ -2779,12 +2805,6 @@
     <div class="cta-row">
       <a href="#trabajo" class="btn btn-1 sat placa-negra" style="--giro-d:-11.3deg;--empuje:58px"><i data-es="Ver mi trabajo" data-en="See my work">Ver mi trabajo</i><span class="chispa-btn" aria-hidden="true"></span></a>
       <a href="#contacto" class="btn btn-2 sat placa-roja" style="--giro-d:11deg;--empuje:50px"><i data-es="Trabajemos juntos" data-en="Let's work together">Trabajemos juntos</i><span class="chispa-btn" aria-hidden="true"></span></a>
-    </div>
-
-    <div class="stats">
-      <div class="stat sat placa-roja" style="--giro-d:-5.8deg;--empuje:66px"><b class="cuenta">9+</b><span data-es="años en agencias" data-en="years in agencies">años en agencias</span></div>
-      <div class="stat sat placa-roja" style="--giro-d:-4.3deg;--empuje:44px"><b>2D / 3D</b><span data-es="motion graphics" data-en="motion graphics">motion graphics</span></div>
-      <div class="stat sat placa-negra" style="--giro-d:3.8deg;--empuje:52px"><b>MX · ES · MENA</b><span data-es="mercados" data-en="markets">mercados</span><em data-es="México · España · Medio Oriente y Norte de África" data-en="Mexico · Spain · Middle East &amp; North Africa">México · España · Medio Oriente y Norte de África</em></div>
     </div>
   </div>
 </header>
