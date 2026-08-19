@@ -888,6 +888,24 @@ La causa: `.perfil-hero-mini` (el ajuste del rollback de arriba) metía TODO el 
 
 Verificado con Playwright: a 390×844 (el tamaño real de la captura de Rubén) el borde inferior del logo (`.marca`) queda en y=540px, dentro del viewport de 844px -- visible completo sin hacer scroll. Confirmado también en escritorio (1440×950, logo igual dentro del viewport). Sweep completo en 14 anchos (375–1920px): sin overflow, sin errores, 3 `.stat` en todos, toggle de idioma intacto.
 
+## Botón flotante de WhatsApp (2026-08-19)
+
+Rubén: "podríamos obtener un sticky floating whatsapp button en la parte inferior izquierda del sitio, apuntando al 4421411230?".
+
+`.whatsapp-flotante`, esquina inferior IZQUIERDA (`left:22px;bottom:22px`, `14px`/`14px` en móvil) -- la derecha ya la ocupa el HUD de scroll (`.hud-scroll`/`.volver-arriba`), así que las dos esquinas quedan cada una con su propio sistema en vez de pelear por el mismo rincón. Enlace `https://wa.me/524421411230` (52 + los 10 dígitos, sin el "1" extra que México pedía antes -- WhatsApp ya no lo requiere), `target="_blank"` porque saca al visitante hacia la app/web de WhatsApp.
+
+**Única excepción deliberada al sistema de 5 colores del sitio:** el botón usa el verde de marca real de WhatsApp (`#25D366`), no rojo ni morado. Motivo: un botón de contacto directo depende de que se reconozca al instante como "esto es WhatsApp" -- en cualquier otro color perdería esa función utilitaria. Sí lleva el resto del acabado P5 (borde grueso `--ink`, sombra dura `--sombra`, mismo `translate` + sombra creciente al hover que ya usan `.btn-1`/`.btn-2`) para que no se sienta un elemento ajeno pegado encima, solo el relleno es distinto.
+
+Verificado con Playwright en 14 anchos (375–1920px): sin overflow, sin errores, botón presente y con el `href`/`target` correctos en todos. Sin overlap con el HUD de scroll ni con el footer al bajar hasta el final de la página.
+
+⚠️ **Pendiente de que Rubén confirme el formato del número** una vez publicado -- probarlo tocándolo desde su propio teléfono, por si algún operador todavía espera el "1" extra después del 52 para números móviles mexicanos.
+
+### reCAPTCHA: pendiente de decisión, no hay formulario que proteger
+
+Rubén también pidió "habilitar reCAPTCHA para filtrar spam". Revisado el sitio completo: **no existe ningún formulario ni backend** -- todo el mecanismo de "contacto" (el menú de diálogo estilo RPG en `#contacto`, el botón `.mail`) son enlaces `mailto:` que abren el cliente de correo del propio visitante. No hay ningún `<form>`, ninguna función serverless, ningún endpoint que reciba datos. reCAPTCHA protege *envíos* a un servidor -- sin uno, no hay nada a lo que engancharlo.
+
+Se le devolvió la pregunta a Rubén: ¿el spam llega directo a la bandeja de `hola@notmanrivera.com` (algo que reCAPTCHA no puede filtrar, porque pasa completamente fuera del sitio), o tenía en mente un formulario real (lo que implicaría meter backend por primera vez -- una Cloudflare Pages Function o similar, un servicio de envío de correo, y las llaves de sitio/secreto de reCAPTCHA de Google)? Sin resolver todavía.
+
 ## Trabajar desde una sesión remota (no desde la Mac)
 
 El repo es autosuficiente: un `index.html` sin build step. Editar, revisar y pushear funciona igual en cualquier máquina. **Lo único que no viaja es el despliegue**, y conviene saber exactamente por qué antes de perder tiempo:
