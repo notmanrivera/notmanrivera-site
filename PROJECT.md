@@ -832,6 +832,26 @@ El diagnóstico esta vez no era de color sino de **formato**. Revisando el resto
 
 Verificado con Playwright en 13 anchos (375–1920px): sin overflow, sin errores de consola, 3 `.stat` presentes en todos los anchos, toggle de idioma confirmado (ES: "años en agencias / motion graphics / mercados" → EN: "years in agencies / motion graphics / markets").
 
+### El hero reusa la propia caja de diálogo de NOTMAN (2026-08-19)
+
+Nueva vuelta de Rubén sobre el mismo bloque: mandó una captura de la placa "NOTMAN" (la caja de diálogo que ya vive más abajo en el hero) y dijo "usa una forma cuadrada con capas como esta, usa también sus animaciones, y comitéalo para probar -- si no me gusta, volvemos al layout de placas pero centrado, más chico, y con los colores ajustados".
+
+En vez de construir un componente paralelo que imitara el look (que es lo que había sido `.p5-perfil-box`, ver arriba), se reusan las MISMAS clases que ya arma la caja de "Soy el refuerzo táctico...": `.dialogo` / `.lede` / `.dialog-name` / `.dialog-texto`. Como los selectores que animan esas piezas son genéricos y no están acotados a una sola instancia --
+
+- `document.querySelectorAll('.dialog-texto')` arma la máquina de escribir en CUALQUIER párrafo con esa clase, no solo el original
+- `.lede.go ~ .dialog-name{opacity:1}` es un selector CSS de hermano, se sincroniza solo dentro de cada `.dialogo` sin importar cuántos haya en la página
+- `entradaHero()` ya recorre `document.querySelectorAll('header .lede')` completo, así que una segunda `.lede` dentro de `<header>` entra sola al stagger de entrada
+
+-- la nueva caja de identidad hereda gratis la máquina de escribir, el fundido sincronizado de la placa de nombre, y el orden de entrada del hero, sin una sola línea de JS nueva.
+
+**Lo único que hizo falta fue reubicarla.** `.orbita > .dialogo{grid-area:lede}` ya asigna la fila de abajo a CUALQUIER `.dialogo` hijo directo de `.orbita` -- con dos cajas de dialogo ahora en el hero, la nueva colisionaría con esa regla. Se agrega `.dialogo-id` como modificador puro de posición: `.orbita > .dialogo.dialogo-id{grid-area:info;margin-top:0}` gana por especificidad (3 clases contra 2) sin importar el orden en la hoja, y solo toca `grid-area`/`margin-top` -- el resto (sombra roja corrida, hover, centrado, `max-width:62ch` del párrafo) se hereda tal cual de las reglas compartidas de `.dialogo`.
+
+Contenido: la placa de nombre pasa a decir "Rubén Rivera" (la persona, no el personaje) y el párrafo funde ubicación + las 3 cifras en una sola oración de corrido ("Querétaro, México. 9+ años en agencias, motion graphics 2D/3D, activo en México, España y Medio Oriente/Norte de África") -- info completa, sin perder ningún dato de las placas viejas, ahora leída por la máquina de escribir en vez de mostrada de golpe.
+
+Verificado con Playwright en 14 anchos (375–1920px): sin overflow, sin errores de consola, exactamente 1 `.dialogo.dialogo-id` y 3 `.dialogo` normales (la caja de "Soy el refuerzo táctico..." + las 2 de `.dialogo-doble` en `#contacto`, sin colisión entre ellas), texto tecleándose correctamente en ambos idiomas.
+
+**Pendiente de confirmación con Rubén** -- si esta lectura no convence, el plan B ya está acordado: volver al layout de placas separadas (como estaba antes de este cambio) pero centradas, más chicas, y con los colores retocados.
+
 ## Trabajar desde una sesión remota (no desde la Mac)
 
 El repo es autosuficiente: un `index.html` sin build step. Editar, revisar y pushear funciona igual en cualquier máquina. **Lo único que no viaja es el despliegue**, y conviene saber exactamente por qué antes de perder tiempo:

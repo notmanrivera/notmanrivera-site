@@ -1053,11 +1053,21 @@
        -- una composicion, no una placa perdida en medio del ancho libre.
        Sigue sin --empuje: ya no se abanica, solo se ancla. */
     .orbita > .perfil-hero {grid-area:info;justify-self:start}
+    .orbita > .p5-perfil-box{grid-area:info;justify-self:start}
     /* z-index por encima de las placas (que van en 1): con giros fuertes
        alguna esquina puede acercarse al logo, y el logo es la pieza que no
        se tapa nunca */
     .orbita > h1           {grid-area:logo;margin-bottom:0;position:relative;z-index:2}
     .orbita > .dialogo     {grid-area:lede}
+    /* .dialogo-id: la copia de la caja de dialogo que vive en la fila "info"
+       (arriba del logo) en vez de "lede" (abajo). 3 clases contra las 2 de
+       la regla generica de arriba le ganan en especificidad sin depender del
+       orden en la hoja -- .dialogo sigue aportando el resto (sombra roja,
+       hover, isolation) tal cual. margin-top en 0: el 30px de la regla de
+       abajo esta pensado para separar la caja de "lede" del logo que la
+       antecede; esta es la PRIMERA fila de la rejilla, no hay nada arriba
+       de que separarse. */
+    .orbita > .dialogo.dialogo-id{grid-area:info;margin-top:0}
     .cta-row .btn-1        {grid-area:b1;justify-self:end;  margin-right:var(--empuje,0)}
     .cta-row .btn-2        {grid-area:b2;justify-self:start; margin-left:var(--empuje,0)}
 
@@ -2194,6 +2204,60 @@
     fill:rgba(255,255,255,.74);text-transform:uppercase;
   }
   .radar .punto{cursor:pointer}
+
+  /* ===== P5-PERFIL-BOX: nota estilo pantalla de personaje =====
+     Etiqueta roja con una "cola" de globo de dialogo apuntando hacia abajo,
+     sobre una caja de contenido blanca -- mismo lenguaje de borde grueso +
+     sombra dura que ya usa el resto de las placas del sitio, aplicado a un
+     bloque de texto libre en vez de a una cifra o un boton.
+     El punteado del borde derecho (la "libreta de Morgana") es un solo
+     radial-gradient repetido en Y -- cero elementos extra en el DOM. */
+  .p5-perfil-box{position:relative;max-width:440px}
+  .p5-perfil-tag{
+    position:relative;z-index:2;display:inline-block;
+    background:var(--rojo);color:var(--paper);
+    font-family:var(--ui);font-weight:900;text-transform:uppercase;
+    font-size:.82rem;letter-spacing:.1em;
+    padding:8px 20px;
+    /* margen inferior negativo: monta la etiqueta 3px sobre el borde de la
+       caja de abajo (el mismo grosor que .p5-perfil-content{border}), asi
+       las dos piezas se leen soldadas, como una pestaña de carpeta. */
+    margin:0 0 -3px 22px;
+    transform:skewX(-10deg) rotate(-2deg);
+  }
+  /* La cola nace del borde inferior de la etiqueta y hereda su mismo
+     skew/rotate (el transform del padre distorsiona tambien a sus
+     pseudo-elementos) -- por eso sale ligeramente inclinada en vez de
+     perfectamente vertical, que es justo el acabado "recortado a mano" que
+     ya tiene el resto de las placas del sitio. */
+  .p5-perfil-tag::after{
+    content:"";position:absolute;left:14px;bottom:-9px;
+    width:0;height:0;
+    border-left:8px solid transparent;
+    border-right:8px solid transparent;
+    border-top:9px solid var(--rojo);
+  }
+  .p5-perfil-content{
+    position:relative;z-index:1;
+    background:var(--paper);color:var(--ink);
+    font-family:var(--body);font-weight:600;line-height:1.5;
+    border:3px solid var(--ink);
+    box-shadow:6px 6px 0 var(--sombra);
+    /* padding-right generoso: dejar aire a la columna de puntos de abajo,
+       que empieza a 15px del borde derecho */
+    padding:26px 46px 22px 24px;
+    /* mayormente rectangular con solo dos esquinas cortadas -- sutil, no el
+       --filo de las placas chicas: ese corte agresivo en una caja de
+       parrafo se comeria las primeras/ultimas palabras de esas lineas */
+    clip-path:polygon(0 0,calc(100% - 16px) 0,100% 14px,100% 100%,16px 100%,0 calc(100% - 14px));
+    /* perforaciones de libreta: un solo radial-gradient repetido en Y */
+    background-image:radial-gradient(circle,var(--ink) 4px,transparent 4.5px);
+    background-repeat:repeat-y;
+    background-position:right 15px top 10px;
+    background-size:100% 30px;
+  }
+  .p5-perfil-content p{margin:0}
+
   /* etiqueta estilo Persona 5: fondo --ink, texto --paper, filo diagonal.
      position:fixed + clientX/clientY del mouse directo, sin convertir
      coordenadas del viewBox del SVG -- el offset visual (14px,-140%) lo
@@ -2743,22 +2807,24 @@
        la izquierda, asi que las dos columnas arrancan pegadas al logo y
        crecen alejandose de el. -->
   <div class="wrap orbita">
-    <!-- Bloque de perfil: kicker + stats agrupados y SIN giro individual --
-         antes cada placa se abria en abanico con su propio angulo (--giro-d),
-         y Ruben lo señalo como poco legible/inconsistente. Ahora es un solo
-         grupo plano, como la placa "MORGANA / Voice: Ikue Ohtani" de
-         Persona 5 Royal: el fondo sigue diagonal y con energia, pero la
-         info en si se lee de corrido. Los CTA (accion, no info) conservan
-         su giro -- ese contraste plano-vs-inclinado es el propio lenguaje
-         P5R, no algo que haya que igualar. -->
-    <div class="perfil-hero">
-      <span class="kicker sat placa-negra" data-es="Rubén Rivera · Querétaro, México" data-en="Rubén Rivera · Querétaro, Mexico">Rubén Rivera · Querétaro, México</span>
-
-      <div class="stats">
-        <div class="stat sat placa-roja"><b class="cuenta">9+</b><span data-es="años en agencias" data-en="years in agencies">años en agencias</span></div>
-        <div class="stat sat placa-roja"><b>2D / 3D</b><span data-es="motion graphics" data-en="motion graphics">motion graphics</span></div>
-        <div class="stat sat placa-negra"><b>MX · ES · MENA</b><span data-es="mercados" data-en="markets">mercados</span><em data-es="México · España · Medio Oriente y Norte de África" data-en="Mexico · Spain · Middle East &amp; North Africa">México · España · Medio Oriente y Norte de África</em></div>
+    <!-- Bloque de perfil, v4: reusa el propio sistema de caja de dialogo
+         (.dialogo/.lede/.dialog-name) que ya usa NOTMAN mas abajo para
+         hablar, en vez de un componente nuevo -- Ruben senalo la placa
+         "NOTMAN" (bordes en capas, sombra roja corrida, filo --filo) como la
+         referencia a seguir, "usa tambien sus animaciones". Al reusar las
+         MISMAS clases (no una copia), llegan gratis la maquina de escribir
+         (querySelectorAll('.dialog-texto') es generico, no distingue cual
+         caja), el fundido sincronizado de la placa de nombre
+         (.lede.go ~ .dialog-name) y el stagger de entrada del hero
+         (entradaHero ya recorre TODOS los 'header .lede', no solo uno).
+         .dialogo-id es solo un modificador para reubicar esta copia en la
+         fila "info" en vez de "lede" -- ver la regla junto a .orbita>.dialogo
+         mas arriba. DEMO -- pendiente de confirmar con Ruben. -->
+    <div class="dialogo dialogo-id">
+      <div class="lede">
+        <p class="dialog-texto" data-es="Querétaro, México. 9+ años en agencias, motion graphics 2D/3D, activo en México, España y Medio Oriente/Norte de África." data-en="Querétaro, Mexico. 9+ years in agencies, 2D/3D motion graphics, active across Mexico, Spain and the Middle East/North Africa.">Querétaro, México. 9+ años en agencias, motion graphics 2D/3D, activo en México, España y Medio Oriente/Norte de África.</p>
       </div>
+      <span class="dialog-name">Rubén Rivera</span>
     </div>
 
     <h1>
@@ -3261,6 +3327,17 @@
           <text class="eje"   x="164" y="126" text-anchor="end">Lightroom</text>
           <text class="rango" x="164" y="142" text-anchor="end">82</text>
         </svg>
+      </div>
+    </div>
+
+    <!-- Demo de .p5-perfil-box: nota estilo pantalla de personaje (etiqueta
+         roja con cola + caja blanca con perforaciones de libreta). Texto de
+         muestra -- pendiente confirmar contenido y ubicacion definitiva con
+         Ruben antes de darla por terminada. -->
+    <div class="p5-perfil-box rv" style="margin-top:40px">
+      <div class="p5-perfil-tag" data-es="Nota" data-en="Note">Nota</div>
+      <div class="p5-perfil-content">
+        <p data-es="Cada proyecto arranca con un brief claro, una referencia visual y una fecha de entrega fija — así trabajo mejor y así entrego mejor." data-en="Every project starts with a clear brief, a visual reference and a fixed delivery date — that's how I work best and deliver best.">Cada proyecto arranca con un brief claro, una referencia visual y una fecha de entrega fija — así trabajo mejor y así entrego mejor.</p>
       </div>
     </div>
   </div>
