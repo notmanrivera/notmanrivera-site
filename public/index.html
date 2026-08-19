@@ -1053,6 +1053,7 @@
        -- una composicion, no una placa perdida en medio del ancho libre.
        Sigue sin --empuje: ya no se abanica, solo se ancla. */
     .orbita > .perfil-hero {grid-area:info;justify-self:start}
+    .orbita > .p5-perfil-box{grid-area:info;justify-self:start}
     /* z-index por encima de las placas (que van en 1): con giros fuertes
        alguna esquina puede acercarse al logo, y el logo es la pieza que no
        se tapa nunca */
@@ -2797,21 +2798,16 @@
        la izquierda, asi que las dos columnas arrancan pegadas al logo y
        crecen alejandose de el. -->
   <div class="wrap orbita">
-    <!-- Bloque de perfil: kicker + stats agrupados y SIN giro individual --
-         antes cada placa se abria en abanico con su propio angulo (--giro-d),
-         y Ruben lo señalo como poco legible/inconsistente. Ahora es un solo
-         grupo plano, como la placa "MORGANA / Voice: Ikue Ohtani" de
-         Persona 5 Royal: el fondo sigue diagonal y con energia, pero la
-         info en si se lee de corrido. Los CTA (accion, no info) conservan
-         su giro -- ese contraste plano-vs-inclinado es el propio lenguaje
-         P5R, no algo que haya que igualar. -->
-    <div class="perfil-hero">
-      <span class="kicker sat placa-negra" data-es="Rubén Rivera · Querétaro, México" data-en="Rubén Rivera · Querétaro, Mexico">Rubén Rivera · Querétaro, México</span>
-
-      <div class="stats">
-        <div class="stat sat placa-roja"><b class="cuenta">9+</b><span data-es="años en agencias" data-en="years in agencies">años en agencias</span></div>
-        <div class="stat sat placa-roja"><b>2D / 3D</b><span data-es="motion graphics" data-en="motion graphics">motion graphics</span></div>
-        <div class="stat sat placa-negra"><b>MX · ES · MENA</b><span data-es="mercados" data-en="markets">mercados</span><em data-es="México · España · Medio Oriente y Norte de África" data-en="Mexico · Spain · Middle East &amp; North Africa">México · España · Medio Oriente y Norte de África</em></div>
+    <!-- Bloque de perfil, v3: nota de "libreta de detective" (.p5-perfil-box)
+         en vez de placas separadas -- Ruben probando si esta lectura le
+         gusta mas para el hero. Nombre como etiqueta (con el mismo giro que
+         ya llevaba .kicker), ubicacion + cifras fundidas en un solo parrafo
+         de corrido en la caja de abajo, que es justo lo que .p5-perfil-content
+         esta pensado para sostener. DEMO -- pendiente de confirmar con Ruben. -->
+    <div class="p5-perfil-box">
+      <div class="p5-perfil-tag">Rubén Rivera</div>
+      <div class="p5-perfil-content">
+        <p data-es="Querétaro, México. 9+ años en agencias, motion graphics 2D/3D, activo en México, España y Medio Oriente/Norte de África." data-en="Querétaro, Mexico. 9+ years in agencies, 2D/3D motion graphics, active across Mexico, Spain and the Middle East/North Africa.">Querétaro, México. 9+ años en agencias, motion graphics 2D/3D, activo en México, España y Medio Oriente/Norte de África.</p>
       </div>
     </div>
 
