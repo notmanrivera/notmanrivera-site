@@ -1,0 +1,5 @@
+# /casos/mazatlan-fc/ estuvo publicado brevemente (PR #58-#60) antes de
+# renombrarse a /casos/hugo-gonzalez/ -- puede seguir indexado o compartido,
+# asi que se redirige en vez de dejarlo en 404. 301 = permanente, para que
+# Google transfiera el ranking a la URL nueva.
+/casos/mazatlan-fc/  /casos/hugo-gonzalez/  301
