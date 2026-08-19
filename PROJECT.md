@@ -852,6 +852,18 @@ Verificado con Playwright en 14 anchos (375–1920px): sin overflow, sin errores
 
 **Pendiente de confirmación con Rubén** -- si esta lectura no convence, el plan B ya está acordado: volver al layout de placas separadas (como estaba antes de este cambio) pero centradas, más chicas, y con los colores retocados.
 
+### Primer retrato de NotMan (placeholder) + favicon (2026-08-19)
+
+Rubén mandó una ilustración del personaje NotMan (cabeza redonda, gorra violeta, ojos saltones, boca roja abierta, un par de detalles tipo "patas" saliendo por un lado) pidiendo dos cosas: que sea el favicon del sitio, y que aparezca "como si él fuera quien dice los diálogos" -- un retrato junto a las cajas donde habla NotMan.
+
+La imagen llegó pegada directo en el chat, no como archivo -- este entorno no tiene forma de bajar una imagen pegada en la conversación a un archivo real, así que no había manera de usar el asset original con exactitud de píxel. Rubén mismo la llamó "placeholder" y dijo que mandaría el SVG definitivo más tarde, así que en vez de bloquear el trabajo se recreó a mano en SVG (formas básicas: círculo, elipses, líneas) como mejor aproximación visual, con la expectativa explícita de reemplazarla en cuanto llegue el archivo real.
+
+- **`public/assets/notman-cara.svg`**: la ilustración recreada, coordenadas simples (círculo para la cabeza, rectángulo rotado recortado con `clip-path` para la gorra, líneas con `stroke-linecap:round` para las patas, elipses para ojos/boca). Colores tomados de la paleta del sitio donde aplican (`--violet` en la gorra) y tonos nuevos donde no (piel, que no compite con el sistema de acentos porque es parte de la ilustración, no una decisión de UI).
+- **Favicon**: se renderizó esa misma ilustración con Playwright (recortando el `viewBox` a un cuadro centrado en la cabeza, para que a 16-32px no queden puntas de patas/antena cortadas a la mitad) y se exportó a PNG con `omitBackground:true` para conservar transparencia -- reemplaza `public/assets/favicon.png` en el mismo nombre de archivo, así que no hizo falta tocar los `<link rel="icon">` del `<head>`.
+- **`.notman-retrato`**: nueva pieza que acompaña la placa `.dialog-name` en CUALQUIER caja donde habla el personaje -- se agregó a la caja de "Soy el refuerzo táctico..." del hero Y a la de "¿En qué puedo ayudarte?" de `#contacto`, pero NO a `.dialogo-id` (esa es Rubén hablando como persona, no NotMan como personaje). Mismo cromado que el resto de las placas del sitio -- círculo con relleno `--paper`, borde grueso `--ink`, sombra dura -- para que la ilustración se lea como una pieza más del sistema. Se revela con el mismo selector de hermano que ya usa `.dialog-name` (`.lede.go ~ .notman-retrato`), así que aparece sincronizada sin animación propia, y respeta `prefers-reduced-motion` igual que el resto de las placas.
+
+Verificado con Playwright en 14 anchos (375–1920px): sin overflow, sin errores de consola ni de red (ambos assets cargan con `200`), exactamente 2 `.notman-retrato` en todos los anchos (uno por caja).
+
 ## Trabajar desde una sesión remota (no desde la Mac)
 
 El repo es autosuficiente: un `index.html` sin build step. Editar, revisar y pushear funciona igual en cualquier máquina. **Lo único que no viaja es el despliegue**, y conviene saber exactamente por qué antes de perder tiempo:
