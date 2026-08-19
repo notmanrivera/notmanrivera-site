@@ -3915,7 +3915,6 @@
      (Deportivo y Web, ver pestañas mas abajo) y esto evita duplicar la
      logica o pisar IDs repetidos entre ambas. */
   const visores = [...document.querySelectorAll('.galeria .visor')];
-  const repintarVisores = [];
 
   function initVisor(root){
     const visorImg     = root.querySelector('.visor-img');
@@ -3948,19 +3947,9 @@
         pintarVisor(thumb);
       });
     });
-
-    // el toggle de idioma solo repinta la miniatura activa: las demas
-    // no tienen texto visible hasta que se seleccionan
-    repintarVisores.push(() => pintarVisor(activo));
   }
 
   visores.forEach(initVisor);
-  // un solo listener de idioma para todas las instancias, en vez de uno
-  // por visor -- el evento 'idioma' ya lo dispara el toggle generico
-  // mas abajo sobre document
-  if (repintarVisores.length) {
-    document.addEventListener('idioma', () => repintarVisores.forEach(fn => fn()));
-  }
 
   /* ===== PESTAÑAS DE LA GALERIA (Deportivo / Web) =====
      Alternan que .visor es visible dentro de .galeria -- ambos existen
@@ -4073,69 +4062,27 @@
       rota.classList.add('go');
     }
 
-    // al cambiar de idioma hay que redibujar con la lista nueva
-    rota.addEventListener('idioma', () => {
-      const lista = opciones();
-      idx = Math.min(idx, lista.length - 1);
-      pintarServicio(lista[idx]);
-    });
-
     if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
       // no gastar ciclos rotando texto que nadie esta viendo
       setInterval(() => { if (!document.hidden) girarServicio(); }, 3400);
     }
   }
 
+  // El boton de idioma NAVEGA en vez de traducir en el sitio -- version
+  // anterior de esto hacia el cambio en el DOM en el acto (sin recargar),
+  // pero dejaba la URL sin cambiar: alguien que tocaba EN veia ingles pero
+  // la barra de direcciones seguia diciendo notmanrivera.com/, asi que
+  // refrescar, compartir el link o usar "atras" del navegador perdia el
+  // idioma elegido y volvia a español. Desde que existe /en/ como pagina de
+  // verdad (generada por scripts/build-en.js para que Google la indexe,
+  // ver PROJECT.md), lo correcto es que el boton lleve ahi de una vez -- la
+  // URL manda, no un estado de JS que se pierde al primer refresh.
+  // location.hash se conserva para no perder la seccion en la que estaba
+  // el visitante al cambiar de idioma.
   const btn = document.getElementById('langBtn');
   btn.addEventListener('click', () => {
-    lang = lang === 'es' ? 'en' : 'es';
-    btn.textContent = lang === 'es' ? 'EN' : 'ES';
-    document.documentElement.lang = lang;
-
-    // Reemplazar el texto borra los <span class="wd">, hay que volver a partirlo
-    document.querySelectorAll('[data-es][data-en]').forEach(el => {
-      el.innerHTML = el.getAttribute('data-' + lang);
-      if (el.classList.contains('slam')){
-        el.classList.remove('go');
-        splitWords(el);
-        void el.offsetWidth;          // reinicia la animacion
-        el.classList.add('go');       // en el acto: rAF no corre si la pestana esta oculta
-      }
-      // .lede ya tiene .go (nunca se le quita), asi que maquinaEscribir
-      // arranca su bucle de inmediato con el texto nuevo -- no hace falta
-      // el remove/re-add de arriba, eso es solo para el sistema de .slam.
-      // La caja de respuestas (si esta pregunta tiene una hermana) se
-      // oculta primero, y el cursor de "seguir" reaparece -- los dos solo
-      // vuelven a su estado de "esperando" cuando termina de teclearse la
-      // pregunta en el nuevo idioma; si no, se veria la caja de respuestas
-      // vieja mientras la pregunta todavia se esta reescribiendo.
-      if (el.classList.contains('dialog-texto')) {
-        el.closest('.dialogo-doble')?.querySelector('.dialogo-tu')?.classList.remove('go');
-        el.closest('.lede')?.querySelector('.dialog-next')?.classList.remove('oculto');
-        maquinaEscribir(el, () => revelarOpciones(el));
-      }
-    });
-
-    // Mismo patron que arriba, para atributos en vez de texto: alt de
-    // imagenes y aria-label de controles. Van aparte de [data-es][data-en]
-    // porque no todo elemento que necesita alt/aria bilingue tiene tambien
-    // texto visible que traducir (un <img>, por ejemplo, no tiene innerHTML
-    // que le sirva de nada). El generador de la version en ingles
-    // (scripts/build-en.js) hace exactamente este mismo reemplazo, sin
-    // duplicar la logica -- por eso vive aca y no solo en el script.
-    document.querySelectorAll('[data-alt-es][data-alt-en]').forEach(el => {
-      el.setAttribute('alt', el.getAttribute('data-alt-' + lang));
-    });
-    document.querySelectorAll('[data-aria-es][data-aria-en]').forEach(el => {
-      el.setAttribute('aria-label', el.getAttribute('data-aria-' + lang));
-    });
-
-    // el rotador y el visor de la galeria no tienen data-es/data-en, se avisan aparte
-    if (rota) rota.dispatchEvent(new Event('idioma'));
-    if (repintarVisores.length) document.dispatchEvent(new Event('idioma'));
-    // el rotulo del Scene Rail tampoco -- copia el texto de .sec-tag, que
-    // el bucle de arriba ya tradujo, asi que solo hace falta releerlo
-    if (indiceHudActivo >= 0) actualizarHudSeccion(indiceHudActivo);
+    const destino = location.pathname.startsWith('/en') ? '/' : '/en/';
+    location.href = destino + location.hash;
   });
 
   /* ===== SONIDO DE INTERFAZ =====
