@@ -998,6 +998,18 @@ Rubén, viendo una captura real de `/casos/mazatlan-fc/` en su telefono: el kick
 
 Verificado con Playwright: `getComputedStyle(...).paddingLeft` confirmado en `24px` (nunca `0px`) en las cinco secciones de las tres paginas, en 8 anchos cada una (375 a 1920px) -- 24 combinaciones, sin overflow, sin errores.
 
+## Corrección: el caso de estudio es Hugo González, no Mazatlán FC (2026-08-19)
+
+Rubén: "that study case is hugo gonzalez, not maxatlan, job was done for hugo's socials". Dos correcciones en una: (1) el caso está centrado en la persona, no en el club -- la URL y el nombre del caso deberían reflejar eso; (2) el encargo fue para las redes sociales **personales** de Hugo, no para los canales oficiales del club -- un dato nuevo que no estaba en ninguna parte del sitio hasta ahora.
+
+**Renombrado:** `public/casos/mazatlan-fc/` → `public/casos/hugo-gonzalez/` vía `git mv` (conserva el historial). Se actualizaron las tres referencias internas a la URL vieja dentro del propio archivo (`og:url`, `canonical`, `url` del JSON-LD), el enlace en `.casos-links` de `index.html` (href y texto, de "Caso completo: Mazatlán FC →" a "Caso completo: Hugo González →" -- se regeneró `/en/` después con `npm run build:en` para que arrastrara el cambio), y la entrada correspondiente en `sitemap.xml`.
+
+**Copy actualizado** con el dato de "redes sociales personales" en los lugares que antes solo decían "imagen digital" en genérico y podían leerse como contenido oficial del club: meta description, `og:description`/`twitter:description`, `about` del JSON-LD, el `dek` bajo el `h1`, y el primer párrafo de "El encargo" (que además cambió "no contenido genérico de equipo" por "no contenido oficial del club", más preciso con el dato nuevo). El resto del cuerpo ("Partido a partido", "Por qué importa el branding personal") ya hablaba de branding del jugador sin contradecir el dato nuevo, no necesitó cambios.
+
+**`public/_redirects` (nuevo archivo):** la URL vieja `/casos/mazatlan-fc/` estuvo publicada en producción durante dos despliegues (PR #58 y #60) antes de este renombrado, así que puede seguir indexada en Google o compartida en algún link -- se agregó un redirect 301 a `/casos/hugo-gonzalez/` en vez de dejarla morir en 404. Es el primer `_redirects` del repo; sintaxis de Cloudflare Pages, no se puede probar con el servidor local de Python (solo Cloudflare la interpreta), así que queda verificado por lectura del archivo y por la documentación de Cloudflare, no por Playwright.
+
+Verificado con Playwright: `/casos/hugo-gonzalez/` carga sin errores de consola/red, `canonical` y `og:url` ya apuntan a la URL nueva; el enlace de `.casos-links` en `/` y en `/en/` apunta a `/casos/hugo-gonzalez/` con el texto actualizado en los dos idiomas.
+
 ## Notas para quien retome esto
 
 - El dashboard de Cloudflare y Gmail están bloqueados para el agente vía navegador — pero **la API de Cloudflare sí responde** usando el token OAuth que Wrangler guarda en `~/Library/Preferences/.wrangler/config/default.toml`. Ese token puede leer/escribir Pages y Email Routing, pero **no** puede escribir registros DNS — eso lo tiene que hacer Rubén a mano en el dashboard.
