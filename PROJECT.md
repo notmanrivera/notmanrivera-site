@@ -878,6 +878,16 @@ Tres cosas en un solo commit:
 
 Verificado con Playwright en 14 anchos (375–1920px): sin overflow, sin errores de consola ni de red, exactamente 3 `.stat` y 0 `.notman-retrato`/`.p5-perfil-box` en todos los anchos, toggle de idioma confirmado en las 3 etiquetas, favicon de vuelta a 180×101 (el tamaño/formato original).
 
+### Corrección inmediata: "más chicas" solo aplicaba en escritorio (2026-08-19)
+
+Rubén, mandando una captura real de su celular: "they are still too big, logo should be fully visible from start" -- el bloque de perfil seguía empujando el logo NOTMAN fuera de la primera pantalla en movil.
+
+La causa: `.perfil-hero-mini` (el ajuste del rollback de arriba) metía TODO el achicado -- `.kicker` Y `.stat`/`.stats` -- dentro de `@media(min-width:1000px)`, con un razonamiento que sonaba bien pero era falso a medias: *"en movil ya se apilan chicas por su cuenta via los media queries que ya traian .kicker/.stat"*. Cierto solo para `.kicker` (que sí tiene su propio `header .kicker{font-size:.56rem}` bajo `max-width:820px`, calibrado desde antes) -- **falso para `.stat`/`.stats`**, que nunca tuvieron un tamaño de móvil propio. Resultado: en escritorio las placas se veían chicas (el ajuste sí aplicaba), pero en móvil seguían con el `font-size:3.6rem` original sin tocar -- exactamente lo que la captura de Rubén mostraba.
+
+**Arreglo:** se separan los dos. `.perfil-hero-mini .stat`/`.stats` se achican SIEMPRE, sin media query -- mismo achicado en cualquier ancho. `.perfil-hero-mini .kicker` se queda acotado a escritorio nada más, porque ese sí tenía ya un tamaño de móvil bien calibrado que no hacía falta duplicar ni arriesgar a desajustar.
+
+Verificado con Playwright: a 390×844 (el tamaño real de la captura de Rubén) el borde inferior del logo (`.marca`) queda en y=540px, dentro del viewport de 844px -- visible completo sin hacer scroll. Confirmado también en escritorio (1440×950, logo igual dentro del viewport). Sweep completo en 14 anchos (375–1920px): sin overflow, sin errores, 3 `.stat` en todos, toggle de idioma intacto.
+
 ## Trabajar desde una sesión remota (no desde la Mac)
 
 El repo es autosuficiente: un `index.html` sin build step. Editar, revisar y pushear funciona igual en cualquier máquina. **Lo único que no viaja es el despliegue**, y conviene saber exactamente por qué antes de perder tiempo:
