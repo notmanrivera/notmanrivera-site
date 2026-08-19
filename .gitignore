@@ -1,3 +1,8 @@
 .wrangler/
 .DS_Store
 node_modules/
+
+# Generado por scripts/build-en.js antes de cada deploy (ver
+# .github/workflows/deploy.yml) -- no se versiona, index.html es la unica
+# fuente de verdad.
+public/en/

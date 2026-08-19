@@ -1,0 +1,11 @@
+{
+  "name": "notmanrivera-site",
+  "private": true,
+  "description": "Genera public/en/index.html a partir de public/index.html antes de cada despliegue -- ver scripts/build-en.js. El sitio en si sigue siendo HTML estatico sin build step; esto es lo unico que corre en CI.",
+  "scripts": {
+    "build:en": "node scripts/build-en.js"
+  },
+  "devDependencies": {
+    "jsdom": "^25.0.0"
+  }
+}
