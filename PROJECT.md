@@ -800,6 +800,18 @@ Antes, los 3 stats del `.perfil-hero` vivían cada uno en su propia placa (`plac
 
 Verificado con Playwright en 3 anchos (390px / 768px / 1440px): `.marquesina-hero` visible y con dos `span` hijos de `.marquesina-hero-pista`, animación durando 18s, color de texto en `rgb(255,255,255)`, sin errores de consola, y las capas sucesivas de la animación muestran el efecto de scroll continuo sin saltos.
 
+### Ajuste: aire antes del logo y presentación de ticker (2026-08-19)
+
+Rubén, viendo la marquesina ya en producción en móvil: "se siente un poco apretado, agrega espacio entre el logo y la barra deslizante, y no sé si valdría la pena cambiar la presentación de la marquesina".
+
+Medido con Playwright: el hueco entre el kicker y la marquesina era de 28px, pero entre la marquesina y el logo era de **0px** -- pegaba directo contra el `<h1>` de abajo. Se iguala con `margin:16px 0 28px` (antes solo `margin-top:16px`), simétrico con el aire de arriba.
+
+Sobre la presentación, dos cambios que la acercan al lenguaje visual del resto del sitio en vez de leerse como un banner suelto:
+- **Borde negro de 3px arriba y abajo.** El resto de las placas del sitio siempre tienen un filo definido (recorte diagonal, sombra dura); la marquesina era la única pieza de color que empezaba y terminaba sin ningún borde. El `border` no lo recorta el `overflow:hidden` del mismo elemento porque se pinta en la caja, no en el contenido -- a diferencia del `box-shadow`, que sí se habría visto recortado.
+- **Máscara de desvanecido en los dos extremos** (`mask-image:linear-gradient(90deg,transparent,#000 48px,#000 calc(100% - 48px),transparent)`, con el prefijo `-webkit-` primero por Safari). Antes el texto se cortaba a media letra justo en el borde del contenedor cada vez que el scroll pasaba por ahí -- con la máscara se desvanece a transparente antes de tocar el borde, el mismo truco que un ticker de noticiero. De paso se sube el espacio entre repeticiones (`padding:0 2em` en cada `span`) para que las dos copias no se sientan pegadas.
+
+Verificado con Playwright en 13 anchos (375 a 1920px): sin overflow horizontal, sin errores de consola, marquesina visible con sus dos `span` en todos. Confirmado el hueco simétrico (28px arriba, 28px abajo) a 390px.
+
 ## Trabajar desde una sesión remota (no desde la Mac)
 
 El repo es autosuficiente: un `index.html` sin build step. Editar, revisar y pushear funciona igual en cualquier máquina. **Lo único que no viaja es el despliegue**, y conviene saber exactamente por qué antes de perder tiempo:
