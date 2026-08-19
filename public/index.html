@@ -3815,6 +3815,19 @@
       raiz.classList.add('cargado');      // libera el scroll sin matar la salida
       heroListo = true;
       entradaHero();
+      // Si se llega con un hash en la URL (un CTA de una pagina de caso que
+      // manda a /#contacto, por ejemplo), el salto nativo del navegador a
+      // esa ancla pasa ANTES de este punto -- justo cuando <html> todavia
+      // tenia overflow:hidden por .cargando, que se agrega de forma
+      // sincrona en el <head> antes de que exista el resto de la pagina.
+      // El navegador no reintenta el salto despues solo, asi que sin este
+      // empujon manual el visitante se queda varado arriba del todo pese
+      // al hash en la URL. behavior:'instant' a proposito (no 'auto', que
+      // heredaria el scroll-behavior:smooth global): quien llega con un
+      // hash quiere aterrizar ahi ya, no ver un recorrido de toda la pagina.
+      if (location.hash) {
+        document.querySelector(location.hash)?.scrollIntoView({behavior:'instant'});
+      }
       setTimeout(() => raiz.classList.remove('cargando','cargado'), 720);
     }
 
