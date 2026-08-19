@@ -2327,6 +2327,30 @@
   @media(prefers-reduced-motion:reduce){
     .marquesina-pista{animation-play-state:paused}
   }
+
+  /* Marquesina del hero: versión más visualmente impactante que la del footer.
+     Usa la paleta de colores del sitio (rojo + violeta) con mayor presencia. */
+  .marquesina-hero{
+    overflow:hidden;white-space:nowrap;
+    background:linear-gradient(90deg, var(--rojo) 0%, var(--violet-hi) 50%, var(--rojo) 100%);
+    padding:12px 0;margin-top:16px;
+  }
+  .marquesina-hero-pista{
+    display:inline-flex;width:max-content;
+    animation:marquesinaScroll 18s linear infinite;
+  }
+  .marquesina-hero-pista span{
+    flex:none;
+    font-family:var(--ui);font-weight:700;text-transform:uppercase;
+    letter-spacing:.12em;font-size:.85rem;color:var(--paper);opacity:1;
+  }
+  .marquesina-hero-pista b{
+    font-weight:900;color:inherit;
+  }
+  @media(prefers-reduced-motion:reduce){
+    .marquesina-hero-pista{animation-play-state:paused}
+  }
+
   footer{
     border-top:2px solid var(--line);color:var(--muted);font-size:.82rem;
   }
@@ -2753,10 +2777,11 @@
     <div class="perfil-hero">
       <span class="kicker sat placa-negra" data-es="Rubén Rivera · Querétaro, México" data-en="Rubén Rivera · Querétaro, Mexico">Rubén Rivera · Querétaro, México</span>
 
-      <div class="stats">
-        <div class="stat sat placa-roja"><b class="cuenta">9+</b><span data-es="años en agencias" data-en="years in agencies">años en agencias</span></div>
-        <div class="stat sat placa-roja"><b>2D / 3D</b><span data-es="motion graphics" data-en="motion graphics">motion graphics</span></div>
-        <div class="stat sat placa-negra"><b>MX · ES · MENA</b><span data-es="mercados" data-en="markets">mercados</span><em data-es="México · España · Medio Oriente y Norte de África" data-en="Mexico · Spain · Middle East &amp; North Africa">México · España · Medio Oriente y Norte de África</em></div>
+      <div class="marquesina-hero" aria-hidden="true">
+        <div class="marquesina-hero-pista">
+          <span><b data-es="9+ años" data-en="9+ years">9+ años</b> · <b>2D / 3D</b> · <b data-es="MX · ES · MENA" data-en="MX · ES · MENA">MX · ES · MENA</b></span>
+          <span><b data-es="9+ años" data-en="9+ years">9+ años</b> · <b>2D / 3D</b> · <b data-es="MX · ES · MENA" data-en="MX · ES · MENA">MX · ES · MENA</b></span>
+        </div>
       </div>
     </div>
 
