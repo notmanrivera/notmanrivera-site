@@ -2328,50 +2328,6 @@
     .marquesina-pista{animation-play-state:paused}
   }
 
-  /* Marquesina del hero: versión más visualmente impactante que la del footer.
-     ⚠️ La v1 mezclaba rojo y violeta en un solo linear-gradient -- exactamente
-     lo que la paleta del sitio prohíbe. "Cada color tiene un trabajo asignado"
-     (ver PROJECT.md): rojo es LA SUPERFICIE (relleno de placa en reposo),
-     violeta es QUIEN ES (bordes, identidad). Fundir los dos en una transición
-     genera tonos intermedios que no son ninguno de los dos -- el mismo motivo
-     por el que el magenta se retiró del sitio ("junto al rojo los dos se leían
-     como el mismo color mal impreso"). Aquí no eran tonos ajenos, pero el
-     principio es el mismo: los acentos no se mezclan entre sí.
-     Arreglo: relleno rojo SOLIDO (la marquesina es literalmente una "barra de
-     acento", el propio trabajo asignado al rojo) + borde violeta (su trabajo
-     es bordes/identidad). Los dos colores conviven en la misma pieza sin
-     pisarse -- superficie y borde, no superficie mezclada consigo misma. */
-  .marquesina-hero{
-    overflow:hidden;white-space:nowrap;
-    background:var(--rojo);
-    border-top:3px solid var(--violet);border-bottom:3px solid var(--violet);
-    padding:12px 0;margin:16px 0 28px;
-    /* Mascara de desvanecido en los dos extremos: sin ella, el texto que
-       scrollea se corta a la mitad de una letra justo en el borde del
-       contenedor, y ese corte abrupto (ES · MENA9+ AÑOS…) se lee entrecortado.
-       Con la mascara el texto se desvanece a transparente antes de tocar el
-       borde -- el mismo truco visual que un ticker de noticiero. -webkit-
-       primero por Safari, que todavia no reconoce el prefijo sin él. */
-    -webkit-mask-image:linear-gradient(90deg,transparent,#000 48px,#000 calc(100% - 48px),transparent);
-    mask-image:linear-gradient(90deg,transparent,#000 48px,#000 calc(100% - 48px),transparent);
-  }
-  .marquesina-hero-pista{
-    display:inline-flex;width:max-content;
-    animation:marquesinaScroll 18s linear infinite;
-  }
-  .marquesina-hero-pista span{
-    flex:none;
-    font-family:var(--ui);font-weight:700;text-transform:uppercase;
-    letter-spacing:.12em;font-size:.85rem;color:var(--paper);opacity:1;
-    padding:0 2em;
-  }
-  .marquesina-hero-pista b{
-    font-weight:900;color:inherit;
-  }
-  @media(prefers-reduced-motion:reduce){
-    .marquesina-hero-pista{animation-play-state:paused}
-  }
-
   footer{
     border-top:2px solid var(--line);color:var(--muted);font-size:.82rem;
   }
@@ -2798,11 +2754,10 @@
     <div class="perfil-hero">
       <span class="kicker sat placa-negra" data-es="Rubén Rivera · Querétaro, México" data-en="Rubén Rivera · Querétaro, Mexico">Rubén Rivera · Querétaro, México</span>
 
-      <div class="marquesina-hero" aria-hidden="true">
-        <div class="marquesina-hero-pista">
-          <span><b data-es="9+ años" data-en="9+ years">9+ años</b> · <b>2D / 3D</b> · <b data-es="MX · ES · MENA" data-en="MX · ES · MENA">MX · ES · MENA</b></span>
-          <span><b data-es="9+ años" data-en="9+ years">9+ años</b> · <b>2D / 3D</b> · <b data-es="MX · ES · MENA" data-en="MX · ES · MENA">MX · ES · MENA</b></span>
-        </div>
+      <div class="stats">
+        <div class="stat sat placa-roja"><b class="cuenta">9+</b><span data-es="años en agencias" data-en="years in agencies">años en agencias</span></div>
+        <div class="stat sat placa-roja"><b>2D / 3D</b><span data-es="motion graphics" data-en="motion graphics">motion graphics</span></div>
+        <div class="stat sat placa-negra"><b>MX · ES · MENA</b><span data-es="mercados" data-en="markets">mercados</span><em data-es="México · España · Medio Oriente y Norte de África" data-en="Mexico · Spain · Middle East &amp; North Africa">México · España · Medio Oriente y Norte de África</em></div>
       </div>
     </div>
 
