@@ -783,6 +783,23 @@ Dos vueltas hasta dar con el ancho correcto:
 
 Verificado con Playwright en 10 anchos (375 a 1920px): sin overflow horizontal, sin ningún elemento del bloque de info fuera de pantalla, sin errores de consola, y el toggle de idioma sigue actualizando kicker y stats correctamente. (De paso: se confirmó que el ligero desborde del botón "Trabajemos juntos" a 1000-1024px ya existía ANTES de este cambio -- no es una regresión, y queda fuera del alcance de esta tarea.)
 
+## El info se convierte en marquesina scrolleante (2026-08-19)
+
+Rubén: "convierte esa info en una barra como la de arriba del footer, la que se desliza, pero más llamativa con la paleta de colores que resalte".
+
+Antes, los 3 stats del `.perfil-hero` vivían cada uno en su propia placa (`placa-roja` / `placa-negra`) apiladas en una fila sin movimiento. Ahora desaparecen esas placas y el contenido (9+ años, 2D/3D, MX·ES·MENA) se convierte en un texto que scrollea infinitamente de izquierda a derecha, como la marquesina del footer pero con **presencia visual** — la del footer es violet subtil (`--violet-hi` a `.45` opacidad sobre fondo oscuro), la del hero necesita impacto.
+
+**Implementación:**
+- **`.marquesina-hero` envuelve `.marquesina-hero-pista`** (patrón idéntico al footer -- contenedor con `overflow:hidden` + inner con `display:inline-flex` y animación).
+- **Dos copias idénticas de `.marquesina-hero-pista span`** con el mismo contenido (9+ años · 2D/3D · MX·ES·MENA), sin cambios -- la animación `translateX(-50%)` mueve la primera copia fuera de pantalla exactamente cuando la segunda entra desde la izquierda, creando un loop sin salto visible.
+- **Fondo en gradiente** (rojo a violeta, rojo nuevamente: `linear-gradient(90deg, var(--rojo) 0%, var(--violet-hi) 50%, var(--rojo) 100%)`) para máximo impacto, combinando el rojo de P5 con el morado de identidad.
+- **Texto en blanco puro** (`color:var(--paper)`, `opacity:1` -- contrario al subtle `.45` del footer) para máxima legibilidad sobre el gradiente de fondo.
+- **Animación más rápida** (18s en vez de 22s del footer) para que sea más dinámica y llamativa.
+- **Soporte multiidioma** con `data-es`/`data-en` en los elementos de la primera copia del texto -- el toggle genérico de idioma los actualiza normalmente, y la segunda copia (invisible, pura copia textual) se queda igual en ambos idiomas porque es el motor de seamless loop, no contenido.
+- **Respeta `prefers-reduced-motion`** con el mismo mecanismo del footer (`animation-play-state:paused`).
+
+Verificado con Playwright en 3 anchos (390px / 768px / 1440px): `.marquesina-hero` visible y con dos `span` hijos de `.marquesina-hero-pista`, animación durando 18s, color de texto en `rgb(255,255,255)`, sin errores de consola, y las capas sucesivas de la animación muestran el efecto de scroll continuo sin saltos.
+
 ## Trabajar desde una sesión remota (no desde la Mac)
 
 El repo es autosuficiente: un `index.html` sin build step. Editar, revisar y pushear funciona igual en cualquier máquina. **Lo único que no viaja es el despliegue**, y conviene saber exactamente por qué antes de perder tiempo:
