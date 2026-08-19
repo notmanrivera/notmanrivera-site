@@ -864,6 +864,20 @@ La imagen llegó pegada directo en el chat, no como archivo -- este entorno no t
 
 Verificado con Playwright en 14 anchos (375–1920px): sin overflow, sin errores de consola ni de red (ambos assets cargan con `200`), exactamente 2 `.notman-retrato` en todos los anchos (uno por caja).
 
+### Rollback: fuera el retrato, y el bloque de perfil vuelve a placas (2026-08-19)
+
+Rubén, viendo el retrato y la caja de dialogo reusada ya en producción: "lol no, roll it back, for now ditch the character, go back to cards for the hero info, but make them smaller and centered".
+
+Tres cosas en un solo commit:
+
+1. **Fuera el retrato y el favicon placeholder.** Se borra `public/assets/notman-cara.svg`, se quita `.notman-retrato` (CSS + los dos `<img>` en el hero y en `#contacto`) y se restaura `public/assets/favicon.png` al logo original -- recuperado directo del historial de git (`git show <commit-antes-de-PR#51>:public/assets/favicon.png`), no hubo que re-exportar nada.
+2. **El bloque de identidad del hero vuelve a placas separadas** (v3, la misma estructura de antes de probar la caja de dialogo reusada en v4) -- kicker + 3 `.stat`, ya no `.dialogo.dialogo-id`. Dos ajustes nuevos sobre como estaban en v3:
+   - **Centradas**: `.orbita > .perfil-hero{justify-self:center}` (antes `start`).
+   - **Mas chicas**: nueva clase `.perfil-hero-mini`, acotada a `@media(min-width:1000px)` (en movil ya se apilan chicas por su cuenta). No se tocó el tamaño en la regla generica `.orbita .sat` porque **`.sat` tambien la usan `.btn-1`/`.btn-2`** -- reducir ahi habria encogido los botones sin que nadie lo pidiera. El modificador nuevo solo pisa `.perfil-hero-mini .kicker`/`.stat`/`.stat b`/`.stat span`/`.stat em`, dejando los botones intactos.
+3. **Limpieza de un extra que quedó pendiente: `.p5-perfil-box`.** Al revisar qué seguía vivo en el DOM se encontró que la demo "Nota" que se había probado en la sección `#perfil` (texto de muestra, nunca confirmada por Ruben) seguía publicada en producción -- un PR posterior (#50, la caja de dialogo del hero) tocó el hero pero nunca tocó esa sección, así que el bloque de demo sobrevivió sin que nadie lo pidiera. Se elimina por completo: el componente `.p5-perfil-box`/`.p5-perfil-tag`/`.p5-perfil-content` (CSS) y su instancia en `#perfil`. No era parte de lo que Rubén pidió revertir en este mensaje, pero tampoco era algo que hubiera confirmado tener -- se documenta aquí para que quede rastro de por qué desapareció sin pedirlo explícitamente.
+
+Verificado con Playwright en 14 anchos (375–1920px): sin overflow, sin errores de consola ni de red, exactamente 3 `.stat` y 0 `.notman-retrato`/`.p5-perfil-box` en todos los anchos, toggle de idioma confirmado en las 3 etiquetas, favicon de vuelta a 180×101 (el tamaño/formato original).
+
 ## Trabajar desde una sesión remota (no desde la Mac)
 
 El repo es autosuficiente: un `index.html` sin build step. Editar, revisar y pushear funciona igual en cualquier máquina. **Lo único que no viaja es el despliegue**, y conviene saber exactamente por qué antes de perder tiempo:

@@ -1048,26 +1048,16 @@
        es la pieza clave de que ahora se vea agrupada y no repartida. */
     .orbita .cta-row{display:contents}
 
-    /* justify-self:start (no end): el bloque de info se ancla al borde
-       izquierdo de la fila completa, igual que .lede se centra en la suya
-       -- una composicion, no una placa perdida en medio del ancho libre.
-       Sigue sin --empuje: ya no se abanica, solo se ancla. */
-    .orbita > .perfil-hero {grid-area:info;justify-self:start}
-    .orbita > .p5-perfil-box{grid-area:info;justify-self:start}
+    /* v5: centrada (no anclada a la izquierda como en v3) -- Ruben la pidio
+       centrada esta vuelta, junto con placas mas chicas (ver
+       .perfil-hero-mini mas abajo, agrupado con el resto de reglas
+       especificas de las placas del hero). */
+    .orbita > .perfil-hero {grid-area:info;justify-self:center}
     /* z-index por encima de las placas (que van en 1): con giros fuertes
        alguna esquina puede acercarse al logo, y el logo es la pieza que no
        se tapa nunca */
     .orbita > h1           {grid-area:logo;margin-bottom:0;position:relative;z-index:2}
     .orbita > .dialogo     {grid-area:lede}
-    /* .dialogo-id: la copia de la caja de dialogo que vive en la fila "info"
-       (arriba del logo) en vez de "lede" (abajo). 3 clases contra las 2 de
-       la regla generica de arriba le ganan en especificidad sin depender del
-       orden en la hoja -- .dialogo sigue aportando el resto (sombra roja,
-       hover, isolation) tal cual. margin-top en 0: el 30px de la regla de
-       abajo esta pensado para separar la caja de "lede" del logo que la
-       antecede; esta es la PRIMERA fila de la rejilla, no hay nada arriba
-       de que separarse. */
-    .orbita > .dialogo.dialogo-id{grid-area:info;margin-top:0}
     .cta-row .btn-1        {grid-area:b1;justify-self:end;  margin-right:var(--empuje,0)}
     .cta-row .btn-2        {grid-area:b2;justify-self:start; margin-left:var(--empuje,0)}
 
@@ -1159,6 +1149,22 @@
   .orbita .sat,.svc,.cred,.ficha-yo,.ficha-radar{--giro:0deg}
   @media(min-width:1000px){
     .orbita .sat,.svc,.cred,.ficha-yo,.ficha-radar{--giro:var(--giro-d,0deg)}
+  }
+
+  /* Placas del bloque de perfil, mas chicas (v5) -- de vuelta a esto tras
+     probar la caja unica de dialogo, pero Ruben las pidio mas compactas que
+     en v3. .kicker/.stat tambien los usan .btn-1/.btn-2 (comparten .sat),
+     asi que el tamaño no se toca en la regla generica -- .perfil-hero-mini
+     acota el recorte a esta instancia nada mas. Solo en escritorio: en
+     movil ya se apilan chicas por su cuenta via los media queries que ya
+     traian .kicker/.stat. */
+  @media(min-width:1000px){
+    .perfil-hero-mini .kicker{font-size:.72rem;padding:7px 14px;margin-bottom:14px}
+    .perfil-hero-mini .stats{gap:22px;margin-top:14px;padding-top:14px}
+    .perfil-hero-mini .stat{padding:9px 15px 8px}
+    .perfil-hero-mini .stat b{font-size:2.1rem}
+    .perfil-hero-mini .stat span{font-size:.56rem}
+    .perfil-hero-mini .stat em{font-size:.46rem;margin-top:6px}
   }
 
   /* ===== PLACAS DEL HERO =====
@@ -1348,25 +1354,6 @@
     opacity:0;transition:opacity .3s;
   }
   .lede.go ~ .dialog-name{opacity:1}
-  /* Retrato de NotMan: acompaña la placa de nombre en las cajas donde
-     habla el PERSONAJE (no en .dialogo-id, que es Rubén hablando como
-     persona). Mismo cromado que el resto del sitio -- relleno --paper,
-     borde grueso --ink, sombra dura -- para que la ilustracion se lea
-     como una pieza mas del sistema y no como una imagen suelta pegada
-     encima. Asset placeholder: Ruben esta preparando el definitivo.
-     Un poco mas arriba/izquierda que .dialog-name para que las dos
-     placas floten juntas sin pisarse (mismo truco de hermano vecino que
-     .dialog-name, sincronizado con el mismo .lede.go). */
-  .notman-retrato{
-    position:absolute;top:-100px;left:-14px;z-index:1;
-    width:76px;height:76px;border-radius:50%;
-    background:var(--paper);border:4px solid var(--ink);
-    box-shadow:5px 5px 0 var(--sombra);
-    object-fit:cover;object-position:center 32%;
-    pointer-events:none;
-    opacity:0;transition:opacity .3s;
-  }
-  .lede.go ~ .notman-retrato{opacity:1}
   /* La placa de "TÚ" (2026-08-17): referencia real de P3R -- quien
      pregunta ancla su caja/placa a la izquierda, quien responde a la
      derecha. Mismo .dialog-name, espejado: right en vez de left, giro en
@@ -2224,59 +2211,6 @@
   }
   .radar .punto{cursor:pointer}
 
-  /* ===== P5-PERFIL-BOX: nota estilo pantalla de personaje =====
-     Etiqueta roja con una "cola" de globo de dialogo apuntando hacia abajo,
-     sobre una caja de contenido blanca -- mismo lenguaje de borde grueso +
-     sombra dura que ya usa el resto de las placas del sitio, aplicado a un
-     bloque de texto libre en vez de a una cifra o un boton.
-     El punteado del borde derecho (la "libreta de Morgana") es un solo
-     radial-gradient repetido en Y -- cero elementos extra en el DOM. */
-  .p5-perfil-box{position:relative;max-width:440px}
-  .p5-perfil-tag{
-    position:relative;z-index:2;display:inline-block;
-    background:var(--rojo);color:var(--paper);
-    font-family:var(--ui);font-weight:900;text-transform:uppercase;
-    font-size:.82rem;letter-spacing:.1em;
-    padding:8px 20px;
-    /* margen inferior negativo: monta la etiqueta 3px sobre el borde de la
-       caja de abajo (el mismo grosor que .p5-perfil-content{border}), asi
-       las dos piezas se leen soldadas, como una pestaña de carpeta. */
-    margin:0 0 -3px 22px;
-    transform:skewX(-10deg) rotate(-2deg);
-  }
-  /* La cola nace del borde inferior de la etiqueta y hereda su mismo
-     skew/rotate (el transform del padre distorsiona tambien a sus
-     pseudo-elementos) -- por eso sale ligeramente inclinada en vez de
-     perfectamente vertical, que es justo el acabado "recortado a mano" que
-     ya tiene el resto de las placas del sitio. */
-  .p5-perfil-tag::after{
-    content:"";position:absolute;left:14px;bottom:-9px;
-    width:0;height:0;
-    border-left:8px solid transparent;
-    border-right:8px solid transparent;
-    border-top:9px solid var(--rojo);
-  }
-  .p5-perfil-content{
-    position:relative;z-index:1;
-    background:var(--paper);color:var(--ink);
-    font-family:var(--body);font-weight:600;line-height:1.5;
-    border:3px solid var(--ink);
-    box-shadow:6px 6px 0 var(--sombra);
-    /* padding-right generoso: dejar aire a la columna de puntos de abajo,
-       que empieza a 15px del borde derecho */
-    padding:26px 46px 22px 24px;
-    /* mayormente rectangular con solo dos esquinas cortadas -- sutil, no el
-       --filo de las placas chicas: ese corte agresivo en una caja de
-       parrafo se comeria las primeras/ultimas palabras de esas lineas */
-    clip-path:polygon(0 0,calc(100% - 16px) 0,100% 14px,100% 100%,16px 100%,0 calc(100% - 14px));
-    /* perforaciones de libreta: un solo radial-gradient repetido en Y */
-    background-image:radial-gradient(circle,var(--ink) 4px,transparent 4.5px);
-    background-repeat:repeat-y;
-    background-position:right 15px top 10px;
-    background-size:100% 30px;
-  }
-  .p5-perfil-content p{margin:0}
-
   /* etiqueta estilo Persona 5: fondo --ink, texto --paper, filo diagonal.
      position:fixed + clientX/clientY del mouse directo, sin convertir
      coordenadas del viewBox del SVG -- el offset visual (14px,-140%) lo
@@ -2639,7 +2573,6 @@
   @media(prefers-reduced-motion:reduce){
     .fade,.fade.go{opacity:1;animation:none;transform:none}
     .dialog-name{opacity:1;transition:none}
-    .notman-retrato{opacity:1;transition:none}
     .dialogo::before{transition:none}
     .dialogo:hover::before{transform:translate(6px,6px)}
     .stats::before,.stats.go::before{transform:scaleX(1);animation:none}
@@ -2827,24 +2760,20 @@
        la izquierda, asi que las dos columnas arrancan pegadas al logo y
        crecen alejandose de el. -->
   <div class="wrap orbita">
-    <!-- Bloque de perfil, v4: reusa el propio sistema de caja de dialogo
-         (.dialogo/.lede/.dialog-name) que ya usa NOTMAN mas abajo para
-         hablar, en vez de un componente nuevo -- Ruben senalo la placa
-         "NOTMAN" (bordes en capas, sombra roja corrida, filo --filo) como la
-         referencia a seguir, "usa tambien sus animaciones". Al reusar las
-         MISMAS clases (no una copia), llegan gratis la maquina de escribir
-         (querySelectorAll('.dialog-texto') es generico, no distingue cual
-         caja), el fundido sincronizado de la placa de nombre
-         (.lede.go ~ .dialog-name) y el stagger de entrada del hero
-         (entradaHero ya recorre TODOS los 'header .lede', no solo uno).
-         .dialogo-id es solo un modificador para reubicar esta copia en la
-         fila "info" en vez de "lede" -- ver la regla junto a .orbita>.dialogo
-         mas arriba. DEMO -- pendiente de confirmar con Ruben. -->
-    <div class="dialogo dialogo-id">
-      <div class="lede">
-        <p class="dialog-texto" data-es="Querétaro, México. 9+ años en agencias, motion graphics 2D/3D, activo en México, España y Medio Oriente/Norte de África." data-en="Querétaro, Mexico. 9+ years in agencies, 2D/3D motion graphics, active across Mexico, Spain and the Middle East/North Africa.">Querétaro, México. 9+ años en agencias, motion graphics 2D/3D, activo en México, España y Medio Oriente/Norte de África.</p>
+    <!-- Bloque de perfil, v5: de vuelta a las placas separadas (v3, antes de
+         probar la caja de dialogo reusada en v4) -- Ruben las prefiere sobre
+         cualquiera de las dos alternativas de caja unica. Esta vuelta suma
+         dos ajustes nuevos sobre como estaban en v3: centradas en vez de
+         ancladas a la izquierda (.perfil-hero-mini) y mas chicas (ver
+         .perfil-hero-mini .sat mas abajo en el CSS). -->
+    <div class="perfil-hero perfil-hero-mini">
+      <span class="kicker sat placa-negra" data-es="Rubén Rivera · Querétaro, México" data-en="Rubén Rivera · Querétaro, Mexico">Rubén Rivera · Querétaro, México</span>
+
+      <div class="stats">
+        <div class="stat sat placa-roja"><b class="cuenta">9+</b><span data-es="años en agencias" data-en="years in agencies">años en agencias</span></div>
+        <div class="stat sat placa-roja"><b>2D / 3D</b><span data-es="motion graphics" data-en="motion graphics">motion graphics</span></div>
+        <div class="stat sat placa-negra"><b>MX · ES · MENA</b><span data-es="mercados" data-en="markets">mercados</span><em data-es="México · España · Medio Oriente y Norte de África" data-en="Mexico · Spain · Middle East &amp; North Africa">México · España · Medio Oriente y Norte de África</em></div>
       </div>
-      <span class="dialog-name">Rubén Rivera</span>
     </div>
 
     <h1>
@@ -2883,7 +2812,6 @@
         <p class="dialog-texto" data-es="Soy el refuerzo táctico que tu agencia necesita. 9 años de experiencia diseñando y animando para agencias, jugadores y representantes de élite. Cuando a tu equipo le falta capacidad o tiempo, yo entro en acción. Motion graphics, video y diseño web. Listo para el despliegue." data-en="I am the tactical backup your agency needs. 9 years of experience designing and animating for agencies, elite players and representatives. When your team runs out of capacity or time, I step in. Motion graphics, video, and web design. Ready for deployment.">Soy el refuerzo táctico que tu agencia necesita. 9 años de experiencia diseñando y animando para agencias, jugadores y representantes de élite. Cuando a tu equipo le falta capacidad o tiempo, yo entro en acción. Motion graphics, video y diseño web. Listo para el despliegue.</p>
         <i class="dialog-next" aria-hidden="true"></i>
       </div>
-      <img class="notman-retrato" src="/assets/notman-cara.svg" alt="" aria-hidden="true">
       <span class="dialog-name">NotMan</span>
     </div>
 
@@ -3350,17 +3278,6 @@
         </svg>
       </div>
     </div>
-
-    <!-- Demo de .p5-perfil-box: nota estilo pantalla de personaje (etiqueta
-         roja con cola + caja blanca con perforaciones de libreta). Texto de
-         muestra -- pendiente confirmar contenido y ubicacion definitiva con
-         Ruben antes de darla por terminada. -->
-    <div class="p5-perfil-box rv" style="margin-top:40px">
-      <div class="p5-perfil-tag" data-es="Nota" data-en="Note">Nota</div>
-      <div class="p5-perfil-content">
-        <p data-es="Cada proyecto arranca con un brief claro, una referencia visual y una fecha de entrega fija — así trabajo mejor y así entrego mejor." data-en="Every project starts with a clear brief, a visual reference and a fixed delivery date — that's how I work best and deliver best.">Cada proyecto arranca con un brief claro, una referencia visual y una fecha de entrega fija — así trabajo mejor y así entrego mejor.</p>
-      </div>
-    </div>
   </div>
 </section>
 
@@ -3398,8 +3315,7 @@
           <p class="dialog-texto" data-es="¿En qué puedo ayudarte?" data-en="What can I help you with?">¿En qué puedo ayudarte?</p>
           <i class="dialog-next" aria-hidden="true"></i>
         </div>
-        <img class="notman-retrato" src="/assets/notman-cara.svg" alt="" aria-hidden="true">
-        <span class="dialog-name">NotMan</span>
+          <span class="dialog-name">NotMan</span>
       </div>
 
       <div class="dialogo dialogo-tu">
