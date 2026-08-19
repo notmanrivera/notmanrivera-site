@@ -2194,6 +2194,60 @@
     fill:rgba(255,255,255,.74);text-transform:uppercase;
   }
   .radar .punto{cursor:pointer}
+
+  /* ===== P5-PERFIL-BOX: nota estilo pantalla de personaje =====
+     Etiqueta roja con una "cola" de globo de dialogo apuntando hacia abajo,
+     sobre una caja de contenido blanca -- mismo lenguaje de borde grueso +
+     sombra dura que ya usa el resto de las placas del sitio, aplicado a un
+     bloque de texto libre en vez de a una cifra o un boton.
+     El punteado del borde derecho (la "libreta de Morgana") es un solo
+     radial-gradient repetido en Y -- cero elementos extra en el DOM. */
+  .p5-perfil-box{position:relative;max-width:440px}
+  .p5-perfil-tag{
+    position:relative;z-index:2;display:inline-block;
+    background:var(--rojo);color:var(--paper);
+    font-family:var(--ui);font-weight:900;text-transform:uppercase;
+    font-size:.82rem;letter-spacing:.1em;
+    padding:8px 20px;
+    /* margen inferior negativo: monta la etiqueta 3px sobre el borde de la
+       caja de abajo (el mismo grosor que .p5-perfil-content{border}), asi
+       las dos piezas se leen soldadas, como una pestaña de carpeta. */
+    margin:0 0 -3px 22px;
+    transform:skewX(-10deg) rotate(-2deg);
+  }
+  /* La cola nace del borde inferior de la etiqueta y hereda su mismo
+     skew/rotate (el transform del padre distorsiona tambien a sus
+     pseudo-elementos) -- por eso sale ligeramente inclinada en vez de
+     perfectamente vertical, que es justo el acabado "recortado a mano" que
+     ya tiene el resto de las placas del sitio. */
+  .p5-perfil-tag::after{
+    content:"";position:absolute;left:14px;bottom:-9px;
+    width:0;height:0;
+    border-left:8px solid transparent;
+    border-right:8px solid transparent;
+    border-top:9px solid var(--rojo);
+  }
+  .p5-perfil-content{
+    position:relative;z-index:1;
+    background:var(--paper);color:var(--ink);
+    font-family:var(--body);font-weight:600;line-height:1.5;
+    border:3px solid var(--ink);
+    box-shadow:6px 6px 0 var(--sombra);
+    /* padding-right generoso: dejar aire a la columna de puntos de abajo,
+       que empieza a 15px del borde derecho */
+    padding:26px 46px 22px 24px;
+    /* mayormente rectangular con solo dos esquinas cortadas -- sutil, no el
+       --filo de las placas chicas: ese corte agresivo en una caja de
+       parrafo se comeria las primeras/ultimas palabras de esas lineas */
+    clip-path:polygon(0 0,calc(100% - 16px) 0,100% 14px,100% 100%,16px 100%,0 calc(100% - 14px));
+    /* perforaciones de libreta: un solo radial-gradient repetido en Y */
+    background-image:radial-gradient(circle,var(--ink) 4px,transparent 4.5px);
+    background-repeat:repeat-y;
+    background-position:right 15px top 10px;
+    background-size:100% 30px;
+  }
+  .p5-perfil-content p{margin:0}
+
   /* etiqueta estilo Persona 5: fondo --ink, texto --paper, filo diagonal.
      position:fixed + clientX/clientY del mouse directo, sin convertir
      coordenadas del viewBox del SVG -- el offset visual (14px,-140%) lo
@@ -3261,6 +3315,17 @@
           <text class="eje"   x="164" y="126" text-anchor="end">Lightroom</text>
           <text class="rango" x="164" y="142" text-anchor="end">82</text>
         </svg>
+      </div>
+    </div>
+
+    <!-- Demo de .p5-perfil-box: nota estilo pantalla de personaje (etiqueta
+         roja con cola + caja blanca con perforaciones de libreta). Texto de
+         muestra -- pendiente confirmar contenido y ubicacion definitiva con
+         Ruben antes de darla por terminada. -->
+    <div class="p5-perfil-box rv" style="margin-top:40px">
+      <div class="p5-perfil-tag" data-es="Nota" data-en="Note">Nota</div>
+      <div class="p5-perfil-content">
+        <p data-es="Cada proyecto arranca con un brief claro, una referencia visual y una fecha de entrega fija — así trabajo mejor y así entrego mejor." data-en="Every project starts with a clear brief, a visual reference and a fixed delivery date — that's how I work best and deliver best.">Cada proyecto arranca con un brief claro, una referencia visual y una fecha de entrega fija — así trabajo mejor y así entrego mejor.</p>
       </div>
     </div>
   </div>
