@@ -13,6 +13,19 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      # Genera public/en/index.html a partir de public/index.html (ver
+      # scripts/build-en.js) -- el sitio en si sigue sin build step, esto es
+      # lo unico que corre antes de desplegar. La carpeta public/en/ no vive
+      # en el repo (.gitignore), se genera fresca en cada deploy.
+      - name: Generar la version en inglés
+        run: |
+          npm ci
+          npm run build:en
+
       - name: Deploy a Cloudflare Pages
         uses: cloudflare/wrangler-action@v3
         with:

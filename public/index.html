@@ -18,6 +18,16 @@
 <meta name="twitter:description" content="Motion graphics 2D/3D, edición de video, diseño web UI/UX y soporte de marca blanca para agencias, representantes y jugadores profesionales.">
 <meta name="twitter:image" content="https://notmanrivera.com/assets/logo-lg.webp">
 <link rel="canonical" href="https://notmanrivera.com/">
+<!-- hreflang: le dice a Google que esta pagina y /en/ son la misma pagina
+     en dos idiomas, no dos paginas de contenido duplicado compitiendo entre
+     si. x-default es la version que se ofrece a un visitante cuyo idioma no
+     coincide con ninguna alternativa listada -- espanol, porque es el
+     idioma real del negocio (Queretaro, Mexico). /en/ se genera con
+     scripts/build-en.js a partir de este mismo archivo, ver ese script para
+     el detalle. -->
+<link rel="alternate" hreflang="es" href="https://notmanrivera.com/">
+<link rel="alternate" hreflang="en" href="https://notmanrivera.com/en/">
+<link rel="alternate" hreflang="x-default" href="https://notmanrivera.com/">
 <meta name="theme-color" content="#000000">
 
 <script type="application/ld+json">
@@ -27,6 +37,7 @@
   "name": "Rubén Rivera — NotMan",
   "alternateName": "NotMan Rivera",
   "url": "https://notmanrivera.com/",
+  "inLanguage": "es",
   "image": "https://notmanrivera.com/assets/logo-lg.webp",
   "email": "hola@notmanrivera.com",
   "description": "Motion graphics 2D/3D, edición de video, diseño web UI/UX y soporte de marca blanca para agencias de marketing deportivo, representantes y jugadores profesionales.",
@@ -2697,7 +2708,7 @@
       </button>
       <!-- Apagado por default a proposito: nunca reproducir audio sin que
            la persona lo haya pedido de forma explicita con un clic. -->
-      <button class="sonido" id="sonidoBtn" type="button" aria-pressed="false" aria-label="Activar sonido de interfaz">
+      <button class="sonido" id="sonidoBtn" type="button" aria-pressed="false" aria-label="Activar sonido de interfaz" data-aria-es="Activar sonido de interfaz" data-aria-en="Turn on interface sound">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
           <path d="M4 9v6h4l5 4V5L8 9H4z" fill="currentColor" stroke="none"/>
           <path class="ondas" d="M16 9a5 5 0 0 1 0 6M18.4 6.6a8.5 8.5 0 0 1 0 10.8"/>
@@ -2732,7 +2743,7 @@
      del sitio. href="#inicio" lo engancha al mismo listener de a[href^="#"]
      de mas abajo (barrido incluido): no hace falta JS de clic nuevo, solo
      mostrar/ocultar segun el scroll. -->
-<a href="#inicio" class="volver-arriba" id="volverArriba" aria-label="Volver arriba">
+<a href="#inicio" class="volver-arriba" id="volverArriba" aria-label="Volver arriba" data-aria-es="Volver arriba" data-aria-en="Back to top">
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true">
     <path d="M6 15l6-6 6 6"/>
   </svg>
@@ -2746,7 +2757,7 @@
      lenguajes distintos. Numero en formato wa.me (52 + 10 digitos, sin
      espacios ni signos) -- target=_blank porque saca al visitante del
      sitio hacia la app/web de WhatsApp. -->
-<a href="https://wa.me/524421411230" target="_blank" rel="noopener" class="whatsapp-flotante" aria-label="Escríbeme por WhatsApp">
+<a href="https://wa.me/524421411230" target="_blank" rel="noopener" class="whatsapp-flotante" aria-label="Escríbeme por WhatsApp" data-aria-es="Escríbeme por WhatsApp" data-aria-en="Message me on WhatsApp">
   <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
     <path d="M17.47 14.38c-.29-.15-1.71-.85-1.98-.94-.27-.1-.46-.15-.65.14-.19.29-.75.94-.92 1.13-.17.19-.34.22-.63.07-.29-.15-1.22-.45-2.32-1.44-.86-.76-1.44-1.71-1.61-2-.17-.29-.02-.44.13-.59.13-.13.29-.34.44-.51.15-.17.19-.29.29-.48.1-.19.05-.36-.02-.51-.07-.15-.65-1.58-.9-2.16-.24-.57-.48-.5-.65-.5-.17-.01-.36-.01-.55-.01-.19 0-.5.07-.76.36-.26.29-1 .98-1 2.38 0 1.4 1.03 2.76 1.17 2.95.14.19 2.03 3.1 4.93 4.35.69.3 1.22.48 1.64.61.69.22 1.32.19 1.82.11.55-.08 1.71-.7 1.95-1.37.24-.68.24-1.26.17-1.38-.07-.12-.26-.19-.55-.34z"/>
     <path d="M12.04 2.5c-5.26 0-9.54 4.28-9.54 9.54 0 1.68.44 3.32 1.28 4.76L2.5 21.5l4.85-1.27a9.5 9.5 0 0 0 4.69 1.25h.01c5.26 0 9.54-4.28 9.54-9.54 0-2.55-.99-4.94-2.79-6.75a9.47 9.47 0 0 0-6.76-2.69zm0 17.46h-.01a7.9 7.9 0 0 1-4.03-1.1l-.29-.17-3 .79.8-2.92-.19-.3a7.9 7.9 0 0 1-1.22-4.22c0-4.38 3.57-7.94 7.95-7.94a7.9 7.9 0 0 1 5.62 2.33 7.88 7.88 0 0 1 2.32 5.61c0 4.38-3.57 7.92-7.95 7.92z"/>
@@ -2755,18 +2766,18 @@
 
 <!-- Menu de pantalla completa en cascada diagonal -->
 <div class="menu-full" id="menuFull" data-abierto="no" role="dialog" aria-modal="true"
-     aria-label="Menú de navegación">
+     aria-label="Menú de navegación" data-aria-es="Menú de navegación" data-aria-en="Navigation menu">
   <div class="menu-figura" aria-hidden="true">
     <img src="/assets/logo-lg.webp" alt="" width="1200" height="675" loading="lazy">
   </div>
   <div class="halftone" aria-hidden="true"></div>
 
-  <button class="cerrar-menu" id="cerrarMenu" aria-label="Cerrar menú">✕</button>
+  <button class="cerrar-menu" id="cerrarMenu" aria-label="Cerrar menú" data-aria-es="Cerrar menú" data-aria-en="Close menu">✕</button>
 
   <!-- Cada item es una PLACA con su propio giro: en la referencia ninguna
        comparte linea de base. La segunda linea diminuta hace el papel del
        subtitulo japones -- es lo que da la densidad. -->
-  <nav class="menu-lista" aria-label="Principal">
+  <nav class="menu-lista" aria-label="Principal" data-aria-es="Principal" data-aria-en="Main">
     <a href="#trabajo" style="--i:0;--giro:-1.2deg">
       <i>01</i>
       <span data-es="Trabajo" data-en="Work">Trabajo</span>
@@ -2837,6 +2848,8 @@
            como encabezado de la pagina. -->
       <img class="marca" src="/assets/logo-lg.webp"
            alt="NotMan Rivera — Rubén Rivera, motion graphics, video y diseño web"
+           data-alt-es="NotMan Rivera — Rubén Rivera, motion graphics, video y diseño web"
+           data-alt-en="NotMan Rivera — Rubén Rivera, motion graphics, video, and web design"
            width="1200" height="675" fetchpriority="high" decoding="async">
       <i class="rafaga" aria-hidden="true"></i>
       <i class="chispa-logo" aria-hidden="true" style="left:16%;top:14%;--i:0"></i>
@@ -2893,15 +2906,15 @@
     <div class="galeria">
       <h3 class="galeria-tit rv" data-es="Piezas <em>reales</em>, entregadas a clientes" data-en="<em>Real</em> pieces, delivered to clients">Piezas <em>reales</em>, entregadas a clientes</h3>
 
-      <div class="galeria-tabs rv" role="tablist" aria-label="Tipo de trabajo">
+      <div class="galeria-tabs rv" role="tablist" aria-label="Tipo de trabajo" data-aria-es="Tipo de trabajo" data-aria-en="Type of work">
         <button type="button" class="galeria-tab activo" role="tab" aria-selected="true" aria-controls="galeriaDeportivo" data-galeria="deportivo" data-es="Deportivo" data-en="Sports">Deportivo</button>
         <button type="button" class="galeria-tab" role="tab" aria-selected="false" aria-controls="galeriaWeb" data-galeria="web" data-es="Web" data-en="Web">Web</button>
       </div>
 
       <div class="visor rv" id="galeriaDeportivo" data-galeria-panel="deportivo" role="tabpanel">
         <div class="visor-grande">
-          <img class="visor-img" src="/assets/galeria/al-arabi-grupo.webp" alt="Al-Arabi SC — gráfico de fase de grupos" width="431" height="538" decoding="async">
-          <a class="visor-full" href="/assets/galeria/al-arabi-grupo.webp" target="_blank" rel="noopener" aria-label="Ver tamaño completo">
+          <img class="visor-img" src="/assets/galeria/al-arabi-grupo.webp" alt="Al-Arabi SC — gráfico de fase de grupos" data-alt-es="Al-Arabi SC — gráfico de fase de grupos" data-alt-en="Al-Arabi SC — group stage graphic" width="431" height="538" decoding="async">
+          <a class="visor-full" href="/assets/galeria/al-arabi-grupo.webp" target="_blank" rel="noopener" aria-label="Ver tamaño completo" data-aria-es="Ver tamaño completo" data-aria-en="View full size">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
               <path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5"/>
             </svg>
@@ -3035,8 +3048,8 @@
            cliente. -->
       <div class="visor visor--web oculto" id="galeriaWeb" data-galeria-panel="web" role="tabpanel">
         <div class="visor-grande">
-          <img class="visor-img" src="/assets/portafolio-web/moser-cafe-kultur.webp" alt="Moser Café Kultur — sitio web y kit de redes" decoding="async">
-          <a class="visor-full" href="/assets/portafolio-web/moser-cafe-kultur.webp" target="_blank" rel="noopener" aria-label="Ver tamaño completo">
+          <img class="visor-img" src="/assets/portafolio-web/moser-cafe-kultur.webp" alt="Moser Café Kultur — sitio web y kit de redes" data-alt-es="Moser Café Kultur — sitio web y kit de redes" data-alt-en="Moser Café Kultur — website and social media kit" decoding="async">
+          <a class="visor-full" href="/assets/portafolio-web/moser-cafe-kultur.webp" target="_blank" rel="noopener" aria-label="Ver tamaño completo" data-aria-es="Ver tamaño completo" data-aria-en="View full size">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
               <path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5"/>
             </svg>
@@ -3147,8 +3160,8 @@
 
 <!-- Lightbox de la galeria: se abre desde .visor-full (el icono de
      esquina sobre la imagen grande), no navega a una pestaña nueva. -->
-<div class="lightbox" id="lightbox" data-abierto="no" role="dialog" aria-modal="true" aria-label="Imagen en tamaño completo">
-  <button class="lightbox-cerrar" id="lightboxCerrar" aria-label="Cerrar">✕</button>
+<div class="lightbox" id="lightbox" data-abierto="no" role="dialog" aria-modal="true" aria-label="Imagen en tamaño completo" data-aria-es="Imagen en tamaño completo" data-aria-en="Full-size image">
+  <button class="lightbox-cerrar" id="lightboxCerrar" aria-label="Cerrar" data-aria-es="Cerrar" data-aria-en="Close">✕</button>
   <figure class="lightbox-fig">
     <img id="lightboxImg" src="" alt="">
     <figcaption id="lightboxCaption"></figcaption>
@@ -3408,7 +3421,7 @@
        réplica 1:1. -->
   <div class="wrap foot-menu">
     <img class="foot-logo" src="/assets/logo-lg.webp" alt="NotMan" width="1200" height="675" loading="lazy">
-    <nav class="foot-mini" aria-label="Atajos">
+    <nav class="foot-mini" aria-label="Atajos" data-aria-es="Atajos" data-aria-en="Shortcuts">
       <a href="#trabajo" style="--giro:-2deg">
         <i>01</i>
         <span data-es="Trabajo" data-en="Work">Trabajo</span>
@@ -3435,7 +3448,7 @@
   <div class="wrap foot-in">
     <span>© <span id="yr"></span> Rubén Rivera</span>
 
-    <nav class="social" aria-label="Redes sociales">
+    <nav class="social" aria-label="Redes sociales" data-aria-es="Redes sociales" data-aria-en="Social media">
       <a href="https://www.instagram.com/notman.rivera" target="_blank" rel="noopener" aria-label="Instagram — @notman.rivera">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
           <rect x="3" y="3" width="18" height="18" rx="5"/>
@@ -4101,6 +4114,20 @@
         el.closest('.lede')?.querySelector('.dialog-next')?.classList.remove('oculto');
         maquinaEscribir(el, () => revelarOpciones(el));
       }
+    });
+
+    // Mismo patron que arriba, para atributos en vez de texto: alt de
+    // imagenes y aria-label de controles. Van aparte de [data-es][data-en]
+    // porque no todo elemento que necesita alt/aria bilingue tiene tambien
+    // texto visible que traducir (un <img>, por ejemplo, no tiene innerHTML
+    // que le sirva de nada). El generador de la version en ingles
+    // (scripts/build-en.js) hace exactamente este mismo reemplazo, sin
+    // duplicar la logica -- por eso vive aca y no solo en el script.
+    document.querySelectorAll('[data-alt-es][data-alt-en]').forEach(el => {
+      el.setAttribute('alt', el.getAttribute('data-alt-' + lang));
+    });
+    document.querySelectorAll('[data-aria-es][data-aria-en]').forEach(el => {
+      el.setAttribute('aria-label', el.getAttribute('data-aria-' + lang));
     });
 
     // el rotador y el visor de la galeria no tienen data-es/data-en, se avisan aparte
