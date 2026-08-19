@@ -822,6 +822,16 @@ Tenía razón, y el motivo estaba ya documentado en este mismo archivo sin que s
 
 Verificado con Playwright en 13 anchos (375–1920px): sin overflow, sin errores de consola, `background-color` computado confirmado en `rgb(229,0,18)` (rojo) y `border-top-color` en `rgb(139,63,255)` (violeta) en mobile y desktop.
 
+### Se revierte la marquesina: el formato en sí no encajaba (2026-08-19)
+
+Con el color ya arreglado, Rubén seguía sin verlo: "no es del todo el look que busco, ¿crees que convendría volver a contenedores separados para cada dato?".
+
+El diagnóstico esta vez no era de color sino de **formato**. Revisando el resto del sitio: cada pieza de información suelta -- el kicker, cada `.stat`, cada `.svc`, cada `.cred` -- vive en su propia placa recortada (`--filo`), alternando roja/negra, con sombra dura. Es el lenguaje visual que se repite en TODO el sitio, documentado arriba en **Estética: menús de Persona**. Una barra continua de texto scrolleando es un objeto visual que no existe en ese vocabulario -- el único precedente, la marquesina del footer, funciona como textura decorativa de fondo (`aria-hidden`, repite la marca sin transmitir información nueva), no como el vehículo principal para leer datos. Por eso dos vueltas de ajuste de color no bastaron: el problema no eran los colores del contenedor, era que el contenedor mismo no pertenecía al sistema.
+
+**Arreglo: se revierte por completo a las 3 placas separadas** (`.stat sat placa-roja` × 2, `.stat sat placa-negra` × 1) dentro de `.perfil-hero`, en la misma fila de ancho completo (`grid-area:info`) que ya se había resuelto en el ajuste original del hero (evita el bug de overflow invisible documentado en "El hero se reagrupa" más arriba). Se elimina por completo `.marquesina-hero`/`.marquesina-hero-pista` del CSS -- el HTML volvió a `.stats`, cuyo CSS (`.stats`, `.orbita .stat`, `.orbita .placa-roja/.placa-negra`) nunca se había tocado y seguía intacto desde antes de PR #46, así que no hubo que reescribir nada, solo restaurar el markup original.
+
+Verificado con Playwright en 13 anchos (375–1920px): sin overflow, sin errores de consola, 3 `.stat` presentes en todos los anchos, toggle de idioma confirmado (ES: "años en agencias / motion graphics / mercados" → EN: "years in agencies / motion graphics / markets").
+
 ## Trabajar desde una sesión remota (no desde la Mac)
 
 El repo es autosuficiente: un `index.html` sin build step. Editar, revisar y pushear funciona igual en cualquier máquina. **Lo único que no viaja es el despliegue**, y conviene saber exactamente por qué antes de perder tiempo:
