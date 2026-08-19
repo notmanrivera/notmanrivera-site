@@ -900,6 +900,14 @@ Verificado con Playwright en 14 anchos (375–1920px): sin overflow, sin errores
 
 ⚠️ **Pendiente de que Rubén confirme el formato del número** una vez publicado -- probarlo tocándolo desde su propio teléfono, por si algún operador todavía espera el "1" extra después del 52 para números móviles mexicanos.
 
+### Corrección: nada de verde, mismo rombo que el HUD del otro lado (2026-08-19)
+
+Rubén, viendo el botón circular verde en vivo: "see how we have the diamond shapes in the other side? lets give the same treatment to the whatsapp button so it matches the aesthetic, also use other color other than green, make it match those diamond navigators".
+
+La excepción de color de la v1 (verde de marca "porque hay que reconocerlo al instante") quedó anulada por una prioridad más alta: consistencia visual con `.volver-arriba`, el otro flotante fijo del sitio. Se retira el círculo + verde y se copia la receta exacta de `.volver-arriba` -- `transform:rotate(45deg)` en la caja (con el SVG contra-rotado `-45deg` para que el ícono se quede derecho), `background:var(--violet)` en reposo y `var(--rojo)` al hover/focus, mismo grosor de borde (2px, del mismo color que el fondo). Ya no hace falta ninguna excepción a la paleta de 5 colores -- vuelve a ser 100% el sistema del sitio. Un poco más grande que `.volver-arriba` (40px vs 34px, 34px vs 28px en móvil) porque sigue siendo el CTA de contacto primario, no un utilitario de scroll como su vecino.
+
+Verificado con Playwright en 14 anchos (375–1920px): sin overflow, sin errores, `background-color` computado confirmado en `rgb(139,63,255)` (violeta) en reposo y `rgb(229,0,18)` (rojo) en hover.
+
 ### reCAPTCHA: pendiente de decisión, no hay formulario que proteger
 
 Rubén también pidió "habilitar reCAPTCHA para filtrar spam". Revisado el sitio completo: **no existe ningún formulario ni backend** -- todo el mecanismo de "contacto" (el menú de diálogo estilo RPG en `#contacto`, el botón `.mail`) son enlaces `mailto:` que abren el cliente de correo del propio visitante. No hay ningún `<form>`, ninguna función serverless, ningún endpoint que reciba datos. reCAPTCHA protege *envíos* a un servidor -- sin uno, no hay nada a lo que engancharlo.
