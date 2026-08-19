@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Dos URLs, sin build step que mantenga fechas. Se quitaron <lastmod>,
+<!-- Cinco URLs, sin build step que mantenga fechas. Se quitaron <lastmod>,
      <changefreq> y <priority> a proposito: Google ignora los dos ultimos por
      completo, y solo hace caso a lastmod si es fiable. Una fecha puesta a
      mano se queda vieja al primer cambio que se nos olvide, y una fecha
@@ -24,5 +24,18 @@
     <xhtml:link rel="alternate" hreflang="es" href="https://notmanrivera.com/"/>
     <xhtml:link rel="alternate" hreflang="en" href="https://notmanrivera.com/en/"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://notmanrivera.com/"/>
+  </url>
+  <!-- Casos de estudio (public/casos/): paginas propias, solo en español
+       por ahora -- sin hreflang porque todavia no tienen contraparte en
+       ingles (a diferencia de / y /en/, que si son traducciones exactas
+       una de otra). -->
+  <url>
+    <loc>https://notmanrivera.com/casos/al-arabi-sc/</loc>
+  </url>
+  <url>
+    <loc>https://notmanrivera.com/casos/mazatlan-fc/</loc>
+  </url>
+  <url>
+    <loc>https://notmanrivera.com/casos/diseno-web/</loc>
   </url>
 </urlset>
