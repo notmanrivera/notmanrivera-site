@@ -1348,6 +1348,25 @@
     opacity:0;transition:opacity .3s;
   }
   .lede.go ~ .dialog-name{opacity:1}
+  /* Retrato de NotMan: acompaña la placa de nombre en las cajas donde
+     habla el PERSONAJE (no en .dialogo-id, que es Rubén hablando como
+     persona). Mismo cromado que el resto del sitio -- relleno --paper,
+     borde grueso --ink, sombra dura -- para que la ilustracion se lea
+     como una pieza mas del sistema y no como una imagen suelta pegada
+     encima. Asset placeholder: Ruben esta preparando el definitivo.
+     Un poco mas arriba/izquierda que .dialog-name para que las dos
+     placas floten juntas sin pisarse (mismo truco de hermano vecino que
+     .dialog-name, sincronizado con el mismo .lede.go). */
+  .notman-retrato{
+    position:absolute;top:-100px;left:-14px;z-index:1;
+    width:76px;height:76px;border-radius:50%;
+    background:var(--paper);border:4px solid var(--ink);
+    box-shadow:5px 5px 0 var(--sombra);
+    object-fit:cover;object-position:center 32%;
+    pointer-events:none;
+    opacity:0;transition:opacity .3s;
+  }
+  .lede.go ~ .notman-retrato{opacity:1}
   /* La placa de "TÚ" (2026-08-17): referencia real de P3R -- quien
      pregunta ancla su caja/placa a la izquierda, quien responde a la
      derecha. Mismo .dialog-name, espejado: right en vez de left, giro en
@@ -2620,6 +2639,7 @@
   @media(prefers-reduced-motion:reduce){
     .fade,.fade.go{opacity:1;animation:none;transform:none}
     .dialog-name{opacity:1;transition:none}
+    .notman-retrato{opacity:1;transition:none}
     .dialogo::before{transition:none}
     .dialogo:hover::before{transform:translate(6px,6px)}
     .stats::before,.stats.go::before{transform:scaleX(1);animation:none}
@@ -2863,6 +2883,7 @@
         <p class="dialog-texto" data-es="Soy el refuerzo táctico que tu agencia necesita. 9 años de experiencia diseñando y animando para agencias, jugadores y representantes de élite. Cuando a tu equipo le falta capacidad o tiempo, yo entro en acción. Motion graphics, video y diseño web. Listo para el despliegue." data-en="I am the tactical backup your agency needs. 9 years of experience designing and animating for agencies, elite players and representatives. When your team runs out of capacity or time, I step in. Motion graphics, video, and web design. Ready for deployment.">Soy el refuerzo táctico que tu agencia necesita. 9 años de experiencia diseñando y animando para agencias, jugadores y representantes de élite. Cuando a tu equipo le falta capacidad o tiempo, yo entro en acción. Motion graphics, video y diseño web. Listo para el despliegue.</p>
         <i class="dialog-next" aria-hidden="true"></i>
       </div>
+      <img class="notman-retrato" src="/assets/notman-cara.svg" alt="" aria-hidden="true">
       <span class="dialog-name">NotMan</span>
     </div>
 
@@ -3377,6 +3398,7 @@
           <p class="dialog-texto" data-es="¿En qué puedo ayudarte?" data-en="What can I help you with?">¿En qué puedo ayudarte?</p>
           <i class="dialog-next" aria-hidden="true"></i>
         </div>
+        <img class="notman-retrato" src="/assets/notman-cara.svg" alt="" aria-hidden="true">
         <span class="dialog-name">NotMan</span>
       </div>
 

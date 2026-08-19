@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 280">
+  <defs>
+    <clipPath id="cabeza-clip">
+      <circle cx="210" cy="150" r="100"/>
+    </clipPath>
+  </defs>
+
+  <!-- palillo/rama diagonal que sale por detras, antes de la cabeza para que quede debajo -->
+  <line x1="235" y1="78" x2="392" y2="34" stroke="#000" stroke-width="9" stroke-linecap="round"/>
+
+  <!-- patas tipo arana, saliendo por la izquierda -->
+  <g fill="none" stroke="#000" stroke-width="8" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M92,196 L46,188 L20,172"/>
+    <path d="M90,206 L44,212 L18,226"/>
+    <path d="M96,216 L58,236 L38,258"/>
+    <path d="M104,222 L78,252 L64,272"/>
+  </g>
+  <circle cx="98" cy="200" r="20" fill="#000"/>
+
+  <!-- cabeza -->
+  <circle cx="210" cy="150" r="100" fill="#F5C4A0" stroke="#000" stroke-width="9"/>
+
+  <!-- gorra violeta, recortada al circulo de la cabeza -->
+  <g clip-path="url(#cabeza-clip)">
+    <rect x="70" y="10" width="300" height="120" fill="#8B3FFF" transform="rotate(-11 210 150)"/>
+  </g>
+  <!-- filo de la gorra, trazo encima del recorte para que se vea limpio -->
+  <path d="M104,124 L370,60" fill="none" stroke="#000" stroke-width="9" stroke-linecap="round" clip-path="url(#cabeza-clip)"/>
+  <!-- contorno general de la cabeza otra vez encima, para que el corte de la gorra no tape el borde -->
+  <circle cx="210" cy="150" r="100" fill="none" stroke="#000" stroke-width="9"/>
+
+  <!-- ojos -->
+  <circle cx="178" cy="178" r="15" fill="#fff" stroke="#000" stroke-width="5"/>
+  <circle cx="182" cy="180" r="5.5" fill="#000"/>
+  <circle cx="238" cy="172" r="15" fill="#fff" stroke="#000" stroke-width="5"/>
+  <circle cx="242" cy="174" r="5.5" fill="#000"/>
+
+  <!-- boca -->
+  <ellipse cx="208" cy="220" rx="19" ry="15" fill="#E50012" stroke="#000" stroke-width="5"/>
+</svg>
