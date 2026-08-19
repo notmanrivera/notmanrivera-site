@@ -978,6 +978,16 @@ Rubén corrigió el punto pendiente: "el trabajo para hugo, como el de al arabi,
 
 Los dos ahora llevan `Victorem Sports Marketing` en el kicker -- mismo nombre que ya aparece en la tarjeta de credenciales del sitio principal, así que no es información nueva para quien ya conoce el sitio, solo la conexión explícita en los casos de estudio.
 
+## Bug real: los links con hash desde afuera no aterrizaban en la sección (2026-08-19)
+
+Con los casos de estudio ya publicados, Rubén reportó que el botón "¿Necesitas un sistema así para tu club? Hablemos" (que apunta a `/#contacto`) no llevaba a la sección de contacto -- el visitante llegaba a la portada de siempre, arriba del todo.
+
+**Causa real:** `<script>document.documentElement.classList.add('cargando');</script>` corre de forma síncrona en el `<head>`, antes de que exista el resto de la página -- y `.cargando{overflow:hidden}` vive en `<html>`. El salto nativo del navegador a un ancla de la URL (`#contacto`) pasa en algún punto de la carga inicial, pero mientras `<html>` tenga `overflow:hidden` ese salto simplemente no puede pasar -- y el navegador **no lo reintenta después**, una vez que `overflow` vuelve a `visible` cuando el cargador se retira. El resultado: cualquier visitante que llegara con un hash en la URL desde AFUERA del sitio (los CTA de los casos de estudio son el primer caso real de esto -- antes, todo el scroll a secciones pasaba por clics dentro de la página ya cargada, que nunca pisaban este problema) se quedaba varado arriba pese a que la URL decía `#contacto`.
+
+**Arreglo:** en `cerrar()` (la función que retira el cargador), justo después de que `raiz.classList.add('cargado')` libera el scroll, se agrega un empujón manual: `document.querySelector(location.hash)?.scrollIntoView({behavior:'instant'})`. `'instant'` a propósito y no `'auto'` (que heredaría el `scroll-behavior:smooth` global) -- quien llega con un hash quiere aterrizar ahí ya, no ver un recorrido animado de toda la página primero.
+
+Verificado con Playwright: carga sin hash sigue arrancando en `scrollY:0` (sin regresión); `#trabajo`, `#servicios`, `#experiencia` y `#perfil` (no solo `#contacto`) aterrizan correctamente -- confirma que el arreglo es genérico, no un parche solo para contacto; sweep de 6 anchos × 2 idiomas (`/` y `/en/`, ambos con `#contacto`) sin overflow, sin errores, `#contacto` a `y≈0` en los 12.
+
 ## Notas para quien retome esto
 
 - El dashboard de Cloudflare y Gmail están bloqueados para el agente vía navegador — pero **la API de Cloudflare sí responde** usando el token OAuth que Wrangler guarda en `~/Library/Preferences/.wrangler/config/default.toml`. Ese token puede leer/escribir Pages y Email Routing, pero **no** puede escribir registros DNS — eso lo tiene que hacer Rubén a mano en el dashboard.
