@@ -2329,20 +2329,22 @@
   }
 
   /* Marquesina del hero: versión más visualmente impactante que la del footer.
-     Usa la paleta de colores del sitio (rojo + violeta) con mayor presencia.
-     Bordes negros de 3px arriba/abajo -- el mismo lenguaje de "placa recortada"
-     que el resto del sitio (sombra dura, filo definido) en vez de una franja
-     de color que empieza y termina sin borde, que se leía como un banner
-     publicitario suelto en vez de una pieza del sistema. El borde no lo
-     recorta overflow:hidden porque se pinta en la caja del propio elemento,
-     no en su contenido.
-     margin da aire arriba (mismo que ya tenía el kicker encima) Y abajo --
-     antes tocaba directo el h1/logo con 0px de por medio, que es lo que Rubén
-     señaló como "crammed". */
+     ⚠️ La v1 mezclaba rojo y violeta en un solo linear-gradient -- exactamente
+     lo que la paleta del sitio prohíbe. "Cada color tiene un trabajo asignado"
+     (ver PROJECT.md): rojo es LA SUPERFICIE (relleno de placa en reposo),
+     violeta es QUIEN ES (bordes, identidad). Fundir los dos en una transición
+     genera tonos intermedios que no son ninguno de los dos -- el mismo motivo
+     por el que el magenta se retiró del sitio ("junto al rojo los dos se leían
+     como el mismo color mal impreso"). Aquí no eran tonos ajenos, pero el
+     principio es el mismo: los acentos no se mezclan entre sí.
+     Arreglo: relleno rojo SOLIDO (la marquesina es literalmente una "barra de
+     acento", el propio trabajo asignado al rojo) + borde violeta (su trabajo
+     es bordes/identidad). Los dos colores conviven en la misma pieza sin
+     pisarse -- superficie y borde, no superficie mezclada consigo misma. */
   .marquesina-hero{
     overflow:hidden;white-space:nowrap;
-    background:linear-gradient(90deg, var(--rojo) 0%, var(--violet-hi) 50%, var(--rojo) 100%);
-    border-top:3px solid var(--ink);border-bottom:3px solid var(--ink);
+    background:var(--rojo);
+    border-top:3px solid var(--violet);border-bottom:3px solid var(--violet);
     padding:12px 0;margin:16px 0 28px;
     /* Mascara de desvanecido en los dos extremos: sin ella, el texto que
        scrollea se corta a la mitad de una letra justo en el borde del

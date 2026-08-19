@@ -812,6 +812,16 @@ Sobre la presentación, dos cambios que la acercan al lenguaje visual del resto 
 
 Verificado con Playwright en 13 anchos (375 a 1920px): sin overflow horizontal, sin errores de consola, marquesina visible con sus dos `span` en todos. Confirmado el hueco simétrico (28px arriba, 28px abajo) a 390px.
 
+### Ajuste: el fondo mezclaba rojo y violeta, contra la regla de la paleta (2026-08-19)
+
+Rubén, viendo el resultado en producción: "no siento que los colores de la marquesina encajen con el look de Persona 5 que buscamos".
+
+Tenía razón, y el motivo estaba ya documentado en este mismo archivo sin que se aplicara aquí: el fondo era `linear-gradient(90deg, var(--rojo) 0%, var(--violet-hi) 50%, var(--rojo) 100%)` -- funde rojo y violeta en una sola transición. La sección **Paleta**, arriba, es explícita: *"cada color tiene un trabajo asignado"* -- rojo es **la superficie** (relleno de placa en reposo), violeta es **quién es** (bordes, identidad). Mezclarlos genera tonos intermedios que no son ninguno de los dos, el mismo problema por el que el magenta se retiró del sitio en su momento ("junto al rojo los dos se leían como el mismo color mal impreso"). No era el mismo error letra por letra -- ahí eran dos colores ajenos parecidos, aquí son los dos acentos propios del sitio -- pero el principio que rompía es el mismo: los acentos no se funden entre sí.
+
+**Arreglo:** relleno rojo sólido (`background:var(--rojo)`, sin gradiente) -- la marquesina es literalmente una "barra de acento", que es el trabajo que la tabla de paleta ya le asigna al rojo. El borde, que en el ajuste anterior era negro, pasa a violeta (`border:3px solid var(--violet)`) -- bordes es su trabajo asignado. Los dos colores conviven en la misma pieza sin pisarse: superficie rellena + borde de identidad, no superficie mezclada consigo misma. Texto blanco sobre rojo se queda igual (ya cumplía el contraste 4.84:1 documentado arriba).
+
+Verificado con Playwright en 13 anchos (375–1920px): sin overflow, sin errores de consola, `background-color` computado confirmado en `rgb(229,0,18)` (rojo) y `border-top-color` en `rgb(139,63,255)` (violeta) en mobile y desktop.
+
 ## Trabajar desde una sesión remota (no desde la Mac)
 
 El repo es autosuficiente: un `index.html` sin build step. Editar, revisar y pushear funciona igual en cualquier máquina. **Lo único que no viaja es el despliegue**, y conviene saber exactamente por qué antes de perder tiempo:
