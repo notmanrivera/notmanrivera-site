@@ -988,6 +988,16 @@ Con los casos de estudio ya publicados, Rubén reportó que el botón "¿Necesit
 
 Verificado con Playwright: carga sin hash sigue arrancando en `scrollY:0` (sin regresión); `#trabajo`, `#servicios`, `#experiencia` y `#perfil` (no solo `#contacto`) aterrizan correctamente -- confirma que el arreglo es genérico, no un parche solo para contacto; sweep de 6 anchos × 2 idiomas (`/` y `/en/`, ambos con `#contacto`) sin overflow, sin errores, `#contacto` a `y≈0` en los 12.
 
+## Bug real: el texto de los casos de estudio pegaba contra los bordes (2026-08-19)
+
+Rubén, viendo una captura real de `/casos/mazatlan-fc/` en su telefono: el kicker, el `h1`, el parrafo y las imagenes tocaban literalmente el borde de la pantalla, sin ningun aire lateral -- pidio separarlos.
+
+**No era solo "poco espacio", era un bug de CSS real.** Cada seccion de las paginas de caso usa DOS clases en el mismo elemento -- por ejemplo `<section class="caso-hero wrap">`. `.wrap{padding:0 24px}` pone el aire lateral; pero `.caso-hero{padding:64px 0 36px}` (declarada DESPUES en la hoja, misma especificidad) usa la propiedad shorthand `padding`, que fija los CUATRO lados a la vez -- sus `0` en los lados quedaban ganando por completo sobre el `24px` de `.wrap`, dejando el padding izquierdo/derecho real en **0px**, no "chico". Se repetia en `.caso-galeria`/`.proyectos`, `.caso-cuerpo`, `.caso-cta`, y de nuevo en el `@media(max-width:560px)` de cada pagina (el breakpoint exacto de la captura de Rubén).
+
+**Arreglo:** en las cinco reglas, se cambio la shorthand `padding:Npx 0 Mpx` por las longhand `padding-top:Npx;padding-bottom:Mpx` -- sin tocar `padding-left`/`padding-right`, esas dos propiedades ya no las declara nadie mas que `.wrap`, asi que su `24px` se queda en pie sin que nada lo pise. Mismo cambio en las tres paginas (`al-arabi-sc`, `mazatlan-fc`, `diseno-web`) y en su media query movil.
+
+Verificado con Playwright: `getComputedStyle(...).paddingLeft` confirmado en `24px` (nunca `0px`) en las cinco secciones de las tres paginas, en 8 anchos cada una (375 a 1920px) -- 24 combinaciones, sin overflow, sin errores.
+
 ## Notas para quien retome esto
 
 - El dashboard de Cloudflare y Gmail están bloqueados para el agente vía navegador — pero **la API de Cloudflare sí responde** usando el token OAuth que Wrangler guarda en `~/Library/Preferences/.wrangler/config/default.toml`. Ese token puede leer/escribir Pages y Email Routing, pero **no** puede escribir registros DNS — eso lo tiene que hacer Rubén a mano en el dashboard.
