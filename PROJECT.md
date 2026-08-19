@@ -972,6 +972,12 @@ Seguimiento del hueco de SEO #2 (una sola URL, sin forma de rankear por consulta
 
 **Estado: en la rama, sin mergear.** A diferencia de casi todo lo demás en este archivo, esto lleva contenido factual sobre clientes reales de Rubén -- se le pide su revisión antes de publicar, sobre todo el rol de Hugo González en el segundo caso.
 
+### Corrección: los dos casos son trabajo de agencia, via Victorem Sports Marketing
+
+Rubén corrigió el punto pendiente: "el trabajo para hugo, como el de al arabi, se hizo como colaborador/empleado de Victorem Agency". Esto ya estaba parcialmente documentado en el propio sitio y no se había cruzado: la tarjeta de credenciales de `#experiencia` dice literalmente **"Hugo González · Mazatlán FC -- Branding e imagen digital para el arquero profesional durante su etapa en el club"** -- Hugo González no es un representante ni periodista, es el propio ARQUERO PROFESIONAL, y el trabajo es branding personal del jugador, no contenido de club. El caso de Mazatlán FC se reescribió por completo con este dato (título, kicker, dek, y las tres secciones de cuerpo) en vez de solo agregar una atribución encima del texto original. Al-Arabi SC solo necesitó una línea (kicker + dek) porque su encargo real ya estaba bien descrito, solo le faltaba el crédito de agencia.
+
+Los dos ahora llevan `Victorem Sports Marketing` en el kicker -- mismo nombre que ya aparece en la tarjeta de credenciales del sitio principal, así que no es información nueva para quien ya conoce el sitio, solo la conexión explícita en los casos de estudio.
+
 ## Notas para quien retome esto
 
 - El dashboard de Cloudflare y Gmail están bloqueados para el agente vía navegador — pero **la API de Cloudflare sí responde** usando el token OAuth que Wrangler guarda en `~/Library/Preferences/.wrangler/config/default.toml`. Ese token puede leer/escribir Pages y Email Routing, pero **no** puede escribir registros DNS — eso lo tiene que hacer Rubén a mano en el dashboard.
