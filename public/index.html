@@ -1059,6 +1059,15 @@
        se tapa nunca */
     .orbita > h1           {grid-area:logo;margin-bottom:0;position:relative;z-index:2}
     .orbita > .dialogo     {grid-area:lede}
+    /* .dialogo-id: la copia de la caja de dialogo que vive en la fila "info"
+       (arriba del logo) en vez de "lede" (abajo). 3 clases contra las 2 de
+       la regla generica de arriba le ganan en especificidad sin depender del
+       orden en la hoja -- .dialogo sigue aportando el resto (sombra roja,
+       hover, isolation) tal cual. margin-top en 0: el 30px de la regla de
+       abajo esta pensado para separar la caja de "lede" del logo que la
+       antecede; esta es la PRIMERA fila de la rejilla, no hay nada arriba
+       de que separarse. */
+    .orbita > .dialogo.dialogo-id{grid-area:info;margin-top:0}
     .cta-row .btn-1        {grid-area:b1;justify-self:end;  margin-right:var(--empuje,0)}
     .cta-row .btn-2        {grid-area:b2;justify-self:start; margin-left:var(--empuje,0)}
 
@@ -2798,17 +2807,24 @@
        la izquierda, asi que las dos columnas arrancan pegadas al logo y
        crecen alejandose de el. -->
   <div class="wrap orbita">
-    <!-- Bloque de perfil, v3: nota de "libreta de detective" (.p5-perfil-box)
-         en vez de placas separadas -- Ruben probando si esta lectura le
-         gusta mas para el hero. Nombre como etiqueta (con el mismo giro que
-         ya llevaba .kicker), ubicacion + cifras fundidas en un solo parrafo
-         de corrido en la caja de abajo, que es justo lo que .p5-perfil-content
-         esta pensado para sostener. DEMO -- pendiente de confirmar con Ruben. -->
-    <div class="p5-perfil-box">
-      <div class="p5-perfil-tag">Rubén Rivera</div>
-      <div class="p5-perfil-content">
-        <p data-es="Querétaro, México. 9+ años en agencias, motion graphics 2D/3D, activo en México, España y Medio Oriente/Norte de África." data-en="Querétaro, Mexico. 9+ years in agencies, 2D/3D motion graphics, active across Mexico, Spain and the Middle East/North Africa.">Querétaro, México. 9+ años en agencias, motion graphics 2D/3D, activo en México, España y Medio Oriente/Norte de África.</p>
+    <!-- Bloque de perfil, v4: reusa el propio sistema de caja de dialogo
+         (.dialogo/.lede/.dialog-name) que ya usa NOTMAN mas abajo para
+         hablar, en vez de un componente nuevo -- Ruben senalo la placa
+         "NOTMAN" (bordes en capas, sombra roja corrida, filo --filo) como la
+         referencia a seguir, "usa tambien sus animaciones". Al reusar las
+         MISMAS clases (no una copia), llegan gratis la maquina de escribir
+         (querySelectorAll('.dialog-texto') es generico, no distingue cual
+         caja), el fundido sincronizado de la placa de nombre
+         (.lede.go ~ .dialog-name) y el stagger de entrada del hero
+         (entradaHero ya recorre TODOS los 'header .lede', no solo uno).
+         .dialogo-id es solo un modificador para reubicar esta copia en la
+         fila "info" en vez de "lede" -- ver la regla junto a .orbita>.dialogo
+         mas arriba. DEMO -- pendiente de confirmar con Ruben. -->
+    <div class="dialogo dialogo-id">
+      <div class="lede">
+        <p class="dialog-texto" data-es="Querétaro, México. 9+ años en agencias, motion graphics 2D/3D, activo en México, España y Medio Oriente/Norte de África." data-en="Querétaro, Mexico. 9+ years in agencies, 2D/3D motion graphics, active across Mexico, Spain and the Middle East/North Africa.">Querétaro, México. 9+ años en agencias, motion graphics 2D/3D, activo en México, España y Medio Oriente/Norte de África.</p>
       </div>
+      <span class="dialog-name">Rubén Rivera</span>
     </div>
 
     <h1>
