@@ -2329,11 +2329,29 @@
   }
 
   /* Marquesina del hero: versión más visualmente impactante que la del footer.
-     Usa la paleta de colores del sitio (rojo + violeta) con mayor presencia. */
+     Usa la paleta de colores del sitio (rojo + violeta) con mayor presencia.
+     Bordes negros de 3px arriba/abajo -- el mismo lenguaje de "placa recortada"
+     que el resto del sitio (sombra dura, filo definido) en vez de una franja
+     de color que empieza y termina sin borde, que se leía como un banner
+     publicitario suelto en vez de una pieza del sistema. El borde no lo
+     recorta overflow:hidden porque se pinta en la caja del propio elemento,
+     no en su contenido.
+     margin da aire arriba (mismo que ya tenía el kicker encima) Y abajo --
+     antes tocaba directo el h1/logo con 0px de por medio, que es lo que Rubén
+     señaló como "crammed". */
   .marquesina-hero{
     overflow:hidden;white-space:nowrap;
     background:linear-gradient(90deg, var(--rojo) 0%, var(--violet-hi) 50%, var(--rojo) 100%);
-    padding:12px 0;margin-top:16px;
+    border-top:3px solid var(--ink);border-bottom:3px solid var(--ink);
+    padding:12px 0;margin:16px 0 28px;
+    /* Mascara de desvanecido en los dos extremos: sin ella, el texto que
+       scrollea se corta a la mitad de una letra justo en el borde del
+       contenedor, y ese corte abrupto (ES · MENA9+ AÑOS…) se lee entrecortado.
+       Con la mascara el texto se desvanece a transparente antes de tocar el
+       borde -- el mismo truco visual que un ticker de noticiero. -webkit-
+       primero por Safari, que todavia no reconoce el prefijo sin él. */
+    -webkit-mask-image:linear-gradient(90deg,transparent,#000 48px,#000 calc(100% - 48px),transparent);
+    mask-image:linear-gradient(90deg,transparent,#000 48px,#000 calc(100% - 48px),transparent);
   }
   .marquesina-hero-pista{
     display:inline-flex;width:max-content;
@@ -2343,6 +2361,7 @@
     flex:none;
     font-family:var(--ui);font-weight:700;text-transform:uppercase;
     letter-spacing:.12em;font-size:.85rem;color:var(--paper);opacity:1;
+    padding:0 2em;
   }
   .marquesina-hero-pista b{
     font-weight:900;color:inherit;
