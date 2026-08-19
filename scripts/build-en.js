@@ -60,6 +60,12 @@ document.querySelectorAll('[data-alt-es][data-alt-en]').forEach(el => {
 document.querySelectorAll('[data-aria-es][data-aria-en]').forEach(el => {
   el.setAttribute('aria-label', el.getAttribute('data-aria-en'));
 });
+// Mismo patron para href -- los links a los casos de estudio (paginas
+// aparte, no [data-es][data-en]) tienen que apuntar a su propia copia en
+// ingles (public/casos/<slug>/en/) cuando esta pagina es la version /en/.
+document.querySelectorAll('[data-href-es][data-href-en]').forEach(el => {
+  el.setAttribute('href', el.getAttribute('data-href-en'));
+});
 
 // El rotador de servicios del hero (.rota) es el UNICO caso que el boton de
 // idioma no resuelve con el mismo bucle de arriba: su texto inicial queda
