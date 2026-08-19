@@ -952,6 +952,32 @@ Con `/en/` ya publicada, Rubén notó la inconsistencia: tocar EN en la portada 
 
 Verificado con Playwright: desde `/index.html#contacto`, clic en EN navega a `/en/#contacto` (`lang="en"`, botón en "ES", kicker en inglés); clic en ES desde ahí vuelve a `/#contacto` (`lang="es"`, botón en "EN", kicker en español) -- el hash se conserva en las dos direcciones, cero errores de consola. Sweep de Playwright en 7 anchos × 2 idiomas: sin overflow, sin errores, en los 14.
 
+## Casos de estudio: paginas propias por cliente+servicio (2026-08-19, PENDIENTE de revisión)
+
+Seguimiento del hueco de SEO #2 (una sola URL, sin forma de rankear por consulta específica). Rubén: "no tengo tiempo de mantener un blog, ¿podrías hacerlo tú?". Se descartó el blog a propósito -- un blog abandonado (tres posts y silencio desde 2024) es peor señal que no tener blog, y exige una cadencia que Rubén ya avisó que no puede sostener. En su lugar: **páginas de caso de estudio, escritas una sola vez, sin cadencia que mantener**, construidas con hechos que YA estaban publicados en el sitio (ningún dato, cifra o resultado inventado).
+
+**Tres páginas, cada una cubriendo un ángulo de servicio distinto:**
+- `public/casos/al-arabi-sc/` -- paquete de motion graphics de matchday para Al-Arabi SC (Qatar Stars League). El más rico en material: 8 piezas reales en la galería del sitio (fase de grupos, alineación, próximo partido, 4 jornadas, calendario completo).
+- `public/casos/mazatlan-fc/` -- edición de video/motion graphics de matchday para Mazatlán FC, Liga MX y Leagues Cup, "en colaboración con Hugo González". ⚠️ El rol exacto de Hugo González (¿representante? ¿periodista? ¿el propio equipo de contenido del club?) no está declarado en ningún lado del sitio existente -- se redactó deliberadamente genérico ("en colaboración con") para no inventar un cargo. **Pendiente que Rubén confirme o corrija esto antes de publicar.**
+- `public/casos/diseno-web/` -- no es UN cliente, es un recorrido por los 7 clientes de la pestaña "Web" de la galería (Moser Café Kultur, Café Amadeus, Grupo Uno22, Saxodia, V-Dental, Viterbo 68, Incómodo). Se eligió este formato porque cada cliente web individual solo tiene una miniatura en el sitio -- no había material real para un caso de estudio profundo por cliente, y estirarlo habría significado inventar contenido.
+
+**Lo que NO llevan a propósito:** métricas de resultado ("aumentó el engagement 40%"), testimonios o citas atribuidas a personas reales, cualquier dato que no estuviera ya en el sitio. Un caso de estudio de un cliente real con afirmaciones falsas es un riesgo reputacional -- mejor modesto y verificable que impresionante e inventado.
+
+**Implementación:**
+- Cada página es un HTML autocontenido (mismo espíritu que `public/firma.html`), NO parte del sistema `.orbita`/`.dialogo`/RPG del sitio principal -- reutiliza las mismas tipografías (Kenyan Coffee, Monument, Inter vía `@font-face`) y la misma paleta (`:root` con las mismas variables), pero con su propio CSS compacto: sin la maquinaria de animación/scroll-reveal del sitio, porque un caso de estudio se beneficia de ser simple, liviano y indexable rápido -- no necesita el peso ni la complejidad del SPA.
+- Cada una lleva su propio `title`/`description`/OG/Twitter/canonical y un JSON-LD `CreativeWork` con `creator` apuntando al `Person` del sitio principal.
+- **Sin hreflang todavía** -- a diferencia de `/` y `/en/` (que SÍ son traducciones exactas la una de la otra), estas páginas solo existen en español por ahora. Traducirlas es un seguimiento natural, no bloqueante.
+- ⚠️ **Bug real encontrado y corregido:** `.kicker`/`h2` con `skewX()` empujaban 2-3px de overflow horizontal medible por `scrollWidth` en anchos angostos (375-390px) -- el mismo patrón de "el skew empuja fuera de la caja" que ya documentaba este archivo en otros contextos. Se agregó `html{overflow-x:hidden}` (mismo recurso que ya usa `index.html` en la línea 339) -- confirmado con Playwright que el `scrollX` real después de `window.scrollTo(9999,0)` se queda en 2-3px, no hay scroll horizontal visible ni funcional, es puro ruido de medición del layout pre-recorte.
+- Se agregó un enlace discreto a las tres (`.casos-links`, morado con hover rojo, mismo lenguaje que el resto de links del sitio) justo después de la galería en `#trabajo`, y las tres URLs al `sitemap.xml` (sin hreflang, ver arriba).
+
+**Estado: en la rama, sin mergear.** A diferencia de casi todo lo demás en este archivo, esto lleva contenido factual sobre clientes reales de Rubén -- se le pide su revisión antes de publicar, sobre todo el rol de Hugo González en el segundo caso.
+
+### Corrección: los dos casos son trabajo de agencia, via Victorem Sports Marketing
+
+Rubén corrigió el punto pendiente: "el trabajo para hugo, como el de al arabi, se hizo como colaborador/empleado de Victorem Agency". Esto ya estaba parcialmente documentado en el propio sitio y no se había cruzado: la tarjeta de credenciales de `#experiencia` dice literalmente **"Hugo González · Mazatlán FC -- Branding e imagen digital para el arquero profesional durante su etapa en el club"** -- Hugo González no es un representante ni periodista, es el propio ARQUERO PROFESIONAL, y el trabajo es branding personal del jugador, no contenido de club. El caso de Mazatlán FC se reescribió por completo con este dato (título, kicker, dek, y las tres secciones de cuerpo) en vez de solo agregar una atribución encima del texto original. Al-Arabi SC solo necesitó una línea (kicker + dek) porque su encargo real ya estaba bien descrito, solo le faltaba el crédito de agencia.
+
+Los dos ahora llevan `Victorem Sports Marketing` en el kicker -- mismo nombre que ya aparece en la tarjeta de credenciales del sitio principal, así que no es información nueva para quien ya conoce el sitio, solo la conexión explícita en los casos de estudio.
+
 ## Notas para quien retome esto
 
 - El dashboard de Cloudflare y Gmail están bloqueados para el agente vía navegador — pero **la API de Cloudflare sí responde** usando el token OAuth que Wrangler guarda en `~/Library/Preferences/.wrangler/config/default.toml`. Ese token puede leer/escribir Pages y Email Routing, pero **no** puede escribir registros DNS — eso lo tiene que hacer Rubén a mano en el dashboard.

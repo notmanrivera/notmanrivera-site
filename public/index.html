@@ -1868,6 +1868,19 @@
   }
   .galeria-tit em{font-style:normal;color:var(--paper)}
 
+  /* Enlaces a los casos de estudio completos (public/casos/) -- discretos
+     a proposito, no otra placa mas: son una salida secundaria de la
+     seccion, no el CTA principal (ese sigue siendo .mail/.btn-2). */
+  .casos-links{
+    display:flex;flex-wrap:wrap;gap:12px 28px;margin-top:26px;
+  }
+  .casos-links a{
+    font-family:var(--ui);font-weight:300;text-transform:uppercase;
+    font-size:.72rem;letter-spacing:.08em;color:var(--violet-hi);
+    text-decoration:none;transition:color .18s;
+  }
+  .casos-links a:hover,.casos-links a:focus-visible{color:var(--rojo)}
+
   /* mismo lenguaje que .lang/.abrir-menu: sesgado, Monument, mayusculas.
      Activa en --rojo (la accion ya elegida), inactiva en placa oscura. */
   .galeria-tabs{display:flex;gap:10px;margin-bottom:28px}
@@ -3086,6 +3099,18 @@
           </div>
         </div>
       </div>
+    </div>
+
+    <!-- Enlaces a los casos de estudio completos: paginas propias fuera del
+         SPA (public/casos/), cada una con su propio title/description/
+         JSON-LD para poder indexarse y rankear por su combinacion
+         cliente+servicio -- el sitio entero es una sola URL en el
+         sitemap, esto es lo que le da a Google mas de una puerta de
+         entrada. Ver PROJECT.md, seccion de casos de estudio. -->
+    <div class="casos-links rv">
+      <a href="/casos/al-arabi-sc/" data-es="Caso completo: Al-Arabi SC →" data-en="Full case study: Al-Arabi SC →">Caso completo: Al-Arabi SC →</a>
+      <a href="/casos/mazatlan-fc/" data-es="Caso completo: Mazatlán FC →" data-en="Full case study: Mazatlán FC →">Caso completo: Mazatlán FC →</a>
+      <a href="/casos/diseno-web/" data-es="Caso completo: Diseño web →" data-en="Full case study: Web design →">Caso completo: Diseño web →</a>
     </div>
 
     <!-- Reel real, en Vimeo (2026-08-17) -- reactivado, ya no es el
