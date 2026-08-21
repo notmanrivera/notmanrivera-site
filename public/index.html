@@ -9,6 +9,19 @@
   gtag('js', new Date());
 
   gtag('config', 'G-KMZ6Q35TJ8');
+
+  // Evento de conversion: cualquier clic en un link de contacto (mailto o
+  // WhatsApp), en cualquier pagina del sitio. Delegado en document para
+  // cubrir los links de #contacto, el CTA .mail y los flotantes/CTA de las
+  // paginas de /casos/ sin tener que instrumentar cada uno a mano -- y para
+  // que siga funcionando si algun dia se agrega otro link de contacto.
+  document.addEventListener('click', function (e) {
+    var a = e.target.closest('a[href^="mailto:"], a.whatsapp-flotante');
+    if (!a) return;
+    gtag('event', 'contacto_click', {
+      metodo: a.href.indexOf('mailto:') === 0 ? 'email' : 'whatsapp',
+    });
+  }, true);
 </script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">

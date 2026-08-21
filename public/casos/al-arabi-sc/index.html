@@ -9,6 +9,16 @@
   gtag('js', new Date());
 
   gtag('config', 'G-KMZ6Q35TJ8');
+
+  // Mismo evento de conversion que en index.html (ver ahi el comentario
+  // completo): clic en cualquier link de contacto, delegado en document.
+  document.addEventListener('click', function (e) {
+    var a = e.target.closest('a[href^="mailto:"], a.whatsapp-flotante');
+    if (!a) return;
+    gtag('event', 'contacto_click', {
+      metodo: a.href.indexOf('mailto:') === 0 ? 'email' : 'whatsapp',
+    });
+  }, true);
 </script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
