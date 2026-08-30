@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="es">
+<head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-KMZ6Q35TJ8"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-KMZ6Q35TJ8');
+
+  // Registra QUE ruta se rompio, no solo que hubo un 404 -- sin esto la
+  // pagina aparece en GA4 como una visita mas y no hay forma de saber que
+  // link viejo hay que redirigir en public/_redirects.
+  gtag('event', 'pagina_404', { ruta_rota: location.pathname });
+</script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Página no encontrada — NotMan Rivera</title>
+<!-- noindex: una 404 nunca debe entrar al indice. Google la descarta sola por
+     el codigo de estado, pero Cloudflare Pages sirve este archivo tambien en
+     casos donde el estado no siempre es 404, asi que se declara explicito. -->
+<meta name="robots" content="noindex">
+<link rel="icon" type="image/png" href="/assets/favicon.png">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<meta name="theme-color" content="#000000">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+<link rel="preload" href="/assets/kenyan-coffee.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/monument-black.woff2" as="font" type="font/woff2" crossorigin>
+
+<style>
+  @font-face{font-family:"Kenyan Coffee";src:url("/assets/kenyan-coffee.woff2") format("woff2");font-weight:400;font-style:normal;font-display:swap}
+  @font-face{font-family:"Monument Extended";src:url("/assets/monument-black.woff2") format("woff2");font-weight:900;font-style:normal;font-display:swap}
+  @font-face{font-family:"Monument Extended";src:url("/assets/monument-light.woff2") format("woff2");font-weight:300;font-style:normal;font-display:swap}
+
+  :root{
+    --ink:#000000;--ink-2:#1A1A1A;
+    --violet:#8B3FFF;--violet-hi:#A96BFF;
+    --sombra:#2b2b2b;--rojo:#E50012;
+    --paper:#FFFFFF;--muted:#A99CC4;--line:#33204f;
+    --filo:polygon(9px 0%, 100% 6px, calc(100% - 9px) 100%, 0% calc(100% - 6px));
+    --disp:"Kenyan Coffee",Impact,"Haettenschweiler","Arial Narrow Bold",sans-serif;
+    --ui:"Monument Extended","Arial Black","Helvetica Neue",sans-serif;
+    --body:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{overflow-x:hidden}
+  body{
+    background:var(--ink);color:var(--paper);font-family:var(--body);
+    line-height:1.65;font-size:1.05rem;
+    min-height:100vh;display:flex;flex-direction:column;
+  }
+
+  /* Halftone de puntos, el mismo recurso de fondo que usa cada seccion de la
+     home -- es lo que evita que esta pagina se lea como un error del servidor
+     en vez de como una pagina del sitio. */
+  body::before{
+    content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
+    background-image:radial-gradient(var(--line) 1px, transparent 1px);
+    background-size:7px 7px;
+    -webkit-mask-image:linear-gradient(160deg,#000 0%,transparent 62%);
+    mask-image:linear-gradient(160deg,#000 0%,transparent 62%);
+    opacity:.55;
+  }
+
+  main{
+    position:relative;z-index:1;flex:1;
+    display:flex;flex-direction:column;justify-content:center;
+    max-width:880px;margin:0 auto;padding:80px 24px;width:100%;
+  }
+
+  /* El 404 gigante en contorno: mismo recurso que los numeros de seccion de
+     la home. ⚠️ El trazo NO puede ir en currentColor -- el elemento lleva
+     color:transparent para que solo se vea el contorno, asi que currentColor
+     resolveria a transparente y el numero se pintaria invisible, sin error y
+     sin aviso (ver PROJECT.md). */
+  .num{
+    font-family:var(--ui);font-weight:900;font-size:clamp(4.5rem,17vw,11rem);
+    line-height:.9;color:transparent;
+    -webkit-text-stroke:2px var(--violet);
+    letter-spacing:.02em;margin-bottom:6px;transform:skewX(-6deg);
+    transform-origin:left;
+  }
+  .kicker{
+    display:inline-block;font-family:var(--ui);font-weight:900;text-transform:uppercase;
+    font-size:.8rem;letter-spacing:.12em;color:#fff;background:var(--rojo);
+    padding:8px 16px;transform:skewX(-6deg);margin-bottom:22px;
+    /* ⚠️ align-self y no solo inline-block: <main> es flex column, y un hijo
+       de flex se estira a todo lo ancho sin importar su display -- la chapa
+       roja se volvia una barra de lado a lado en vez de una etiqueta. */
+    align-self:flex-start;
+  }
+  h1{
+    font-family:var(--disp);font-weight:400;text-transform:uppercase;line-height:.95;
+    font-size:clamp(2.2rem,5.6vw,3.4rem);letter-spacing:.01em;margin-bottom:16px;
+  }
+  p{color:var(--muted);max-width:56ch;margin-bottom:34px}
+
+  .salidas{list-style:none;display:grid;gap:12px;grid-template-columns:1fr 1fr;max-width:620px}
+  .salidas a{
+    display:block;padding:16px 20px;text-decoration:none;
+    background:var(--ink-2);clip-path:var(--filo);
+    color:var(--paper);font-family:var(--disp);text-transform:uppercase;
+    font-size:1.35rem;line-height:1.1;letter-spacing:.01em;
+    transition:background .18s,color .18s;
+  }
+  .salidas a span{
+    display:block;margin-top:6px;
+    font-family:var(--ui);font-weight:300;text-transform:uppercase;
+    font-size:.6rem;letter-spacing:.08em;line-height:1.4;color:var(--muted);
+  }
+  .salidas a:hover,.salidas a:focus-visible{background:var(--paper);color:var(--ink)}
+  .salidas a:hover span,.salidas a:focus-visible span{color:var(--ink)}
+
+  /* Anillo de foco: blanco y con offset, igual que en el resto del sitio --
+     tiene que leerse sobre cualquier fondo que le toque. */
+  a:focus-visible{outline:3px solid var(--paper);outline-offset:3px}
+
+  footer{
+    position:relative;z-index:1;
+    padding:28px 24px;border-top:2px solid var(--line);
+    color:var(--muted);font-size:.82rem;
+    max-width:880px;margin:0 auto;width:100%;
+    display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;
+  }
+  footer a{color:var(--muted);text-decoration:none}
+  footer a:hover{color:var(--paper)}
+
+  @media(max-width:560px){
+    .salidas{grid-template-columns:1fr}
+    main{padding:56px 24px}
+  }
+  @media(prefers-reduced-motion:reduce){
+    .salidas a{transition:none}
+  }
+</style>
+</head>
+<body>
+
+<main>
+  <div class="num">404</div>
+  <span class="kicker">Ruta no encontrada</span>
+  <h1>Esta página no existe</h1>
+  <p>El link que seguiste está roto o la página cambió de dirección. Nada se perdió — el trabajo sigue aquí abajo.</p>
+
+  <ul class="salidas">
+    <li><a href="/">Inicio<span>Portafolio completo</span></a></li>
+    <li><a href="/#trabajo">Trabajo<span>Piezas entregadas a clientes</span></a></li>
+    <li><a href="/casos/al-arabi-sc/">Al-Arabi SC<span>Motion graphics de matchday</span></a></li>
+    <li><a href="/casos/hugo-gonzalez/">Hugo González<span>Branding deportivo</span></a></li>
+    <li><a href="/casos/diseno-web/">Diseño web<span>Seis industrias, un estándar</span></a></li>
+    <li><a href="/#contacto">Contacto<span>hola@notmanrivera.com</span></a></li>
+  </ul>
+</main>
+
+<footer>
+  <span>NotMan Rivera — Motion graphics, video y diseño web</span>
+  <a href="/">notmanrivera.com</a>
+</footer>
+
+</body>
+</html>

@@ -1,6 +1,25 @@
 <!doctype html>
 <html lang="en">
 <head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-KMZ6Q35TJ8"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-KMZ6Q35TJ8');
+
+  // Mismo evento de conversion que en index.html (ver ahi el comentario
+  // completo): clic en cualquier link de contacto, delegado en document.
+  document.addEventListener('click', function (e) {
+    var a = e.target.closest('a[href^="mailto:"], a.whatsapp-flotante');
+    if (!a) return;
+    gtag('event', 'contacto_click', {
+      metodo: a.href.indexOf('mailto:') === 0 ? 'email' : 'whatsapp',
+    });
+  }, true);
+</script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Al-Arabi SC — Broadcast &amp; Social Motion Graphics | NotMan Rivera</title>
@@ -21,6 +40,7 @@
 <link rel="alternate" hreflang="en" href="https://notmanrivera.com/casos/al-arabi-sc/en/">
 <link rel="alternate" hreflang="x-default" href="https://notmanrivera.com/casos/al-arabi-sc/">
 <link rel="icon" type="image/png" href="/assets/favicon.png">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
 <meta name="theme-color" content="#000000">
 
 <script type="application/ld+json">
@@ -109,7 +129,12 @@
     font-size:.62rem;letter-spacing:.08em;color:var(--muted);
   }
 
-  .caso-cuerpo{padding-top:20px;padding-bottom:60px;max-width:66ch}
+  /* ⚠️ El limite de medida va en los HIJOS, no en la seccion. Con
+     max-width aqui, el margin:0 auto que .caso-cuerpo hereda de
+     .wrap centraba la columna angosta y el cuerpo quedaba 132px
+     a la derecha del titulo, el dek y la galeria (medido). */
+  .caso-cuerpo{padding-top:20px;padding-bottom:60px}
+  .caso-cuerpo h2,.caso-cuerpo p{max-width:66ch}
   .caso-cuerpo h2{
     font-family:var(--disp);font-weight:400;text-transform:uppercase;
     font-size:1.7rem;letter-spacing:.01em;margin:0 0 16px;transform:skewX(-4deg);
@@ -135,6 +160,64 @@
   @media(max-width:560px){
     .caso-hero{padding-top:44px;padding-bottom:28px}
     .caso-galeria{grid-template-columns:repeat(auto-fill,minmax(140px,1fr))}
+  }
+
+  /* ===== WHATSAPP FLOTANTE =====
+     Portado tal cual desde index.html (mismo rombo violeta que pasa a rojo
+     al hover). Estas paginas son el aterrizaje real del trafico de Google y
+     de los correos con UTM, y hasta ahora su unica salida era un CTA hasta
+     el fondo que devolvia a la home a buscar el contacto otra vez. */
+  .whatsapp-flotante{
+    position:fixed;left:22px;bottom:22px;z-index:90;
+    width:40px;height:40px;
+    display:flex;align-items:center;justify-content:center;
+    background:var(--violet);border:2px solid var(--violet);
+    color:#fff;text-decoration:none;
+    transform:rotate(45deg);
+    transition:background .18s,border-color .18s;
+  }
+  .whatsapp-flotante:hover,.whatsapp-flotante:focus-visible{
+    background:var(--rojo);border-color:var(--rojo);
+  }
+  .whatsapp-flotante svg{width:20px;height:20px;transform:rotate(-45deg)}
+  @media(max-width:640px){
+    .whatsapp-flotante{left:14px;bottom:14px;width:34px;height:34px}
+    .whatsapp-flotante svg{width:17px;height:17px}
+  }
+  @media(prefers-reduced-motion:reduce){
+    .whatsapp-flotante{transition:none}
+  }
+
+  /* ===== LOS OTROS DOS CASOS =====
+     Sin esto la pagina es un callejon sin salida: quien termina de leer un
+     caso no tiene forma de ver otro sin volver a la home. Cada tarjeta lleva
+     el filo diagonal (--filo) y el hover blanco que ya son el lenguaje del
+     sitio, para que no se lean como un modulo prestado. */
+  .casos-otros{padding-top:44px;padding-bottom:8px;border-top:2px solid var(--line)}
+  .casos-otros h2{
+    font-family:var(--ui);font-weight:900;text-transform:uppercase;
+    font-size:.72rem;letter-spacing:.12em;color:var(--muted);margin-bottom:18px;
+  }
+  .casos-otros ul{list-style:none;display:grid;gap:12px;grid-template-columns:1fr 1fr}
+  .casos-otros a{
+    display:block;padding:16px 20px;text-decoration:none;
+    background:var(--ink-2);clip-path:var(--filo);
+    color:var(--paper);font-family:var(--disp);text-transform:uppercase;
+    font-size:1.35rem;line-height:1.1;letter-spacing:.01em;
+    transition:background .18s,color .18s;
+  }
+  /* Segunda linea diminuta bajo la etiqueta: el mismo recurso que sostiene
+     las placas del menu de pantalla completa en la home (ver PROJECT.md,
+     "Segunda linea diminuta"). Sin ella la tarjeta se ve vacia. */
+  .casos-otros a span{
+    display:block;margin-top:6px;
+    font-family:var(--ui);font-weight:300;text-transform:uppercase;
+    font-size:.6rem;letter-spacing:.08em;line-height:1.4;color:var(--muted);
+  }
+  .casos-otros a:hover,.casos-otros a:focus-visible{background:var(--paper);color:var(--ink)}
+  .casos-otros a:hover span,.casos-otros a:focus-visible span{color:var(--ink)}
+  @media(max-width:560px){
+    .casos-otros ul{grid-template-columns:1fr}
   }
 </style>
 </head>
@@ -205,6 +288,14 @@
     <p>Working for an international club means designing for an audience that sees these pieces in the same feed as the big European leagues. The bar isn't "good for Qatar" — it's holding its own against any Champions League or Premier League graphic.</p>
   </section>
 
+  <section class="casos-otros wrap">
+    <h2>More case studies</h2>
+    <ul>
+      <li><a href="/casos/hugo-gonzalez/en/">Hugo González<span>Sports branding</span></a></li>
+      <li><a href="/casos/diseno-web/en/">Web design<span>Six industries, one standard</span></a></li>
+    </ul>
+  </section>
+
   <section class="caso-cta wrap">
     <a class="btn" href="/en/#contacto">Need a system like this for your club? Let's talk</a>
   </section>
@@ -216,6 +307,13 @@
     <a href="/en/">notmanrivera.com</a>
   </div>
 </footer>
+
+<a href="https://wa.me/524421411230?text=Hi%2C%20I'm%20coming%20from%20the%20site%20and%20I'd%20like%20to%20talk%20about%20a%20project" target="_blank" rel="noopener" class="whatsapp-flotante" aria-label="Message me on WhatsApp">
+  <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+    <path d="M17.47 14.38c-.29-.15-1.71-.85-1.98-.94-.27-.1-.46-.15-.65.14-.19.29-.75.94-.92 1.13-.17.19-.34.22-.63.07-.29-.15-1.22-.45-2.32-1.44-.86-.76-1.44-1.71-1.61-2-.17-.29-.02-.44.13-.59.13-.13.29-.34.44-.51.15-.17.19-.29.29-.48.1-.19.05-.36-.02-.51-.07-.15-.65-1.58-.9-2.16-.24-.57-.48-.5-.65-.5-.17-.01-.36-.01-.55-.01-.19 0-.5.07-.76.36-.26.29-1 .98-1 2.38 0 1.4 1.03 2.76 1.17 2.95.14.19 2.03 3.1 4.93 4.35.69.3 1.22.48 1.64.61.69.22 1.32.19 1.82.11.55-.08 1.71-.7 1.95-1.37.24-.68.24-1.26.17-1.38-.07-.12-.26-.19-.55-.34z"/>
+    <path d="M12.04 2.5c-5.26 0-9.54 4.28-9.54 9.54 0 1.68.44 3.32 1.28 4.76L2.5 21.5l4.85-1.27a9.5 9.5 0 0 0 4.69 1.25h.01c5.26 0 9.54-4.28 9.54-9.54 0-2.55-.99-4.94-2.79-6.75a9.47 9.47 0 0 0-6.76-2.69zm0 17.46h-.01a7.9 7.9 0 0 1-4.03-1.1l-.29-.17-3 .79.8-2.92-.19-.3a7.9 7.9 0 0 1-1.22-4.22c0-4.38 3.57-7.94 7.95-7.94a7.9 7.9 0 0 1 5.62 2.33 7.88 7.88 0 0 1 2.32 5.61c0 4.38-3.57 7.92-7.95 7.92z"/>
+  </svg>
+</a>
 
 </body>
 </html>

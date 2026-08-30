@@ -100,7 +100,10 @@
 </script>
 
 <link rel="icon" type="image/png" href="/assets/favicon.png">
-<link rel="apple-touch-icon" href="/assets/favicon.png">
+<!-- Cuadrado de verdad (180x180). favicon.png mide 180x101, y como
+     apple-touch-icon iOS lo deforma al guardarlo en la pantalla de
+     inicio: ese icono se recorta SIEMPRE a cuadrado. -->
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
 <meta property="og:image" content="https://notmanrivera.com/assets/logo-lg.webp">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -1057,6 +1060,34 @@
 
      Solo a partir de 1000px: por debajo se apila en una columna y las placas
      se enderezan, porque en movil el giro se lee como error de maquetacion. */
+
+  /* ⚠️ Debajo de 1000px hay que REORDENAR, no solo apilar. El orden del DOM
+     es perfil-hero → h1 → dialogo → cta-row, pero en la rejilla de escritorio
+     los dos CTA viven en la fila "b1 logo b2", o sea ARRIBA de "lede" -- el
+     orden del DOM solo funciona porque grid-template-areas lo reacomoda.
+     Apilado en el orden natural, la caja de dialogo (un parrafo largo que
+     ademas se teclea) empuja los dos CTA hasta ~935px en una pantalla de
+     844px: el visitante que llega de un correo o de Instagram no ve NINGUN
+     boton en la primera pantalla. Con order:* el movil recupera la misma
+     secuencia que ya tiene el escritorio (identidad → logo → accion → texto
+     largo), sin tocar el HTML ni el orden de tabulacion... que si cambia,
+     y a favor: los CTA quedan antes del parrafo tambien para el teclado. */
+  @media(max-width:999px){
+    .orbita{display:flex;flex-direction:column}
+    .orbita > .perfil-hero{order:1}
+    .orbita > h1          {order:2}
+    .orbita > .cta-row    {order:3}
+    .orbita > .dialogo    {order:4}
+    /* Los CTA quedan pegados a la caja de dialogo (hueco real de 0px) porque
+       ninguno de los dos traia margen -- en el orden anterior no se tocaban.
+       22px y no los 12px del resto del hero: .btn va con skewX(-6deg), asi
+       que su esquina inferior derecha baja mas que su caja de layout y con
+       el ritmo normal roza la chapa "NOTMAN" del dialogo. Mismo motivo que
+       el row-gap:40px de la rejilla de escritorio, a menor escala porque
+       aqui las placas no llevan el giro, solo el skew. */
+    .orbita > .dialogo{margin-top:22px}
+  }
+
   @media(min-width:1000px){
     .orbita{
       display:grid;
