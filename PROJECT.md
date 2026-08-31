@@ -1049,6 +1049,24 @@ Auditoría con Playwright contra el servidor local, midiendo posiciones reales e
 
 **Lo que sigue pendiente del embudo,** por orden de valor: (1) el `utm_content` por contacto en el Apps Script; (2) una secuencia de seguimiento — en outreach frío el segundo y tercer toque son los que convierten, y hoy nada registra "a este ya le escribí hace 8 días"; (3) un link de agenda (Cal.com/Calendly) — para un contacto de agencia en Qatar o España, "escríbeme un correo" es mucha más fricción que "elige un hueco de 15 min"; (4) estado del prospecto en la propia hoja (escrito/abrió/visitó/contestó/cotizado). Y sigue abierto lo de siempre: **no hay testimonios** — el contacto con Hugo González y Al-Arabi SC lo tenía Victorem, así que la cita que sí se puede conseguir es de alguien de Victorem hablando de trabajar con Rubén, no de los clientes finales.
 
+## Textura ambiente en las páginas de caso (2026-08-30)
+
+Rubén preguntó por animaciones continuas con Lottie. Se descartó **no por inviable sino por innecesario**: técnicamente se resolvía auto-alojando `lottie_light` (~40KB gzip, y el CSP ya permite `'self'`, cero cambios de cabeceras), pero él no tenía nada exportado de After Effects, y el sitio ya tiene 32 `@keyframes` propios. El vocabulario ya existía en CSS.
+
+**La regla que decidió el diseño:** animar solo `transform` y `opacity`. El compositor los resuelve en GPU y un loop infinito sale prácticamente gratis; `background-position`, `clip-path`, `filter` y `box-shadow` obligan a repintar cada cuadro, que es lo que tumba el scroll en móvil. Medido en móvil con los tres loops activos: **60fps, 1 frame largo en 4 segundos.**
+
+Las tres piezas, en las 6 páginas de `/casos/`:
+
+1. **Halftone que deriva** (`body::before`, 38s lineal). El movimiento va en `transform` sobre el pseudo-elemento, no en `background-position` -- por eso es barato. ⚠️ El recorrido es exactamente **7px, un tile del patrón**: al llegar ahí el dibujo coincide consigo mismo y el loop no tiene salto visible. La capa se hace de 150% con offset -25% para que al desplazarse no descubra un borde vacío. `header,main,footer` necesitaron `position:relative;z-index:1` para quedar encima.
+2. **Número de caso en contorno** (01 Al-Arabi, 02 Hugo González, 03 Diseño web), el recurso firma de la home que a estas páginas les faltaba. Respira 4% en 9s. **Es la pieza que más trabajo hace y casi no se mueve** -- lo que arregla el "se ven planas" es tener el número, no animarlo. ⚠️ Trazo en `--violet` explícito, nunca `currentColor` (el elemento va en `color:transparent`). ⚠️ `top` positivo: con valores negativos el número se salía de `.caso-hero` y el borde del header lo cortaba a la mitad.
+3. **Barrido sobre la chapa del kicker** (6.5s). ⚠️ La pausa es el diseño: el destello ocupa el primer 35% del ciclo y el resto se queda quieto. Sin la pausa se lee como un *loader*, no como acento.
+
+**El número se retira en móvil** (`max-width:560px`): ahí el kicker ocupa 3 líneas, el número se le encimaba y dejaba de leerse como recurso de fondo. Mismo criterio con el que la home endereza sus placas en móvil. **Con `prefers-reduced-motion` se apagan las tres animaciones pero el número y el halftone siguen visibles, quietos** -- se apaga el movimiento, no el elemento.
+
+⚠️ **Dos falsos positivos al replicar con script**, los dos del mismo tipo: comprobar si una pieza "ya existe" buscando el nombre de su clase falla cuando esa cadena aparece también en otro contexto. `'.whatsapp-flotante' not in t` dio falso porque el selector vive dentro del JS de GA4; `'num-caso' not in t` dio falso porque el CSS recién insertado ya define `.num-caso{}`. Para el markup hay que buscar el markup (`'<span class="num-caso"'`), no la clase.
+
+Verificado con Playwright en las 12 combinaciones (3 casos × es/en × 1440/390): número correcto y visible en escritorio, oculto en móvil, trazo en violeta real, sin overflow horizontal, sin errores de consola.
+
 ## Notas para quien retome esto
 
 - El dashboard de Cloudflare y Gmail están bloqueados para el agente vía navegador — pero **la API de Cloudflare sí responde** usando el token OAuth que Wrangler guarda en `~/Library/Preferences/.wrangler/config/default.toml`. Ese token puede leer/escribir Pages y Email Routing, pero **no** puede escribir registros DNS — eso lo tiene que hacer Rubén a mano en el dashboard.

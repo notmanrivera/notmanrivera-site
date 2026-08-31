@@ -103,7 +103,95 @@
   }
   .idioma:hover{color:var(--paper)}
 
-  .caso-hero{padding-top:64px;padding-bottom:36px}
+  /* ===== TEXTURA AMBIENTE (CSS puro, sin librería) =====
+     Las tres piezas de abajo existen para cerrar el hueco de que estas
+     paginas se leen como un articulo generico al lado de la home. Todo
+     anima SOLO transform/opacity: el compositor las resuelve en GPU y un
+     loop infinito sale practicamente gratis. Animar background-position o
+     clip-path aqui obligaria a repintar cada cuadro -- que es justo lo que
+     tumba el scroll en movil. */
+
+  /* 1. Halftone que deriva. El mismo patron de puntos de la home, en una
+        capa fija detras de todo. El movimiento va en transform sobre el
+        pseudo-elemento, no en background-position: por eso es barato.
+        La capa se hace mas grande que la pantalla (-25%/150%) para que al
+        desplazarse no descubra un borde vacio. */
+  body::before{
+    content:"";position:fixed;left:-25%;top:-25%;width:150%;height:150%;
+    z-index:0;pointer-events:none;
+    background-image:radial-gradient(var(--line) 1px, transparent 1px);
+    background-size:7px 7px;
+    -webkit-mask-image:linear-gradient(160deg,#000 0%,transparent 55%);
+    mask-image:linear-gradient(160deg,#000 0%,transparent 55%);
+    opacity:.5;
+    animation:derivaHalftone 38s linear infinite;
+  }
+  /* 7px es exactamente un tile del patron: al recorrer esa distancia el
+     dibujo coincide consigo mismo y el loop no tiene salto visible. */
+  @keyframes derivaHalftone{
+    to{transform:translate3d(7px,7px,0)}
+  }
+  /* El contenido tiene que quedar por encima de la capa de textura. */
+  header,main,footer{position:relative;z-index:1}
+
+  /* 2. Numero gigante en contorno detras del titulo -- el recurso firma de
+        la home, que a estas paginas les faltaba por completo. Es lo que mas
+        trabajo hace de las tres, y ni siquiera se mueve.
+        ⚠️ El trazo NO puede ir en currentColor: el elemento lleva
+        color:transparent para que solo se vea el contorno, asi que
+        currentColor resolveria a transparente y el numero se pintaria
+        invisible, sin error y sin aviso (ver PROJECT.md). */
+  .caso-hero{padding-top:64px;padding-bottom:36px;position:relative}
+  .num-caso{
+    /* top positivo: con valores negativos el numero se salia por arriba de
+       .caso-hero y el borde del header lo cortaba a la mitad. */
+    position:absolute;right:8px;top:14px;z-index:-1;
+    font-family:var(--ui);font-weight:900;font-size:clamp(3.4rem,13vw,9rem);
+    line-height:.9;color:transparent;
+    -webkit-text-stroke:2px var(--violet);
+    opacity:.28;transform:skewX(-6deg);
+    /* Respira: 4% de escala en 9s. Apenas se percibe conscientemente, que
+       es justo el punto -- da la sensacion de que la pagina esta viva sin
+       pedir atencion mientras alguien lee. */
+    animation:respiraNum 9s ease-in-out infinite;
+  }
+  @keyframes respiraNum{
+    50%{transform:skewX(-6deg) scale(1.04);opacity:.36}
+  }
+
+  /* 3. Barrido lento sobre la chapa roja del kicker. Un solo elemento, un
+        solo transform. Mismo gesto que el destello de los CTA de la home,
+        estirado a ritmo ambiente en vez de reaccion a un clic. */
+  .kicker{position:relative;overflow:hidden}
+  .kicker::after{
+    content:"";position:absolute;inset:0;pointer-events:none;
+    background:linear-gradient(100deg,transparent 40%,rgba(255,255,255,.32) 50%,transparent 60%);
+    transform:translateX(-100%);
+    animation:barridoKicker 6.5s ease-in-out infinite;
+  }
+  @keyframes barridoKicker{
+    /* La pausa importa: el barrido ocupa el primer 35% del ciclo y el resto
+       se queda quieto. Sin la pausa se lee como un loader, no como acento. */
+    0%,65%{transform:translateX(-100%)}
+    35%,100%{transform:translateX(100%)}
+  }
+
+  /* Las tres se apagan juntas. El sitio ya tiene 27 guardas de estas: un
+     loop continuo es exactamente lo que esta preferencia existe para
+     detener. Se apaga la ANIMACION, no el elemento -- el numero en contorno
+     y el halftone se quedan visibles, quietos. */
+  /* En movil el numero se encima con el kicker (que ahi ocupa 3 lineas) y
+     queda apretado contra el borde: deja de leerse como recurso de fondo y
+     se lee como algo mal puesto. Se retira, igual que la home endereza sus
+     placas en movil por el mismo criterio. El halftone y el barrido siguen. */
+  @media(max-width:560px){
+    .num-caso{display:none}
+  }
+
+  @media(prefers-reduced-motion:reduce){
+    body::before,.num-caso,.kicker::after{animation:none}
+    .kicker::after{opacity:0}
+  }
   .kicker{
     display:inline-block;font-family:var(--ui);font-weight:900;text-transform:uppercase;
     font-size:.8rem;letter-spacing:.12em;color:#fff;background:var(--rojo);
@@ -227,6 +315,7 @@
 
 <main>
   <section class="caso-hero wrap">
+    <span class="num-caso" aria-hidden="true">03</span>
     <span class="kicker">UI/UX Web Design</span>
     <h1>Six industries, one standard</h1>
     <p class="dek">Web design isn't a template you repeat: every industry solves different problems, even as the visual and usability standard stays consistent. A sample of the range of projects.</p>
