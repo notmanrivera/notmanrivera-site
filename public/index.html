@@ -1992,6 +1992,15 @@
     transition:background .18s,border-color .18s,opacity .18s;
   }
   .visor-full svg{width:15px;height:15px}
+  /* ⚠️ En pantallas tactiles el icono sube a 44x44, el minimo comodo para un
+     dedo. En escritorio se queda en 32 porque ahi el cursor es preciso y el
+     recuadro grande taparia mas obra de la necesaria -- y de todas formas
+     desde que .visor-grande entero abre el lightbox (ver initLightbox), este
+     icono ya no es la unica manera de ampliar, es la PISTA de que se puede. */
+  @media(pointer:coarse){
+    .visor-full{width:44px;height:44px;opacity:.9}
+    .visor-full svg{width:19px;height:19px}
+  }
   .visor-full:hover,.visor-full:focus-visible{
     background:var(--rojo);border-color:var(--rojo);opacity:1;
   }
@@ -2676,7 +2685,7 @@
   @media(pointer:fine){
     body{cursor:var(--cur-normal),auto}
     /* sobre cualquier cosa accionable, el marcador de seleccion violeta */
-    a,button,.svc,.card,.cred,.lang,.mail,[role="button"]{
+    a,button,.svc,.card,.cred,.lang,.mail,[role="button"],.visor-grande{
       cursor:var(--cur-activo),pointer;
     }
     /* dentro de los videos manda el iframe: tiene su propio documento */
@@ -4108,6 +4117,27 @@
 
     triggers.forEach(trigger => {
       trigger.addEventListener('click', e => { e.preventDefault(); abrirLightbox(trigger); });
+
+      /* La obra entera abre el lightbox, no solo el icono de la esquina.
+         Medido antes de este cambio: el icono es 32x32 sobre una imagen de
+         ~430x540, o sea el 0.4% de su area -- y el gesto natural de cualquiera
+         es hacer clic en la imagen, que no hacia nada. En un portafolio, "ver
+         la pieza en grande" es LA accion principal; no puede vivir escondida
+         en el 0.4% de la superficie.
+         El listener va en .visor-grande y no en .visor-img porque el contenedor
+         cubre tambien el pie con cliente/caption, que a esa altura del gesto se
+         lee como parte de la misma pieza.
+         ⚠️ Se ignora el clic que ya venga del propio .visor-full: ese enlace
+         tiene su handler arriba, y sin este guard el mismo clic abriria el
+         lightbox dos veces. */
+      const caja = trigger.closest('.visor-grande');
+      if (caja) {
+        caja.addEventListener('click', e => {
+          if (e.target.closest('.visor-full')) return;
+          e.preventDefault();
+          abrirLightbox(trigger);
+        });
+      }
     });
     cerrar.addEventListener('click', cerrarLightbox);
     // clic en el fondo oscuro cierra; clic en la figura (imagen o pie) no
