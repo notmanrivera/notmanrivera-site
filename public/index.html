@@ -466,6 +466,50 @@
     .halftone{animation:none}
   }
 
+  /* ===== SCREENTONE POR SECCIÓN =====
+     Hasta aquí las 7 capas de halftone usaban EXACTAMENTE la misma trama de
+     puntos. En el manga —y en las referencias de Persona— el screentone no es
+     un fondo uniforme: es un vocabulario. Se cambia de trama para separar
+     zonas, igual que aquí ya se cambia de placa o de número de sección. Cada
+     sección se queda con su propia trama, sin sumar movimiento nuevo: todas
+     heredan la misma deriva de 46s y el mismo mask de .halftone.
+
+     ⚠️ El recorrido de la deriva es un tile de 7px, así que toda trama nueva
+     tiene que medir 7px o un divisor exacto (3.5px), o el bucle da un salto
+     visible al reiniciar. Por eso las líneas van a 3.5px y no a "como se vea".
+
+     La densidad sigue el peso de cada sección: Trabajo se queda con la trama
+     base para no competir con la obra, y Contacto es la más marcada porque es
+     donde el sitio sube la voz. */
+
+  /* Servicios: trama de LÍNEA diagonal. La retícula más clásica del cómic
+     impreso, y la que mejor acompaña una lista de filas. */
+  #servicios .halftone{
+    background-image:repeating-linear-gradient(
+      135deg, rgba(255,255,255,.13) 0 1px, transparent 1px 3.5px);
+    background-size:auto;
+  }
+  /* Experiencia: trama CRUZADA. Dos juegos de líneas = más densidad visual,
+     que es justo lo que pide una sección de credenciales acumuladas. */
+  #experiencia .halftone{
+    background-image:
+      repeating-linear-gradient(135deg, rgba(255,255,255,.10) 0 1px, transparent 1px 3.5px),
+      repeating-linear-gradient( 45deg, rgba(255,255,255,.10) 0 1px, transparent 1px 3.5px);
+    background-size:auto;
+  }
+  /* Perfil: punto FINO y apretado. La sección más personal y más callada,
+     así que la trama se acerca al gris continuo. */
+  #perfil .halftone{
+    background-image:radial-gradient(circle, rgba(255,255,255,.13) .8px, transparent .8px);
+    background-size:3.5px 3.5px;
+  }
+  /* Contacto: punto GRUESO y espaciado. La trama más marcada del sitio, el
+     equivalente impreso de subir el volumen justo donde se pide la acción. */
+  #contacto .halftone{
+    background-image:radial-gradient(circle, rgba(255,255,255,.19) 1.5px, transparent 1.5px);
+    background-size:7px 7px;
+  }
+
   /* ===== CAMPOS DE COLOR PLANOS =====
      Sustituyen a los mesh gradients. Las referencias usan bloques solidos
      con bordes duros y diagonales -- el rojo de P5, el amarillo de P4 --
@@ -655,6 +699,28 @@
   .sonido .ondas{display:none}
   .sonido[aria-pressed="true"] .ondas{display:block}
   .sonido[aria-pressed="true"] .tachon{display:none}
+
+  /* ===== PISTA DE QUE EL SONIDO EXISTE =====
+     El sitio tiene un sistema de sonido propio -- tics al hover, blips de
+     navegación, tonos generados con Web Audio, sin un solo archivo de audio --
+     y está apagado por default, como debe ser. El costo de eso es que
+     prácticamente nadie descubre que existe: es un botón de 38x34 sin
+     etiqueta entre otros dos.
+
+     Esto es un latido de tres pulsos que corre UNA sola vez, y solo para
+     quien nunca ha tocado el botón (el JS solo agrega .pista si no hay nada
+     guardado en localStorage). No es un elemento nuevo ni un tooltip: es el
+     mismo anillo violeta del sistema, respirando. Quien ya lo tocó alguna
+     vez -- para prenderlo o apagarlo -- no lo vuelve a ver nunca. */
+  .sonido.pista{animation:pistaSonido 1.5s ease-out 3 both;animation-delay:2.4s}
+  @keyframes pistaSonido{
+    0%,100%{box-shadow:0 0 0 0 rgba(169,107,255,0)}
+    35%    {box-shadow:0 0 0 5px rgba(169,107,255,.45)}
+    70%    {box-shadow:0 0 0 9px rgba(169,107,255,0)}
+  }
+  @media(prefers-reduced-motion:reduce){
+    .sonido.pista{animation:none}
+  }
 
   /* ===== BOTON QUE ABRE EL MENU ===== */
   .abrir-menu{
@@ -991,6 +1057,74 @@
     .marca.go{animation:none;opacity:1;transform:scale(var(--marca-escala,1))}
     .rafaga,.marca.go ~ .rafaga{display:none}
   }
+  /* ===== BRILLO ESPECULAR DEL LOGO =====
+     El logo es cromado, pero hasta aquí era una imagen fija de cromo: nunca
+     se comportaba como metal. Esto es un destello especular que barre las
+     letras justo después de que el logo aterriza -- el recurso de los
+     gráficos de transmisión deportiva, que es literalmente su industria.
+
+     Se apoya en el canal alfa del propio archivo: `mask-image:url(logo-lg)`
+     recorta el destello a la silueta de las letras, así que la luz cae SOBRE
+     el lettering y no sobre un rectángulo. Sin esa máscara esto sería una
+     barra blanca cruzando la pantalla.
+
+     ⚠️ Dos capas, no una. El destello no puede ir en el mismo elemento que
+     la máscara: la máscara se define contra la caja del elemento, así que al
+     mover el elemento se mueven máscara y luz juntas y no barre nada. La
+     capa de afuera lleva la máscara y se queda quieta; la de adentro es la
+     banda de luz y es la que viaja, con transform (compositor, gratis).
+
+     ⚠️ La geometría se repite en los tres modos del logo (base, ≤820px y la
+     rejilla del hero ≥1000px) porque .marca cambia de alto, de margen y de
+     origen en cada uno -- mismo criterio que ya sigue .rafaga, que también
+     repite el min(29vh,330px) en vez de deducirlo. */
+  .brillo{
+    position:absolute;left:0;top:0;z-index:3;
+    height:min(29vh,330px);aspect-ratio:1200/675;
+    margin-left:-1.5%;
+    transform-origin:left center;transform:scale(var(--marca-escala,1));
+    pointer-events:none;overflow:hidden;
+    -webkit-mask-image:url("/assets/logo-mask.png");
+            mask-image:url("/assets/logo-mask.png");
+    -webkit-mask-size:contain;         mask-size:contain;
+    -webkit-mask-repeat:no-repeat;     mask-repeat:no-repeat;
+    -webkit-mask-position:left center; mask-position:left center;
+  }
+  /* ⚠️ El destello NO puede ser solo blanco. El logo ya es cromo plateado,
+     casi blanco: una banda blanca encima no tiene contra qué contrastar y es
+     literalmente invisible (probado). Lo que hace que el metal se lea como
+     metal es el CONTRASTE -- un flanco oscuro a cada lado del núcleo claro,
+     como el reflejo real de una superficie curva. El oscuro va en violeta muy
+     bajo, no en negro neutro, para quedarse dentro de la paleta. */
+  .brillo i{
+    position:absolute;inset:-10% -60%;display:block;opacity:0;
+    background:linear-gradient(102deg,
+      transparent 36%,
+      rgba(20,6,40,.85) 43%,
+      rgba(255,255,255,1) 50%,
+      rgba(20,6,40,.85) 57%,
+      transparent 64%);
+    transform:translateX(-100%);
+  }
+  /* Arranca a .72s: marcaIn dura .66s, así que la luz entra cuando el logo
+     ya aterrizó, no mientras todavía se está acomodando. */
+  .marca.go ~ .brillo i{animation:brilloBarrido 1.15s cubic-bezier(.3,0,.2,1) .72s both}
+  @keyframes brilloBarrido{
+    0%  {opacity:0;   transform:translateX(-100%)}
+    18% {opacity:1}
+    82% {opacity:1}
+    100%{opacity:0;   transform:translateX(100%)}
+  }
+  @media(max-width:820px){
+    /* margin-left NO se resetea: .marca conserva el -1.5% de su regla base
+       (la de ≤820px solo cambia margin-bottom), y ponerlo en 0 desplazaba el
+       brillo 5px a la derecha del logo. */
+    .brillo{height:auto;width:94%;aspect-ratio:1200/675}
+  }
+  @media(prefers-reduced-motion:reduce){
+    .brillo{display:none}
+  }
+
   /* ===== CHISPAS DEL LOGO (mismo destello que ya usan los clics) =====
      El JS ya inyecta 2-3 estrellas de 4 puntas en las coordenadas del
      clic sobre .btn/.menu-lista a (ver PARTICULAS DE CONFIRMACION mas
@@ -1159,10 +1293,22 @@
     /* el logo deja de estar anclado a la izquierda y se centra en su celda */
     .orbita .marca{
       height:min(27vh,320px);
-      --marca-escala:1.34;
       margin:0 auto 10px;object-position:center;transform-origin:center;
     }
-    .orbita h1{text-align:center}
+    /* El brillo sigue al logo en el modo centrado del hero: mismo alto, mismo
+       origen de escala, y left:50% + translateX(-50%) para caer exactamente
+       sobre él ahora que .marca está centrado con margin:auto. */
+    .orbita .brillo{
+      height:min(27vh,320px);width:auto;margin-left:0;
+      left:50%;transform-origin:center;
+      transform:translateX(-50%) scale(var(--marca-escala,1));
+      -webkit-mask-position:center; mask-position:center;
+    }
+    /* ⚠️ --marca-escala se define aquí, en <h1>, y no en .marca: .brillo es
+       HERMANO de .marca, y las custom properties se heredan hacia abajo, no
+       de lado. Definida en .marca, el brillo la leía como su fallback (1) y
+       salía un 34% más chico que el logo. */
+    .orbita h1{text-align:center;--marca-escala:1.34}
     /* ⚠️ position:absolute, no solo texto centrado -- mismo motivo que el
        calc() fijo de las columnas mas arriba, pero en vertical: .rota
        normal-flow suma su propia altura a la de <h1>, y aunque ahora <h1>
@@ -2931,6 +3077,9 @@
            data-alt-en="NotMan Rivera — Rubén Rivera, motion graphics, video, and web design"
            width="1200" height="675" fetchpriority="high" decoding="async">
       <i class="rafaga" aria-hidden="true"></i>
+      <!-- Destello especular: capa exterior enmascarada con el alfa del logo,
+           capa interior (la banda de luz) es la que viaja. Ver .brillo. -->
+      <span class="brillo" aria-hidden="true"><i></i></span>
       <i class="chispa-logo" aria-hidden="true" style="left:16%;top:14%;--i:0"></i>
       <i class="chispa-logo" aria-hidden="true" style="left:82%;top:30%;--i:1"></i>
       <i class="chispa-logo" aria-hidden="true" style="left:66%;top:80%;--i:2"></i>
@@ -4237,6 +4386,16 @@
   }
 
   const sonidoBtn = document.getElementById('sonidoBtn');
+  /* Pista de descubrimiento: solo la primera vez. localStorage.getItem
+     devuelve null únicamente si NUNCA se guardó nada -- o sea, si el visitante
+     jamás ha tocado el botón. En cuanto lo toque (para prender O apagar), el
+     listener de abajo guarda '1' o '0' y esta condición deja de cumplirse
+     para siempre. */
+  if (localStorage.getItem('notman_sonido') === null) {
+    sonidoBtn.classList.add('pista');
+    // se retira al primer clic para que el latido no siga corriendo encima
+    sonidoBtn.addEventListener('click', () => sonidoBtn.classList.remove('pista'), { once:true });
+  }
   sonidoBtn.addEventListener('click', () => {
     sonidoActivo = !sonidoActivo;
     sonidoBtn.setAttribute('aria-pressed', sonidoActivo ? 'true' : 'false');
