@@ -26,6 +26,25 @@ jobs:
           npm ci
           npm run build:en
 
+      # El sitemap se rompio en produccion sin que nadie se enterara: los
+      # comentarios del proyecto usan "--" como raya, y "--" dentro de un
+      # comentario XML es ilegal (XML 1.0 §2.5). El archivo se desplego, se
+      # sirvio con 200, y Google lo rechazo entero al parsearlo -- un fallo
+      # invisible salvo que abras la URL a mano. minidom es el parser
+      # estricto: falla con el comentario, a diferencia de un grep.
+      - name: Validar el sitemap
+        run: |
+          python3 - <<'EOF'
+          import xml.dom.minidom, xml.etree.ElementTree as ET
+          xml.dom.minidom.parse('public/sitemap.xml')
+          raiz = ET.parse('public/sitemap.xml').getroot()
+          ns = {'s': 'http://www.sitemaps.org/schemas/sitemap/0.9'}
+          urls = [e.text for e in raiz.findall('.//s:loc', ns)]
+          assert raiz.tag.endswith('urlset'), 'la raiz no es <urlset>'
+          assert urls, 'el sitemap no declara ninguna URL'
+          print('sitemap OK: %d URLs' % len(urls))
+          EOF
+
       - name: Deploy a Cloudflare Pages
         uses: cloudflare/wrangler-action@v3
         with:

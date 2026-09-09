@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Cinco URLs, sin build step que mantenga fechas. Se quitaron <lastmod>,
+<!-- Ocho URLs, sin build step que mantenga fechas. Se quitaron <lastmod>,
      <changefreq> y <priority> a proposito: Google ignora los dos ultimos por
      completo, y solo hace caso a lastmod si es fiable. Una fecha puesta a
      mano se queda vieja al primer cambio que se nos olvide, y una fecha
      mentirosa es peor que ninguna.
      /en/ se genera con scripts/build-en.js antes de cada deploy (no vive en
-     el repo) -- pero como URL SI hace falta declararla aqui a mano, el
+     el repo) — pero como URL SI hace falta declararla aqui a mano, el
      sitemap no se genera solo. Los <xhtml:link hreflang> repiten en el
      sitemap la misma relacion que ya declaran los <link> en el <head> de
-     cada pagina -- pertenecen en los dos sitios, no es redundante: el
+     cada pagina — pertenecen en los dos sitios, no es redundante: el
      <head> es lo que ve un visitante/crawler que ya esta en la pagina, el
      sitemap es lo primero que Google lee, antes de visitar nada. -->
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
@@ -26,7 +26,7 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://notmanrivera.com/"/>
   </url>
   <!-- Casos de estudio (public/casos/): cada uno ahora tiene contraparte en
-       /en/ (paginas propias, escritas a mano -- no generadas, a diferencia
+       /en/ (paginas propias, escritas a mano — no generadas, a diferencia
        de / y /en/, asi que hay que mantenerlas sincronizadas manualmente si
        el contenido en español cambia). -->
   <url>

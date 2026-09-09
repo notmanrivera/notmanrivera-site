@@ -1067,6 +1067,22 @@ Las tres piezas, en las 6 páginas de `/casos/`:
 
 Verificado con Playwright en las 12 combinaciones (3 casos × es/en × 1440/390): número correcto y visible en escritorio, oculto en móvil, trazo en violeta real, sin overflow horizontal, sin errores de consola.
 
+## Bug real: el sitemap llevaba semanas roto y servía 200 (2026-09-09)
+
+Google Search Console rechazó el sitemap con "No se ha podido obtener". El archivo estaba desplegado, se servía con `200`, tenía las 8 URLs correctas y `robots.txt` lo apuntaba. Abriéndolo en el navegador salió el error real:
+
+```
+error on line 8 at column 15: Double hyphen within comment
+```
+
+**`--` dentro de un comentario XML es ilegal** (XML 1.0 §2.5, la secuencia está reservada porque cierra el comentario). La casa usa `--` como raya en todos los comentarios del proyecto — en CSS, JS y HTML es inofensivo, en XML rompe el archivo entero. El `<!-- ... -->` que documenta por qué el sitemap no tiene `<lastmod>` traía tres. Ahora usan raya de verdad (—).
+
+⚠️ **Lo que hace este bug peligroso no es el error, es su forma de fallar.** No hay 404, no hay warning en el deploy, no hay nada en los logs de Cloudflare: el archivo se sirve perfecto y el rechazo ocurre dentro del parser de Google, callado. Estuvo así desde que se creó el sitemap. La única señal fue una fila roja en un panel que nadie mira a diario.
+
+⚠️ **Y una lección de método:** revisé este archivo a ojo y lo declaré "XML válido, sin BOM". Leer XML no es validarlo — el `--` se ve como una raya normal. Para eso está `xml.dom.minidom`, que es el parser estricto; `ElementTree` solo no basta (es más permisivo con los comentarios) y un `grep` no ve la diferencia entre el delimitador y el texto.
+
+Por eso el deploy ahora **valida el sitemap antes de publicar** (`.github/workflows/deploy.yml`, paso "Validar el sitemap"): parsea con `minidom`, comprueba que la raíz sea `<urlset>` y que declare al menos una URL. Verificado en los dos sentidos — reintroduciendo el `--` el paso sale con exit 1 y el deploy se detiene.
+
 ## Notas para quien retome esto
 
 - El dashboard de Cloudflare y Gmail están bloqueados para el agente vía navegador — pero **la API de Cloudflare sí responde** usando el token OAuth que Wrangler guarda en `~/Library/Preferences/.wrangler/config/default.toml`. Ese token puede leer/escribir Pages y Email Routing, pero **no** puede escribir registros DNS — eso lo tiene que hacer Rubén a mano en el dashboard.
