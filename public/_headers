@@ -7,6 +7,14 @@
   Strict-Transport-Security: max-age=31536000; includeSubDomains
   Cross-Origin-Opener-Policy: same-origin
 
+# Google rechazo el sitemap con "El sitemap es HTML", y el navegador lo
+# renderizaba como texto corrido en vez del arbol XML -- las dos cosas son el
+# mismo sintoma: llegaba con un Content-Type que se lee como HTML. Se fija
+# explicito. Ojo: X-Content-Type-Options: nosniff (arriba) impide que el
+# navegador lo adivine, asi que la cabecera tiene que estar bien de origen.
+/sitemap.xml
+  Content-Type: application/xml; charset=utf-8
+
 # La fuente propia no cambia: se puede cachear un ano entero
 /assets/*
   Cache-Control: public, max-age=31536000, immutable
