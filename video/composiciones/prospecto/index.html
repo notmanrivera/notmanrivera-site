@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="es" data-resolution="portrait">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <script src="assets/gsap.min.js"></script>
+    <style>
+      @font-face{font-family:Kenyan;src:url(assets/kenyan-coffee.woff2) format('woff2');font-display:block}
+      @font-face{font-family:Monument;src:url(assets/monument-black.woff2) format('woff2');font-weight:900;font-display:block}
+      :root{
+        --violet:#8B3FFF; --violet-hi:#A96BFF; --red:#E50012;
+        --blanco:#fff; --negro:#07030F;
+        --filo:polygon(0 0,100% 0,calc(100% - 24px) 100%,0 100%);
+      }
+      *{margin:0;padding:0;box-sizing:border-box}
+      html,body{width:1080px;height:1920px;overflow:hidden;background:var(--negro)}
+      body{font-family:Kenyan,sans-serif;color:var(--blanco)}
+      .clip{position:absolute;inset:0}
+      .cap{position:absolute;inset:0}
+
+      .trama{position:absolute;inset:-20%;
+        background-image:radial-gradient(var(--violet) 1px,transparent 1.1px);
+        background-size:7px 7px;opacity:.14}
+      .vineta{position:absolute;inset:0;
+        background:radial-gradient(ellipse at 50% 45%,transparent 32%,rgba(0,0,0,.88) 100%)}
+
+      /* ── 1. SU NOMBRE. Lo primero que se ve, y lo que prueba que el video
+            se hizo para ellos y no es un reel masivo. ── */
+      #para{position:absolute;left:0;right:0;top:660px;text-align:center;
+        font-family:Monument;font-weight:900;font-size:26px;letter-spacing:.34em;color:var(--violet-hi)}
+      #nombre{position:absolute;left:0;right:0;top:720px;text-align:center;
+        font-size:150px;line-height:.9;text-transform:uppercase;padding:0 60px}
+      #barra{position:absolute;left:50%;top:920px;width:360px;height:14px;
+        margin-left:-180px;background:var(--red);clip-path:var(--filo)}
+      #linea1{position:absolute;left:0;right:0;top:990px;text-align:center;
+        font-family:Monument;font-weight:900;font-size:34px;letter-spacing:.04em;padding:0 90px;line-height:1.45}
+
+      /* ── 2. LA OBRA. Pantalla completa, una tras otra: la prueba. ── */
+      .fondoblur{position:absolute;inset:0;width:1080px;height:1920px;
+        object-fit:cover;filter:blur(46px) saturate(.7) brightness(.42);transform:scale(1.15)}
+      .full{position:absolute;left:60px;right:60px;top:50%;transform:translateY(-50%);
+        width:960px;max-height:1180px;object-fit:contain;
+        border:7px solid var(--blanco);background:var(--negro)}
+      .etq{position:absolute;left:0;bottom:300px;background:var(--red);
+        padding:22px 62px 22px 52px;clip-path:var(--filo);
+        font-family:Monument;font-weight:900;font-size:36px;letter-spacing:.05em}
+      .velo{position:absolute;inset:0;background:linear-gradient(180deg,rgba(7,3,15,.5) 0%,transparent 26%,transparent 60%,rgba(7,3,15,.92) 100%)}
+
+      /* ── 3. LA CREDENCIAL ── */
+      #cifras{position:absolute;left:0;right:0;top:700px;text-align:center;padding:0 70px}
+      #cifras .n{font-size:190px;line-height:.86;color:var(--violet-hi)}
+      #cifras .t{font-family:Monument;font-weight:900;font-size:32px;letter-spacing:.16em;margin-top:18px}
+      #ligas{position:absolute;left:0;right:0;top:1090px;text-align:center;
+        font-family:Monument;font-weight:900;font-size:28px;letter-spacing:.2em;color:var(--violet-hi);line-height:2.1}
+
+      /* ── 4. LA OFERTA Y EL CIERRE ── */
+      #oferta{position:absolute;left:0;right:0;top:620px;text-align:center;padding:0 80px;
+        font-size:118px;line-height:.95;text-transform:uppercase}
+      #oferta em{font-style:normal;color:var(--violet-hi)}
+      #logo{position:absolute;left:50%;top:1180px;transform:translateX(-50%);width:520px}
+      #dom{position:absolute;left:50%;top:1420px;transform:translateX(-50%);
+        background:var(--blanco);color:var(--negro);clip-path:var(--filo);
+        padding:26px 74px 26px 54px;font-family:Monument;font-weight:900;font-size:44px}
+      #firma{position:absolute;left:0;right:0;top:1560px;text-align:center;
+        font-family:Monument;font-weight:900;font-size:25px;letter-spacing:.22em;color:var(--violet-hi)}
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="14"
+         data-width="1080" data-height="1920">
+
+      <div class="clip" id="fondo" data-start="0" data-duration="14" data-track-index="0">
+        <div class="trama" id="trama"></div>
+        <div class="vineta"></div>
+      </div>
+
+      <div class="clip" id="esc1" data-start="0" data-duration="3.4" data-track-index="1">
+        <div class="cap" id="in1">
+          <div id="para">PARA</div>
+          <div id="nombre"></div>
+          <div id="barra"></div>
+          <div id="linea1"></div>
+        </div>
+      </div>
+
+      <div class="clip" id="esc2" data-start="3.4" data-duration="1.5" data-track-index="1">
+        <div class="cap" id="in2">
+          <img class="fondoblur" src="assets/p1.webp" alt="" />
+          <img class="full" id="im1" src="assets/p1.webp" alt="" />
+          <div class="velo"></div><div class="etq" id="et1">AL-ARABI SC · QATAR</div>
+        </div>
+      </div>
+      <div class="clip" id="esc3" data-start="4.9" data-duration="1.5" data-track-index="1">
+        <div class="cap" id="in3">
+          <img class="fondoblur" src="assets/p2.webp" alt="" />
+          <img class="full" id="im2" src="assets/p2.webp" alt="" />
+          <div class="velo"></div><div class="etq" id="et2">HUGO GONZÁLEZ · LIGA MX</div>
+        </div>
+      </div>
+      <div class="clip" id="esc4" data-start="6.4" data-duration="1.5" data-track-index="1">
+        <div class="cap" id="in4">
+          <img class="fondoblur" src="assets/p3.webp" alt="" />
+          <img class="full" id="im3" src="assets/p3.webp" alt="" />
+          <div class="velo"></div><div class="etq" id="et3">UEFA CHAMPIONS LEAGUE</div>
+        </div>
+      </div>
+
+      <div class="clip" id="esc5" data-start="7.9" data-duration="2.6" data-track-index="1">
+        <div class="cap" id="in5">
+          <div id="cifras"><div class="n" id="cif-n">9</div><div class="t">AÑOS EN MARKETING DEPORTIVO</div></div>
+          <div id="ligas">EX&nbsp;VICTOREM&nbsp;SPORTS&nbsp;MARKETING<br />MOTION&nbsp;2D/3D&nbsp;·&nbsp;EDICIÓN&nbsp;·&nbsp;WEB</div>
+        </div>
+      </div>
+
+      <div class="clip" id="esc6" data-start="10.5" data-duration="3.5" data-track-index="1">
+        <div class="cap" id="in6">
+          <div id="oferta">Capacidad de<br /><em>producción</em><br />sin costo fijo</div>
+          <img id="logo" src="assets/logo-lg.webp" alt="NotMan Rivera" />
+          <div id="dom">notmanrivera.com</div>
+          <div id="firma">RUBÉN RIVERA · QUERÉTARO, MÉXICO</div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // ══════════════════════════════════════════════════════════
+      //  LO ÚNICO QUE CAMBIA POR PROSPECTO
+      //  Estas dos líneas salen de las columnas A y M de la hoja.
+      //  Cambiarlas y volver a renderizar = una variante nueva en ~50s.
+      // ══════════════════════════════════════════════════════════
+      const PROSPECTO = "Márcate";
+      const GANCHO    = "Vi que llevan las campañas digitales de marcas deportivas en México.";
+
+      document.getElementById("nombre").textContent = PROSPECTO;
+      document.getElementById("linea1").textContent = GANCHO;
+
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+
+      // La trama recorre exactamente un tile (7px): al llegar el dibujo
+      // coincide consigo mismo y el bucle no da un salto visible.
+      tl.to("#trama", { backgroundPositionX: 7, duration: 14, ease: "none" }, 0);
+
+      // 1 — su nombre primero, todo lo demás después
+      tl.from("#para",   { opacity: 0, y: 16, duration: .4, ease: "power2.out" }, .1)
+        .from("#nombre", { opacity: 0, y: 40, scale: .94, duration: .7, ease: "power3.out" }, .25)
+        .from("#barra",  { scaleX: 0, transformOrigin: "left center", duration: .45, ease: "power4.out" }, .7)
+        .from("#linea1", { opacity: 0, y: 22, duration: .6, ease: "power2.out" }, .95)
+        .to("#in1",  { opacity: 0, duration: .3, ease: "power1.in" }, 3.1)
+        .set("#in1", { opacity: 0 }, 3.4);
+
+      // 2 — la obra: empuje lento de cámara, la etiqueta entra desde el filo
+      [["in1x","im1","et1","in2",3.4],["in2x","im2","et2","in3",4.9],["in3x","im3","et3","in4",6.4]]
+        .forEach(function (s) {
+          const t = s[4];
+          tl.fromTo("#" + s[1], { scale: 1.05, yPercent: -50 }, { scale: 1, yPercent: -50, duration: 1.5, ease: "none" }, t)
+            .from("#" + s[2], { xPercent: -110, duration: .45, ease: "power4.out" }, t + .12)
+            .to("#" + s[3],  { opacity: 0, duration: .22, ease: "power1.in" }, t + 1.28)
+            .set("#" + s[3], { opacity: 0 }, t + 1.5);
+        });
+
+      // 3 — la credencial
+      tl.from("#cif-n", { opacity: 0, scale: .8, duration: .55, ease: "back.out(1.6)" }, 8.0)
+        .from("#cifras .t", { opacity: 0, y: 16, duration: .45 }, 8.35)
+        .from("#ligas", { opacity: 0, y: 20, duration: .5 }, 8.6)
+        .to("#in5",  { opacity: 0, duration: .3, ease: "power1.in" }, 10.2)
+        .set("#in5", { opacity: 0 }, 10.5);
+
+      // 4 — el cierre: lo único que tiene que quedarse en la cabeza
+      tl.from("#oferta", { opacity: 0, y: 34, duration: .6, ease: "power3.out" }, 10.65)
+        .from("#logo",   { opacity: 0, y: -26, duration: .5, ease: "power3.out" }, 11.1)
+        .from("#dom",    { opacity: 0, xPercent: -60, duration: .5, ease: "power4.out" }, 11.45)
+        .from("#firma",  { opacity: 0, duration: .5 }, 11.8);
+
+      window.__timelines["main"] = tl;
+    </script>
+  </body>
+</html>

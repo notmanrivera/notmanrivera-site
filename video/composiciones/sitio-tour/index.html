@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="es" data-resolution="landscape">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <script src="assets/gsap.min.js"></script>
+    <style>
+      @font-face{font-family:Kenyan;src:url(assets/kenyan-coffee.woff2) format('woff2');font-display:block}
+      @font-face{font-family:Monument;src:url(assets/monument-black.woff2) format('woff2');font-weight:900;font-display:block}
+      :root{
+        --violet:#8B3FFF; --violet-hi:#A96BFF; --red:#E50012;
+        --blanco:#fff; --negro:#07030F;
+        --filo:polygon(0 0,100% 0,calc(100% - 22px) 100%,0 100%);
+      }
+      *{margin:0;padding:0;box-sizing:border-box}
+      html,body{width:1920px;height:1080px;overflow:hidden;background:var(--negro)}
+      body{font-family:Kenyan,sans-serif;color:var(--blanco)}
+      .clip{position:absolute;inset:0}
+      .cap{position:absolute;inset:0}
+      .trama{position:absolute;inset:-20%;
+        background-image:radial-gradient(var(--violet) 1px,transparent 1.1px);
+        background-size:7px 7px;opacity:.13}
+      .vineta{position:absolute;inset:0;
+        background:radial-gradient(ellipse at 50% 45%,transparent 30%,rgba(0,0,0,.9) 100%)}
+
+      /* ── APERTURA ── */
+      #ap-logo{position:absolute;left:50%;top:300px;transform:translateX(-50%);width:620px}
+      #ap-barra{position:absolute;left:50%;top:600px;width:420px;height:12px;margin-left:-210px;
+        background:var(--red);clip-path:var(--filo)}
+      #ap-dom{position:absolute;left:0;right:0;top:650px;text-align:center;
+        font-size:104px;letter-spacing:.01em}
+      #ap-sub{position:absolute;left:0;right:0;top:790px;text-align:center;
+        font-family:Monument;font-weight:900;font-size:26px;letter-spacing:.3em;color:var(--violet-hi)}
+
+      /* ── EL NAVEGADOR ── */
+      #marco{position:absolute;left:230px;top:20px;width:1460px;
+        border-radius:14px;overflow:hidden;background:#14101c;
+        box-shadow:0 40px 90px rgba(0,0,0,.7),0 0 0 1px rgba(169,107,255,.28)}
+      #barra-nav{height:56px;display:flex;align-items:center;gap:10px;padding:0 18px;background:#1b1526}
+      .punto{width:12px;height:12px;border-radius:50%}
+      #url{flex:1;margin-left:14px;height:32px;border-radius:16px;background:#0d0916;
+        display:flex;align-items:center;padding:0 18px;gap:10px;
+        font-family:Monument;font-weight:900;font-size:16px;letter-spacing:.05em;color:#cbb8ee}
+      #candado{width:11px;height:11px;border:2px solid #7d63a8;border-radius:2px;border-bottom-width:6px}
+      #scroll{display:block;width:1460px;height:912px}
+      /* Etiqueta que va nombrando la sección mientras baja el scroll */
+      #rotulo{position:absolute;left:230px;bottom:26px;background:var(--red);
+        padding:16px 46px 16px 38px;clip-path:var(--filo);
+        font-family:Monument;font-weight:900;font-size:26px;letter-spacing:.12em}
+
+      /* ── CIERRE ── */
+      #ci-txt{position:absolute;left:0;right:0;top:330px;text-align:center;
+        font-size:120px;line-height:.95;text-transform:uppercase}
+      #ci-txt em{font-style:normal;color:var(--violet-hi)}
+      #ci-dom{position:absolute;left:50%;top:640px;transform:translateX(-50%);
+        background:var(--blanco);color:var(--negro);clip-path:var(--filo);
+        padding:24px 70px 24px 52px;font-family:Monument;font-weight:900;font-size:44px}
+      #ci-firma{position:absolute;left:0;right:0;top:790px;text-align:center;
+        font-family:Monument;font-weight:900;font-size:24px;letter-spacing:.24em;color:var(--violet-hi)}
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="28.2"
+         data-width="1920" data-height="1080">
+
+      <div class="clip" id="fondo" data-start="0" data-duration="28.2" data-track-index="0">
+        <div class="trama" id="trama"></div>
+        <div class="vineta"></div>
+      </div>
+
+      <div class="clip" id="apertura" data-start="0" data-duration="2.4" data-track-index="1">
+        <div class="cap" id="inA">
+          <img id="ap-logo" src="assets/logo-lg.webp" alt="NotMan Rivera" />
+          <div id="ap-barra"></div>
+          <div id="ap-dom">notmanrivera.com</div>
+          <div id="ap-sub">PORTAFOLIO DE MARKETING DEPORTIVO</div>
+        </div>
+      </div>
+
+      <!-- El recorrido: metraje real del sitio, grabado en tiempo real para que
+           las animaciones propias del sitio corran a su velocidad verdadera. -->
+      <div class="clip" id="tour" data-start="2.4" data-duration="22.6" data-track-index="1">
+        <div class="cap" id="inB">
+          <div id="marco">
+            <div id="barra-nav">
+              <div class="punto" style="background:#E50012"></div>
+              <div class="punto" style="background:#8B3FFF"></div>
+              <div class="punto" style="background:#A96BFF"></div>
+              <div id="url"><span id="candado"></span>notmanrivera.com</div>
+            </div>
+            <video id="scroll" src="assets/scroll.mp4" muted
+                   data-start="2.4" data-duration="22.6" data-media-start="0"></video>
+          </div>
+          <div id="rotulo">EL TRABAJO</div>
+        </div>
+      </div>
+
+      <div class="clip" id="cierre" data-start="25.0" data-duration="3.2" data-track-index="1">
+        <div class="cap" id="inC">
+          <div id="ci-txt">Capacidad de<br /><em>producción</em> sin costo fijo</div>
+          <div id="ci-dom">notmanrivera.com</div>
+          <div id="ci-firma">RUBÉN RIVERA · QUERÉTARO, MÉXICO</div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // El rótulo va nombrando lo que se está viendo. Los tiempos salen del
+      // recorrido con el que se grabó el scroll, ya ajustados por el 1.15x
+      // con que se apretó el metraje.
+      const ROTULOS = [
+        [0.0,  "EL SITIO"],
+        [3.4,  "EL TRABAJO"],
+        [7.6,  "LA GALERÍA"],
+        [11.0, "QUÉ HAGO"],
+        [14.6, "EXPERIENCIA"],
+        [17.6, "QUIÉN SOY"],
+        [20.2, "CONTACTO"],
+      ];
+
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+
+      // La trama recorre exactamente un tile (7px): el bucle no da salto.
+      tl.to("#trama", { backgroundPositionX: 7, duration: 28.2, ease: "none" }, 0);
+
+      // APERTURA
+      tl.from("#ap-logo",  { opacity: 0, y: -40, duration: .65, ease: "power3.out" }, .1)
+        .from("#ap-barra", { scaleX: 0, transformOrigin: "left center", duration: .4, ease: "power4.out" }, .5)
+        .from("#ap-dom",   { opacity: 0, y: 26, duration: .55, ease: "power3.out" }, .62)
+        .from("#ap-sub",   { opacity: 0, duration: .5 }, .9)
+        .to("#inA",  { opacity: 0, duration: .3, ease: "power1.in" }, 2.1)
+        .set("#inA", { opacity: 0 }, 2.4);
+
+      // EL RECORRIDO — el marco entra, el rótulo cambia con las secciones
+      tl.from("#marco",  { opacity: 0, y: 34, scale: .985, duration: .55, ease: "power3.out" }, 2.45)
+        .from("#rotulo", { xPercent: -110, duration: .45, ease: "power4.out" }, 2.7);
+
+      ROTULOS.forEach(function (r, i) {
+        if (i === 0) return;                       // el primero ya entra con el marco
+        const t = 2.4 + r[0];
+        tl.to("#rotulo", { xPercent: -110, duration: .22, ease: "power2.in" }, t - .28)
+          .set("#rotulo", { textContent: r[1] }, t)
+          .to("#rotulo", { xPercent: 0, duration: .34, ease: "power4.out" }, t);
+      });
+
+      tl.to("#inB",  { opacity: 0, duration: .35, ease: "power1.in" }, 24.6)
+        .set("#inB", { opacity: 0 }, 25.0);
+
+      // CIERRE
+      tl.from("#ci-txt",   { opacity: 0, y: 32, duration: .55, ease: "power3.out" }, 25.15)
+        .from("#ci-dom",   { opacity: 0, xPercent: -60, duration: .45, ease: "power4.out" }, 25.5)
+        .from("#ci-firma", { opacity: 0, duration: .5 }, 25.8);
+
+      window.__timelines["main"] = tl;
+    </script>
+  </body>
+</html>

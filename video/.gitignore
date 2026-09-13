@@ -1,0 +1,10 @@
+# Nada de esto vive en el repo: se regenera en minutos y pesa decenas de MB.
+node_modules/
+renders/
+*.mp4
+*.webm
+*.png
+raw/
+raw-movil/
+sitio/
+composiciones/*/assets/

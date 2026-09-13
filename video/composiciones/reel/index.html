@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="es" data-resolution="portrait">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <script src="assets/gsap.min.js"></script>
+    <style>
+      @font-face{font-family:Kenyan;src:url(assets/kenyan-coffee.woff2) format('woff2');font-display:block}
+      @font-face{font-family:Monument;src:url(assets/monument-black.woff2) format('woff2');font-weight:900;font-display:block}
+      :root{
+        --violet:#8B3FFF; --violet-hi:#A96BFF; --red:#E50012;
+        --blanco:#fff; --negro:#07030F;
+        --filo:polygon(0 0,100% 0,calc(100% - 20px) 100%,0 100%);
+      }
+      *{margin:0;padding:0;box-sizing:border-box}
+      html,body{width:1080px;height:1920px;overflow:hidden;background:var(--negro)}
+      body{font-family:Kenyan,sans-serif;color:var(--blanco)}
+      .clip{position:absolute;inset:0}
+      .cap{position:absolute;inset:0}
+      .trama{position:absolute;inset:-20%;
+        background-image:radial-gradient(var(--violet) 1px,transparent 1.1px);
+        background-size:7px 7px;opacity:.13}
+      .vineta{position:absolute;inset:0;
+        background:radial-gradient(ellipse at 50% 42%,transparent 34%,rgba(0,0,0,.9) 100%)}
+
+      /* ── GANCHO. 1.4s: en Reels, lo que no enganche aquí no existe. ── */
+      #g-logo{position:absolute;left:50%;top:640px;transform:translateX(-50%);width:640px}
+      #g-barra{position:absolute;left:50%;top:1010px;width:380px;height:13px;margin-left:-190px;
+        background:var(--red);clip-path:var(--filo)}
+      #g-dom{position:absolute;left:0;right:0;top:1060px;text-align:center;font-size:96px}
+
+      /* ── EL TELÉFONO ── */
+      #tel{position:absolute;left:166px;top:58px;width:748px;padding:14px;
+        background:#14101c;border-radius:46px;
+        box-shadow:0 34px 80px rgba(0,0,0,.75),0 0 0 1px rgba(169,107,255,.3)}
+      #pantalla{display:block;width:720px;height:1560px;border-radius:34px}
+      #muesca{position:absolute;left:50%;top:26px;transform:translateX(-50%);
+        width:180px;height:26px;background:#14101c;border-radius:14px;z-index:2}
+      #rotulo{position:absolute;left:100px;bottom:118px;background:var(--red);
+        padding:18px 50px 18px 40px;clip-path:var(--filo);
+        font-family:Monument;font-weight:900;font-size:32px;letter-spacing:.1em}
+      #url{position:absolute;left:0;right:0;bottom:58px;text-align:center;
+        font-family:Monument;font-weight:900;font-size:26px;letter-spacing:.24em;color:var(--violet-hi)}
+
+      /* ── CIERRE. Emocional, no contable: en Instagram nadie se detiene por
+            un argumento de costo fijo. Y el dominio NO es clickeable ahí,
+            así que la llamada tiene que poder ejecutarse dentro de la app. ── */
+      #c-tit{position:absolute;left:0;right:0;top:480px;text-align:center;padding:0 70px;
+        font-size:128px;line-height:.92;text-transform:uppercase}
+      #c-tit em{font-style:normal;color:var(--violet-hi)}
+      #c-serv{position:absolute;left:0;right:0;top:960px;text-align:center;
+        font-family:Monument;font-weight:900;font-size:32px;letter-spacing:.28em;color:var(--violet-hi)}
+      #c-dm{position:absolute;left:50%;top:1120px;transform:translateX(-50%);
+        background:var(--red);clip-path:var(--filo);
+        padding:26px 72px 26px 54px;font-family:Monument;font-weight:900;font-size:40px;letter-spacing:.03em;white-space:nowrap}
+      #c-logo{position:absolute;left:50%;top:1330px;transform:translateX(-50%);width:420px}
+      #c-dom{position:absolute;left:0;right:0;top:1560px;text-align:center;
+        font-family:Monument;font-weight:900;font-size:30px;letter-spacing:.2em;color:var(--blanco)}
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="18"
+         data-width="1080" data-height="1920">
+
+      <div class="clip" id="fondo" data-start="0" data-duration="18" data-track-index="0">
+        <div class="trama" id="trama"></div>
+        <div class="vineta"></div>
+      </div>
+
+      <div class="clip" id="gancho" data-start="0" data-duration="1.4" data-track-index="1">
+        <div class="cap" id="inA">
+          <img id="g-logo" src="assets/logo-lg.webp" alt="NotMan Rivera" />
+          <div id="g-barra"></div>
+          <div id="g-dom">notmanrivera.com</div>
+        </div>
+      </div>
+
+      <div class="clip" id="tour" data-start="1.4" data-duration="12.36" data-track-index="1">
+        <div class="cap" id="inB">
+          <div id="tel">
+            <div id="muesca"></div>
+            <video id="pantalla" src="assets/movil.mp4" muted
+                   data-start="1.4" data-duration="12.36" data-media-start="0"></video>
+          </div>
+          <div id="rotulo">EL SITIO</div>
+          <div id="url">NOTMANRIVERA.COM</div>
+        </div>
+      </div>
+
+      <div class="clip" id="cierre" data-start="13.76" data-duration="4.24" data-track-index="1">
+        <div class="cap" id="inC">
+          <div id="c-tit">Hago que el deporte<br /><em>se vea</em> como se siente</div>
+          <div id="c-serv">MOTION · VIDEO · WEB</div>
+          <div id="c-dm">ESCRÍBEME POR DM</div>
+          <img id="c-logo" src="assets/logo-lg.webp" alt="NotMan Rivera" />
+          <div id="c-dom">NOTMANRIVERA.COM</div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Los tiempos salen del recorrido con que se grabó el scroll móvil, ya
+      // ajustados por el 1.18x con que se apretó el metraje.
+      const ROTULOS = [
+        [0.0, "EL SITIO"], [1.9, "EL TRABAJO"], [3.5, "LA GALERÍA"],
+        [5.2, "QUÉ HAGO"],  [7.0, "EXPERIENCIA"], [8.5, "QUIÉN SOY"],
+        [10.2, "CONTACTO"],
+      ];
+
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+      tl.to("#trama", { backgroundPositionX: 7, duration: 18, ease: "none" }, 0);
+
+      // GANCHO — rápido y sin adornos
+      tl.from("#g-logo",  { opacity: 0, scale: .9, duration: .45, ease: "back.out(1.4)" }, 0)
+        .from("#g-barra", { scaleX: 0, transformOrigin: "left center", duration: .3, ease: "power4.out" }, .3)
+        .from("#g-dom",   { opacity: 0, y: 20, duration: .35, ease: "power3.out" }, .38)
+        .to("#inA",  { opacity: 0, duration: .22, ease: "power1.in" }, 1.18)
+        .set("#inA", { opacity: 0 }, 1.4);
+
+      // EL TELÉFONO
+      tl.from("#tel",    { opacity: 0, y: 50, duration: .5, ease: "power3.out" }, 1.45)
+        .from("#rotulo", { xPercent: -120, duration: .4, ease: "power4.out" }, 1.7)
+        .from("#url",    { opacity: 0, duration: .4 }, 1.9);
+
+      ROTULOS.forEach(function (r, i) {
+        if (i === 0) return;
+        const t = 1.4 + r[0];
+        tl.to("#rotulo",  { xPercent: -120, duration: .18, ease: "power2.in" }, t - .24)
+          .set("#rotulo", { textContent: r[1] }, t)
+          .to("#rotulo",  { xPercent: 0, duration: .3, ease: "power4.out" }, t);
+      });
+
+      tl.to("#inB",  { opacity: 0, duration: .28, ease: "power1.in" }, 13.48)
+        .set("#inB", { opacity: 0 }, 13.76);
+
+      // CIERRE
+      tl.from("#c-tit",  { opacity: 0, y: 34, duration: .5, ease: "power3.out" }, 13.9)
+        .from("#c-serv", { opacity: 0, duration: .4 }, 14.2)
+        .from("#c-dm",   { opacity: 0, scale: .88, duration: .45, ease: "back.out(1.7)" }, 14.4)
+        .from("#c-logo", { opacity: 0, y: -20, duration: .45, ease: "power3.out" }, 14.7)
+        .from("#c-dom",  { opacity: 0, duration: .4 }, 14.95)
+        // Un latido en la llamada: es lo único que el espectador tiene que hacer.
+        .to("#c-dm", { scale: 1.045, duration: .5, yoyo: true, repeat: 2, ease: "sine.inOut" }, 15.5);
+
+      window.__timelines["main"] = tl;
+    </script>
+  </body>
+</html>

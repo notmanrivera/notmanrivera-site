@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="es" data-resolution="portrait">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <!-- GSAP servido desde el propio proyecto, no desde un CDN: el render
+         corre en un Chrome headless que puede no tener salida a internet. -->
+    <script src="assets/gsap.min.js"></script>
+    <style>
+      @font-face{font-family:Kenyan;src:url(assets/kenyan-coffee.woff2) format('woff2');font-display:block}
+      @font-face{font-family:Monument;src:url(assets/monument-black.woff2) format('woff2');font-weight:900;font-display:block}
+
+      /* Paleta del sitio. El violeta es identidad/estructura, el rojo es
+         superficie/acción, el blanco es lo seleccionado, el negro es suelo.
+         ⚠️ Nada de verde ácido: es el color de Victorem, no el de Rubén. */
+      :root{
+        --violet:#8B3FFF; --violet-deep:#4A1391; --violet-hi:#A96BFF;
+        --red:#E50012; --blanco:#fff; --negro:#07030F;
+        --filo:polygon(0 0,100% 0,calc(100% - 26px) 100%,0 100%);
+      }
+      *{margin:0;padding:0;box-sizing:border-box}
+      html,body{width:1080px;height:1920px;overflow:hidden;background:var(--negro)}
+      body{font-family:Kenyan,sans-serif;color:var(--blanco)}
+      .clip{position:absolute;inset:0}
+
+      /* Trama de medios tonos: 7px, el mismo tile del sitio. */
+      .trama{
+        position:absolute;inset:-20%;
+        background-image:radial-gradient(var(--violet) 1px, transparent 1.1px);
+        background-size:7px 7px;opacity:.16;
+      }
+      .vineta{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 45%, transparent 35%, rgba(0,0,0,.85) 100%)}
+
+      /* ESCENA 1 — el logo aterriza */
+      #logo{position:absolute;left:50%;top:44%;transform:translate(-50%,-50%);width:760px}
+      #astilla-a,#astilla-b{position:absolute;background:var(--red);height:16px;clip-path:var(--filo)}
+      #astilla-a{left:-60px;top:38%;width:520px}
+      #astilla-b{right:-60px;top:71%;width:420px;background:var(--violet)}
+      #kicker{
+        position:absolute;left:0;right:0;top:60%;text-align:center;
+        font-family:Monument;font-weight:900;font-size:29px;letter-spacing:.2em;
+        color:var(--violet-hi);
+      }
+
+      /* ESCENA 2 — la obra */
+      .obra{position:absolute;width:620px;border:6px solid var(--blanco);object-fit:cover}
+      #o1{left:70px;top:250px;height:450px}
+      #o2{right:70px;top:640px;height:520px}
+      #o3{left:130px;top:1100px;height:400px}
+      #placa-obra{
+        position:absolute;left:0;bottom:210px;background:var(--red);
+        padding:26px 70px 26px 60px;clip-path:var(--filo);
+        font-family:Monument;font-weight:900;font-size:40px;letter-spacing:.06em;
+      }
+
+      /* ESCENA 3 — el cierre */
+      #cierre{display:flex;flex-direction:column;justify-content:center;align-items:center;gap:40px;padding:0 80px}
+      #promesa{font-size:132px;line-height:.92;text-align:center;text-transform:uppercase}
+      #promesa em{font-style:normal;color:var(--violet-hi)}
+      #placa-dom{
+        background:var(--blanco);color:var(--negro);clip-path:var(--filo);
+        padding:28px 78px 28px 58px;font-family:Monument;font-weight:900;
+        font-size:46px;letter-spacing:.04em;
+      }
+      #sub{font-family:Monument;font-weight:900;font-size:28px;letter-spacing:.3em;color:var(--violet-hi)}
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="11"
+         data-width="1080" data-height="1920">
+
+      <div class="clip" data-start="0" data-duration="11" data-track-index="0">
+        <div class="trama" id="trama"></div>
+        <div class="vineta"></div>
+      </div>
+
+      <!-- ESCENA 1 -->
+      <div class="clip" id="esc1" data-start="0" data-duration="4" data-track-index="1">
+       <div id="in1" style="position:absolute;inset:0">
+        <div id="astilla-a"></div>
+        <div id="astilla-b"></div>
+        <img id="logo" src="assets/logo-lg.webp" alt="NotMan Rivera" />
+        <div id="kicker"></div>
+       </div>
+      </div>
+
+      <!-- ESCENA 2 -->
+      <div class="clip" id="esc2" data-start="4" data-duration="3.6" data-track-index="1">
+       <div id="in2" style="position:absolute;inset:0">
+        <img class="obra" id="o1" src="assets/obra1.webp" alt="" />
+        <img class="obra" id="o2" src="assets/obra2.webp" alt="" />
+        <img class="obra" id="o3" src="assets/obra3.webp" alt="" />
+        <div id="placa-obra">AL-ARABI · LIGA MX · MENA</div>
+       </div>
+      </div>
+
+      <!-- ESCENA 3 -->
+      <div class="clip" id="esc3" data-start="7.6" data-duration="3.4" data-track-index="1">
+        <div id="cierre" style="position:absolute;inset:0">
+          <div id="promesa">Capacidad de<br /><em>producción</em><br />sin costo fijo</div>
+          <div id="placa-dom">notmanrivera.com</div>
+          <div id="sub">QUERÉTARO · MÉXICO</div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      window.__timelines = window.__timelines || {};
+      // letterSpacing reflowea el texto y GSAP redondea el valor a píxel
+      // entero: bajo la captura cuadro por cuadro eso se ve como tembleque.
+      // Se parte en glifos y se anima la x de cada uno — transform puro,
+      // interpola en subpíxel. Misma regla que el sitio: solo transform/opacity.
+      const KICKER = "DISEÑO Y ANIMACIÓN DEPORTIVA";
+      document.getElementById("kicker").innerHTML = KICKER.split("").map(function (ch) {
+        return '<span style="display:inline-block">' + (ch === " " ? "&nbsp;" : ch) + "</span>";
+      }).join("");
+
+      const tl = gsap.timeline({ paused: true });
+
+      // La trama recorre EXACTAMENTE un tile (7px) y vuelve: al llegar el
+      // dibujo coincide consigo mismo y el bucle no da un salto visible.
+      tl.to("#trama", { backgroundPositionX: 7, duration: 11, ease: "none" }, 0);
+
+      // ESCENA 1 — el logo cae, las astillas cruzan, el kicker se abre
+      tl.from("#logo",      { y: -90, opacity: 0, duration: .7, ease: "power3.out" }, .15)
+        .from("#astilla-a", { xPercent: -140, duration: .55, ease: "power4.out" }, .35)
+        .from("#astilla-b", { xPercent:  140, duration: .55, ease: "power4.out" }, .45)
+        .from("#kicker span", { opacity: 0, x: -14, duration: .5, ease: "power2.out", stagger: .012 }, .7)
+        .to("#in1",         { opacity: 0, duration: .35, ease: "power1.in" }, 3.65)
+        .set("#in1",        { opacity: 0 }, 4.0);
+
+      // ESCENA 2 — la obra entra escalonada, cada pieza desde su lado
+      tl.from("#o1", { xPercent: -120, rotation: -4, duration: .6, ease: "power3.out" }, 4.05)
+        .from("#o2", { xPercent:  120, rotation:  3, duration: .6, ease: "power3.out" }, 4.3)
+        .from("#o3", { xPercent: -120, rotation: -2, duration: .6, ease: "power3.out" }, 4.55)
+        .from("#placa-obra", { xPercent: -110, duration: .5, ease: "power4.out" }, 4.9)
+        .to("#in2", { opacity: 0, duration: .35, ease: "power1.in" }, 7.25)
+        .set("#in2", { opacity: 0 }, 7.6);
+
+      // ESCENA 3 — el cierre, lo único que tiene que quedarse en la cabeza
+      tl.from("#promesa",  { y: 40, opacity: 0, duration: .6, ease: "power3.out" }, 7.7)
+        .from("#placa-dom",{ xPercent: -110, opacity: 0, duration: .5, ease: "power4.out" }, 8.1)
+        .from("#sub",      { opacity: 0, duration: .6 }, 8.5);
+
+      window.__timelines["main"] = tl;
+    </script>
+  </body>
+</html>
