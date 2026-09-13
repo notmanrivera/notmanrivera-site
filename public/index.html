@@ -1078,6 +1078,41 @@
      rejilla del hero ≥1000px) porque .marca cambia de alto, de margen y de
      origen en cada uno -- mismo criterio que ya sigue .rafaga, que también
      repite el min(29vh,330px) en vez de deducirlo. */
+  /* ===== TRAZO: el logo se dibuja a si mismo =====
+     Nueve rutas, una por letra, reveladas con stroke-dashoffset -- el unico
+     efecto que el logo en raster NO podia dar: necesita la geometria real de
+     cada letra. Una punta blanca recorre cada ruta por delante del trazo; sin
+     ella el efecto se lee como "aparecio un contorno", no como "se esta
+     dibujando".
+     ⚠️ stroke-dashoffset REPINTA cada cuadro, asi que rompe la regla de "solo
+     transform y opacity" que sigue el resto del sitio. Es admisible porque
+     corre UNA sola vez por sesion y nunca en bucle. No reutilizar en loops.
+     ⚠️ La geometria se calca de .brillo, no se deduce: mismo alto, mismo
+     margin-left, mismo transform-origin y misma escala en los tres modos.
+     ⚠️ preserveAspectRatio="none" es deliberado. El viewBox enmarca la obra
+     del SVG dentro del lienzo de 1200x675 del PNG, pero las dos fuentes no
+     tienen exactamente la misma proporcion (1.786 contra 1.778, un 0.44% de
+     diferencia). Con "meet" ese 0.44% se convierte en trazo desalineado del
+     cromado; con "none" se convierte en 0.44% de deformacion, que no se ve. */
+  .trazo{
+    position:absolute;left:0;top:0;z-index:4;display:none;
+    height:min(29vh,330px);aspect-ratio:1200/675;
+    margin-left:-1.5%;
+    transform-origin:left center;transform:scale(var(--marca-escala,1));
+    pointer-events:none;overflow:visible;
+  }
+  .revelado .trazo{display:block}
+  .trazo .linea{
+    fill:none;stroke:var(--violet-hi);stroke-width:2.2;
+    stroke-linecap:round;stroke-linejoin:round;
+  }
+  .trazo .punta{
+    fill:none;stroke:#fff;stroke-width:3.2;
+    stroke-linecap:round;stroke-linejoin:round;
+    filter:drop-shadow(0 0 4px rgba(200,150,255,.8))
+           drop-shadow(0 0 9px rgba(139,63,255,.45));
+  }
+
   .brillo{
     position:absolute;left:0;top:0;z-index:3;
     height:min(29vh,330px);aspect-ratio:1200/675;
@@ -1120,9 +1155,12 @@
        (la de ≤820px solo cambia margin-bottom), y ponerlo en 0 desplazaba el
        brillo 5px a la derecha del logo. */
     .brillo{height:auto;width:94%;aspect-ratio:1200/675}
+    .trazo {height:auto;width:94%;aspect-ratio:1200/675}
   }
   @media(prefers-reduced-motion:reduce){
     .brillo{display:none}
+    /* El trazo tampoco: quien pide menos movimiento ve el logo directo. */
+    .revelado .trazo{display:none}
   }
 
   /* ===== CHISPAS DEL LOGO (mismo destello que ya usan los clics) =====
@@ -1298,6 +1336,11 @@
     /* El brillo sigue al logo en el modo centrado del hero: mismo alto, mismo
        origen de escala, y left:50% + translateX(-50%) para caer exactamente
        sobre él ahora que .marca está centrado con margin:auto. */
+    .orbita .trazo{
+      height:min(27vh,320px);width:auto;margin-left:0;
+      left:50%;transform-origin:center;
+      transform:translateX(-50%) scale(var(--marca-escala,1));
+    }
     .orbita .brillo{
       height:min(27vh,320px);width:auto;margin-left:0;
       left:50%;transform-origin:center;
@@ -3091,6 +3134,20 @@
            data-alt-es="NotMan Rivera — Rubén Rivera, motion graphics, video y diseño web"
            data-alt-en="NotMan Rivera — Rubén Rivera, motion graphics, video, and web design"
            width="1200" height="675" fetchpriority="high" decoding="async">
+      <!-- El logo se dibuja a si mismo antes de aparecer. Solo la primera
+           visita de la sesion; ver .trazo y el bloque REVELADO del JS. Las
+           rutas salen del SVG vectorial del logo, una por letra. -->
+      <svg class="trazo" viewBox="-6.401 -7.966 960.203 537.729" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+      <path class="linea" d="M941,0c2.6,17.4-3,38.8-7.5,57.5l-43.8,10.4c-38.1,7.6-75.9,13.8-114.8,19.1-87.2,11.9-174.1,20.7-261.9,27-31.5,2.3-61.7,3.4-93.1,3.9-45.8.6-106.8-.8-149-15-13.3-4.5-31.8-14-32.8-27.1-1-13.5,14.1-20.4,2.1-25.6-11.4-2.6-22.4-3.5-34.5-3.4-27.3.2-53.9,3.2-81.6,6.8-37.6,114.3-36.3,238.2,16.3,347.6,12.3,25.7,26.7,49.5,44.5,71.5s1.9,2.8,1.9,3.8-2.2,2.4-3.7,2.9c-24.1,7.8-45.6,20.1-66.5,34.4s-4.6,1.6-5.1.3c-21.9-46.6-37.2-95.4-46.8-146.2-18.8-99.7-16.4-208,5-308.5-21.7,3-42.4,7.7-63.6,12.9-2.1.5-4.8.3-6.4-.3V27C78.4,11.3,158.7,5.8,238.9,11.7s42.8,4.3,64,9.2,21.4,7.5,21.2,14.6c-.1,6-8.3,9.2-16.2,16.7s-6.1,8.4-4.5,12.3c3.8,9.4,37.5,11.5,52.5,11.6,87.7.4,190.2-11.1,277.9-23.3,101.6-14.2,202.3-32,302.1-52.3l4.9-.5Z"/>
+      <path class="linea" d="M945,515v5s-5,0-5,0l-1.7-1.4-57.9-15.9-20.3-26.8-28.3-48.8-42.9-89.5c2.4,18.1,6.3,34.4,10.7,51.8,7.5,29.5,16,57.7,25.3,86.7s-1.4,4.2-2.7,3.8l-34.3-10.3c-21.6-56.8-32-119-35.3-180.2-3.3-61.1-.3-121.7,9.3-182.6l50.3-7c1.6-.2,3.2,2.3,3,4.1-4.4,74.6,0,154.6,20.4,226.5,6.7,23.7,14.4,46.4,26.9,68.1-7.2-71.5-9.8-140.7-5.8-211.2,1.9-32.5,5-63.9,10.8-96l55.6-11.6c1.6-.3,3.4,2.4,2.9,4.2-27.1,117.3-29.2,244.3-1.9,361.8,5.6,24.1,12.2,46.8,21.1,69.1Z"/>
+      <path class="linea" d="M694.4,445.2l-25.7-6c-1.4-.3-3.6-2.2-4.1-3.8-9.6-31-16.2-61.8-19.9-94.2-6.8-60.4-5.4-120.9,4.6-180.9-65.1-10.2-131.8-5.5-196.1,2.5-3-.2-5.1-2.9-4.4-5.7l5-22.5c.3-1.5,2.6-3.6,4.3-3.6,95,.5,189.8-8.1,283.3-22.5,1.6-.2,3.9,0,4.8.8s1.7,3.3,1.4,5.2c-12.4,77.8-13.9,156.5-3,234.8,5.1,36.8,12.7,72.4,24.5,107.5.6,1.8.7,4.2.2,5.5s-3.3,2.5-4.5,2.1l-34.8-10.1c-10.2-20.7-16.3-42-20.5-64.7-7.4-39.7-9.4-79-8.5-120.2l-23-1.6c-2.5,55.3,2.5,119.1,22.9,170.3.7,1.9.8,4.7-.2,5.9-1.4,1.6-3.9,1.7-6.2,1.1ZM699.8,248.9l-.8-16.9c.5-15.3,2.8-29.5,5.7-44.8-5.3-1.6-11-1.4-16.8-.3-5.2,20.2-9,40.3-8.3,60.7,7.2-.6,13.8,0,20.2,1.3Z"/>
+      <path class="linea" d="M299.3,129.4c-4.2,12.6-7.8,23.1-10.5,35.5-9.5,42.4-9.3,85.6-.4,128.8-19.4,1.1-36.4,4.9-54.3,10.6-4.8-5.9-7.3-12.7-9.8-19.7-4.4-16.1-6.9-31.7-8.4-48.9h-24c-.4,26.4,5.5,51,16.3,75.6-22.4,6-42.8,12.4-63.6,20s-3.9-.2-4.8-2c-25.8-72.3-27.2-151.7-9.6-226.2,2.9-12.1,6.3-22.8,10.3-34.8,11.8-2.5,22.6-3.8,34.4-4.9,16.6-.7,32.2-.7,49.1-.3.8,1.5,1.2,3.2,1.3,4.8-7.6,14-13,27.5-17.9,42.6-9.9,31.6-15.7,63.2-19,96.9h26c-1.1-37,6.6-72.9,17.5-107.6.4-1.1,1.9-2.9,2.9-2.9s2.8,1.2,3.4,2.1c13.5,18,35.7,25.4,58.1,26.8,1.3,0,3.7,2.1,3.2,3.7Z"/>
+      <path class="linea" d="M551.8,362.7l-23.2-25.2c6.2,27.7,14.5,52.8,23,78.9.3.9.3,3-.2,3.7s-2.8.7-4.1.6l-22-1.9c-21-51.8-32.1-108.2-37.9-163.6,3-5.9,15.3-4.4,24.6-3.2,8.2,21.2,17.1,44.5,31.9,59.9-21-42.7-25.2-92.9-23.8-139.5,21.4-2.7,41.7-3.3,62.9-3.3,18,0,35.5.6,53.5,4.8-5.6,21.8-8.8,42.3-9.9,64-3.2,63.2,6.4,129.3,22.1,190.5.3,1.3.2,3.8-.7,4.2s-3,.1-4.3-.2c-8.4-2.5-16.4-3.1-25.7-3.4-17.5-43.5-26.4-98.2-30.6-145.1l-3.9-44c-4.3,45-1.3,90.1,5.6,135,.4,2.8,0,5.3-1.2,7s-5.7,3.3-7.9,2.2c-10.6-5.5-20-12.2-28.3-21.2Z"/>
+      <path class="linea" d="M266.2,444.8c-21.8,6.3-41.5,12.9-62.2,21.8-27.3-34.7-46.1-77.8-59.5-119.4,4.2-3.9,8.4-6.2,13.3-8.5,15.7-5.7,31.6-9.7,48.7-12.5,8.6,27.4,27,49.6,53.9,60.6-8.8-22.8-15.7-44-22.3-66.8,2.4-2.4,4.8-3.7,7.8-5.2,14.5-4.6,29.5-7.4,44.9-8.3,2,11.9,4.2,22,7.9,32.7,9.8,28.3,21.9,54.9,34.9,82s.2,3.9-.7,5c-15,1.9-29.6,5.6-43.9,11.5-13.9-5.8-24.7-13.9-37.6-22.2,4.3,9.5,9.9,16.9,16.1,24.9s-.1,3.9-1.4,4.2Z"/>
+      <path class="linea" d="M504.9,415.5l-31.6-.4c-24.6-54-36.1-116.5-38.8-176-21.2-.3-40.9.7-61.5,2.4-1.9-.2-3.6-1-4.6-2.3l4.4-57.5,135.2-8c3-.2,2.4,3.7,2.3,5.4-1.5,18.7.4,36.5,2.7,55.1.2,1.7-1.2,4.1-2.8,3.9-12.7-.9-24.1-.7-36.3.5.4,23.4,3.1,44.8,7.4,67.3,6.9,36.1,16.5,70.7,28.3,105.5.3.9.3,3-.1,3.7s-2.8.5-4.6.5Z"/>
+      <path class="linea" d="M351,244.2l-12.4,1.9v11.5c27.4-5.5,52.6-5.2,80.4-4.5,1.8,0,4.5,2.6,4.5,4.2v21.3c0,2.9-2.4,4.8-5.5,4.7-37.3-1.9-74,2.4-109.8,12.7s-3.7.5-4.6-.2-2-2.9-2.3-4.2c-10.9-49.8-1.2-109.9,11.1-159.3.8-3.2,3.3-4.4,6.2-4,39.6,5.3,78.5,4.6,118.4,2.8s3.4.4,4.2,1.2,1.4,3.6,1.1,4.8l-5.9,23.1c-.3,1.3-3,3.6-4.4,3.7-29.9,3.4-55.5,5.8-85.9,1.6v14s9.3-1.1,9.3-1.1c1.5-.2,4.2,2.7,4,4.4l-4.2,57.1c-.1,1.8-2.5,3.9-4.1,4.1Z"/>
+      <path class="linea" d="M457.3,415c-36.2.8-70.6,4.7-105.9,10.2-6.2-9.7-11.2-18.8-15.7-29-12.8-28.9-22.5-58.1-31.3-89.2,39.5-9.4,82.5-10.8,122.1-8.7,7.1,39.6,19.3,76.1,33.4,113,.5,1.3-.7,3.8-2.6,3.8ZM396,383.2c1.7-.4,4-2.3,3.3-4.1-5.9-15.9-10.3-30.9-13.8-47.7-7-.2-13.4,1.2-19.6,4.7l5.9,24.1c2.3,9.3,6.1,17.8,11.1,25.9l13.1-2.8Z"/>
+    </svg>
       <i class="rafaga" aria-hidden="true"></i>
       <!-- Destello especular: capa exterior enmascarada con el alfa del logo,
            capa interior (la banda de luz) es la que viaja. Ver .brillo. -->
@@ -4007,8 +4064,78 @@
   const raiz = document.documentElement;
   let heroListo = !raiz.classList.contains('cargando');
 
+  /* ===== REVELADO DEL LOGO =====
+     El trazo se dibuja, y solo cuando termina se le pone .go a .marca. Todo
+     lo demas del hero (rafaga, brillo, chispas) ya cuelga de `.marca.go ~ X`,
+     asi que hereda el retraso sin que haya que tocar una sola de esas reglas.
+     Se usa la Web Animations API y no transiciones CSS porque las nueve
+     rutas llevan DOS animaciones cada una -- el trazo y la punta que lo
+     encabeza -- y tienen que ir clavadas al mismo reloj: con dos transiciones
+     independientes se desfasan y la punta se despega de la linea. */
+  const TRAZO_MS = 1200;   // lo que tarda el logo en dibujarse
+  let retrasoMarca = 0;
+
+  let trazoArrancado = false;
+
+  function arrancarTrazo(){
+    const svg = document.querySelector('header h1 .trazo');
+    if (!svg || !svg.animate) return;
+
+    // Menos movimiento: nunca. El CSS ya lo oculta; aqui se evita el trabajo.
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    // Una vez por sesion. sessionStorage y no localStorage a proposito: el
+    // valor esta en la PRIMERA impresion (el clic desde un correo en frio),
+    // no en castigar para siempre a quien vuelva en otro momento.
+    // ⚠️ Envuelto en try: en ventana privada el acceso puede lanzar.
+    try {
+      if (sessionStorage.getItem('notman_revelado')) return;
+      sessionStorage.setItem('notman_revelado', '1');
+    } catch (e) { /* sin almacenamiento: se revela y ya */ }
+
+    raiz.classList.add('revelado');
+    retrasoMarca = TRAZO_MS - 60;   // el cromo entra solapando 60ms el final
+
+    const HEAD = 26;                // largo de la punta, en unidades del viewBox
+    const EASE = 'cubic-bezier(.42,0,.35,1)';
+
+    svg.querySelectorAll('.linea').forEach(linea => {
+      const L = linea.getTotalLength();
+
+      // La punta es una COPIA de la misma ruta: recorre identico camino con
+      // identico easing, asi que no puede desincronizarse del trazo.
+      const punta = linea.cloneNode(false);
+      punta.setAttribute('class', 'punta');
+      linea.after(punta);
+
+      linea.style.strokeDasharray = L;
+      // dasharray [HEAD, mucho] + offset (HEAD - dibujado) deja el segmento
+      // brillante exactamente sobre el punto donde el trazo esta creciendo.
+      punta.style.strokeDasharray = HEAD + ' 99999';
+
+      const opt = { duration: TRAZO_MS, easing: EASE, fill: 'both' };
+      linea.animate([{ strokeDashoffset: L }, { strokeDashoffset: 0 }], opt);
+      punta.animate([{ strokeDashoffset: HEAD }, { strokeDashoffset: HEAD - L }], opt);
+      punta.animate([{ opacity: 0 }, { opacity: 1 }],
+                    { duration: 70, easing: 'linear', fill: 'both' });
+      punta.animate([{ opacity: 1 }, { opacity: 0 }],
+                    { duration: 150, delay: TRAZO_MS - 90, easing: 'linear', fill: 'both' });
+    });
+
+    // El contorno se apaga mientras el cromado entra: se solapan para que no
+    // haya un cuadro en el que no haya nada en pantalla.
+    svg.animate([{ opacity: 1 }, { opacity: 0 }],
+                { duration: 300, delay: TRAZO_MS - 60, easing: 'ease-in', fill: 'both' });
+  }
+
   function entradaHero(){
     if (!heroListo) return;
+    // ⚠️ El trazo arranca AQUI y no al parsear: el cargador tapa la pagina
+    // hasta 950ms como minimo. Arrancandolo antes, el contorno se dibujaba y
+    // se apagaba por debajo del cargador, y el cromado -- que si espera a esta
+    // funcion -- entraba un segundo y medio despues, con un hueco en blanco
+    // en medio. Los dos cuelgan del mismo disparo.
+    if (!trazoArrancado) { trazoArrancado = true; arrancarTrazo(); }
     const orden = [
       ...document.querySelectorAll('header .kicker'),
       ...document.querySelectorAll('header .marca'),
@@ -4017,7 +4144,15 @@
       ...document.querySelectorAll('header .btn'),
       ...document.querySelectorAll('header .stats'),
     ];
-    orden.forEach((el, i) => setTimeout(() => dispararTexto(el), 20 + i * 65));
+    orden.forEach((el, i) => {
+      // Solo .marca espera al trazo. Kicker, lede y botones entran a su ritmo
+      // de siempre: la pagina no debe SENTIRSE 1.3s mas lenta.
+      const esMarca = el.classList.contains('marca');
+      // El logo, en modo revelado, NO acumula ademas su turno del escalonado:
+      // ese turno ordena la entrada del hero, y aqui el trazo ya hace ese papel.
+      const ms = (esMarca && retrasoMarca) ? retrasoMarca : 20 + i * 65;
+      setTimeout(() => dispararTexto(el), ms);
+    });
   }
   // Arranca de inmediato: esperar a 'load' significaba esperar a los iframes de Drive
   requestAnimationFrame(entradaHero);

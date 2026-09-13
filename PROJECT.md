@@ -1105,6 +1105,36 @@ Lo que se arregló:
 
 **"Qué hay detrás de este texto" es un problema resuelto y no hay que volver a resolverlo.** axe-core (`npm i axe-core`, inyectar `axe.min.js` con Playwright y correr `axe.run`) lo hace bien. Lo único que hay que hacer a mano es **recorrer la página antes de auditar** para disparar los reveals dependientes de scroll y **esperar a que terminen** — no congelarlos.
 
+## El logo se dibuja a sí mismo (2026-09-13)
+
+Rubén consiguió el logo en **vector de verdad**: 9 rutas de Illustrator, una por letra, 4.6 KB. Eso desbloquea lo único que el raster no podía dar — `stroke-dashoffset` necesita la geometría real de cada letra; con un PNG lo máximo posible es una cortinilla rectangular.
+
+**Cómo funciona.** Las nueve letras se trazan **a la vez** (1200ms), cada una con una punta blanca que recorre su ruta por delante del trazo. Al terminar, el contorno se apaga y entra el cromado de siempre. Solo la primera visita de la sesión.
+
+⚠️ **La punta es lo que hace legible el efecto.** Sin un extremo que avanza se lee como "apareció un contorno", no como "se está dibujando". Son dos copias de cada ruta: la línea (`dasharray: L`, offset L→0) y la punta (`dasharray: HEAD 99999`, offset `HEAD-dibujado`), atadas al mismo reloj.
+
+⚠️ **Simultáneo, no escalonado.** Se probaron las dos. Escalonado se lee como una mano escribiendo, pero deja la mitad derecha del cuadro vacía durante más de un segundo. Simultáneo, con la misma duración total, **muestra la silueta completa a los 0.6s** — el visitante reconoce el logo mucho antes. Para tráfico de correo frío eso pesa más que el gesto.
+
+⚠️ **Web Animations API, no transiciones CSS.** Cada ruta lleva dos animaciones que tienen que ir clavadas; con transiciones independientes la punta se despega de la línea. Y WAAPI permite posicionar el reloj en un milisegundo exacto, que es como se verificó (ver abajo).
+
+⚠️ **`stroke-dashoffset` REPINTA cada cuadro**, así que rompe la regla de "solo transform y opacity" que sigue el resto del sitio. Es admisible porque corre una vez por sesión y nunca en bucle. No reutilizar en loops.
+
+### Dos bugs que costaron, y los dos eran de alineación o de medición
+
+**1. El contorno salía 4.8% más grande que el cromado.** Tres causas apiladas: `logo-lg.webp` trae margen transparente (8px izq, 11 der, 10 arriba, 11 abajo) que el SVG no tiene; el `viewBox` decía `945 520` cuando la unión de las rutas mide `945 521`; y las proporciones no coinciden (1.786 contra 1.778), así que `object-fit:contain` encuadraba distinto. Se arregló con un `viewBox` que reencuadra la obra dentro del lienzo de 1200x675 — `-6.401 -7.966 960.203 537.729` — y `preserveAspectRatio="none"`, que convierte ese 0.44% de desajuste en deformación invisible en vez de en desalineación visible. Verificado: desfase 0.0px en escritorio y en móvil.
+
+**2. El trazo arrancaba al parsear, el cromado esperaba al cargador.** El cargador tapa la página **950ms como mínimo**, así que el contorno se dibujaba y se apagaba por debajo de él, y el cromado —que sí espera a `entradaHero()`— entraba 1.4s después. Quedaba un hueco largo con nada en pantalla. Ahora los dos cuelgan del mismo disparo. Verificado muestreando opacidades cada 100ms: **0 instantes con nada visible.**
+
+### Y una lección de método que se repite
+
+La primera versión se descartó por "no se ve el trazo letra por letra" — pero el problema era **el instrumento**: se grababa la pantalla con Playwright y la grabación arranca antes de que la página cargue, así que el segundo 0.25 del archivo era en realidad el 1.5 de la animación. Es el mismo error que ya está documentado en la auditoría de accesibilidad: **medir mal produce hallazgos falsos convincentes.** La solución fue la misma que usa HyperFrames — pedirle a la página cada cuadro en un tiempo exacto en vez de filmarla.
+
+### Integración: nada del CSS existente se tocó
+
+Todo lo demás del hero (`.rafaga`, `.brillo`, `.chispa-logo`) ya cuelga de `.marca.go ~ X`. Basta con **retrasar el `.go` del logo** hasta que el trazo termine y el resto hereda el retraso en su orden actual. `.trazo` calca la geometría de `.brillo` en sus tres modos (base, ≤820px, `.orbita`) y se oculta con `prefers-reduced-motion`, igual que el brillo.
+
+El vector de origen vive en `fuente/logo-vector.svg`, fuera de `public/` para que el deploy no lo publique.
+
 ## Notas para quien retome esto
 
 - El dashboard de Cloudflare y Gmail están bloqueados para el agente vía navegador — pero **la API de Cloudflare sí responde** usando el token OAuth que Wrangler guarda en `~/Library/Preferences/.wrangler/config/default.toml`. Ese token puede leer/escribir Pages y Email Routing, pero **no** puede escribir registros DNS — eso lo tiene que hacer Rubén a mano en el dashboard.
