@@ -2957,6 +2957,13 @@
   </div>
 </div>
 
+<!-- Los dos botones flotantes viven fuera de <main> (son position:fixed y
+     acompanan a toda la pagina), asi que axe los reportaba como contenido
+     fuera de landmarks. <aside> los agrupa en uno solo. Ojo: el envoltorio
+     NO debe llevar transform, filter ni will-change -- cualquiera de los tres
+     crearia un bloque contenedor y los fixed dejarian de anclarse al viewport. -->
+<aside class="flotantes" aria-label="Accesos rápidos" data-aria-es="Accesos rápidos" data-aria-en="Quick actions">
+
 <!-- Volver arriba: un rombo mas grande justo encima de los 5 pips del HUD,
      como si fuera un sexto paso que te regresa al inicio -- mismo lenguaje
      visual, no un boton generico suelto en la esquina. Morado por defecto
@@ -2988,6 +2995,8 @@
     <path d="M12.04 2.5c-5.26 0-9.54 4.28-9.54 9.54 0 1.68.44 3.32 1.28 4.76L2.5 21.5l4.85-1.27a9.5 9.5 0 0 0 4.69 1.25h.01c5.26 0 9.54-4.28 9.54-9.54 0-2.55-.99-4.94-2.79-6.75a9.47 9.47 0 0 0-6.76-2.69zm0 17.46h-.01a7.9 7.9 0 0 1-4.03-1.1l-.29-.17-3 .79.8-2.92-.19-.3a7.9 7.9 0 0 1-1.22-4.22c0-4.38 3.57-7.94 7.95-7.94a7.9 7.9 0 0 1 5.62 2.33 7.88 7.88 0 0 1 2.32 5.61c0 4.38-3.57 7.92-7.95 7.92z"/>
   </svg>
 </a>
+
+</aside>
 
 <!-- Menu de pantalla completa en cascada diagonal -->
 <div class="menu-full" id="menuFull" data-abierto="no" role="dialog" aria-modal="true"
@@ -3032,6 +3041,12 @@
 
   <span class="menu-pie" data-es="Rubén Rivera · NotMan" data-en="Rubén Rivera · NotMan">Rubén Rivera · NotMan</span>
 </div>
+
+<!-- axe-core: el documento no tenia landmark <main>, asi que TODO el contenido
+     quedaba fuera de landmarks (46 elementos senalados). Un lector de pantalla
+     no puede saltarse el nav para ir al contenido. El <main> envuelve del hero
+     al contacto; nav, menu, cargador y footer se quedan fuera a proposito. -->
+<main id="contenido">
 
 <header id="inicio">
   <div class="campo"></div>
@@ -3639,6 +3654,8 @@
     <a href="mailto:hola@notmanrivera.com" class="mail" data-text="hola@notmanrivera.com"><span>hola@notmanrivera.com</span></a>
   </div>
 </section>
+
+</main>
 
 <footer>
   <!-- Marquesina puramente decorativa: repite la misma marca que ya esta

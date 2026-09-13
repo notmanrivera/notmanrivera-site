@@ -1083,6 +1083,28 @@ error on line 8 at column 15: Double hyphen within comment
 
 Por eso el deploy ahora **valida el sitemap antes de publicar** (`.github/workflows/deploy.yml`, paso "Validar el sitemap"): parsea con `minidom`, comprueba que la raíz sea `<urlset>` y que declare al menos una URL. Verificado en los dos sentidos — reintroduciendo el `--` el paso sale con exit 1 y el deploy se detiene.
 
+## Accesibilidad: auditoría medida con axe-core (2026-09-13)
+
+Primera auditoría real del sitio. **Resultado: 46 reglas pasan, 1 falla.** El sitio estaba mucho mejor de lo que se temía — el riesgo aparente (violeta sobre negro, controles a medida, 32 animaciones) no se materializó.
+
+Lo que se arregló:
+
+1. **No había `<main>`.** Sin ese landmark, axe reportaba **46 elementos** como "contenido fuera de landmarks", y un lector de pantalla no tiene forma de saltarse el nav para llegar al contenido. Ahora `<main id="contenido">` envuelve del hero al contacto; `nav`, el menú, el cargador y el `footer` quedan fuera a propósito. Solo eso bajó las violaciones de 3 a 2 y las reglas que pasan de 44 a 46.
+2. **Los dos botones flotantes** (`#volverArriba` y `.whatsapp-flotante`) quedaban fuera de cualquier landmark por ser `position:fixed`. Van envueltos en un `<aside aria-label="Accesos rápidos">`. ⚠️ Ese envoltorio **no debe llevar `transform`, `filter` ni `will-change`**: cualquiera de los tres crea un bloque contenedor y los hijos `fixed` dejarían de anclarse al viewport.
+
+**Lo que queda:** `.marquesina-pista span` lleva `color:var(--violet-hi)` con `opacity:.45`, que da **2.02:1 en escritorio y 1.86:1 en móvil** — el mínimo es 4.5:1 para texto de 11.5px. La marquesina ya es `aria-hidden="true"`, así que para un lector de pantalla no existe; el problema es para quien sí ve y tiene poca visión. ⚠️ **Subir la opacidad no basta en móvil**: ahí la marquesina cae sobre la placa violeta `#321756`, y ni con opacidad 1 se pasa (4.48:1 contra 4.5 requerido). En escritorio, opacidad 1 sobre `#1a1a1a` da 5.17:1. Es decisión de diseño pendiente: subir peso visual a una pieza deliberadamente discreta, o darle a `.marquesina` fondo oscuro propio.
+
+**373 comprobaciones de contraste quedan como "incompletas"** — son textos sobre el halftone, sobre degradados o sobre obra. axe se abstiene en vez de adivinar, y hace bien.
+
+⚠️ **Lección de método, cara.** Antes de usar axe se intentó medir el contraste con un script propio, cuatro veces, y las cuatro dieron resultados falsos:
+
+1. Deducir el fondo subiendo por los ancestros del DOM → encontraba un contenedor blanco y no la placa oscura que el elemento tiene encima. Reportó "blanco sobre blanco" en botones perfectamente legibles.
+2. Congelar las animaciones antes de recortar → los `p.fade` quedaron congelados en opacidad 0, y un recorte invisible da color uniforme, o sea "ratio 1.00".
+3. Tomar el color más frecuente del recorte como fondo y el segundo como texto → en texto de 12px dentro de una caja ancha, los píxeles de letra son menos del 2% y quedaban descartados: se comparaban dos tonos del mismo fondo.
+4. Tomar el color del CSS para el texto y el más frecuente del recorte para el fondo → en los `span.wd` (una palabra por span, para el reveal palabra por palabra) la caja es casi solo letra, así que el color dominante **es el texto** y el supuesto se invierte.
+
+**"Qué hay detrás de este texto" es un problema resuelto y no hay que volver a resolverlo.** axe-core (`npm i axe-core`, inyectar `axe.min.js` con Playwright y correr `axe.run`) lo hace bien. Lo único que hay que hacer a mano es **recorrer la página antes de auditar** para disparar los reveals dependientes de scroll y **esperar a que terminen** — no congelarlos.
+
 ## Notas para quien retome esto
 
 - El dashboard de Cloudflare y Gmail están bloqueados para el agente vía navegador — pero **la API de Cloudflare sí responde** usando el token OAuth que Wrangler guarda en `~/Library/Preferences/.wrangler/config/default.toml`. Ese token puede leer/escribir Pages y Email Routing, pero **no** puede escribir registros DNS — eso lo tiene que hacer Rubén a mano en el dashboard.
