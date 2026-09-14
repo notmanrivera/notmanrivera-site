@@ -23,17 +23,17 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Al-Arabi SC — Broadcast &amp; Social Motion Graphics | NotMan Rivera</title>
-<meta name="description" content="Motion graphics package for Al-Arabi Sports Club (Qatar Stars League): lineups, matchday announcements, group stage schedule and matchday-specific graphics, ready for broadcast and social media.">
+<meta name="description" content="Motion graphics package for the Al-Arabi Sports Club volleyball team (Qatar): lineups, matchday announcements, group stage schedule and matchday-specific graphics, ready for broadcast and social media.">
 
 <meta property="og:title" content="Al-Arabi SC — Broadcast &amp; Social Motion Graphics">
-<meta property="og:description" content="Motion graphics package for Al-Arabi Sports Club (Qatar Stars League): lineups, matchday announcements, group stage schedule and matchday graphics.">
+<meta property="og:description" content="Motion graphics package for the Al-Arabi Sports Club volleyball team (Qatar): lineups, matchday announcements, group stage schedule and matchday graphics.">
 <meta property="og:type" content="article">
 <meta property="og:url" content="https://notmanrivera.com/casos/al-arabi-sc/en/">
 <meta property="og:image" content="https://notmanrivera.com/assets/og-caso-al-arabi-sc.jpg">
 <meta property="og:locale" content="en_US">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Al-Arabi SC — Broadcast &amp; Social Motion Graphics">
-<meta name="twitter:description" content="Motion graphics package for Al-Arabi Sports Club (Qatar Stars League): lineups, matchday announcements, group stage schedule and matchday graphics.">
+<meta name="twitter:description" content="Motion graphics package for the Al-Arabi Sports Club volleyball team (Qatar): lineups, matchday announcements, group stage schedule and matchday graphics.">
 <meta name="twitter:image" content="https://notmanrivera.com/assets/og-caso-al-arabi-sc.jpg">
 <link rel="canonical" href="https://notmanrivera.com/casos/al-arabi-sc/en/">
 <link rel="alternate" hreflang="es" href="https://notmanrivera.com/casos/al-arabi-sc/">
@@ -51,7 +51,7 @@
   "url": "https://notmanrivera.com/casos/al-arabi-sc/en/",
   "inLanguage": "en",
   "image": "https://notmanrivera.com/assets/galeria/al-arabi-matchday.webp",
-  "about": "Matchday motion graphics package for Al-Arabi Sports Club, Qatar Stars League.",
+  "about": "Matchday motion graphics package for the Al-Arabi Sports Club volleyball team, Qatar.",
   "creator": {
     "@type": "Person",
     "name": "Rubén Núñez Rivera",
@@ -231,6 +231,85 @@
   .caso-cuerpo p{margin-bottom:20px;color:#e8e2f2}
   .caso-cuerpo p:last-child{margin-bottom:0}
 
+  /* ===== BLOQUE DE AUTORIA =====
+     Estas paginas decian "como parte del equipo de X" y dejaban al lector
+     sin saber que toco el autor y que no -- que es justo la pregunta que
+     trae quien esta evaluando contratarlo. El panel la contesta antes de
+     que se la haga: va primero en el cuerpo, inmediatamente debajo del dek
+     que menciona a la agencia. Violeta porque en el sistema de color el
+     violeta es identidad y estructura; el rojo es accion y aqui no se pide
+     nada. El h2 necesita mas especificidad que .caso-cuerpo h2 (0,2,1) o
+     hereda el display de 1.7rem inclinado, que aqui no va. */
+  .caso-rol{
+    max-width:66ch;margin:0 0 34px;padding:18px 22px;
+    border-left:3px solid var(--violet);
+    background:linear-gradient(90deg,rgba(139,63,255,.13),rgba(139,63,255,0));
+  }
+  .caso-cuerpo .caso-rol h2{
+    font-family:var(--ui);font-weight:900;text-transform:uppercase;
+    font-size:.72rem;letter-spacing:.14em;color:var(--violet-hi);
+    margin:0 0 8px;transform:none;
+  }
+  .caso-cuerpo .caso-rol p{margin:0;font-size:1rem}
+  .caso-cuerpo strong{color:#fff;font-weight:600}
+
+  /* ===== PIEZAS EN MOVIMIENTO =====
+     El portafolio de un motion designer estaba hecho de imagenes fijas.
+     Estas son las piezas como salieron al mundo: vertical 9:16, con audio,
+     de quince a veintitres segundos. No son loops de fondo -- son contenido
+     terminado de redes, y se presentan como tal: caratula, boton de play y
+     los controles nativos del navegador una vez que arranca.
+
+     ⚠️ preload="none" es la decision de peso de toda la seccion. Sin eso,
+     entrar a la pagina costaria ~25 MB a cualquiera que pase. Asi, lo unico
+     que viaja de entrada es la caratula (~100-280 KB en webp) y el video se
+     baja solo si alguien lo pide. Por eso tambien hace falta el poster
+     explicito: sin preload el navegador no tiene un cuadro que mostrar.
+
+     El audio no se silencia. Es musica de libreria, pero va sincronizada a
+     la pieza y es parte de lo que comunica -- silenciarlas seria
+     presentarlas a medias. Arrancan solo por clic, nunca en automatico. */
+  .piezas{padding-top:8px;padding-bottom:44px}
+  .piezas h2{
+    font-family:var(--disp);font-weight:400;text-transform:uppercase;
+    font-size:1.7rem;letter-spacing:.01em;margin:0 0 16px;transform:skewX(-4deg);
+    transform-origin:left;max-width:66ch;
+  }
+  .piezas-intro{max-width:66ch;margin:0 0 26px;color:#e8e2f2}
+  .piezas-lista{
+    display:flex;flex-wrap:wrap;gap:24px;align-items:flex-start;margin:0;padding:0;
+  }
+  .pieza{margin:0;flex:1 1 280px;max-width:340px}
+  .pieza-marco{
+    position:relative;aspect-ratio:9/16;background:#0a0410;
+    border:2px solid var(--line);overflow:hidden;
+  }
+  .pieza video{
+    display:block;width:100%;height:100%;object-fit:cover;background:#0a0410;
+  }
+  .pieza-play{
+    position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+    background:rgba(10,4,16,.32);border:0;cursor:pointer;padding:0;
+    transition:background .18s;
+  }
+  .pieza-play:hover,.pieza-play:focus-visible{background:rgba(10,4,16,.12)}
+  .pieza-play span{
+    width:62px;height:62px;display:grid;place-items:center;
+    background:var(--rojo);clip-path:var(--filo);
+    box-shadow:5px 5px 0 var(--sombra);transition:transform .18s;
+  }
+  .pieza-play:hover span{transform:translate(-2px,-2px)}
+  .pieza-play svg{width:20px;height:20px;fill:#fff;margin-left:3px}
+  .pieza figcaption{
+    margin-top:10px;font-family:var(--ui);font-weight:900;text-transform:uppercase;
+    font-size:.62rem;letter-spacing:.1em;color:var(--muted);line-height:1.5;
+  }
+  .pieza figcaption b{color:var(--paper);font-weight:900;display:block}
+  @media(max-width:560px){
+    .piezas-lista{gap:20px}
+    .pieza{flex:1 1 100%;max-width:none}
+  }
+
   .caso-cta{padding-top:48px;padding-bottom:72px;border-top:2px solid var(--line)}
   .btn{
     display:inline-block;font-family:var(--ui);font-weight:900;text-transform:uppercase;
@@ -328,7 +407,7 @@
     <span class="num-caso" aria-hidden="true">01</span>
     <span class="kicker">2D/3D Motion Graphics · Victorem Sports Marketing</span>
     <h1>Al-Arabi SC: matchday graphics for a full season</h1>
-    <p class="dek">As part of the Victorem Sports Marketing team, a reusable graphics system for Al-Arabi SC (Qatar Stars League) — not a one-off piece, but a template the club's content team could feed matchday after matchday without losing visual consistency.</p>
+    <p class="dek">As part of the Victorem Sports Marketing team, a reusable graphics system for the Al-Arabi SC volleyball team (Qatar) — not a one-off piece, but a template the club's content team could feed matchday after matchday without losing visual consistency.</p>
   </section>
 
   <section class="caso-galeria wrap" aria-label="Delivered pieces">
@@ -366,15 +445,41 @@
     </figure>
   </section>
 
+  <section class="piezas wrap" aria-labelledby="piezasTit">
+    <h2 id="piezasTit">Pieces in motion</h2>
+    <p class="piezas-intro">The template didn’t only produce stills. This is a complete matchday piece, as it went out on social.</p>
+    <div class="piezas-lista">
+      <figure class="pieza">
+        <div class="pieza-marco">
+          <video preload="none" controls playsinline
+                 poster="/assets/video/alarabi-voleibol-al-gharafa.webp"
+                 aria-label="Al-Arabi SC versus Al Gharafa SC at Federation Hall">
+            <source src="/assets/video/alarabi-voleibol-al-gharafa.mp4" type="video/mp4">
+          </video>
+          <button type="button" class="pieza-play" aria-label="Reproducir: Al-Arabi SC versus Al Gharafa SC at Federation Hall">
+            <span><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M8 5v14l11-7z"/></svg></span>
+          </button>
+        </div>
+        <figcaption><b>Al-Arabi vs Al Gharafa</b>Federation Hall</figcaption>
+      </figure>
+    </div>
+  </section>
+
   <section class="caso-cuerpo wrap">
+    <div class="caso-rol">
+      <h2>My role</h2>
+      <p>Design, compositing and animation, end to end. Every piece in this case was produced by me; the work shipped under the name of Victorem Sports Marketing, the agency I was with at the time.</p>
+    </div>
+
     <h2>The brief</h2>
-    <p>Al-Arabi Sports Club competes in the Qatar Stars League, Qatar's top football division. The brief wasn't a one-off piece, but a reusable graphics system: a template the club's content team could feed match after match, across a full season, without the visual identity drifting from one matchday to the next.</p>
+    <p>Al-Arabi Sports Club is a multi-sport club in Qatar, and the brief was for its volleyball team. It wasn’t a one-off piece, but a reusable graphics system: a template the club's content team could feed match after match, across a full season, without the visual identity drifting from one matchday to the next.</p>
 
     <h2>What the package covers</h2>
     <p>The moments a club needs to communicate before and during each match: the starting lineup, the next-opponent announcement, the full group-stage schedule, and matchday-specific graphics — against Alsalam Club, Qadsia SC, Al Rayyan SC, Alahli Club, among others.</p>
+    <p><strong>One animated video per match, across the full season.</strong> Not a sample piece — sustained production through an entire campaign, without redesigning the template between matchdays.</p>
 
     <h2>The standard</h2>
-    <p>Working for an international club means designing for an audience that sees these pieces in the same feed as the big European leagues. The bar isn't "good for Qatar" — it's holding its own against any Champions League or Premier League graphic.</p>
+    <p>Working for an international club means designing for an audience that sees these pieces in the same feed as the biggest leagues in the world. The bar isn't "good for volleyball" — it's holding its own against the graphics of any top-flight sport.</p>
   </section>
 
   <section class="casos-otros wrap">
@@ -397,12 +502,47 @@
   </div>
 </footer>
 
+<!-- Fuera de <main> a proposito: es position:fixed y no pertenece al
+     hilo de lectura del caso. El <aside> existe para que no quede
+     contenido huerfano fuera de todo landmark (axe: regla "region"). -->
+<aside class="flotantes" aria-label="Quick actions">
 <a href="https://wa.me/524421411230?text=Hi%2C%20I'm%20coming%20from%20the%20site%20and%20I'd%20like%20to%20talk%20about%20a%20project" target="_blank" rel="noopener" class="whatsapp-flotante" aria-label="Message me on WhatsApp">
   <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
     <path d="M17.47 14.38c-.29-.15-1.71-.85-1.98-.94-.27-.1-.46-.15-.65.14-.19.29-.75.94-.92 1.13-.17.19-.34.22-.63.07-.29-.15-1.22-.45-2.32-1.44-.86-.76-1.44-1.71-1.61-2-.17-.29-.02-.44.13-.59.13-.13.29-.34.44-.51.15-.17.19-.29.29-.48.1-.19.05-.36-.02-.51-.07-.15-.65-1.58-.9-2.16-.24-.57-.48-.5-.65-.5-.17-.01-.36-.01-.55-.01-.19 0-.5.07-.76.36-.26.29-1 .98-1 2.38 0 1.4 1.03 2.76 1.17 2.95.14.19 2.03 3.1 4.93 4.35.69.3 1.22.48 1.64.61.69.22 1.32.19 1.82.11.55-.08 1.71-.7 1.95-1.37.24-.68.24-1.26.17-1.38-.07-.12-.26-.19-.55-.34z"/>
     <path d="M12.04 2.5c-5.26 0-9.54 4.28-9.54 9.54 0 1.68.44 3.32 1.28 4.76L2.5 21.5l4.85-1.27a9.5 9.5 0 0 0 4.69 1.25h.01c5.26 0 9.54-4.28 9.54-9.54 0-2.55-.99-4.94-2.79-6.75a9.47 9.47 0 0 0-6.76-2.69zm0 17.46h-.01a7.9 7.9 0 0 1-4.03-1.1l-.29-.17-3 .79.8-2.92-.19-.3a7.9 7.9 0 0 1-1.22-4.22c0-4.38 3.57-7.94 7.95-7.94a7.9 7.9 0 0 1 5.62 2.33 7.88 7.88 0 0 1 2.32 5.61c0 4.38-3.57 7.92-7.95 7.92z"/>
   </svg>
 </a>
+</aside>
 
+<script>
+/* Un clic cambia la caratula por el video corriendo. El <video> ya trae
+   controls desde el HTML, asi que si este script no corre --o falla-- la
+   pieza sigue siendo reproducible con los controles nativos: la capa de
+   play es una mejora, no un requisito.
+   play() devuelve una promesa que el navegador rechaza si bloquea la
+   reproduccion; si eso pasa se devuelve el boton a su lugar en vez de
+   dejar una caratula muerta que no responde. */
+(function(){
+  var capas = document.querySelectorAll('.pieza-play');
+  for (var i = 0; i < capas.length; i++) {
+    (function(capa){
+      var v = capa.parentNode.querySelector('video');
+      if (!v) return;
+      /* El HTML trae controls puesto para que la pieza siga siendo
+         reproducible si este script nunca corre. Cuando si corre, la barra
+         nativa sobre la caratula estorba --dos botones de play compitiendo
+         por el mismo clic-- asi que se apaga aqui y vuelve al arrancar. */
+      v.controls = false;
+      capa.addEventListener('click', function(){
+        capa.hidden = true;
+        v.controls = true;
+        var p = v.play();
+        if (p && p.catch) p.catch(function(){ capa.hidden = false; v.controls = true; });
+      });
+      v.addEventListener('ended', function(){ capa.hidden = false; });
+    })(capas[i]);
+  }
+})();
+</script>
 </body>
 </html>

@@ -957,7 +957,7 @@ Verificado con Playwright: desde `/index.html#contacto`, clic en EN navega a `/e
 Seguimiento del hueco de SEO #2 (una sola URL, sin forma de rankear por consulta específica). Rubén: "no tengo tiempo de mantener un blog, ¿podrías hacerlo tú?". Se descartó el blog a propósito -- un blog abandonado (tres posts y silencio desde 2024) es peor señal que no tener blog, y exige una cadencia que Rubén ya avisó que no puede sostener. En su lugar: **páginas de caso de estudio, escritas una sola vez, sin cadencia que mantener**, construidas con hechos que YA estaban publicados en el sitio (ningún dato, cifra o resultado inventado).
 
 **Tres páginas, cada una cubriendo un ángulo de servicio distinto:**
-- `public/casos/al-arabi-sc/` -- paquete de motion graphics de matchday para Al-Arabi SC (Qatar Stars League). El más rico en material: 8 piezas reales en la galería del sitio (fase de grupos, alineación, próximo partido, 4 jornadas, calendario completo).
+- `public/casos/al-arabi-sc/` -- paquete de motion graphics de matchday para el equipo de **voleibol** de Al-Arabi SC (Catar). El más rico en material: 8 piezas reales en la galería del sitio (fase de grupos, alineación, próximo partido, 4 jornadas, calendario completo).
 - `public/casos/mazatlan-fc/` -- edición de video/motion graphics de matchday para Mazatlán FC, Liga MX y Leagues Cup, "en colaboración con Hugo González". ⚠️ El rol exacto de Hugo González (¿representante? ¿periodista? ¿el propio equipo de contenido del club?) no está declarado en ningún lado del sitio existente -- se redactó deliberadamente genérico ("en colaboración con") para no inventar un cargo. **Pendiente que Rubén confirme o corrija esto antes de publicar.**
 - `public/casos/diseno-web/` -- no es UN cliente, es un recorrido por los 7 clientes de la pestaña "Web" de la galería (Moser Café Kultur, Café Amadeus, Grupo Uno22, Saxodia, V-Dental, Viterbo 68, Incómodo). Se eligió este formato porque cada cliente web individual solo tiene una miniatura en el sitio -- no había material real para un caso de estudio profundo por cliente, y estirarlo habría significado inventar contenido.
 
@@ -1134,6 +1134,133 @@ La primera versión se descartó por "no se ve el trazo letra por letra" — per
 Todo lo demás del hero (`.rafaga`, `.brillo`, `.chispa-logo`) ya cuelga de `.marca.go ~ X`. Basta con **retrasar el `.go` del logo** hasta que el trazo termine y el resto hereda el retraso en su orden actual. `.trazo` calca la geometría de `.brillo` en sus tres modos (base, ≤820px, `.orbita`) y se oculta con `prefers-reduced-motion`, igual que el brillo.
 
 El vector de origen vive en `fuente/logo-vector.svg`, fuera de `public/` para que el deploy no lo publique.
+
+## Autoría explícita en los casos, y el sistema demostrándose solo (2026-09-14)
+
+Tres cambios que salen de la misma pregunta: **¿qué le falta a esto para ser más atractivo?**
+
+### 1. Las páginas de caso no decían quién hizo el trabajo
+
+Los dos casos deportivos abrían con *"como parte del equipo de Victorem Sports Marketing"* y ahí se quedaban. Es honesto, pero deja al lector —que casi siempre es alguien evaluando si contratarlo— sin poder distinguir entre "movió keyframes" y "llevó el calendario". Rubén lo aclaró en una línea: **hizo todo**, montajes, composiciones y animaciones de principio a fin, bajo el nombre de la agencia donde estaba.
+
+Eso ahora es un bloque `.caso-rol` al inicio del cuerpo, en los tres casos y en las seis páginas (es/en). Violeta porque en el sistema de color el violeta es identidad y estructura; el rojo es acción, y aquí no se pide nada.
+
+⚠️ `diseno-web` **no tiene sección `.caso-cuerpo`** — va hero → proyectos directo. Necesitó su propio bloque de CSS, con el selector sin el prefijo de especificidad y una `<section class="wrap">` propia entre el hero y los proyectos. Si algún día se unifica la estructura de las tres páginas, ese caso especial desaparece.
+
+### 2. Volumen en vez de adjetivos
+
+Los casos terminaban en declaraciones de estándar (*"que compita de tú a tú con cualquier gráfico de Champions League"*), que es aspiración, no evidencia. No hay métricas de alcance porque el trabajo se entregó vía agencia y esos números nunca llegaron. Pero sí hay un dato mejor y que estaba ahí sin usar: **un video animado por partido, temporada completa**. Es cadencia sostenida, que es exactamente lo que una agencia necesita saber que alguien aguanta.
+
+El censo de rivales se dejó fuera a propósito: no aporta y la página ya los enumera.
+
+### 3. El lockup que se rearmaba solo — construido y retirado (mismo día)
+
+El caso de Al-Arabi afirma haber entregado un **sistema reutilizable**, y una galería de imágenes fijas no puede demostrar eso. Se construyó el lockup de *next match* rearmándose en HTML con los cuatro rivales del caso, con botones para manejarlo. Funcionaba: WAAPI, autociclo que se apagaba al primer clic, `IntersectionObserver`, salida temprana con `prefers-reduced-motion`, seis páginas en 0 violaciones de axe.
+
+**Rubén lo vio y lo quitó.** Su sitio, su decisión. Queda anotado para que nadie lo vuelva a proponer creyendo que es terreno sin explorar: la idea se probó, se vio, y no.
+
+Lo que sí sobrevive son las dos lecciones de método que salieron de construirlo, porque no dependen de la pieza.
+
+### Dos bugs, y uno ya lo habíamos tenido
+
+⚠️ **`.lk > *{position:relative}` pisó el `position:absolute` de las capas decorativas.** Misma especificidad (0,1,0) y gana por orden de fuente: la losa roja y el grano volvían al flujo flex y empujaban el contenido media tarjeta hacia abajo. Se arreglaba enumerando los hijos reales uno por uno. Un `> *` es cómodo hasta que hay hermanos posicionados — y el síntoma (contenido empujado media caja hacia abajo, sin error de por medio) no apunta al culpable.
+
+⚠️ **axe devolvió "0 violaciones" y no significaba que pasara.** Las cinco comprobaciones de contraste del lockup salieron como **`incomplete`** — *"Element's background color could not be determined due to a background gradient"* — porque el grano es un `radial-gradient`. Leer ese cero como aprobado habría dejado pasar el `.lk-vs`: rojo `#E50012` a 10px sobre el fondo de la tarjeta da **4.18:1**, y el mínimo AA para texto chico es 4.5. Se corrigió con un tinte más claro del mismo rojo (5.76:1).
+
+**Esto es el mismo error de método del 13/09, invertido.** Aquella vez fueron medidores propios dando falsos positivos; esta vez fue la ausencia de medición leída como resultado. La regla corta: **`incomplete` no es `pass`** — cuando axe se abstiene, el número sigue sin conocerse y hay que calcularlo aparte.
+
+De paso, el botón flotante de WhatsApp quedaba fuera de landmark en las seis páginas de caso (la home ya se había arreglado en agosto). Va envuelto en `<aside class="flotantes">` igual que allá — **eso sí se quedó**, y las seis páginas están en 0 violaciones.
+
+### Nota de método sobre las herramientas de verificación
+
+`playwright` y `axe-core` se instalan para auditar y **se revierten de `package.json` antes de commitear**. El deploy corre `npm ci`, y dejar Playwright ahí significa descargar navegadores en cada despliegue para nada. La única devDependency del repo sigue siendo `jsdom`, que sí hace falta para `build-en.js`.
+
+## Prospección: el 15% de rebote era un promedio mal leído (2026-09-14)
+
+Se reportó una tasa de rebote del 15% como amenaza activa a la entregabilidad de `hola@notmanrivera.com`. **Era el acumulado histórico**, y mezclaba dos lotes malos de agosto con todo lo demás. Por cohorte de envío:
+
+| Fecha | Enviados | Rebotes | |
+|---|---|---|---|
+| 07/08 | 14 | 4 | 29% |
+| 11/08 | 12 | 7 | **58%** |
+| 12/08 | 12 | 0 | 0% |
+| 20/08 | 10 | 0 | 0% |
+| 12/09 | 10 | 0 | 0% |
+| 13/09 | 5 | 0 | 0% |
+| 14/09 | 10 | 0 | 0% |
+
+**Cero rebotes en los últimos 47 envíos.** Los 11 rebotes son todos del 7 y el 11 de agosto y son todos direcciones genéricas adivinadas (`info@`, `contacto@`, `hello@`, `contact@`).
+
+La causa de que se arreglara solo está en la hoja: la columna **`Confianza_email`** está poblada en 35 filas (`publicado` en 30, `persona` en 5) y vacía en las 50 viejas. En algún momento el sistema empezó a exigir que la dirección estuviera publicada en el sitio del prospecto en vez de inventarla, y el rebote se fue a cero.
+
+**Regla que hay que sostener:** no enviar a nada sin `Confianza_email`. Y queda pendiente borrar las 11 direcciones muertas para que nunca se reintenten.
+
+⚠️ **Lección:** una tasa acumulada sobre una población que cambió de régimen a medio camino no describe ningún régimen. Partir por cohorte **antes** de reportar un número, no después de que alguien pregunte.
+
+## Bug real: el caso de Al-Arabi decía que era futbol, y es voleibol (2026-09-14)
+
+La página de caso afirmaba, en texto visible y en el `schema.org`, que **"Al-Arabi Sports Club compite en la Qatar Stars League, la primera división de fútbol de Qatar"**. Rubén nunca trabajó con el equipo de futbol: *todo* lo que hizo para ese club fue para su **equipo de voleibol**.
+
+Lo peor no es el error, es que **el sitio ya tenía el dato correcto y la página de caso lo contradecía**. En `public/index.html`, la galería dice desde agosto `Al-Arabi SC · Voleibol · Catar/Baréin`, y el bloque de experiencia dice `Al-Arabi SC Volleyball · Catar`. La página de caso se escribió después y le puso futbol encima.
+
+Se corrigió en las dos versiones (es/en): `<meta name="description">`, `og:description`, `twitter:description`, el `about` del JSON-LD, el dek, el párrafo de "El encargo" y la línea de volumen. También el párrafo de "El estándar", que comparaba el trabajo con "cualquier gráfico de Champions League o Premier League" — una vara de futbol para medir voleibol.
+
+⚠️ **De dónde salió el error.** "Al-Arabi SC" + Catar lleva derechito al club de futbol de Doha, que sí juega en la Qatar Stars League y es el que sale en cualquier búsqueda. La inferencia era plausible y era falsa. Los rivales que aparecen en las piezas (Alsalam Club, Qadsia SC, Al Rayyan SC, Alahli Club) y la estructura de "fase de grupos" tampoco encajan con una liga de futbol — son de un torneo de clubes con equipos de Catar, Baréin y Kuwait. Había señales y no se leyeron.
+
+**La regla: los hechos sobre el trabajo de un cliente salen del cliente o de los archivos, nunca de deducir a partir del nombre.** Si no hay forma de verificar el nombre de una competencia, se describe lo que sí se puede ver (el deporte, los rivales, el formato) y se deja el nombre fuera. Eso es lo que quedó: en ningún lado del caso se nombra ya una competencia, porque no está confirmada.
+
+Nota aparte: las piezas de Nayrobi García y Andrea Velarde viven en archivos que se llaman `sub17-*.webp`, y en realidad son de Liga MX Femenil Sub-19 (hay material de Sub-17, 19 y 21). **Ninguna leyenda visible menciona la categoría** — el grupo de la galería se llama "Presentaciones · Firmas y nuevos contratos" — así que el error está solo en nombres de archivo internos y no llega al visitante. Se deja, pero que nadie escriba un pie de foto con "Sub-17" leyendo el nombre del archivo.
+
+## Por fin hay movimiento en el portafolio (2026-09-14)
+
+El sitio de un motion designer estaba hecho de **29 WebP fijos y un embed de Vimeo**. Ya no: tres piezas completas viven en las páginas de caso, en `public/assets/video/`.
+
+### Qué son, y por qué no son loops
+
+Se asumió que serían loops de galería de 3-6 segundos, mudos. Al inspeccionarlas resultaron ser otra cosa: **1080×1920 vertical, 15 a 23 segundos, con pista de audio**. Son piezas terminadas de redes, no material de fondo. Meterlas como loops habría significado silenciarlas, cortarlas y ponerlas a repetirse — presentarlas a medias.
+
+Van con carátula, botón de play y controles nativos al arrancar. **El audio no se silencia**: es música de librería, pero va sincronizada y Rubén la considera parte de lo que cada pieza comunica.
+
+### Las dos decisiones que importan
+
+⚠️ **`preload="none"` sostiene toda la sección.** Sin eso, entrar a la página de Hugo costaría ~15 MB a cualquiera que pase. Con eso, lo único que viaja de entrada es la carátula WebP (~100-280 KB) y el video se baja solo si alguien le da play. Verificado: **0 bytes de MP4 en la carga inicial**. Por lo mismo el `poster` explícito es obligatorio — sin preload el navegador no tiene ningún cuadro que mostrar.
+
+**`controls` va en el HTML y el JS lo apaga.** Así la pieza sigue siendo reproducible si el script nunca corre, pero cuando sí corre no quedan dos botones de play compitiendo por el mismo clic (la barra nativa sobre la carátula estorbaba). Vuelve a encenderse al arrancar.
+
+### La compresión
+
+De **102 MB a 29 MB**, comparando cinco ajustes contra el original en un recorte 1:1:
+
+| Ajuste | Peso (pieza de 15s) | Veredicto |
+|---|---|---|
+| 1080 · CRF 23 | 9.6 MB | indistinguible, caro |
+| 1080 · CRF 24 | 8.6 MB | indistinguible |
+| **810 · CRF 23** | **5.8 MB** | **elegido** |
+| 810 · CRF 25 | 4.5 MB | grano visiblemente aplanado |
+| 720 · CRF 24 | 4.1 MB | bordes de tipografía blandos |
+| 1080 · CRF 29 | 4.6 MB | el peor de todos |
+
+⚠️ Lo contraintuitivo: **1080/CRF29 se ve peor que 810/CRF25 pesando lo mismo**. Bajar resolución y comprimir menos gana a mantener resolución y comprimir mucho. No subir el CRF por encima de 25 en material con tipografía.
+
+La pieza de voleibol necesitó CRF 25 aparte: es material en vivo con movimiento constante y a CRF 23 apenas bajaba de 22 MB. El movimiento rápido enmascara los artefactos, así que ahí sí se puede.
+
+Receta: `ffmpeg -i ENTRADA -vf scale=810:1440:flags=lanczos -c:v libx264 -crf 23 -preset slow -pix_fmt yuv420p -c:a aac -b:a 128k -movflags +faststart SALIDA`
+
+⚠️ **El ffmpeg que trae Playwright en `/opt/pw-browsers/` no sirve**: viene con `--disable-everything` y no decodifica H.264. Hace falta `apt-get update && apt-get install -y ffmpeg`.
+
+⚠️ **El Chromium de Playwright tampoco reproduce H.264/AAC** (es la build sin códecs propietarios: `canPlayType` devuelve vacío). Se verificó el cableado — `play()` resuelve, los controles aparecen, el botón se oculta — pero **el decodificado real no se puede comprobar en este contenedor**. En navegadores de verdad H.264+AAC en MP4 es lo más soportado que existe.
+
+### Cómo llegaron los archivos
+
+Ni el conector de Drive (corta en 10 MB) ni `curl` (el proxy da 403 en `drive.google.com`) sirven para archivos grandes. **La vía que funciona es git**: se empujan a una rama desechable y se sacan con `git archive origin/RAMA carpeta | tar -x -C destino`. Los crudos quedan fuera del historial de `main`.
+
+## Los grupos de la galería decían mal lo que contienen (2026-09-14)
+
+Dos renombres en `public/index.html`, los dos a petición de Rubén:
+
+**"Presentaciones · Firmas y nuevos contratos" → "Jugadores · Presentaciones, firmas, transferencias y matchday".** El grupo ya tenía transferencias que el nombre no cubría, y va a recibir piezas de matchday de Sub-17/19/21. ⚠️ Se consideró etiquetarlo por liga (Liga MX Femenil) y **no aplica**: de los nueve jugadores, Santiago Ulloa, Christian Amparán y Emiliano Montaño son hombres. Lo que une al grupo son los momentos de carrera, no la liga.
+
+**"Piezas de exhibición · Trabajo personal, sin cliente" → "· Victorem Sports Marketing, sin cliente final".** Era inexacto en los dos sentidos: no fue trabajo personal (se hizo en Victorem), y "personal" le resta peso — quien contrata lee "proyecto personal" y lo descuenta frente a trabajo de cliente. Que no hubiera cliente final no las hace menos profesionales.
 
 ## Notas para quien retome esto
 
