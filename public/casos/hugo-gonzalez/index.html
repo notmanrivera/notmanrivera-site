@@ -231,6 +231,28 @@
   .caso-cuerpo p{margin-bottom:20px;color:#e8e2f2}
   .caso-cuerpo p:last-child{margin-bottom:0}
 
+  /* ===== BLOQUE DE AUTORIA =====
+     Estas paginas decian "como parte del equipo de X" y dejaban al lector
+     sin saber que toco el autor y que no -- que es justo la pregunta que
+     trae quien esta evaluando contratarlo. El panel la contesta antes de
+     que se la haga: va primero en el cuerpo, inmediatamente debajo del dek
+     que menciona a la agencia. Violeta porque en el sistema de color el
+     violeta es identidad y estructura; el rojo es accion y aqui no se pide
+     nada. El h2 necesita mas especificidad que .caso-cuerpo h2 (0,2,1) o
+     hereda el display de 1.7rem inclinado, que aqui no va. */
+  .caso-rol{
+    max-width:66ch;margin:0 0 34px;padding:18px 22px;
+    border-left:3px solid var(--violet);
+    background:linear-gradient(90deg,rgba(139,63,255,.13),rgba(139,63,255,0));
+  }
+  .caso-cuerpo .caso-rol h2{
+    font-family:var(--ui);font-weight:900;text-transform:uppercase;
+    font-size:.72rem;letter-spacing:.14em;color:var(--violet-hi);
+    margin:0 0 8px;transform:none;
+  }
+  .caso-cuerpo .caso-rol p{margin:0;font-size:1rem}
+  .caso-cuerpo strong{color:#fff;font-weight:600}
+
   .caso-cta{padding-top:48px;padding-bottom:72px;border-top:2px solid var(--line)}
   .btn{
     display:inline-block;font-family:var(--ui);font-weight:900;text-transform:uppercase;
@@ -371,11 +393,17 @@
   </section>
 
   <section class="caso-cuerpo wrap">
+    <div class="caso-rol">
+      <h2>Mi rol</h2>
+      <p>Diseño, composición y animación de principio a fin. Todas las piezas de este caso las produje yo; el trabajo se entregó bajo el nombre de Victorem Sports Marketing, la agencia donde estaba en ese momento.</p>
+    </div>
+
     <h2>El encargo</h2>
     <p>Hugo González jugaba como arquero profesional de Mazatlán FC. Como parte del equipo de Victorem Sports Marketing, el encargo fue sostener su imagen digital en sus redes sociales personales durante esa etapa en el club: branding propio del jugador, no contenido oficial del club, timado a cada partido relevante de la temporada — Liga MX y Leagues Cup, la copa que enfrenta a equipos de México y Estados Unidos.</p>
 
     <h2>Partido a partido</h2>
     <p>Cada pieza sigue el mismo patrón: presencia del arquero en el partido, resultado, resumen — repetido contra Tijuana, Puebla, Monterrey, Pachuca, Necaxa y Juárez, además de dos ediciones de Leagues Cup.</p>
+    <p><strong>Un video animado por cada partido relevante de la temporada.</strong> No una pieza de lanzamiento — presencia sostenida en Liga MX y Leagues Cup, jornada tras jornada, durante toda su etapa en el club.</p>
 
     <h2>Por qué importa el branding personal</h2>
     <p>Un jugador profesional no es solo su función en la cancha — su marca personal es parte de su valor comercial. Sostenerla de forma consistente, partido tras partido durante toda una temporada, es exactamente el tipo de trabajo que una agencia deportiva ofrece a sus representados.</p>
@@ -401,12 +429,17 @@
   </div>
 </footer>
 
+<!-- Fuera de <main> a proposito: es position:fixed y no pertenece al
+     hilo de lectura del caso. El <aside> existe para que no quede
+     contenido huerfano fuera de todo landmark (axe: regla "region"). -->
+<aside class="flotantes" aria-label="Accesos rápidos">
 <a href="https://wa.me/524421411230?text=Hola%2C%20vengo%20del%20sitio%20y%20quiero%20platicar%20sobre%20un%20proyecto" target="_blank" rel="noopener" class="whatsapp-flotante" aria-label="Escríbeme por WhatsApp">
   <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
     <path d="M17.47 14.38c-.29-.15-1.71-.85-1.98-.94-.27-.1-.46-.15-.65.14-.19.29-.75.94-.92 1.13-.17.19-.34.22-.63.07-.29-.15-1.22-.45-2.32-1.44-.86-.76-1.44-1.71-1.61-2-.17-.29-.02-.44.13-.59.13-.13.29-.34.44-.51.15-.17.19-.29.29-.48.1-.19.05-.36-.02-.51-.07-.15-.65-1.58-.9-2.16-.24-.57-.48-.5-.65-.5-.17-.01-.36-.01-.55-.01-.19 0-.5.07-.76.36-.26.29-1 .98-1 2.38 0 1.4 1.03 2.76 1.17 2.95.14.19 2.03 3.1 4.93 4.35.69.3 1.22.48 1.64.61.69.22 1.32.19 1.82.11.55-.08 1.71-.7 1.95-1.37.24-.68.24-1.26.17-1.38-.07-.12-.26-.19-.55-.34z"/>
     <path d="M12.04 2.5c-5.26 0-9.54 4.28-9.54 9.54 0 1.68.44 3.32 1.28 4.76L2.5 21.5l4.85-1.27a9.5 9.5 0 0 0 4.69 1.25h.01c5.26 0 9.54-4.28 9.54-9.54 0-2.55-.99-4.94-2.79-6.75a9.47 9.47 0 0 0-6.76-2.69zm0 17.46h-.01a7.9 7.9 0 0 1-4.03-1.1l-.29-.17-3 .79.8-2.92-.19-.3a7.9 7.9 0 0 1-1.22-4.22c0-4.38 3.57-7.94 7.95-7.94a7.9 7.9 0 0 1 5.62 2.33 7.88 7.88 0 0 1 2.32 5.61c0 4.38-3.57 7.92-7.95 7.92z"/>
   </svg>
 </a>
+</aside>
 
 </body>
 </html>

@@ -1135,6 +1135,73 @@ Todo lo demás del hero (`.rafaga`, `.brillo`, `.chispa-logo`) ya cuelga de `.ma
 
 El vector de origen vive en `fuente/logo-vector.svg`, fuera de `public/` para que el deploy no lo publique.
 
+## Autoría explícita en los casos, y el sistema demostrándose solo (2026-09-14)
+
+Tres cambios que salen de la misma pregunta: **¿qué le falta a esto para ser más atractivo?**
+
+### 1. Las páginas de caso no decían quién hizo el trabajo
+
+Los dos casos deportivos abrían con *"como parte del equipo de Victorem Sports Marketing"* y ahí se quedaban. Es honesto, pero deja al lector —que casi siempre es alguien evaluando si contratarlo— sin poder distinguir entre "movió keyframes" y "llevó el calendario". Rubén lo aclaró en una línea: **hizo todo**, montajes, composiciones y animaciones de principio a fin, bajo el nombre de la agencia donde estaba.
+
+Eso ahora es un bloque `.caso-rol` al inicio del cuerpo, en los tres casos y en las seis páginas (es/en). Violeta porque en el sistema de color el violeta es identidad y estructura; el rojo es acción, y aquí no se pide nada.
+
+⚠️ `diseno-web` **no tiene sección `.caso-cuerpo`** — va hero → proyectos directo. Necesitó su propio bloque de CSS, con el selector sin el prefijo de especificidad y una `<section class="wrap">` propia entre el hero y los proyectos. Si algún día se unifica la estructura de las tres páginas, ese caso especial desaparece.
+
+### 2. Volumen en vez de adjetivos
+
+Los casos terminaban en declaraciones de estándar (*"que compita de tú a tú con cualquier gráfico de Champions League"*), que es aspiración, no evidencia. No hay métricas de alcance porque el trabajo se entregó vía agencia y esos números nunca llegaron. Pero sí hay un dato mejor y que estaba ahí sin usar: **un video animado por partido, temporada completa**. Es cadencia sostenida, que es exactamente lo que una agencia necesita saber que alguien aguanta.
+
+El censo de rivales se dejó fuera a propósito: no aporta y la página ya los enumera.
+
+### 3. El lockup que se rearma solo
+
+El caso de Al-Arabi afirma que lo entregado fue un **sistema reutilizable**, no piezas sueltas. Una galería de imágenes fijas no puede demostrar eso: enseña resultados terminados, nunca la plantilla comportándose. Así que la plantilla ahora corre en la página — el mismo lockup de *next match* rearmándose con los cuatro rivales del caso, en HTML, con botones para manejarlo a mano.
+
+Sin escudos de club: no son suyos y no hacen falta. El argumento es tipográfico y de composición.
+
+Decisiones que vale la pena no volver a discutir:
+
+- **WAAPI, no transiciones CSS.** Son varios elementos entrando escalonados que tienen que volver al mismo estado en cada ciclo. Con transiciones sobre clases basta un clic a destiempo para que dos elementos queden desfasados y ya nunca se re-sincronicen. Con WAAPI cada ciclo se construye desde cero y `.cancel()` los mata limpio.
+- **El autociclo se apaga en cuanto alguien toca un botón.** Si el visitante está manejando la pieza, que la siga manejando él.
+- **`IntersectionObserver`** para no quemar cuadros fuera de pantalla, y salida temprana con `prefers-reduced-motion`.
+- El **numeral fantasma** llena el hueco central sin inventar contenido: es el mismo dato de la jornada, al 16%. De paso hace visible que entre una jornada y otra cambia el dato, no la composición.
+
+### Dos bugs, y uno ya lo habíamos tenido
+
+⚠️ **`.lk > *{position:relative}` pisó el `position:absolute` de las capas decorativas.** Misma especificidad (0,1,0) y gana por orden de fuente: la losa roja y el grano volvían al flujo flex y empujaban el contenido media tarjeta hacia abajo. Se arregló enumerando los hijos reales uno por uno (`.lk-liga,.lk-centro,.lk-pie`). Un `> *` es cómodo hasta que hay hermanos posicionados.
+
+⚠️ **axe devolvió "0 violaciones" y no significaba que pasara.** Las cinco comprobaciones de contraste del lockup salieron como **`incomplete`** — *"Element's background color could not be determined due to a background gradient"* — porque el grano es un `radial-gradient`. Leer ese cero como aprobado habría dejado pasar el `.lk-vs`: rojo `#E50012` a 10px sobre el fondo de la tarjeta da **4.18:1**, y el mínimo AA para texto chico es 4.5. Se cambió a un tinte claro del mismo rojo (`#FF3B4A`, 5.76:1).
+
+**Esto es el mismo error de método del 13/09, invertido.** Aquella vez fueron medidores propios dando falsos positivos; esta vez fue la ausencia de medición leída como resultado. La regla corta: **`incomplete` no es `pass`** — cuando axe se abstiene, el número sigue sin conocerse y hay que calcularlo aparte.
+
+De paso, el botón flotante de WhatsApp quedaba fuera de landmark en las seis páginas de caso (la home ya se había arreglado en agosto). Va envuelto en `<aside class="flotantes">` igual que allá. **Las seis páginas quedan en 0 violaciones.**
+
+### Nota de método sobre las herramientas de verificación
+
+`playwright` y `axe-core` se instalan para auditar y **se revierten de `package.json` antes de commitear**. El deploy corre `npm ci`, y dejar Playwright ahí significa descargar navegadores en cada despliegue para nada. La única devDependency del repo sigue siendo `jsdom`, que sí hace falta para `build-en.js`.
+
+## Prospección: el 15% de rebote era un promedio mal leído (2026-09-14)
+
+Se reportó una tasa de rebote del 15% como amenaza activa a la entregabilidad de `hola@notmanrivera.com`. **Era el acumulado histórico**, y mezclaba dos lotes malos de agosto con todo lo demás. Por cohorte de envío:
+
+| Fecha | Enviados | Rebotes | |
+|---|---|---|---|
+| 07/08 | 14 | 4 | 29% |
+| 11/08 | 12 | 7 | **58%** |
+| 12/08 | 12 | 0 | 0% |
+| 20/08 | 10 | 0 | 0% |
+| 12/09 | 10 | 0 | 0% |
+| 13/09 | 5 | 0 | 0% |
+| 14/09 | 10 | 0 | 0% |
+
+**Cero rebotes en los últimos 47 envíos.** Los 11 rebotes son todos del 7 y el 11 de agosto y son todos direcciones genéricas adivinadas (`info@`, `contacto@`, `hello@`, `contact@`).
+
+La causa de que se arreglara solo está en la hoja: la columna **`Confianza_email`** está poblada en 35 filas (`publicado` en 30, `persona` en 5) y vacía en las 50 viejas. En algún momento el sistema empezó a exigir que la dirección estuviera publicada en el sitio del prospecto en vez de inventarla, y el rebote se fue a cero.
+
+**Regla que hay que sostener:** no enviar a nada sin `Confianza_email`. Y queda pendiente borrar las 11 direcciones muertas para que nunca se reintenten.
+
+⚠️ **Lección:** una tasa acumulada sobre una población que cambió de régimen a medio camino no describe ningún régimen. Partir por cohorte **antes** de reportar un número, no después de que alguien pregunte.
+
 ## Notas para quien retome esto
 
 - El dashboard de Cloudflare y Gmail están bloqueados para el agente vía navegador — pero **la API de Cloudflare sí responde** usando el token OAuth que Wrangler guarda en `~/Library/Preferences/.wrangler/config/default.toml`. Ese token puede leer/escribir Pages y Email Routing, pero **no** puede escribir registros DNS — eso lo tiene que hacer Rubén a mano en el dashboard.
