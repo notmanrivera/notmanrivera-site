@@ -1153,28 +1153,23 @@ Los casos terminaban en declaraciones de estándar (*"que compita de tú a tú c
 
 El censo de rivales se dejó fuera a propósito: no aporta y la página ya los enumera.
 
-### 3. El lockup que se rearma solo
+### 3. El lockup que se rearmaba solo — construido y retirado (mismo día)
 
-El caso de Al-Arabi afirma que lo entregado fue un **sistema reutilizable**, no piezas sueltas. Una galería de imágenes fijas no puede demostrar eso: enseña resultados terminados, nunca la plantilla comportándose. Así que la plantilla ahora corre en la página — el mismo lockup de *next match* rearmándose con los cuatro rivales del caso, en HTML, con botones para manejarlo a mano.
+El caso de Al-Arabi afirma haber entregado un **sistema reutilizable**, y una galería de imágenes fijas no puede demostrar eso. Se construyó el lockup de *next match* rearmándose en HTML con los cuatro rivales del caso, con botones para manejarlo. Funcionaba: WAAPI, autociclo que se apagaba al primer clic, `IntersectionObserver`, salida temprana con `prefers-reduced-motion`, seis páginas en 0 violaciones de axe.
 
-Sin escudos de club: no son suyos y no hacen falta. El argumento es tipográfico y de composición.
+**Rubén lo vio y lo quitó.** Su sitio, su decisión. Queda anotado para que nadie lo vuelva a proponer creyendo que es terreno sin explorar: la idea se probó, se vio, y no.
 
-Decisiones que vale la pena no volver a discutir:
-
-- **WAAPI, no transiciones CSS.** Son varios elementos entrando escalonados que tienen que volver al mismo estado en cada ciclo. Con transiciones sobre clases basta un clic a destiempo para que dos elementos queden desfasados y ya nunca se re-sincronicen. Con WAAPI cada ciclo se construye desde cero y `.cancel()` los mata limpio.
-- **El autociclo se apaga en cuanto alguien toca un botón.** Si el visitante está manejando la pieza, que la siga manejando él.
-- **`IntersectionObserver`** para no quemar cuadros fuera de pantalla, y salida temprana con `prefers-reduced-motion`.
-- El **numeral fantasma** llena el hueco central sin inventar contenido: es el mismo dato de la jornada, al 16%. De paso hace visible que entre una jornada y otra cambia el dato, no la composición.
+Lo que sí sobrevive son las dos lecciones de método que salieron de construirlo, porque no dependen de la pieza.
 
 ### Dos bugs, y uno ya lo habíamos tenido
 
-⚠️ **`.lk > *{position:relative}` pisó el `position:absolute` de las capas decorativas.** Misma especificidad (0,1,0) y gana por orden de fuente: la losa roja y el grano volvían al flujo flex y empujaban el contenido media tarjeta hacia abajo. Se arregló enumerando los hijos reales uno por uno (`.lk-liga,.lk-centro,.lk-pie`). Un `> *` es cómodo hasta que hay hermanos posicionados.
+⚠️ **`.lk > *{position:relative}` pisó el `position:absolute` de las capas decorativas.** Misma especificidad (0,1,0) y gana por orden de fuente: la losa roja y el grano volvían al flujo flex y empujaban el contenido media tarjeta hacia abajo. Se arreglaba enumerando los hijos reales uno por uno. Un `> *` es cómodo hasta que hay hermanos posicionados — y el síntoma (contenido empujado media caja hacia abajo, sin error de por medio) no apunta al culpable.
 
-⚠️ **axe devolvió "0 violaciones" y no significaba que pasara.** Las cinco comprobaciones de contraste del lockup salieron como **`incomplete`** — *"Element's background color could not be determined due to a background gradient"* — porque el grano es un `radial-gradient`. Leer ese cero como aprobado habría dejado pasar el `.lk-vs`: rojo `#E50012` a 10px sobre el fondo de la tarjeta da **4.18:1**, y el mínimo AA para texto chico es 4.5. Se cambió a un tinte claro del mismo rojo (`#FF3B4A`, 5.76:1).
+⚠️ **axe devolvió "0 violaciones" y no significaba que pasara.** Las cinco comprobaciones de contraste del lockup salieron como **`incomplete`** — *"Element's background color could not be determined due to a background gradient"* — porque el grano es un `radial-gradient`. Leer ese cero como aprobado habría dejado pasar el `.lk-vs`: rojo `#E50012` a 10px sobre el fondo de la tarjeta da **4.18:1**, y el mínimo AA para texto chico es 4.5. Se corrigió con un tinte más claro del mismo rojo (5.76:1).
 
 **Esto es el mismo error de método del 13/09, invertido.** Aquella vez fueron medidores propios dando falsos positivos; esta vez fue la ausencia de medición leída como resultado. La regla corta: **`incomplete` no es `pass`** — cuando axe se abstiene, el número sigue sin conocerse y hay que calcularlo aparte.
 
-De paso, el botón flotante de WhatsApp quedaba fuera de landmark en las seis páginas de caso (la home ya se había arreglado en agosto). Va envuelto en `<aside class="flotantes">` igual que allá. **Las seis páginas quedan en 0 violaciones.**
+De paso, el botón flotante de WhatsApp quedaba fuera de landmark en las seis páginas de caso (la home ya se había arreglado en agosto). Va envuelto en `<aside class="flotantes">` igual que allá — **eso sí se quedó**, y las seis páginas están en 0 violaciones.
 
 ### Nota de método sobre las herramientas de verificación
 
