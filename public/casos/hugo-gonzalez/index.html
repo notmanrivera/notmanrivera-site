@@ -253,6 +253,63 @@
   .caso-cuerpo .caso-rol p{margin:0;font-size:1rem}
   .caso-cuerpo strong{color:#fff;font-weight:600}
 
+  /* ===== PIEZAS EN MOVIMIENTO =====
+     El portafolio de un motion designer estaba hecho de imagenes fijas.
+     Estas son las piezas como salieron al mundo: vertical 9:16, con audio,
+     de quince a veintitres segundos. No son loops de fondo -- son contenido
+     terminado de redes, y se presentan como tal: caratula, boton de play y
+     los controles nativos del navegador una vez que arranca.
+
+     ⚠️ preload="none" es la decision de peso de toda la seccion. Sin eso,
+     entrar a la pagina costaria ~25 MB a cualquiera que pase. Asi, lo unico
+     que viaja de entrada es la caratula (~100-280 KB en webp) y el video se
+     baja solo si alguien lo pide. Por eso tambien hace falta el poster
+     explicito: sin preload el navegador no tiene un cuadro que mostrar.
+
+     El audio no se silencia. Es musica de libreria, pero va sincronizada a
+     la pieza y es parte de lo que comunica -- silenciarlas seria
+     presentarlas a medias. Arrancan solo por clic, nunca en automatico. */
+  .piezas{padding-top:8px;padding-bottom:44px}
+  .piezas h2{
+    font-family:var(--disp);font-weight:400;text-transform:uppercase;
+    font-size:1.7rem;letter-spacing:.01em;margin:0 0 16px;transform:skewX(-4deg);
+    transform-origin:left;max-width:66ch;
+  }
+  .piezas-intro{max-width:66ch;margin:0 0 26px;color:#e8e2f2}
+  .piezas-lista{
+    display:flex;flex-wrap:wrap;gap:24px;align-items:flex-start;margin:0;padding:0;
+  }
+  .pieza{margin:0;flex:1 1 280px;max-width:340px}
+  .pieza-marco{
+    position:relative;aspect-ratio:9/16;background:#0a0410;
+    border:2px solid var(--line);overflow:hidden;
+  }
+  .pieza video{
+    display:block;width:100%;height:100%;object-fit:cover;background:#0a0410;
+  }
+  .pieza-play{
+    position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+    background:rgba(10,4,16,.32);border:0;cursor:pointer;padding:0;
+    transition:background .18s;
+  }
+  .pieza-play:hover,.pieza-play:focus-visible{background:rgba(10,4,16,.12)}
+  .pieza-play span{
+    width:62px;height:62px;display:grid;place-items:center;
+    background:var(--rojo);clip-path:var(--filo);
+    box-shadow:5px 5px 0 var(--sombra);transition:transform .18s;
+  }
+  .pieza-play:hover span{transform:translate(-2px,-2px)}
+  .pieza-play svg{width:20px;height:20px;fill:#fff;margin-left:3px}
+  .pieza figcaption{
+    margin-top:10px;font-family:var(--ui);font-weight:900;text-transform:uppercase;
+    font-size:.62rem;letter-spacing:.1em;color:var(--muted);line-height:1.5;
+  }
+  .pieza figcaption b{color:var(--paper);font-weight:900;display:block}
+  @media(max-width:560px){
+    .piezas-lista{gap:20px}
+    .pieza{flex:1 1 100%;max-width:none}
+  }
+
   .caso-cta{padding-top:48px;padding-bottom:72px;border-top:2px solid var(--line)}
   .btn{
     display:inline-block;font-family:var(--ui);font-weight:900;text-transform:uppercase;
@@ -392,6 +449,39 @@
     </figure>
   </section>
 
+  <section class="piezas wrap" aria-labelledby="piezasTit">
+    <h2 id="piezasTit">Piezas en movimiento</h2>
+    <p class="piezas-intro">Los gráficos de arriba son cuadros sueltos de piezas que se mueven. Estas son dos completas, como salieron a redes — con su audio y su ritmo.</p>
+    <div class="piezas-lista">
+      <figure class="pieza">
+        <div class="pieza-marco">
+          <video preload="none" controls playsinline
+                 poster="/assets/video/hugo-tijuana-mazatlan.webp"
+                 aria-label="Tijuana vs Mazatlán, jornada 10">
+            <source src="/assets/video/hugo-tijuana-mazatlan.mp4" type="video/mp4">
+          </video>
+          <button type="button" class="pieza-play" aria-label="Reproducir: Tijuana vs Mazatlán, jornada 10">
+            <span><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M8 5v14l11-7z"/></svg></span>
+          </button>
+        </div>
+        <figcaption><b>Tijuana vs Mazatlán</b>Jornada 10 · Estadio Caliente</figcaption>
+      </figure>
+      <figure class="pieza">
+        <div class="pieza-marco">
+          <video preload="none" controls playsinline
+                 poster="/assets/video/hugo-mazatlan-juarez.webp"
+                 aria-label="Mazatlán vs Juárez en el Estadio El Encanto">
+            <source src="/assets/video/hugo-mazatlan-juarez.mp4" type="video/mp4">
+          </video>
+          <button type="button" class="pieza-play" aria-label="Reproducir: Mazatlán vs Juárez en el Estadio El Encanto">
+            <span><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M8 5v14l11-7z"/></svg></span>
+          </button>
+        </div>
+        <figcaption><b>Mazatlán vs Juárez</b>Estadio El Encanto</figcaption>
+      </figure>
+    </div>
+  </section>
+
   <section class="caso-cuerpo wrap">
     <div class="caso-rol">
       <h2>Mi rol</h2>
@@ -441,5 +531,35 @@
 </a>
 </aside>
 
+<script>
+/* Un clic cambia la caratula por el video corriendo. El <video> ya trae
+   controls desde el HTML, asi que si este script no corre --o falla-- la
+   pieza sigue siendo reproducible con los controles nativos: la capa de
+   play es una mejora, no un requisito.
+   play() devuelve una promesa que el navegador rechaza si bloquea la
+   reproduccion; si eso pasa se devuelve el boton a su lugar en vez de
+   dejar una caratula muerta que no responde. */
+(function(){
+  var capas = document.querySelectorAll('.pieza-play');
+  for (var i = 0; i < capas.length; i++) {
+    (function(capa){
+      var v = capa.parentNode.querySelector('video');
+      if (!v) return;
+      /* El HTML trae controls puesto para que la pieza siga siendo
+         reproducible si este script nunca corre. Cuando si corre, la barra
+         nativa sobre la caratula estorba --dos botones de play compitiendo
+         por el mismo clic-- asi que se apaga aqui y vuelve al arrancar. */
+      v.controls = false;
+      capa.addEventListener('click', function(){
+        capa.hidden = true;
+        v.controls = true;
+        var p = v.play();
+        if (p && p.catch) p.catch(function(){ capa.hidden = false; v.controls = true; });
+      });
+      v.addEventListener('ended', function(){ capa.hidden = false; });
+    })(capas[i]);
+  }
+})();
+</script>
 </body>
 </html>

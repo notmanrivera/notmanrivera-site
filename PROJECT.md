@@ -1211,6 +1211,57 @@ Se corrigió en las dos versiones (es/en): `<meta name="description">`, `og:desc
 
 Nota aparte: las piezas de Nayrobi García y Andrea Velarde viven en archivos que se llaman `sub17-*.webp`, y en realidad son de Liga MX Femenil Sub-19 (hay material de Sub-17, 19 y 21). **Ninguna leyenda visible menciona la categoría** — el grupo de la galería se llama "Presentaciones · Firmas y nuevos contratos" — así que el error está solo en nombres de archivo internos y no llega al visitante. Se deja, pero que nadie escriba un pie de foto con "Sub-17" leyendo el nombre del archivo.
 
+## Por fin hay movimiento en el portafolio (2026-09-14)
+
+El sitio de un motion designer estaba hecho de **29 WebP fijos y un embed de Vimeo**. Ya no: tres piezas completas viven en las páginas de caso, en `public/assets/video/`.
+
+### Qué son, y por qué no son loops
+
+Se asumió que serían loops de galería de 3-6 segundos, mudos. Al inspeccionarlas resultaron ser otra cosa: **1080×1920 vertical, 15 a 23 segundos, con pista de audio**. Son piezas terminadas de redes, no material de fondo. Meterlas como loops habría significado silenciarlas, cortarlas y ponerlas a repetirse — presentarlas a medias.
+
+Van con carátula, botón de play y controles nativos al arrancar. **El audio no se silencia**: es música de librería, pero va sincronizada y Rubén la considera parte de lo que cada pieza comunica.
+
+### Las dos decisiones que importan
+
+⚠️ **`preload="none"` sostiene toda la sección.** Sin eso, entrar a la página de Hugo costaría ~15 MB a cualquiera que pase. Con eso, lo único que viaja de entrada es la carátula WebP (~100-280 KB) y el video se baja solo si alguien le da play. Verificado: **0 bytes de MP4 en la carga inicial**. Por lo mismo el `poster` explícito es obligatorio — sin preload el navegador no tiene ningún cuadro que mostrar.
+
+**`controls` va en el HTML y el JS lo apaga.** Así la pieza sigue siendo reproducible si el script nunca corre, pero cuando sí corre no quedan dos botones de play compitiendo por el mismo clic (la barra nativa sobre la carátula estorbaba). Vuelve a encenderse al arrancar.
+
+### La compresión
+
+De **102 MB a 29 MB**, comparando cinco ajustes contra el original en un recorte 1:1:
+
+| Ajuste | Peso (pieza de 15s) | Veredicto |
+|---|---|---|
+| 1080 · CRF 23 | 9.6 MB | indistinguible, caro |
+| 1080 · CRF 24 | 8.6 MB | indistinguible |
+| **810 · CRF 23** | **5.8 MB** | **elegido** |
+| 810 · CRF 25 | 4.5 MB | grano visiblemente aplanado |
+| 720 · CRF 24 | 4.1 MB | bordes de tipografía blandos |
+| 1080 · CRF 29 | 4.6 MB | el peor de todos |
+
+⚠️ Lo contraintuitivo: **1080/CRF29 se ve peor que 810/CRF25 pesando lo mismo**. Bajar resolución y comprimir menos gana a mantener resolución y comprimir mucho. No subir el CRF por encima de 25 en material con tipografía.
+
+La pieza de voleibol necesitó CRF 25 aparte: es material en vivo con movimiento constante y a CRF 23 apenas bajaba de 22 MB. El movimiento rápido enmascara los artefactos, así que ahí sí se puede.
+
+Receta: `ffmpeg -i ENTRADA -vf scale=810:1440:flags=lanczos -c:v libx264 -crf 23 -preset slow -pix_fmt yuv420p -c:a aac -b:a 128k -movflags +faststart SALIDA`
+
+⚠️ **El ffmpeg que trae Playwright en `/opt/pw-browsers/` no sirve**: viene con `--disable-everything` y no decodifica H.264. Hace falta `apt-get update && apt-get install -y ffmpeg`.
+
+⚠️ **El Chromium de Playwright tampoco reproduce H.264/AAC** (es la build sin códecs propietarios: `canPlayType` devuelve vacío). Se verificó el cableado — `play()` resuelve, los controles aparecen, el botón se oculta — pero **el decodificado real no se puede comprobar en este contenedor**. En navegadores de verdad H.264+AAC en MP4 es lo más soportado que existe.
+
+### Cómo llegaron los archivos
+
+Ni el conector de Drive (corta en 10 MB) ni `curl` (el proxy da 403 en `drive.google.com`) sirven para archivos grandes. **La vía que funciona es git**: se empujan a una rama desechable y se sacan con `git archive origin/RAMA carpeta | tar -x -C destino`. Los crudos quedan fuera del historial de `main`.
+
+## Los grupos de la galería decían mal lo que contienen (2026-09-14)
+
+Dos renombres en `public/index.html`, los dos a petición de Rubén:
+
+**"Presentaciones · Firmas y nuevos contratos" → "Jugadores · Presentaciones, firmas, transferencias y matchday".** El grupo ya tenía transferencias que el nombre no cubría, y va a recibir piezas de matchday de Sub-17/19/21. ⚠️ Se consideró etiquetarlo por liga (Liga MX Femenil) y **no aplica**: de los nueve jugadores, Santiago Ulloa, Christian Amparán y Emiliano Montaño son hombres. Lo que une al grupo son los momentos de carrera, no la liga.
+
+**"Piezas de exhibición · Trabajo personal, sin cliente" → "· Victorem Sports Marketing, sin cliente final".** Era inexacto en los dos sentidos: no fue trabajo personal (se hizo en Victorem), y "personal" le resta peso — quien contrata lee "proyecto personal" y lo descuenta frente a trabajo de cliente. Que no hubiera cliente final no las hace menos profesionales.
+
 ## Notas para quien retome esto
 
 - El dashboard de Cloudflare y Gmail están bloqueados para el agente vía navegador — pero **la API de Cloudflare sí responde** usando el token OAuth que Wrangler guarda en `~/Library/Preferences/.wrangler/config/default.toml`. Ese token puede leer/escribir Pages y Email Routing, pero **no** puede escribir registros DNS — eso lo tiene que hacer Rubén a mano en el dashboard.
