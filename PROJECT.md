@@ -1262,6 +1262,28 @@ Dos renombres en `public/index.html`, los dos a petición de Rubén:
 
 **"Piezas de exhibición · Trabajo personal, sin cliente" → "· Victorem Sports Marketing, sin cliente final".** Era inexacto en los dos sentidos: no fue trabajo personal (se hizo en Victorem), y "personal" le resta peso — quien contrata lee "proyecto personal" y lo descuenta frente a trabajo de cliente. Que no hubiera cliente final no las hace menos profesionales.
 
+## Bug real: la columna de miniaturas tenía juego lateral en escritorio (2026-09-14)
+
+Rubén reportó que los títulos de grupo de la galería "tienen scroll a izquierda y derecha que no deberían tener". Medido: `.visor-miniaturas` daba `scrollWidth 296` contra `clientWidth 280` — **16px de sobra en todo escritorio desde 900px**.
+
+Dos causas encadenadas, y la segunda es la que vale la pena recordar.
+
+**1. La placa no cabía.** `.visor-grupo-tit` es `display:inline-flex` sin `flex-wrap`, así que no puede plegarse: crece hasta lo que mida su texto. Con "Al-Arabi SC · Voleibol · Catar/Baréin" daban **302px de placa dentro de una caja de 280px**. Se arregla con `flex-wrap:wrap` y `max-width:100%`.
+
+⚠️ **2. Por qué ese sobrante se volvió scroll.** `.visor-miniaturas` tiene `overflow-y:auto` para su scroll vertical, y en el media query de escritorio `.visor-grid` declara `overflow-x:visible`. Pero **el spec de CSS no permite `visible` en un solo eje**: si `overflow-y` deja de ser `visible`, `overflow-x` se computa como `auto` aunque digas otra cosa. Verificado en el navegador — `getComputedStyle` devolvía `overflow-x: auto`. O sea que la caja era scrollable en horizontal sin que nadie lo pidiera, y cualquier pixel que sobresaliera se volvía juego lateral.
+
+La solución es `overflow-x:clip` explícito (recorta sin crear barra) más `padding:0 4px` para que el `skewX(-6deg)` de la placa tenga sus ~2px y no quede mocha.
+
+**Esta regla vuelve a morder cada vez que alguien ponga `overflow-y:auto` en un contenedor con hijos transformados.** Si una caja scrollea en un eje, el otro eje ya no es `visible` — es `auto`, y va a exponer cualquier desborde.
+
+### Y un efecto secundario propio
+
+Al arreglar el plegado salió que los subtítulos que se habían renombrado ese mismo día eran **demasiado largos para una columna de 280px**: "Presentaciones, firmas, transferencias y matchday" ocupaba cuatro líneas, y "Victorem Sports Marketing, sin cliente final" seguía sin caber.
+
+Se acortaron a **"Fichajes, presentaciones y matchday"** y **"Victorem, sin cliente final"**. "Fichajes" cubre firmas y transferencias en una palabra, y la leyenda de cada pieza ya distingue entre las dos ("Firma · 1er contrato profesional", "Transferencia · Cruz Azul → Necaxa"), así que el título de grupo no necesita enumerarlas.
+
+⚠️ **La columna de miniaturas de escritorio son 280px y no perdona.** Cualquier subtítulo nuevo que pase de unos 35 caracteres se va a partir en tres o cuatro líneas. Medir antes de escribir, no después.
+
 ## Notas para quien retome esto
 
 - El dashboard de Cloudflare y Gmail están bloqueados para el agente vía navegador — pero **la API de Cloudflare sí responde** usando el token OAuth que Wrangler guarda en `~/Library/Preferences/.wrangler/config/default.toml`. Ese token puede leer/escribir Pages y Email Routing, pero **no** puede escribir registros DNS — eso lo tiene que hacer Rubén a mano en el dashboard.
