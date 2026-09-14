@@ -957,7 +957,7 @@ Verificado con Playwright: desde `/index.html#contacto`, clic en EN navega a `/e
 Seguimiento del hueco de SEO #2 (una sola URL, sin forma de rankear por consulta específica). Rubén: "no tengo tiempo de mantener un blog, ¿podrías hacerlo tú?". Se descartó el blog a propósito -- un blog abandonado (tres posts y silencio desde 2024) es peor señal que no tener blog, y exige una cadencia que Rubén ya avisó que no puede sostener. En su lugar: **páginas de caso de estudio, escritas una sola vez, sin cadencia que mantener**, construidas con hechos que YA estaban publicados en el sitio (ningún dato, cifra o resultado inventado).
 
 **Tres páginas, cada una cubriendo un ángulo de servicio distinto:**
-- `public/casos/al-arabi-sc/` -- paquete de motion graphics de matchday para Al-Arabi SC (Qatar Stars League). El más rico en material: 8 piezas reales en la galería del sitio (fase de grupos, alineación, próximo partido, 4 jornadas, calendario completo).
+- `public/casos/al-arabi-sc/` -- paquete de motion graphics de matchday para el equipo de **voleibol** de Al-Arabi SC (Catar). El más rico en material: 8 piezas reales en la galería del sitio (fase de grupos, alineación, próximo partido, 4 jornadas, calendario completo).
 - `public/casos/mazatlan-fc/` -- edición de video/motion graphics de matchday para Mazatlán FC, Liga MX y Leagues Cup, "en colaboración con Hugo González". ⚠️ El rol exacto de Hugo González (¿representante? ¿periodista? ¿el propio equipo de contenido del club?) no está declarado en ningún lado del sitio existente -- se redactó deliberadamente genérico ("en colaboración con") para no inventar un cargo. **Pendiente que Rubén confirme o corrija esto antes de publicar.**
 - `public/casos/diseno-web/` -- no es UN cliente, es un recorrido por los 7 clientes de la pestaña "Web" de la galería (Moser Café Kultur, Café Amadeus, Grupo Uno22, Saxodia, V-Dental, Viterbo 68, Incómodo). Se eligió este formato porque cada cliente web individual solo tiene una miniatura en el sitio -- no había material real para un caso de estudio profundo por cliente, y estirarlo habría significado inventar contenido.
 
@@ -1196,6 +1196,20 @@ La causa de que se arreglara solo está en la hoja: la columna **`Confianza_emai
 **Regla que hay que sostener:** no enviar a nada sin `Confianza_email`. Y queda pendiente borrar las 11 direcciones muertas para que nunca se reintenten.
 
 ⚠️ **Lección:** una tasa acumulada sobre una población que cambió de régimen a medio camino no describe ningún régimen. Partir por cohorte **antes** de reportar un número, no después de que alguien pregunte.
+
+## Bug real: el caso de Al-Arabi decía que era futbol, y es voleibol (2026-09-14)
+
+La página de caso afirmaba, en texto visible y en el `schema.org`, que **"Al-Arabi Sports Club compite en la Qatar Stars League, la primera división de fútbol de Qatar"**. Rubén nunca trabajó con el equipo de futbol: *todo* lo que hizo para ese club fue para su **equipo de voleibol**.
+
+Lo peor no es el error, es que **el sitio ya tenía el dato correcto y la página de caso lo contradecía**. En `public/index.html`, la galería dice desde agosto `Al-Arabi SC · Voleibol · Catar/Baréin`, y el bloque de experiencia dice `Al-Arabi SC Volleyball · Catar`. La página de caso se escribió después y le puso futbol encima.
+
+Se corrigió en las dos versiones (es/en): `<meta name="description">`, `og:description`, `twitter:description`, el `about` del JSON-LD, el dek, el párrafo de "El encargo" y la línea de volumen. También el párrafo de "El estándar", que comparaba el trabajo con "cualquier gráfico de Champions League o Premier League" — una vara de futbol para medir voleibol.
+
+⚠️ **De dónde salió el error.** "Al-Arabi SC" + Catar lleva derechito al club de futbol de Doha, que sí juega en la Qatar Stars League y es el que sale en cualquier búsqueda. La inferencia era plausible y era falsa. Los rivales que aparecen en las piezas (Alsalam Club, Qadsia SC, Al Rayyan SC, Alahli Club) y la estructura de "fase de grupos" tampoco encajan con una liga de futbol — son de un torneo de clubes con equipos de Catar, Baréin y Kuwait. Había señales y no se leyeron.
+
+**La regla: los hechos sobre el trabajo de un cliente salen del cliente o de los archivos, nunca de deducir a partir del nombre.** Si no hay forma de verificar el nombre de una competencia, se describe lo que sí se puede ver (el deporte, los rivales, el formato) y se deja el nombre fuera. Eso es lo que quedó: en ningún lado del caso se nombra ya una competencia, porque no está confirmada.
+
+Nota aparte: las piezas de Nayrobi García y Andrea Velarde viven en archivos que se llaman `sub17-*.webp`, y en realidad son de Liga MX Femenil Sub-19 (hay material de Sub-17, 19 y 21). **Ninguna leyenda visible menciona la categoría** — el grupo de la galería se llama "Presentaciones · Firmas y nuevos contratos" — así que el error está solo en nombres de archivo internos y no llega al visitante. Se deja, pero que nadie escriba un pie de foto con "Sub-17" leyendo el nombre del archivo.
 
 ## Notas para quien retome esto
 
