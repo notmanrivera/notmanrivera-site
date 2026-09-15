@@ -1346,6 +1346,37 @@ Y se le reportó a Rubén que en móvil *"el deslizamiento horizontal de miniatu
 
 **Una verificación que no se lee es peor que no correrla**, porque produce una garantía falsa. Si un chequeo imprime `false` donde se esperaba `true`, eso es un hallazgo, no ruido de fondo. Y "sigue igual que antes" solo es tranquilizador si antes estaba bien: cuando no se sabe cómo estaba antes, hay que medirlo (un `git worktree` sobre el commit viejo toma treinta segundos) en vez de asumirlo.
 
+## Las opciones de dialogo van en una linea, y ahora dicen algo util (2026-09-15)
+
+Rubén pidió que *"Tengo un proyecto. Hablemos"* se viera en una sola línea, y de paso abrió la puerta a cambiar las otras dos.
+
+### Lo de la línea
+
+Medido en los dos idiomas: **solo se partía a 320px de ancho** — un iPhone SE de primera generación. De 360 para arriba nunca lo hacía, lo que explica que sea difícil de reproducir a propósito.
+
+Se arregla con dos cosas juntas, y las dos hacen falta: `white-space:nowrap` para que no se parta, y `font-size:clamp(.82rem, 3.9vw, 1rem)` para que quepa donde no cabía. Con `nowrap` a secas el texto se salía de la caja de diálogo. Con el clamp, a 320px baja a 13.1px y a partir de 430px vuelve a 16px — verificado que no hay desborde ni scroll lateral en ningún ancho.
+
+⚠️ **Nada de `text-overflow:ellipsis` aquí.** El texto de cada opción **es el asunto del correo**: el listener de `.dialog-opciones a` hace `asunto = a.textContent.trim()` y lo mete en el `mailto:`. Recortarlo rompería el mensaje que llega.
+
+### Lo de las frases
+
+Ese mismo detalle es el que decide la copia. Las opciones no son decorativas: lo que dicen aterriza en la bandeja de Rubén como línea de asunto, antes de que abra nada.
+
+Las dos viejas fallaban por eso:
+
+- *"Esto es lo que necesitaba ver."* — no dice qué quiere la persona, y además es el visitante elogiando el trabajo. Escribirle esa línea a quien te visita es raro: es autoelogio puesto en boca ajena.
+- *"Cuéntame cómo empezamos."* — sí es una intención, pero se solapa con la primera.
+
+Quedaron tres intenciones que no se pisan, y que como asunto le dicen a Rubén qué quiere la persona:
+
+| Opción | Lo que le llega |
+|---|---|
+| Tengo un proyecto. Hablemos. | encargo concreto |
+| ¿Tienes disponibilidad ahora? | urgencia / calendario |
+| ¿Cómo trabajas con agencias? | encaje con su público objetivo |
+
+La tercera habla directo al prospecto que el sistema de correos persigue.
+
 ## Notas para quien retome esto
 
 - El dashboard de Cloudflare y Gmail están bloqueados para el agente vía navegador — pero **la API de Cloudflare sí responde** usando el token OAuth que Wrangler guarda en `~/Library/Preferences/.wrangler/config/default.toml`. Ese token puede leer/escribir Pages y Email Routing, pero **no** puede escribir registros DNS — eso lo tiene que hacer Rubén a mano en el dashboard.

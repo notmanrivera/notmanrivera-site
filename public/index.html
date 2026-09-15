@@ -1811,10 +1811,20 @@
     list-style:none;margin:0;
     display:flex;flex-direction:column;gap:2px;
   }
+  /* ⚠️ nowrap + tamano fluido, y las dos cosas hacen falta. La frase mas
+     larga mide ~254px a 16px; a 320px de pantalla la caja solo da ~228, y
+     ahi se partia en dos renglones (de 360 para arriba nunca lo hacia, por
+     eso cuesta verlo). Con nowrap a secas el texto se desbordaria de la
+     caja de dialogo; el clamp lo encoge lo justo en los anchos donde no
+     cabe y lo deja en 1rem en cuanto hay sitio.
+     Nada de text-overflow:ellipsis aqui: el texto de cada opcion viaja
+     como ASUNTO del correo (ver el listener de .dialog-opciones a mas
+     abajo), asi que recortarlo romperia el mensaje que llega. */
   .dialog-opciones a{
     position:relative;display:block;
     font-family:var(--body);color:var(--paper);text-decoration:none;
-    font-size:1rem;padding:8px 4px 8px 22px;
+    font-size:clamp(.82rem, 3.9vw, 1rem);padding:8px 4px 8px 22px;
+    white-space:nowrap;
     transition:color .15s;
   }
   /* Cursor de seleccion (2026-08-17, mas "feeling de RPG" a peticion de
@@ -3797,8 +3807,8 @@
       <div class="dialogo dialogo-tu">
         <ul class="lede-tu dialog-opciones">
           <li><a href="mailto:hola@notmanrivera.com" data-es="Tengo un proyecto. Hablemos." data-en="I've got a project. Let's talk.">Tengo un proyecto. Hablemos.</a></li>
-          <li><a href="mailto:hola@notmanrivera.com" data-es="Esto es lo que necesitaba ver." data-en="This is what I needed to see.">Esto es lo que necesitaba ver.</a></li>
-          <li><a href="mailto:hola@notmanrivera.com" data-es="Cuéntame cómo empezamos." data-en="Tell me how we start.">Cuéntame cómo empezamos.</a></li>
+          <li><a href="mailto:hola@notmanrivera.com" data-es="¿Tienes disponibilidad ahora?" data-en="Are you available right now?">¿Tienes disponibilidad ahora?</a></li>
+          <li><a href="mailto:hola@notmanrivera.com" data-es="¿Cómo trabajas con agencias?" data-en="How do you work with agencies?">¿Cómo trabajas con agencias?</a></li>
         </ul>
         <span class="dialog-name dialog-name-tu" data-es="Tú" data-en="You">Tú</span>
       </div>
