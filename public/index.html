@@ -2275,6 +2275,19 @@
   .visor-info span{display:block;color:var(--muted);font-size:.82rem;margin-top:2px}
 
   .visor-miniaturas{display:grid;gap:26px}
+  /* ⚠️ min-width:0 NO es cosmetico y sin el la galeria de movil esta rota.
+     .visor-grupo es item de .visor-miniaturas (display:grid), y los items
+     de grid traen min-width:auto: se niegan a encogerse por debajo de su
+     contenido minimo. Ese minimo aqui son 8 miniaturas de 72px con
+     flex:0 0 auto = 728px. Resultado en movil: el grupo crecia a 728
+     dentro de una caja de 342, el overflow-x:auto de .visor-grid nunca se
+     activaba --el elemento ya era tan ancho como su contenido, asi que
+     scrollWidth == clientWidth y no habia nada que deslizar-- y las
+     miniaturas se salian de lado, donde el overflow-x:hidden del <html>
+     las recortaba sin dejar forma de alcanzarlas.
+     El sintoma enganaba: el desborde se ve en .visor-miniaturas, pero la
+     causa esta en el hijo que se niega a encoger. */
+  .visor-grupo{min-width:0}
   /* ⚠️ flex-wrap y max-width no son decorativos: sin ellos el inline-flex
      no puede plegarse y la placa crece hasta lo que mida su texto. En la
      columna de miniaturas de escritorio (280px) eso daba 302px de placa

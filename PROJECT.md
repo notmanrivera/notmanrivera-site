@@ -1320,6 +1320,32 @@ La ráfaga corría con `animation-fill-mode: both`. El fill hacia atrás pinta e
 
 Y `prefers-reduced-motion` necesita ahora una línea extra: no basta con matar la animación, hay que forzar `mask-position: 0% 0`, o la máscara se queda donde la dejó el último fotograma calculado y el logo puede quedar a medio revelar para siempre.
 
+## Bug real: la galería de móvil nunca se pudo deslizar (2026-09-15)
+
+Rubén: *"en movil no puedo hacer scroll lateral de la galería"*. **Y tenía razón desde siempre** — se verificó contra el commit `300996c`, de antes de cualquier cambio de esta tanda, y el comportamiento era idéntico. No es una regresión, es un bug que llevaba ahí desde que existe la galería.
+
+### La causa
+
+`.visor-grupo` es item de `.visor-miniaturas`, que es `display:grid`. **Los items de grid traen `min-width:auto`**, que les prohíbe encogerse por debajo de su contenido mínimo. El contenido mínimo aquí son 8 miniaturas de 72px con `flex:0 0 auto` — 728px que no negocian.
+
+Resultado en un teléfono: el grupo crecía a 728px dentro de una caja de 342. Y entonces `overflow-x:auto` de `.visor-grid` **nunca se activaba**, porque el elemento ya era tan ancho como su contenido: `scrollWidth == clientWidth`, o sea nada que deslizar. Las miniaturas se salían de lado, donde el `overflow-x:hidden` del `<html>` las recortaba sin dejar forma de alcanzarlas.
+
+Se arregla con una línea: `.visor-grupo{min-width:0}`. Verificado a 390, 430, 768, 900 y 1280px — en móvil `scrollLeft` pasa de 0 a 304 al empujarlo, y escritorio no se entera.
+
+⚠️ **El síntoma engañaba.** El desborde se mide en `.visor-miniaturas` (`scrollWidth 728` contra `clientWidth 342`), pero la causa está en el hijo que se niega a encoger. Buscar ahí y no en el contenedor.
+
+### La lección de método, que es la que duele
+
+El día anterior, al arreglar el juego lateral de escritorio, se corrió una verificación de móvil cuya salida decía literalmente:
+
+```
+movil · .visor-grid sigue deslizando: { scrollW: 728, clientW: 728, desliza: false, ... }
+```
+
+Y se le reportó a Rubén que en móvil *"el deslizamiento horizontal de miniaturas sigue funcionando como antes"*. La frase era cierta en el sentido inútil — seguía igual de roto — pero se presentó como si estuviera bien, con el dato que decía lo contrario impreso en pantalla.
+
+**Una verificación que no se lee es peor que no correrla**, porque produce una garantía falsa. Si un chequeo imprime `false` donde se esperaba `true`, eso es un hallazgo, no ruido de fondo. Y "sigue igual que antes" solo es tranquilizador si antes estaba bien: cuando no se sabe cómo estaba antes, hay que medirlo (un `git worktree` sobre el commit viejo toma treinta segundos) en vez de asumirlo.
+
 ## Notas para quien retome esto
 
 - El dashboard de Cloudflare y Gmail están bloqueados para el agente vía navegador — pero **la API de Cloudflare sí responde** usando el token OAuth que Wrangler guarda en `~/Library/Preferences/.wrangler/config/default.toml`. Ese token puede leer/escribir Pages y Email Routing, pero **no** puede escribir registros DNS — eso lo tiene que hacer Rubén a mano en el dashboard.
