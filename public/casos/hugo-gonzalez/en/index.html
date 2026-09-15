@@ -334,9 +334,17 @@
      al hover). Estas paginas son el aterrizaje real del trafico de Google y
      de los correos con UTM, y hasta ahora su unica salida era un CTA hasta
      el fondo que devolvia a la home a buscar el contacto otra vez. */
+  /* ⚠️ El tamano vive en --wa y el icono se calcula desde el (la
+     proporcion original era 20/40 = .5). Si se cambia el ancho a mano sin
+     tocar el svg, el rombo crece y el icono se queda chico en el centro.
+     46px de base: 40 quedaba por debajo del minimo de 44px para un blanco
+     tactil, asi que subirlo arregla dos cosas a la vez. 54 en escritorio,
+     donde Ruben reporto que pasaba desapercibido -- ahi no hay dedo que
+     estorbe y la pantalla sobra. */
   .whatsapp-flotante{
+    --wa:46px;
     position:fixed;left:22px;bottom:22px;z-index:90;
-    width:40px;height:40px;
+    width:var(--wa);height:var(--wa);
     display:flex;align-items:center;justify-content:center;
     background:var(--violet);border:2px solid var(--violet);
     color:#fff;text-decoration:none;
@@ -346,10 +354,15 @@
   .whatsapp-flotante:hover,.whatsapp-flotante:focus-visible{
     background:var(--rojo);border-color:var(--rojo);
   }
-  .whatsapp-flotante svg{width:20px;height:20px;transform:rotate(-45deg)}
+  .whatsapp-flotante svg{width:calc(var(--wa) * .5);height:calc(var(--wa) * .5);transform:rotate(-45deg)}
+  @media(min-width:900px){.whatsapp-flotante{--wa:54px}}
+  /* ⚠️ Este bloque tenia width/height y el svg en pixeles fijos, por fuera
+     de --wa: al subir el tamano base el rombo seguia midiendo 34px aqui y
+     nadie lo avisaba. Ahora solo mueve --wa, que arrastra al icono solo.
+     44px es el minimo de blanco tactil; a 34 el boton era mas chico que la
+     yema de un dedo justo en el dispositivo donde se toca. */
   @media(max-width:640px){
-    .whatsapp-flotante{left:14px;bottom:14px;width:34px;height:34px}
-    .whatsapp-flotante svg{width:17px;height:17px}
+    .whatsapp-flotante{left:14px;bottom:14px;--wa:44px}
   }
   @media(prefers-reduced-motion:reduce){
     .whatsapp-flotante{transition:none}

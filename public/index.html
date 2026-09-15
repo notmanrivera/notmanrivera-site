@@ -640,9 +640,17 @@
      WhatsApp se retira por completo, ya no hace falta la excepcion de
      paleta. Un poco mas grande que .volver-arriba (40px vs 34px) porque es
      un CTA de contacto primario, no un utilitario de scroll. */
+  /* ⚠️ El tamano vive en --wa y el icono se calcula desde el (la
+     proporcion original era 20/40 = .5). Si se cambia el ancho a mano sin
+     tocar el svg, el rombo crece y el icono se queda chico en el centro.
+     46px de base: 40 quedaba por debajo del minimo de 44px para un blanco
+     tactil, asi que subirlo arregla dos cosas a la vez. 54 en escritorio,
+     donde Ruben reporto que pasaba desapercibido -- ahi no hay dedo que
+     estorbe y la pantalla sobra. */
   .whatsapp-flotante{
+    --wa:46px;
     position:fixed;left:22px;bottom:22px;z-index:90;
-    width:40px;height:40px;
+    width:var(--wa);height:var(--wa);
     display:flex;align-items:center;justify-content:center;
     background:var(--violet);border:2px solid var(--violet);
     color:#fff;text-decoration:none;
@@ -652,10 +660,15 @@
   .whatsapp-flotante:hover,.whatsapp-flotante:focus-visible{
     background:var(--rojo);border-color:var(--rojo);
   }
-  .whatsapp-flotante svg{width:20px;height:20px;transform:rotate(-45deg)}
+  .whatsapp-flotante svg{width:calc(var(--wa) * .5);height:calc(var(--wa) * .5);transform:rotate(-45deg)}
+  @media(min-width:900px){.whatsapp-flotante{--wa:54px}}
+  /* ⚠️ Este bloque tenia width/height y el svg en pixeles fijos, por fuera
+     de --wa: al subir el tamano base el rombo seguia midiendo 34px aqui y
+     nadie lo avisaba. Ahora solo mueve --wa, que arrastra al icono solo.
+     44px es el minimo de blanco tactil; a 34 el boton era mas chico que la
+     yema de un dedo justo en el dispositivo donde se toca. */
   @media(max-width:640px){
-    .whatsapp-flotante{left:14px;bottom:14px;width:34px;height:34px}
-    .whatsapp-flotante svg{width:17px;height:17px}
+    .whatsapp-flotante{left:14px;bottom:14px;--wa:44px}
   }
   @media(prefers-reduced-motion:reduce){
     .whatsapp-flotante{transition:none}
@@ -2503,6 +2516,14 @@
     color:inherit;
   }
   .cred p{color:inherit;opacity:.92;font-size:1rem;line-height:1.7}
+  /* ⚠️ .svc empujaba su texto 9px al hacer hover y .cred no hacia nada: las
+     tarjetas de "Donde he trabajado" volteaban de color con el contenido
+     congelado, que es media sensacion de seleccion. Se calca el gesto de
+     .svc, incluido el skewX(-8deg) que .cred h3 ya lleva en su regla base
+     -- omitirlo aqui enderezaria el titulo durante el hover. */
+  .cred h3,.cred p{transition:transform .22s cubic-bezier(.2,1.4,.3,1)}
+  .cred:hover h3{transform:skewX(-8deg) translateX(9px)}
+  .cred:hover p{transform:translateX(9px)}
 
   /* ===== STATUS (ficha de personaje, tipo pantalla de Persona) ===== */
   #perfil{background:linear-gradient(180deg,var(--ink) 0%,#12081f 55%,var(--ink) 100%)}

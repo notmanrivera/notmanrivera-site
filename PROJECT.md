@@ -1377,6 +1377,36 @@ Quedaron tres intenciones que no se pisan, y que como asunto le dicen a Rubén q
 
 La tercera habla directo al prospecto que el sistema de correos persigue.
 
+## El empuje que le faltaba a una tarjeta, y el boton de WhatsApp (2026-09-15)
+
+Rubén pidió aplicar a las tarjetas de "Cuatro formas" y "Dónde he trabajado" el mismo efecto de hover de los CTA del hero. **Ya lo tenían**: medido en el navegador, los tres voltean igual — placa a blanco, texto a negro, chispa entrando. Lo que sí faltaba era una sola cosa, y esa se arregló:
+
+**`.svc` empujaba su texto 9px al hacer hover y `.cred` no hacía nada.** Las tarjetas de "Dónde he trabajado" cambiaban de color con el contenido congelado, que es media sensación de selección. Se calca el gesto de `.svc`, con su `transition` propia.
+
+⚠️ El hover de `.cred h3` **tiene que repetir el `skewX(-8deg)`** que la regla base ya lleva. `transform` se reemplaza entero, no se acumula: poner solo `translateX(9px)` enderezaría el título justo durante el hover.
+
+Todo lo demás se dejó igual, por decisión suya.
+
+### El botón de WhatsApp
+
+Rubén lo veía pasar desapercibido en escritorio. Se agranda, y de paso se arregla algo que no se había notado.
+
+El tamaño pasa a vivir en **`--wa`**, y el icono se calcula desde ahí (`calc(var(--wa) * .5)`, que es la proporción original de 20/40). Antes el ancho y el icono eran dos números sueltos: cambiar uno sin el otro dejaba el rombo grande con el icono chiquito en el centro, sin que nada lo delatara.
+
+| | Antes | Ahora |
+|---|---|---|
+| Escritorio (≥900px) | 40px | **54px** |
+| Intermedio | 40px | 46px |
+| Móvil (≤640px) | 34px | **44px** |
+
+⚠️ **El bloque de `max-width:640px` traía `width/height` y el `svg` en píxeles fijos, por fuera de la variable.** Al subir el tamaño base, el rombo seguía midiendo 34px en móvil y nadie avisaba. Ahora ese bloque solo mueve `--wa`.
+
+Y esos 34px eran un problema propio: **por debajo del mínimo de 44px de blanco táctil**, justo en el dispositivo donde se toca con el dedo. Subirlo arregla la visibilidad que Rubén pedía y la accesibilidad que nadie había pedido.
+
+El color se queda violeta. Se le propuso cambiarlo a rojo por coherencia con el sistema (violeta = identidad, rojo = acción) y decidió que así está bien.
+
+⚠️ La regla vive **duplicada en las siete páginas** (home + seis de caso). Cualquier cambio va en las siete o se desincronizan.
+
 ## Notas para quien retome esto
 
 - El dashboard de Cloudflare y Gmail están bloqueados para el agente vía navegador — pero **la API de Cloudflare sí responde** usando el token OAuth que Wrangler guarda en `~/Library/Preferences/.wrangler/config/default.toml`. Ese token puede leer/escribir Pages y Email Routing, pero **no** puede escribir registros DNS — eso lo tiene que hacer Rubén a mano en el dashboard.
