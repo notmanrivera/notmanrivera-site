@@ -1284,6 +1284,42 @@ Se acortaron a **"Fichajes, presentaciones y matchday"** y **"Victorem, sin clie
 
 ⚠️ **La columna de miniaturas de escritorio son 280px y no perdona.** Cualquier subtítulo nuevo que pase de unos 35 caracteres se va a partir en tres o cuatro líneas. Medir antes de escribir, no después.
 
+## El cromado ya no aterriza: barre (2026-09-15)
+
+Rubén: *"no me encanta cómo entra el logo cromado, preferiría que solo hiciera un fade in o si se pudiera, un barrido de degradado"*.
+
+La entrada anterior (`marcaIn`) era `skewX(-13deg)` + `scale 1.42` + `translateY(-9%)` con un easing de rebote. Leía como un golpe — y lo que viene justo antes, el contorno dibujándose ruta por ruta, no golpea: dibuja. El barrido continúa ese gesto en vez de interrumpirlo.
+
+**Dos capas.** El piso es un fade simple (`marcaFade`), que es lo que corre si el navegador no soporta máscaras. Dentro de un `@supports`, el mismo fade lleva un degradado que barre de izquierda a derecha animando `mask-position` de `100%` a `0%`.
+
+### La geometría de la máscara no es a ojo
+
+Con `mask-size: 260%`, la caja ve `1/2.6 = 38.5%` del degradado a la vez. De ahí salen las dos paradas que importan:
+
+- **La zona sólida tiene que cubrir al menos el 38.5%** para que el logo termine opaco de verdad. El primer intento la puso en 32%, y el resultado era que **el borde derecho del logo se quedaba al 77% de opacidad para siempre**. Sobre fondo negro no se nota mirando; se detectó comparando el último fotograma contra el logo sin máscara (diferencia máxima de canal 21 en 52 valores de 518.544 tras el arreglo, o sea ruido de antialiasing).
+- **Lo transparente tiene que empezar antes de `1 - 38.5% = 61.5%`** para que arranque invisible. Quedó en 64%.
+
+⚠️ Si alguien toca `mask-size`, esas dos paradas cambian con él.
+
+### Tres relojes encadenados, y ninguno se avisa solo
+
+Cambiar la duración de la entrada (de `.66s` a `1.05s`) desincronizó dos cosas que nadie habría notado hasta verlas:
+
+1. **El brillo especular** arrancaba a `.72s` porque `marcaIn` duraba `.66s`. Con el barrido, la luz cruzaba un logo todavía a medio revelar — un destello sobre algo que aún no existía. Pasa a `1s`.
+2. **La ráfaga** estallaba a `.16s` para coincidir con el aterrizaje. Sin aterrizaje, reventaba sobre un hueco negro: el logo no empieza a asomar hasta los ~315ms. Pasa a `.38s`, donde florece junto con el revelado.
+
+⚠️ **Los tres retrasos están clavados al reloj de `marcaBarrido`.** Si esa duración vuelve a cambiar, los tres números cambian con ella.
+
+### Un bug viejo que el cambio destapó
+
+La ráfaga corría con `animation-fill-mode: both`. El fill hacia atrás pinta el fotograma `0%` (`opacity .6`, `scale .15`) **durante todo el retraso**: una ráfaga chiquita congelada esperando en pantalla. Con `.16s` y un logo que aterrizaba encima, pasaba desapercibida; con `.38s` y el logo todavía invisible, era una mancha roja sobre negro. Ahora es `forwards`, así que el elemento conserva sus estilos base (`scale 0`, `opacity 0`) hasta que le toca.
+
+### Lo que el cambio simplificó
+
+`marcaIn` llevaba un aviso porque la escala vivía **dentro** del keyframe: con `fill:both`, un `scale(1)` suelto en la regla base habría anulado el aumento del logo en escritorio sin que nada lo delatara. `marcaBarrido` no toca `transform` en absoluto, así que la escala vuelve a vivir donde debe, en `.marca`. Verificado: el logo termina en `scale(1.34)`, no en `scale(1)`.
+
+Y `prefers-reduced-motion` necesita ahora una línea extra: no basta con matar la animación, hay que forzar `mask-position: 0% 0`, o la máscara se queda donde la dejó el último fotograma calculado y el logo puede quedar a medio revelar para siempre.
+
 ## Notas para quien retome esto
 
 - El dashboard de Cloudflare y Gmail están bloqueados para el agente vía navegador — pero **la API de Cloudflare sí responde** usando el token OAuth que Wrangler guarda en `~/Library/Preferences/.wrangler/config/default.toml`. Ese token puede leer/escribir Pages y Email Routing, pero **no** puede escribir registros DNS — eso lo tiene que hacer Rubén a mano en el dashboard.
