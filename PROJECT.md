@@ -1407,6 +1407,30 @@ El color se queda violeta. Se le propuso cambiarlo a rojo por coherencia con el 
 
 ⚠️ La regla vive **duplicada en las siete páginas** (home + seis de caso). Cualquier cambio va en las siete o se desincronizan.
 
+## Auditoría con Hallmark: 2 críticos, 4 mayores, 2 menores (2026-09-18)
+
+Se instaló [Hallmark](https://github.com/nutlope/hallmark) (MIT, Together AI) en `.claude/skills/` y se corrió su verbo `audit` sobre la home. Es una skill anti-slop: puntúa código contra un catálogo de tells de interfaz generada por IA.
+
+### Lo que pasó limpio
+
+Vale anotarlo porque es el resultado de meses de decisiones, no suerte: tres tipografías pareadas de verdad (nada de Inter-para-todo), sin hero a `100vh` centrado, **sin rejilla de tres columnas iguales** —los cuatro servicios son filas apiladas asimétricas—, sin nav de IA (es hamburguesa), sin footer de cuatro columnas, cero gradiente morado, cero `background-clip:text`, cero blobs, sin `transition:all`, sin `100vw`, sin emoji como icono, videos por clic y LCP con `fetchpriority="high"`.
+
+### Lo que se arregló
+
+**La franja lateral del panel «Mi rol».** `border-left:3px solid var(--violet)` es el patrón *side-stripe card*, tan repetido en plantillas SaaS que se lee como generado. Se cambió por hairline completo más un cuadro de acento de 8px junto al título. ⚠️ El cuadro va en `::before` del `h2`, no en el panel: así el acento marca el **encabezado** en vez de envolver el bloque entero.
+
+**`tabular-nums`, que resultó ser un bug y no una preferencia.** `.stat b.cuenta` lo anima un script contando desde cero (ver el `querySelectorAll` de `.cifra b, .stats .stat b.cuenta, .radar .rango`). Con cifras proporcionales el ancho del glifo cambia en cada paso y **la placa tiembla mientras cuenta**. Se aplicó también a `.svc-bignum`, `.sec-num` y `.num-caso`, que viven en series 01–04 donde el ancho constante es justo lo que se quiere.
+
+**Comillas rectas** en las dos páginas de Al-Arabi, de la corrección del deporte del 14/09.
+
+### Lo que se rechazó, y por qué
+
+⚠️ **«Pure black, pure white» salió como crítico y no se va a corregir.** La regla asume que construyes un SaaS genérico, donde un neutro tintado se lee como elegido. Este sitio es Persona 5: plano, contraste brutal, negro-blanco-rojo. Tintar el `--ink` suavizaría exactamente lo que hace que la página se lea como viñeta. **`#000000` y `#FFFFFF` se quedan por decisión, no por descuido** — que nadie los "arregle" en el futuro creyendo que es deuda.
+
+Lo mismo, más suave, con dos mayores: los 18 easings con rebote son el lenguaje de menú de P5, y los cinco `.sec-tag` son placas rojas del sistema, no mono-caps fingiendo editorial (además van apiladas, no en el patrón de dos columnas que la propia skill prohíbe).
+
+**La lección de método:** una skill de diseño es una segunda opinión, no un juez. Sus reglas son ciegas al género — están escritas contra el default de un LLM sin identidad, y este sitio tiene una documentada. Cuando chocan, manda la identidad. Eso quedó anotado también en `.claude/skills/hallmark/ORIGEN.md`.
+
 ## Notas para quien retome esto
 
 - El dashboard de Cloudflare y Gmail están bloqueados para el agente vía navegador — pero **la API de Cloudflare sí responde** usando el token OAuth que Wrangler guarda en `~/Library/Preferences/.wrangler/config/default.toml`. Ese token puede leer/escribir Pages y Email Routing, pero **no** puede escribir registros DNS — eso lo tiene que hacer Rubén a mano en el dashboard.

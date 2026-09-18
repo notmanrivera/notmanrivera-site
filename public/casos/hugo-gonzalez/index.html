@@ -146,6 +146,7 @@
     /* top positivo: con valores negativos el numero se salia por arriba de
        .caso-hero y el borde del header lo cortaba a la mitad. */
     position:absolute;right:8px;top:14px;z-index:-1;
+    font-variant-numeric:tabular-nums;
     font-family:var(--ui);font-weight:900;font-size:clamp(3.4rem,13vw,9rem);
     line-height:.9;color:transparent;
     -webkit-text-stroke:2px var(--violet);
@@ -242,8 +243,18 @@
      hereda el display de 1.7rem inclinado, que aqui no va. */
   .caso-rol{
     max-width:66ch;margin:0 0 34px;padding:18px 22px;
-    border-left:3px solid var(--violet);
-    background:linear-gradient(90deg,rgba(139,63,255,.13),rgba(139,63,255,0));
+    border:1px solid var(--line);
+    background:linear-gradient(90deg,rgba(139,63,255,.10),rgba(139,63,255,0));
+  }
+  /* ⚠️ Esto era una franja de 3px solo en el borde izquierdo. Es un patron
+     tan repetido en plantillas SaaS que se lee como generado; un hairline
+     completo mas un cuadro de acento junto al titulo dice lo mismo sin el
+     tic. El cuadro va en ::before del h2 y no en el panel, para que el
+     acento marque el ENCABEZADO y no envuelva el bloque entero. */
+  .caso-rol h2::before{
+    content:"";display:inline-block;width:8px;height:8px;
+    background:var(--violet);margin-right:9px;
+    vertical-align:.08em;
   }
   .caso-cuerpo .caso-rol h2{
     font-family:var(--ui);font-weight:900;text-transform:uppercase;
