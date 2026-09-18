@@ -1429,6 +1429,10 @@ Vale anotarlo porque es el resultado de meses de decisiones, no suerte: tres tip
 
 Lo mismo, más suave, con dos mayores: los 18 easings con rebote son el lenguaje de menú de P5, y los cinco `.sec-tag` son placas rojas del sistema, no mono-caps fingiendo editorial (además van apiladas, no en el patrón de dos columnas que la propia skill prohíbe).
 
+⚠️ **Y el cuarto mayor, «animate-on-scroll on everything», también se rechaza.** Se le planteó a Rubén como pregunta abierta —veinte elementos entrando con el scroll, y el argumento de que «la página nunca se asienta» no es tonto— y su respuesta fue explícita: *«deja todas las animaciones como están»*. **Las 32 animaciones del sitio se quedan completas, por decisión suya.** No es deuda pendiente.
+
+Con eso, de los 8 hallazgos: 3 arreglados, 5 rechazados a conciencia. Ninguno queda abierto.
+
 **La lección de método:** una skill de diseño es una segunda opinión, no un juez. Sus reglas son ciegas al género — están escritas contra el default de un LLM sin identidad, y este sitio tiene una documentada. Cuando chocan, manda la identidad. Eso quedó anotado también en `.claude/skills/hallmark/ORIGEN.md`.
 
 ## Notas para quien retome esto
