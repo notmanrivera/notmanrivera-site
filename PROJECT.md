@@ -1435,6 +1435,30 @@ Con eso, de los 8 hallazgos: 3 arreglados, 5 rechazados a conciencia. Ninguno qu
 
 **La lección de método:** una skill de diseño es una segunda opinión, no un juez. Sus reglas son ciegas al género — están escritas contra el default de un LLM sin identidad, y este sitio tiene una documentada. Cuando chocan, manda la identidad. Eso quedó anotado también en `.claude/skills/hallmark/ORIGEN.md`.
 
+## El 404 de Search Console era de Cloudflare, no del sitio (2026-09-18)
+
+Search Console reportó tres motivos de no indexación. Dos eran el sitio funcionando bien y uno era real — pero ninguno era un fallo propio.
+
+| Motivo | Qué era |
+|---|---|
+| Página alternativa con etiqueta canónica adecuada | Google deduplicando variantes (`/index.html` vs `/`). Los canonical están bien: cada página se apunta a sí misma con `hreflang` correcto en las ocho. |
+| Página con redirección | El 301 de `/casos/mazatlan-fc/` → `/casos/hugo-gonzalez/` que se puso en agosto. Google lo siguió y no indexó la vieja. |
+| **No se ha encontrado (404)** | **Una sola URL:** `https://www.notmanrivera.com/cdn-cgi/l/email-protection` |
+
+### Qué es ese `cdn-cgi`
+
+No es una página del sitio. Es **Cloudflare Email Address Obfuscation** (Scrape Shield), activo en la zona. Con los 7 `mailto:hola@notmanrivera.com` de la home, Cloudflare reescribe el `href` al vuelo a `/cdn-cgi/l/email-protection#<hash>` e inyecta un script que lo decodifica en el navegador, para que los cosechadores de direcciones no puedan leerla.
+
+⚠️ **Ningún visitante llega nunca a esa URL.** El rastreador sí: descarta el fragmento `#hash` —todos lo hacen— pide la ruta pelada, y Cloudflare devuelve 404 porque sin token no hay nada que decodificar.
+
+**Se descartó apagar la ofuscación.** Está haciendo un trabajo real, y desactivarla para silenciar un renglón cosmético del informe es el intercambio equivocado. El arreglo correcto —el que recomienda Cloudflare— es `Disallow: /cdn-cgi/` en `robots.txt`: la dirección sigue protegida y el 404 fantasma desaparece.
+
+### El pendiente que esto destapó: `www`
+
+⚠️ La URL del 404 empieza con **`www.`**, lo que significa que Google está rastreando `www.notmanrivera.com` y algo le responde. Ese es el mismo cabo suelto de la fila `www.notmanrivera.com/sitemap.xml` que quedó en Search Console desde el 09/09 y nunca se resolvió.
+
+**`www` no está configurado como dominio personalizado del proyecto de Cloudflare Pages.** Mientras siga ambiguo, Google puede tratar `www` y el ápice como dos sitios distintos y repartir señales entre los dos. Se arregla desde el panel de Cloudflare, no desde el repo: agregar `www.notmanrivera.com` como dominio personalizado del proyecto (redirige solo al primario), o una Redirect Rule de `www` al ápice.
+
 ## Notas para quien retome esto
 
 - El dashboard de Cloudflare y Gmail están bloqueados para el agente vía navegador — pero **la API de Cloudflare sí responde** usando el token OAuth que Wrangler guarda en `~/Library/Preferences/.wrangler/config/default.toml`. Ese token puede leer/escribir Pages y Email Routing, pero **no** puede escribir registros DNS — eso lo tiene que hacer Rubén a mano en el dashboard.

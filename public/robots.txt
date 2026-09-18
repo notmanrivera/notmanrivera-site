@@ -1,4 +1,14 @@
 User-agent: *
 Allow: /
 
+# /cdn-cgi/ es de Cloudflare, no del sitio. Con Email Address Obfuscation
+# activo (Scrape Shield), Cloudflare reescribe los mailto: del HTML y los
+# apunta a /cdn-cgi/l/email-protection#<hash>. Ningun visitante llega ahi:
+# el enlace solo se activa con el script que Cloudflare inyecta. Pero los
+# rastreadores descartan el fragmento #hash, piden la ruta pelada, y esa
+# devuelve 404 -- que es lo que Search Console reporto el 14/09/2026.
+# Excluirla es lo que recomienda Cloudflare: la ofuscacion sigue
+# protegiendo la direccion y el 404 fantasma desaparece del informe.
+Disallow: /cdn-cgi/
+
 Sitemap: https://notmanrivera.com/sitemap.xml
