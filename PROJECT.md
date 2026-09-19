@@ -1482,25 +1482,44 @@ La primera comparación dio 1% de diferencia de proporción, lo bastante para du
 
 ⚠️ **Si algún día se cambia uno de los dos archivos hay que rehacer ese registro.** Sin él, el guiño deja de ser un parpadeo y se convierte en un salto.
 
+### Las cuatro capas
+
+La primera versión era una sola capa que se recortaba en bandas. Rubén preguntó lo obvio: *«es el único efecto glitch que puedes lograr? no podemos jugar con distorsiones rgb, desfases, etc?»*. Tenía razón: era el mínimo. La versión que quedó son cuatro capas dentro de una caja (`.guino`) que calca la geometría de `.trazo`:
+
+| capa | qué hace |
+|---|---|
+| `.g-r` / `.g-c` | fantasmas RGB — la **silueta** del logo en rojo y cian, desplazadas en direcciones opuestas y mezcladas en `screen` |
+| `.g-old` | el logo morado de 2018, recortado en bandas `inset()` con desplazamientos distintos |
+| `.g-tear` | banda de desgarro: líneas de barrido duras recortadas a una franja y corridas de golpe |
+| `.guino` (la caja) | rodamiento de sincronía — todo salta en vertical un par de cuadros |
+
+⚠️ **Los fantasmas RGB no son una separación de canales de verdad** (eso pediría un filtro SVG). Son silueta sólida enmascarada con `logo-mask.png` — el archivo que `.brillo` ya carga, así que cuestan cero bytes. Sobre un cromado casi blanco y fondo negro el resultado es indistinguible de una aberración cromática: donde solapan le suman color, donde sobresalen quedan como el borde rojo/cian clásico.
+
+El rodamiento vertical funciona porque **el cromado de abajo no se mueve**: esos cuadros se ven como una imagen desencuadrada sobre otra, que es el defecto de una señal perdiendo el enganche, no un elemento animándose.
+
+La geometría se escribe **una sola vez**, en la caja, y no cuatro. Es la parte frágil —hay que repetirla en tres sitios: base, ≤820px y `.orbita`— y multiplicarla por cuatro capas era pedir que se desalineara sola.
+
+Primer pico del split a `opacity:.95` quemaba el cromado a rosa-blanco; bajado a `.8`–`.85`, el desfase hace el trabajo y la letra sigue legible debajo.
+
 ### Las tres decisiones de oficio
 
 1. **Raro.** Primer guiño entre 45 y 75s, después entre 60 y 120s, con azar. Un guiño cada pocos segundos deja de ser guiño y pasa a ser tic: el ojo lo aprende, lo espera, y estorba al leer.
-2. **Corto y a saltos.** 280ms, no el segundo que se planteó, y con `step-end` en vez de un easing. Un glitch es discreto, no interpolado — con transición suave esto se lee como un crossfade de presentación; a saltos secos se lee como interferencia. Tres bandas `inset()` desplazadas + un tartamudeo (se apaga un cuadro a mitad) hacen el resto.
+2. **Corto y a saltos.** 360ms en doce ranuras de 30ms, no el segundo que se planteó, y con `step-end` en vez de un easing. Un glitch es discreto, no interpolado — con transición suave esto se lee como un crossfade de presentación; a saltos secos se lee como interferencia. La secuencia: rompe la señal en RGB, el morado asoma por bandas, se completa, **tartamudea** (todo apagado un cuadro), vuelve, se desgarra abajo, y cierra con un chispazo de color sobre el cromado ya recuperado.
 3. **Diferido.** El archivo morado son 124 KB y el cromado es el LCP del sitio. El `src` lo pone el JS después de `load` y en `requestIdleCallback`; quien se va en los primeros 45 segundos no lo descarga nunca.
 
-Bajo `prefers-reduced-motion:reduce` no hay animación **ni descarga**.
+Bajo `prefers-reduced-motion:reduce` no hay animación **ni descarga** — verificado con el navegador en `reducedMotion:'reduce'`: **0 peticiones** de `logo-morado.webp` en 5 segundos, y `.guino` en `display:none`.
 
 ### Tres trampas que costaron una medición cada una
 
-⚠️ **Los atributos `width`/`height` del HTML son una pista de presentación.** En un `<img>` fijan `width:1200px` e ignoran el `aspect-ratio` del CSS. La capa salía de 1200×261 contra los 578.9×325.6 de `.marca`. Se arregla con `width:auto` — y por eso `.trazo` y `.brillo` no lo necesitan: no son `<img>`.
+⚠️ **Los atributos `width`/`height` del HTML son una pista de presentación.** En un `<img>` fijan `width:1200px` e ignoran el `aspect-ratio` del CSS. La capa salía de 1200×261 contra los 578.9×325.6 de `.marca`. Por eso `.trazo` y `.brillo` nunca lo sufrieron: no son `<img>`. En la versión de cuatro capas el problema desapareció solo — la caja es un `<span>` y el `<img>` va dentro con `width:100%`.
 
-⚠️ **`transform` no acumula, reemplaza.** En el hero centrado (`.orbita`) la capa lleva `translateX(-50%) scale(...)`, así que un keyframe que escriba `transform` la manda al borde izquierdo justo en el cuadro del guiño. El desplazamiento va en la propiedad independiente **`translate`**, que se compone en vez de pisar. Un solo juego de keyframes sirve para el hero alineado y el centrado.
+⚠️ **`transform` no acumula, reemplaza.** En el hero centrado (`.orbita`) la caja lleva `translateX(-50%) scale(...)`, así que un keyframe que escriba `transform` la manda al borde izquierdo justo en el cuadro del guiño. Todo el desplazamiento va en la propiedad independiente **`translate`**, que se compone en vez de pisar. Un solo juego de keyframes sirve para el hero alineado y el centrado — y es lo que además deja libre el `translate` de la caja para el rodamiento vertical.
 
 ⚠️ **Con `step-end`, el keyframe del 100% no se pinta nunca durante la animación.** El valor del 68% se mantenía hasta el final: el morado se quedaba encendido los últimos 90ms. Medido — el cuadro al 90% salía idéntico al del 35%. Hizo falta un corte explícito al 78%.
 
 **Y una trampa del método, no del código:** dos veces seguidas un cuadro salió «sin morado» y parecía un fallo de CSS. Era el arnés de captura: el primer `screenshot` tras forzar la clase corre antes de que se pinte la capa. Con cuatro `requestAnimationFrame` de espera los mismos valores pintan perfecto. **Un fallo que no se reproduce al reordenar la prueba es un fallo de la prueba.**
 
-Verificado con la caja de `.marca` y la de `.marca-guino` medidas en el navegador a 1440, 1024 y 390px: **idénticas al decimal en los tres**.
+Verificado con la caja de `.marca` y la de `.guino` medidas en el navegador a 1440, 1024 y 390px: **idénticas al decimal en los tres**, sin errores de consola.
 
 ## Notas para quien retome esto
 
