@@ -1079,6 +1079,171 @@
     }
   }
 
+  /* ===== GUIÑO A LA VERSION DE 2018 =====
+     Cada cierto rato el cromado parpadea y deja ver, un instante, el logo
+     morado original -- el que existia ocho años antes que este. Es una capa
+     aparte encima de .marca, no un cambio de src: cambiar el src provoca una
+     recarga visible y el hueco entre imagen vieja y nueva se lee como un
+     error de carga, que es justo lo contrario de lo que se busca.
+
+     ⚠️ Los dos archivos estan REGISTRADOS: el morado se reescalo y recorto
+     para que su silueta caiga sobre la del cromado en el mismo lienzo de
+     1200x675. Medido: 98.8% de solape directo, y lo que sobra es una banda
+     de un pixel en el contorno (el bisel del cromo). Si algun dia se cambia
+     uno de los dos archivos hay que rehacer ese registro, o el guiño va a
+     verse como un salto.
+
+     Ninguna capa lleva el drop-shadow de .marca, a proposito: la sombra del
+     cromado asoma por debajo (va desplazada abajo-derecha, fuera de la
+     silueta) y eso es exactamente lo correcto -- lo que se rompe es el logo,
+     no su sombra. */
+  /* La caja del guiño calca la de .trazo/.brillo al pie de la letra, y las
+     cuatro capas viven DENTRO en inset:0. Asi la geometria --que es la parte
+     fragil, la que hay que repetir en tres sitios (base, <=820px y .orbita)--
+     se escribe una sola vez en vez de cuatro. */
+  .guino{
+    position:absolute;left:0;top:0;z-index:5;display:block;
+    height:min(29vh,330px);aspect-ratio:1200/675;
+    margin-left:-1.5%;
+    transform-origin:left center;transform:scale(var(--marca-escala,1));
+    pointer-events:none;
+  }
+  .guino > *{position:absolute;inset:0;display:block;opacity:0}
+  .g-old{width:100%;height:100%;object-fit:fill}
+
+  /* ===== LOS FANTASMAS RGB =====
+     No son una separacion de canales de verdad (eso pediria un filtro SVG):
+     son la SILUETA del logo en rojo y en cian, desplazadas en direcciones
+     opuestas y mezcladas en `screen`. Sobre un cromado casi blanco y un
+     fondo negro el resultado es indistinguible de una aberracion cromatica
+     -- donde solapan al cromo le suman color, donde sobresalen quedan como
+     el borde rojo/cian clasico. Y cuestan cero bytes: la mascara es el
+     logo-mask.png que .brillo ya carga.
+     ⚠️ mask-size 100% 100% y no `contain`: la caja de .guino ya tiene la
+     proporcion exacta de la mascara, asi que estirar a la caja es exacto y
+     ademas quita la dependencia de mask-position -- que es justo lo que
+     obliga a .brillo a tener una regla extra en el hero centrado. */
+  .g-rgb{
+    mix-blend-mode:screen;
+    -webkit-mask-image:url("/assets/logo-mask.png");
+            mask-image:url("/assets/logo-mask.png");
+    -webkit-mask-size:100% 100%;   mask-size:100% 100%;
+    -webkit-mask-repeat:no-repeat; mask-repeat:no-repeat;
+  }
+  .g-r{background:#FF0040}
+  .g-c{background:#2BE9FF}
+
+  /* El desgarro: lineas de barrido duras, recortadas a una banda y corridas
+     de golpe. Es lo que separa «la imagen cambio» de «la señal se rompio». */
+  .g-tear{
+    mix-blend-mode:screen;
+    background:repeating-linear-gradient(0deg,
+      rgba(255,255,255,.92) 0 2px, rgba(255,255,255,0) 2px 5px);
+    -webkit-mask-image:url("/assets/logo-mask.png");
+            mask-image:url("/assets/logo-mask.png");
+    -webkit-mask-size:100% 100%;   mask-size:100% 100%;
+    -webkit-mask-repeat:no-repeat; mask-repeat:no-repeat;
+  }
+
+  /* ⚠️ Todo el desplazamiento va en `translate`, la propiedad independiente,
+     y NO dentro de `transform`. Motivo concreto: en el hero centrado
+     (.orbita) la caja lleva transform:translateX(-50%) scale(...), y un
+     keyframe que escriba `transform` lo reemplaza entero -- transform nunca
+     acumula -- asi que el logo saltaria al borde izquierdo justo en el
+     cuadro del guiño. `translate` se compone en vez de pisar, y por eso el
+     mismo juego de keyframes sirve alineado y centrado.
+
+     ⚠️ step-end en las cuatro, y no un easing: un glitch es discreto, no
+     interpolado. Con transicion suave esto se lee como un crossfade de
+     presentacion; a saltos secos se lee como interferencia.
+
+     ⚠️ Con step-end el keyframe del 100% NO se pinta nunca durante la
+     animacion: el valor del ultimo stop se mantiene hasta el final. Por eso
+     cada capa lleva un apagado explicito (67%, 83%) -- sin el, el morado se
+     quedaba encendido y quieto los ultimos 90ms. Medido.
+
+     Los 360ms van en doce ranuras de 30ms. La secuencia: rompe la señal en
+     RGB, el morado asoma por bandas desplazadas, se completa, TARTAMUDEA
+     (todo apagado un cuadro, que es lo que lo hace leerse como glitch y no
+     como fundido), vuelve, se desgarra abajo, y cierra con un chispazo de
+     color sobre el cromado ya recuperado. */
+  /* El rodamiento de sincronia: la capa ENTERA salta en vertical un par de
+     cuadros. Como el cromado de abajo no se mueve, esos cuadros se ven como
+     una imagen desencuadrada sobre otra -- el defecto de una señal que
+     pierde el enganche, no un elemento animandose. Va en `translate` porque
+     el `transform` de .guino ya esta ocupado por el scale y, en el hero
+     centrado, por el translateX(-50%). */
+  .guino.guina{animation:gCaja .36s step-end both}
+  @keyframes gCaja{
+    0%  {translate:0 0}
+    8%  {translate:0 -1.2%}
+    17% {translate:0 0}
+    25% {translate:0 .9%}
+    33% {translate:0 0}
+    50% {translate:0 -.7%}
+    58% {translate:0 0}
+    75% {translate:0 1.4%}
+    83% {translate:0 0}
+    100%{translate:0 0}
+  }
+  .guino.guina > *{animation-duration:.36s;animation-timing-function:step-end;animation-fill-mode:both}
+  .guino.guina .g-old {animation-name:gOld}
+  .guino.guina .g-r   {animation-name:gRojo}
+  .guino.guina .g-c   {animation-name:gCian}
+  .guino.guina .g-tear{animation-name:gTear}
+
+  @keyframes gOld{
+    0%  {opacity:0}
+    17% {opacity:1;clip-path:inset(0 0 60% 0);  translate:-1.6% 0}
+    25% {opacity:1;clip-path:inset(28% 0 36% 0);translate:3.2% 0}
+    33% {opacity:1;clip-path:inset(0 0 0 0);    translate:0 0}
+    42% {opacity:0}
+    50% {opacity:1;clip-path:inset(0 0 0 0);    translate:0 0}
+    58% {opacity:1;clip-path:inset(70% 0 0 0);  translate:-2.4% 0}
+    67% {opacity:0}
+    100%{opacity:0;clip-path:inset(0 0 0 0);    translate:0 0}
+  }
+  @keyframes gRojo{
+    0%  {opacity:0;   translate:0 0}
+    8%  {opacity:.85; translate:-1.5% 0}
+    17% {opacity:.8;  translate:-2.3% 0}
+    25% {opacity:0}
+    33% {opacity:.7;  translate:-.4% 0}
+    42% {opacity:0}
+    50% {opacity:.9;  translate:-1.1% .6%}
+    58% {opacity:.6;  translate:-.5% 0}
+    67% {opacity:0}
+    75% {opacity:.9;  translate:-2.8% 0}
+    83% {opacity:0}
+    100%{opacity:0;   translate:0 0}
+  }
+  @keyframes gCian{
+    0%  {opacity:0;   translate:0 0}
+    8%  {opacity:.85; translate:1.5% 0}
+    17% {opacity:.8;  translate:2.3% 0}
+    25% {opacity:0}
+    33% {opacity:.7;  translate:.4% 0}
+    42% {opacity:0}
+    50% {opacity:.9;  translate:1.1% -.6%}
+    58% {opacity:.6;  translate:.5% 0}
+    67% {opacity:0}
+    75% {opacity:.9;  translate:2.8% 0}
+    83% {opacity:0}
+    100%{opacity:0;   translate:0 0}
+  }
+  @keyframes gTear{
+    0%  {opacity:0}
+    25% {opacity:1;clip-path:inset(30% 0 52% 0);translate:2.6% 0}
+    33% {opacity:0}
+    58% {opacity:1;clip-path:inset(62% 0 24% 0);translate:-3.4% 0}
+    67% {opacity:0}
+    100%{opacity:0;clip-path:inset(0 0 0 0);    translate:0 0}
+  }
+  @media(prefers-reduced-motion:reduce){
+    /* Ni la animacion ni la descarga: el JS tampoco le pone src. */
+    .guino{display:none}
+  }
+
   /* ===== RAFAGA: lineas cineticas al aterrizar el logo =====
      El logo es el momento de impacto mas grande y singular del sitio --
      aparece una sola vez al cargar, no cinco veces por cada seccion como
@@ -1237,6 +1402,7 @@
        brillo 5px a la derecha del logo. */
     .brillo{height:auto;width:94%;aspect-ratio:1200/675}
     .trazo {height:auto;width:94%;aspect-ratio:1200/675}
+    .guino  {height:auto;width:94%;aspect-ratio:1200/675}
   }
   @media(prefers-reduced-motion:reduce){
     .brillo{display:none}
@@ -1418,6 +1584,11 @@
        origen de escala, y left:50% + translateX(-50%) para caer exactamente
        sobre él ahora que .marca está centrado con margin:auto. */
     .orbita .trazo{
+      height:min(27vh,320px);width:auto;margin-left:0;
+      left:50%;transform-origin:center;
+      transform:translateX(-50%) scale(var(--marca-escala,1));
+    }
+    .orbita .guino{
       height:min(27vh,320px);width:auto;margin-left:0;
       left:50%;transform-origin:center;
       transform:translateX(-50%) scale(var(--marca-escala,1));
@@ -2206,6 +2377,64 @@
     color:var(--muted);
   }
   .galeria-tit em{font-style:normal;color:var(--paper)}
+
+  /* ===== MURO EN MOVIMIENTO =====
+     Seis recortes mudos en bucle, cada uno enlazando al caso donde vive la
+     pieza completa con su audio. Ver el bloque HTML para el porque de los
+     pesos y de donde van los data-es/data-en.
+
+     ⚠️ min-width:0 en los mosaicos NO sobra. Es exactamente el fallo que
+     rompio el scroll lateral de la galeria en movil: un item de flex/grid
+     trae min-width:auto por defecto, se niega a encogerse por debajo de su
+     contenido, y la pista deja de poder desplazarse. Si alguien lo quita,
+     el muro se rompe igual y por la misma razon.
+
+     ⚠️ overflow-y:hidden y no `visible`: en CSS `visible` no existe en un
+     solo eje -- si un eje es distinto de visible, el otro se calcula como
+     auto, y aparecia una barra vertical parasita. */
+  .muro{margin:6px 0 34px}
+  .muro .galeria-tit{margin-bottom:18px}
+  .muro-pista{
+    display:flex;gap:14px;
+    overflow-x:auto;overflow-y:hidden;
+    scroll-snap-type:x proximity;
+    padding:2px 2px 12px;
+    scrollbar-width:thin;scrollbar-color:var(--violet) transparent;
+    -webkit-overflow-scrolling:touch;
+  }
+  .muro-pista::-webkit-scrollbar{height:6px}
+  .muro-pista::-webkit-scrollbar-thumb{background:var(--violet)}
+  .muro-tile{
+    flex:0 0 clamp(132px,26vw,172px);min-width:0;
+    scroll-snap-align:start;text-decoration:none;color:inherit;
+    display:block;background:#0a0410;
+    box-shadow:inset 0 0 0 2px var(--line);
+    transition:box-shadow .18s;
+  }
+  .muro-marco{
+    display:block;position:relative;aspect-ratio:9/16;overflow:hidden;
+    background:#0a0410;
+  }
+  /* ⚠️ La escala va en el <video>, nunca en .muro-tile: si la caja que
+     detecta el hover se mueve, se sale de debajo del cursor, el navegador
+     retira el :hover, la caja vuelve, y el ciclo se repite decenas de veces
+     por segundo. Es la regla de oro del hover en este sitio. */
+  .muro-tile video{
+    display:block;width:100%;height:100%;object-fit:cover;background:#0a0410;
+    transition:transform .3s cubic-bezier(.2,0,.2,1);
+  }
+  .muro-tile:hover,.muro-tile:focus-visible{box-shadow:inset 0 0 0 2px var(--violet-hi)}
+  .muro-tile:hover video{transform:scale(1.045)}
+  .muro-cap{
+    display:block;padding:9px 10px 11px;
+    font-family:var(--ui);font-weight:900;text-transform:uppercase;
+    font-size:.56rem;letter-spacing:.09em;color:var(--muted);line-height:1.6;
+  }
+  .muro-cap b{display:block;color:var(--paper);font-weight:900;font-size:.66rem}
+  @media(prefers-reduced-motion:reduce){
+    /* Se quedan las caratulas: el JS ni siquiera les pone src. */
+    .muro-tile video,.muro-tile:hover video{transition:none;transform:none}
+  }
 
   /* Enlaces a los casos de estudio completos (public/casos/) -- discretos
      a proposito, no otra placa mas: son una salida secundaria de la
@@ -3282,6 +3511,18 @@
       <path class="linea" d="M351,244.2l-12.4,1.9v11.5c27.4-5.5,52.6-5.2,80.4-4.5,1.8,0,4.5,2.6,4.5,4.2v21.3c0,2.9-2.4,4.8-5.5,4.7-37.3-1.9-74,2.4-109.8,12.7s-3.7.5-4.6-.2-2-2.9-2.3-4.2c-10.9-49.8-1.2-109.9,11.1-159.3.8-3.2,3.3-4.4,6.2-4,39.6,5.3,78.5,4.6,118.4,2.8s3.4.4,4.2,1.2,1.4,3.6,1.1,4.8l-5.9,23.1c-.3,1.3-3,3.6-4.4,3.7-29.9,3.4-55.5,5.8-85.9,1.6v14s9.3-1.1,9.3-1.1c1.5-.2,4.2,2.7,4,4.4l-4.2,57.1c-.1,1.8-2.5,3.9-4.1,4.1Z"/>
       <path class="linea" d="M457.3,415c-36.2.8-70.6,4.7-105.9,10.2-6.2-9.7-11.2-18.8-15.7-29-12.8-28.9-22.5-58.1-31.3-89.2,39.5-9.4,82.5-10.8,122.1-8.7,7.1,39.6,19.3,76.1,33.4,113,.5,1.3-.7,3.8-2.6,3.8ZM396,383.2c1.7-.4,4-2.3,3.3-4.1-5.9-15.9-10.3-30.9-13.8-47.7-7-.2-13.4,1.2-19.6,4.7l5.9,24.1c2.3,9.3,6.1,17.8,11.1,25.9l13.1-2.8Z"/>
     </svg>
+      <!-- El guiño a la version morada de 2018. Cuatro capas: dos fantasmas
+           RGB, el logo viejo, y una banda de desgarro. El <img> nace sin src:
+           lo pone el JS bastante despues de la carga, y solo si el navegador
+           no pide menos movimiento, para no competir con el logo cromado,
+           que es el LCP de la pagina. -->
+      <span class="guino" aria-hidden="true">
+        <i class="g-rgb g-r"></i>
+        <i class="g-rgb g-c"></i>
+        <img class="g-old" alt="" width="1200" height="675"
+             decoding="async" fetchpriority="low">
+        <i class="g-tear"></i>
+      </span>
       <i class="rafaga" aria-hidden="true"></i>
       <!-- Destello especular: capa exterior enmascarada con el alfa del logo,
            capa interior (la banda de luz) es la que viaja. Ver .brillo. -->
@@ -3426,6 +3667,18 @@
           <div class="visor-grupo">
             <span class="visor-grupo-tit" data-es="Jugadores <small>Fichajes, presentaciones y matchday</small>" data-en="Players <small>Signings, intros and matchday</small>">Jugadores <small>Fichajes, presentaciones y matchday</small></span>
             <div class="visor-grid">
+              <button type="button" class="visor-thumb" data-cliente="Nayrobi García" data-cap-es="Debut en primera división · vs Necaxa" data-cap-en="Top-flight debut · vs Necaxa" data-full="/assets/galeria/nayrobi-garcia-debut.webp" aria-label="Nayrobi García — Debut en primera división">
+                <img src="/assets/galeria/nayrobi-garcia-debut.webp" alt="" width="760" height="950" loading="lazy" decoding="async">
+              </button>
+              <button type="button" class="visor-thumb" data-cliente="Juan Cuellar" data-cap-es="Presentación · Club León" data-cap-en="Presentation · Club León" data-full="/assets/galeria/juan-cuellar-leon.webp" aria-label="Juan Cuellar — Presentación">
+                <img src="/assets/galeria/juan-cuellar-leon.webp" alt="" width="760" height="950" loading="lazy" decoding="async">
+              </button>
+              <button type="button" class="visor-thumb" data-cliente="Juana Schipper" data-cap-es="Presentación · Selección de Argentina" data-cap-en="Presentation · Argentina national team" data-full="/assets/galeria/juana-schipper-argentina.webp" aria-label="Juana Schipper — Presentación">
+                <img src="/assets/galeria/juana-schipper-argentina.webp" alt="" width="760" height="950" loading="lazy" decoding="async">
+              </button>
+              <button type="button" class="visor-thumb" data-cliente="Carolyn O&#39;Reilly" data-cap-es="Transferencia · Wellington United → Fencibles United" data-cap-en="Transfer · Wellington United → Fencibles United" data-full="/assets/galeria/carolyn-oreilly-transferencia.webp" aria-label="Carolyn O’Reilly — Transferencia">
+                <img src="/assets/galeria/carolyn-oreilly-transferencia.webp" alt="" width="760" height="950" loading="lazy" decoding="async">
+              </button>
               <button type="button" class="visor-thumb" data-cliente="Andrea Velarde" data-cap-es="Transferencia · Cruz Azul → Necaxa" data-cap-en="Transfer · Cruz Azul → Necaxa" data-full="/assets/galeria/sub17-andrea-velarde.webp" aria-label="Andrea Velarde — Transferencia">
                 <img src="/assets/galeria/sub17-andrea-velarde.webp" alt="" width="287" height="333" loading="lazy" decoding="async">
               </button>
@@ -3452,6 +3705,15 @@
               </button>
               <button type="button" class="visor-thumb" data-cliente="Hanna Osorio" data-cap-es="Presentación" data-cap-en="Presentation" data-full="/assets/galeria/hanna-osorio.webp" aria-label="Hanna Osorio — Presentación">
                 <img src="/assets/galeria/hanna-osorio.webp" alt="" width="440" height="551" loading="lazy" decoding="async">
+              </button>
+            </div>
+          </div>
+
+          <div class="visor-grupo">
+            <span class="visor-grupo-tit">Queens League Américas <small data-es="Oysho · Club de Cuervos" data-en="Oysho · Club de Cuervos">Oysho · Club de Cuervos</small></span>
+            <div class="visor-grid">
+              <button type="button" class="visor-thumb" data-cliente="Karla Padilla" data-cap-es="Club de Cuervos · Queens League Américas" data-cap-en="Club de Cuervos · Queens League Américas" data-full="/assets/galeria/karla-padilla-queens-league.webp" aria-label="Karla Padilla — Club de Cuervos, Queens League Américas">
+                <img src="/assets/galeria/karla-padilla-queens-league.webp" alt="" width="760" height="1351" loading="lazy" decoding="async">
               </button>
             </div>
           </div>
@@ -3522,6 +3784,86 @@
       </div>
     </div>
 
+    <!-- ===== MURO EN MOVIMIENTO =====
+         La galeria de arriba son cuadros fijos de piezas que se mueven, y eso
+         siempre vendio el trabajo a la baja: un motion designer presentado en
+         estatico. Esto lo arregla sin pagarlo caro.
+
+         ⚠️ NO son las piezas completas. Son recortes de 3.5s, sin audio, a
+         400x712 y CRF 30: entre 100 y 350 KB cada uno, 1.3 MB los seis. Las
+         piezas completas pesan de 1.5 a 9 MB y viven en sus casos, con su
+         audio y su ritmo, detras del boton de play. Cada mosaico es la
+         puerta a una de ellas, no un sustituto.
+
+         ⚠️ Y no se descarga nada hasta que la seccion entra en pantalla: el
+         `src` lo pone el JS desde un IntersectionObserver (ver MURO EN
+         MOVIMIENTO en el script). Con `preload="none"` y el poster explicito,
+         lo unico que viaja de entrada son seis webp de ~20 KB.
+
+         ⚠️ Los data-es/data-en van en .muro-cap y NO en el <a>: el traductor
+         reemplaza innerHTML del elemento que los lleva, asi que ponerlos en
+         el <a> borraria el <video> al cambiar de idioma. El href si va en el
+         <a>, con data-href-es/en, que es un setAttribute y no toca hijos. -->
+    <div class="muro rv">
+      <h3 class="galeria-tit" data-es="Y así se <em>mueven</em>" data-en="And this is how they <em>move</em>">Y así se <em>mueven</em></h3>
+      <div class="muro-pista">
+        <a class="muro-tile" href="/casos/al-arabi-sc/" data-href-es="/casos/al-arabi-sc/" data-href-en="/casos/al-arabi-sc/en/"
+           aria-label="Al-Arabi SC — voleibol en Catar, ver el caso completo" data-aria-es="Al-Arabi SC — voleibol en Catar, ver el caso completo" data-aria-en="Al-Arabi SC — volleyball in Qatar, see the full case study">
+          <span class="muro-marco">
+            <video muted loop playsinline preload="none" tabindex="-1" aria-hidden="true"
+                   poster="/assets/loops/loop-alarabi.webp" data-src="/assets/loops/loop-alarabi.mp4"
+                   width="400" height="712"></video>
+          </span>
+          <span class="muro-cap" data-es="<b>Al-Arabi SC</b>Voleibol · Catar" data-en="<b>Al-Arabi SC</b>Volleyball · Qatar"><b>Al-Arabi SC</b>Voleibol · Catar</span>
+        </a>
+        <a class="muro-tile" href="/casos/hugo-gonzalez/" data-href-es="/casos/hugo-gonzalez/" data-href-en="/casos/hugo-gonzalez/en/"
+           aria-label="Hugo González — Mazatlán FC, ver el caso completo" data-aria-es="Hugo González — Mazatlán FC, ver el caso completo" data-aria-en="Hugo González — Mazatlán FC, see the full case study">
+          <span class="muro-marco">
+            <video muted loop playsinline preload="none" tabindex="-1" aria-hidden="true"
+                   poster="/assets/loops/loop-hugo.webp" data-src="/assets/loops/loop-hugo.mp4"
+                   width="400" height="712"></video>
+          </span>
+          <span class="muro-cap" data-es="<b>Hugo González</b>Mazatlán FC · Matchday" data-en="<b>Hugo González</b>Mazatlán FC · Matchday"><b>Hugo González</b>Mazatlán FC · Matchday</span>
+        </a>
+        <a class="muro-tile" href="/casos/futbol-femenil/" data-href-es="/casos/futbol-femenil/" data-href-en="/casos/futbol-femenil/en/"
+           aria-label="Nayrobi García — Liga MX Femenil Sub-19, ver el caso completo" data-aria-es="Nayrobi García — Liga MX Femenil Sub-19, ver el caso completo" data-aria-en="Nayrobi García — Liga MX Femenil Under-19, see the full case study">
+          <span class="muro-marco">
+            <video muted loop playsinline preload="none" tabindex="-1" aria-hidden="true"
+                   poster="/assets/loops/loop-nayrobi.webp" data-src="/assets/loops/loop-nayrobi.mp4"
+                   width="400" height="712"></video>
+          </span>
+          <span class="muro-cap" data-es="<b>Nayrobi García</b>Liga MX Femenil Sub-19" data-en="<b>Nayrobi García</b>Liga MX Femenil U-19"><b>Nayrobi García</b>Liga MX Femenil Sub-19</span>
+        </a>
+        <a class="muro-tile" href="/casos/futbol-femenil/" data-href-es="/casos/futbol-femenil/" data-href-en="/casos/futbol-femenil/en/"
+           aria-label="Tigres contra Necaxa, Liga BBVA Femenil — ver el caso completo" data-aria-es="Tigres contra Necaxa, Liga BBVA Femenil — ver el caso completo" data-aria-en="Tigres vs Necaxa, Liga BBVA Femenil — see the full case study">
+          <span class="muro-marco">
+            <video muted loop playsinline preload="none" tabindex="-1" aria-hidden="true"
+                   poster="/assets/loops/loop-andrea.webp" data-src="/assets/loops/loop-andrea.mp4"
+                   width="400" height="712"></video>
+          </span>
+          <span class="muro-cap" data-es="<b>Tigres vs Necaxa</b>Liga BBVA Femenil" data-en="<b>Tigres vs Necaxa</b>Liga BBVA Femenil"><b>Tigres vs Necaxa</b>Liga BBVA Femenil</span>
+        </a>
+        <a class="muro-tile" href="/casos/futbol-femenil/" data-href-es="/casos/futbol-femenil/" data-href-en="/casos/futbol-femenil/en/"
+           aria-label="Gol de Hanna Osorio, Cruz Azul — ver el caso completo" data-aria-es="Gol de Hanna Osorio, Cruz Azul — ver el caso completo" data-aria-en="Hanna Osorio goal, Cruz Azul — see the full case study">
+          <span class="muro-marco">
+            <video muted loop playsinline preload="none" tabindex="-1" aria-hidden="true"
+                   poster="/assets/loops/loop-hanna.webp" data-src="/assets/loops/loop-hanna.mp4"
+                   width="400" height="712"></video>
+          </span>
+          <span class="muro-cap" data-es="<b>Hanna Osorio</b>Gol · Cruz Azul" data-en="<b>Hanna Osorio</b>Goal · Cruz Azul"><b>Hanna Osorio</b>Gol · Cruz Azul</span>
+        </a>
+        <a class="muro-tile" href="/casos/futbol-femenil/" data-href-es="/casos/futbol-femenil/" data-href-en="/casos/futbol-femenil/en/"
+           aria-label="Queens League Américas, Club de Cuervos — ver el caso completo" data-aria-es="Queens League Américas, Club de Cuervos — ver el caso completo" data-aria-en="Queens League Américas, Club de Cuervos — see the full case study">
+          <span class="muro-marco">
+            <video muted loop playsinline preload="none" tabindex="-1" aria-hidden="true"
+                   poster="/assets/loops/loop-karla.webp" data-src="/assets/loops/loop-karla.mp4"
+                   width="400" height="712"></video>
+          </span>
+          <span class="muro-cap" data-es="<b>Queens League</b>Club de Cuervos" data-en="<b>Queens League</b>Club de Cuervos"><b>Queens League</b>Club de Cuervos</span>
+        </a>
+      </div>
+    </div>
+
     <!-- Enlaces a los casos de estudio completos: paginas propias fuera del
          SPA (public/casos/), cada una con su propio title/description/
          JSON-LD para poder indexarse y rankear por su combinacion
@@ -3531,6 +3873,7 @@
     <div class="casos-links rv">
       <a href="/casos/al-arabi-sc/" data-href-es="/casos/al-arabi-sc/" data-href-en="/casos/al-arabi-sc/en/" data-es="Caso completo: Al-Arabi SC →" data-en="Full case study: Al-Arabi SC →">Caso completo: Al-Arabi SC →</a>
       <a href="/casos/hugo-gonzalez/" data-href-es="/casos/hugo-gonzalez/" data-href-en="/casos/hugo-gonzalez/en/" data-es="Caso completo: Hugo González →" data-en="Full case study: Hugo González →">Caso completo: Hugo González →</a>
+      <a href="/casos/futbol-femenil/" data-href-es="/casos/futbol-femenil/" data-href-en="/casos/futbol-femenil/en/" data-es="Caso completo: Fútbol femenil →" data-en="Full case study: Women’s football →">Caso completo: Fútbol femenil →</a>
       <a href="/casos/diseno-web/" data-href-es="/casos/diseno-web/" data-href-en="/casos/diseno-web/en/" data-es="Caso completo: Diseño web →" data-en="Full case study: Web design →">Caso completo: Diseño web →</a>
     </div>
 
@@ -4295,6 +4638,111 @@
   setTimeout(entradaHero, 700);
   // Ultimo recurso, ya pasado el tope del cargador: destapa el hero pase lo que pase.
   setTimeout(() => raiz.classList.add('hero-a-salvo'), 3600);
+
+  /* ===== MURO EN MOVIMIENTO =====
+     Los seis recortes nacen SIN src. Este bloque se lo pone cuando el
+     mosaico entra en pantalla, y los pausa cuando sale. Tres razones, las
+     tres medibles:
+
+     1) Nada se descarga si nadie baja hasta ahi. El muro vive en la
+        seccion 01 y mucha visita no pasa del hero.
+     2) Un <video> en bucle fuera de pantalla sigue costando GPU. Pausarlo
+        al salir es gratis y se nota en una laptop modesta con seis.
+     3) Con la pestaña en segundo plano se pausan todos. Un bucle que nadie
+        ve es trabajo tirado.
+
+     ⚠️ play() devuelve una promesa que el navegador RECHAZA si decide
+     bloquear la reproduccion (politicas de autoplay, ahorro de bateria).
+     Sin el catch eso sale como error no capturado en consola. Si falla, el
+     mosaico se queda en su caratula, que es una degradacion correcta.
+
+     Si el navegador pide menos movimiento, o el usuario trae el ahorro de
+     datos activado, no se pone ni un src: se quedan las seis caratulas, que
+     son ~20 KB cada una y ya viajaron con el HTML. */
+  (function(){
+    const pista = document.querySelector('.muro-pista');
+    if (!pista || !('IntersectionObserver' in window)) return;
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const con = navigator.connection;
+    if (con && con.saveData) return;
+
+    const videos = [].slice.call(pista.querySelectorAll('video[data-src]'));
+    if (!videos.length) return;
+
+    const io = new IntersectionObserver(function(entradas){
+      entradas.forEach(function(e){
+        const v = e.target;
+        if (e.isIntersecting) {
+          if (!v.getAttribute('src')) v.setAttribute('src', v.dataset.src);
+          const pr = v.play();
+          if (pr && pr.catch) pr.catch(function(){ /* se queda la caratula */ });
+        } else if (!v.paused) {
+          v.pause();
+        }
+      });
+    }, { rootMargin: '150px 0px', threshold: .25 });
+
+    videos.forEach(function(v){ io.observe(v); });
+
+    document.addEventListener('visibilitychange', function(){
+      if (!document.hidden) return;
+      videos.forEach(function(v){ if (!v.paused) v.pause(); });
+    });
+  })();
+
+  /* ===== GUIÑO A LA VERSION DE 2018 =====
+     El cromado parpadea de vez en cuando y deja ver el logo morado original.
+     Tres reglas gobiernan esto y las tres son a proposito:
+
+     1) RARO. Primer guiño entre 45 y 75s, y luego entre 60 y 120s, siempre
+        con azar. Un guiño cada pocos segundos deja de ser un guiño y pasa a
+        ser un tic: el ojo lo aprende, lo espera y estorba al leer.
+     2) SOLO SI SE ESTA VIENDO. Si el hero salio de pantalla o la pestaña
+        esta en segundo plano, el reloj no corre. Un parpadeo que nadie ve es
+        trabajo de GPU tirado, y peor: al volver a la pestaña se acumulan.
+     3) CARGA DIFERIDA. El archivo morado (124 KB) no se pide hasta que hay
+        hueco de verdad. El cromado es el LCP del sitio; meterle un hermano
+        de 124 KB en la carga inicial seria pagar el guiño con la primera
+        impresion, que es exactamente al reves. Quien se va en los primeros
+        45 segundos -- la mayoria -- no lo descarga nunca. */
+  (function(){
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const capa = document.querySelector('header h1 .guino');
+    const vieja = capa && capa.querySelector('.g-old');
+    const marca = document.querySelector('header h1 .marca');
+    if (!capa || !vieja || !marca) return;
+
+    const PRIMERO = [45000, 75000];
+    const LUEGO   = [60000, 120000];
+    const azar = ([a, b]) => a + Math.random() * (b - a);
+
+    let visible = true;
+    if ('IntersectionObserver' in window) {
+      new IntersectionObserver(([e]) => { visible = e.isIntersecting; },
+                               { threshold: .35 }).observe(marca);
+    }
+
+    function guinar(){
+      // ⚠️ Si no se esta viendo NO se cuenta como turno gastado: se vuelve a
+      // agendar igual, para que al volver a la pestaña el guiño llegue con su
+      // ritmo normal y no de golpe.
+      if (visible && !document.hidden) {
+        capa.classList.remove('guina');
+        void capa.offsetWidth;          // reinicia la animacion si seguia viva
+        capa.classList.add('guina');
+      }
+      setTimeout(guinar, azar(LUEGO));
+    }
+
+    // El src se pone tarde y por detras de todo lo demas.
+    function armar(){
+      vieja.addEventListener('load', () => setTimeout(guinar, azar(PRIMERO)), { once: true });
+      vieja.src = '/assets/logo-morado.webp';
+    }
+    const pedir = window.requestIdleCallback || (f => setTimeout(f, 1200));
+    if (document.readyState === 'complete') pedir(armar, { timeout: 4000 });
+    else window.addEventListener('load', () => pedir(armar, { timeout: 4000 }), { once: true });
+  })();
 
   /* ===== CIERRE DEL CARGADOR =====
      Se va cuando la pagina termina de cargar, pero nunca antes de MINIMO

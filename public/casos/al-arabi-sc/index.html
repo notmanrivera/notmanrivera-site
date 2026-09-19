@@ -471,7 +471,15 @@
 
   <section class="piezas wrap" aria-labelledby="piezasTit">
     <h2 id="piezasTit">Piezas en movimiento</h2>
-    <p class="piezas-intro">La plantilla no solo producía gráficos fijos. Esta es una pieza completa de matchday, como salió a redes.</p>
+    <!-- ⚠️ Tres jornadas, y el argumento NO es ninguna de las tres por
+         separado. Es que son la misma pieza: mismo esqueleto --accion en
+         vivo, jugador, escudo, tarjeta con los dos escudos y la sede-- con
+         el rival cambiado. Una sola pieza demuestra que sabes animar; tres
+         identicas demuestran que construiste un sistema que aguanta una
+         temporada, que es el encargo que de verdad recibio. Por eso van
+         juntas y con el rival como unico pie de foto: lo que tiene que
+         saltar a la vista es lo que NO cambia. -->
+    <p class="piezas-intro">Tres jornadas distintas, la misma plantilla. Cambia el rival, la sede y la fecha; el esqueleto es idéntico. Así salían a redes, una por partido, temporada completa.</p>
     <div class="piezas-lista">
       <figure class="pieza">
         <div class="pieza-marco">
@@ -485,6 +493,32 @@
           </button>
         </div>
         <figcaption><b>Al-Arabi vs Al Gharafa</b>Federation Hall</figcaption>
+      </figure>
+      <figure class="pieza">
+        <div class="pieza-marco">
+          <video preload="none" controls playsinline
+                 poster="/assets/video/alarabi-voleibol-police.webp"
+                 aria-label="Al-Arabi SC contra Police SC en Federation Hall">
+            <source src="/assets/video/alarabi-voleibol-police.mp4" type="video/mp4">
+          </video>
+          <button type="button" class="pieza-play" aria-label="Reproducir: Al-Arabi SC contra Police SC en Federation Hall">
+            <span><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M8 5v14l11-7z"/></svg></span>
+          </button>
+        </div>
+        <figcaption><b>Al-Arabi vs Police</b>Federation Hall</figcaption>
+      </figure>
+      <figure class="pieza">
+        <div class="pieza-marco">
+          <video preload="none" controls playsinline
+                 poster="/assets/video/alarabi-voleibol-al-rayyan.webp"
+                 aria-label="Al-Arabi SC contra Al Rayyan SC en Isa Bin Rashid Hall, jornada 3">
+            <source src="/assets/video/alarabi-voleibol-al-rayyan.mp4" type="video/mp4">
+          </video>
+          <button type="button" class="pieza-play" aria-label="Reproducir: Al-Arabi SC contra Al Rayyan SC en Isa Bin Rashid Hall, jornada 3">
+            <span><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M8 5v14l11-7z"/></svg></span>
+          </button>
+        </div>
+        <figcaption><b>Al-Arabi vs Al Rayyan</b>Isa Bin Rashid Hall · Jornada 3</figcaption>
       </figure>
     </div>
   </section>
@@ -509,6 +543,7 @@
   <section class="casos-otros wrap">
     <h2>Otros casos</h2>
     <ul>
+      <li><a href="/casos/futbol-femenil/">Fútbol femenil<span>Carreras seguidas, no campañas</span></a></li>
       <li><a href="/casos/hugo-gonzalez/">Hugo González<span>Branding deportivo</span></a></li>
       <li><a href="/casos/diseno-web/">Diseño web<span>Seis industrias, un estándar</span></a></li>
     </ul>

@@ -1459,6 +1459,158 @@ No es una página del sitio. Es **Cloudflare Email Address Obfuscation** (Scrape
 
 **`www` no está configurado como dominio personalizado del proyecto de Cloudflare Pages.** Mientras siga ambiguo, Google puede tratar `www` y el ápice como dos sitios distintos y repartir señales entre los dos. Se arregla desde el panel de Cloudflare, no desde el repo: agregar `www.notmanrivera.com` como dominio personalizado del proyecto (redirige solo al primario), o una Redirect Rule de `www` al ápice.
 
+## El guiño al logo de 2018 (2026-09-19)
+
+Rubén lo propuso así: *«estaba pensando en que cada cierto tiempo glitcheara y la versión cromada mostrase la versión morada con azul, por un segundo y regresara a la versión cromada, como un guiño»*.
+
+Antes de escribir una línea había que contestar una pregunta que lo tumbaba todo si salía mal: **¿las dos versiones tienen exactamente la misma letra?** Si el dibujo cambió entre 2018 y el cromo, el parpadeo no se lee como guiño sino como un error de carga.
+
+### La medición
+
+La primera comparación dio 1% de diferencia de proporción, lo bastante para dudar. Rubén identificó la causa antes que el agente: *«le quité un outer glow que tenía, puede que eso sea el cambio de tamaño»*. Era eso. Con el resplandor fuera:
+
+| | caja de la obra | proporción |
+|---|---|---|
+| morado 2018 (sin glow) | 945 × 520 | 1.8173 |
+| cromado actual | 1167 × 643 | 1.8149 |
+
+0.13% de diferencia. Y la prueba que de verdad importa, la silueta superpuesta: **99.08% de solape (IoU)**, con la diferencia repartida en una banda de un píxel en el contorno — el bisel del cromo, no un cambio de dibujo. Es la misma letra. Luz verde.
+
+### Cómo se montó
+
+`public/assets/logo-morado.webp` **no es el archivo original recortado a ojo**: se reescaló (1482×1484) y se recortó (1200×675 en el offset 140,404) para que su silueta caiga sobre la del cromado en el mismo lienzo. Registro directo medido, sin normalizar nada después: **98.84%**.
+
+⚠️ **Si algún día se cambia uno de los dos archivos hay que rehacer ese registro.** Sin él, el guiño deja de ser un parpadeo y se convierte en un salto.
+
+### Las cuatro capas
+
+La primera versión era una sola capa que se recortaba en bandas. Rubén preguntó lo obvio: *«es el único efecto glitch que puedes lograr? no podemos jugar con distorsiones rgb, desfases, etc?»*. Tenía razón: era el mínimo. La versión que quedó son cuatro capas dentro de una caja (`.guino`) que calca la geometría de `.trazo`:
+
+| capa | qué hace |
+|---|---|
+| `.g-r` / `.g-c` | fantasmas RGB — la **silueta** del logo en rojo y cian, desplazadas en direcciones opuestas y mezcladas en `screen` |
+| `.g-old` | el logo morado de 2018, recortado en bandas `inset()` con desplazamientos distintos |
+| `.g-tear` | banda de desgarro: líneas de barrido duras recortadas a una franja y corridas de golpe |
+| `.guino` (la caja) | rodamiento de sincronía — todo salta en vertical un par de cuadros |
+
+⚠️ **Los fantasmas RGB no son una separación de canales de verdad** (eso pediría un filtro SVG). Son silueta sólida enmascarada con `logo-mask.png` — el archivo que `.brillo` ya carga, así que cuestan cero bytes. Sobre un cromado casi blanco y fondo negro el resultado es indistinguible de una aberración cromática: donde solapan le suman color, donde sobresalen quedan como el borde rojo/cian clásico.
+
+El rodamiento vertical funciona porque **el cromado de abajo no se mueve**: esos cuadros se ven como una imagen desencuadrada sobre otra, que es el defecto de una señal perdiendo el enganche, no un elemento animándose.
+
+La geometría se escribe **una sola vez**, en la caja, y no cuatro. Es la parte frágil —hay que repetirla en tres sitios: base, ≤820px y `.orbita`— y multiplicarla por cuatro capas era pedir que se desalineara sola.
+
+Primer pico del split a `opacity:.95` quemaba el cromado a rosa-blanco; bajado a `.8`–`.85`, el desfase hace el trabajo y la letra sigue legible debajo.
+
+### Las tres decisiones de oficio
+
+1. **Raro.** Primer guiño entre 45 y 75s, después entre 60 y 120s, con azar. Un guiño cada pocos segundos deja de ser guiño y pasa a ser tic: el ojo lo aprende, lo espera, y estorba al leer.
+2. **Corto y a saltos.** 360ms en doce ranuras de 30ms, no el segundo que se planteó, y con `step-end` en vez de un easing. Un glitch es discreto, no interpolado — con transición suave esto se lee como un crossfade de presentación; a saltos secos se lee como interferencia. La secuencia: rompe la señal en RGB, el morado asoma por bandas, se completa, **tartamudea** (todo apagado un cuadro), vuelve, se desgarra abajo, y cierra con un chispazo de color sobre el cromado ya recuperado.
+3. **Diferido.** El archivo morado son 124 KB y el cromado es el LCP del sitio. El `src` lo pone el JS después de `load` y en `requestIdleCallback`; quien se va en los primeros 45 segundos no lo descarga nunca.
+
+Bajo `prefers-reduced-motion:reduce` no hay animación **ni descarga** — verificado con el navegador en `reducedMotion:'reduce'`: **0 peticiones** de `logo-morado.webp` en 5 segundos, y `.guino` en `display:none`.
+
+### Tres trampas que costaron una medición cada una
+
+⚠️ **Los atributos `width`/`height` del HTML son una pista de presentación.** En un `<img>` fijan `width:1200px` e ignoran el `aspect-ratio` del CSS. La capa salía de 1200×261 contra los 578.9×325.6 de `.marca`. Por eso `.trazo` y `.brillo` nunca lo sufrieron: no son `<img>`. En la versión de cuatro capas el problema desapareció solo — la caja es un `<span>` y el `<img>` va dentro con `width:100%`.
+
+⚠️ **`transform` no acumula, reemplaza.** En el hero centrado (`.orbita`) la caja lleva `translateX(-50%) scale(...)`, así que un keyframe que escriba `transform` la manda al borde izquierdo justo en el cuadro del guiño. Todo el desplazamiento va en la propiedad independiente **`translate`**, que se compone en vez de pisar. Un solo juego de keyframes sirve para el hero alineado y el centrado — y es lo que además deja libre el `translate` de la caja para el rodamiento vertical.
+
+⚠️ **Con `step-end`, el keyframe del 100% no se pinta nunca durante la animación.** El valor del 68% se mantenía hasta el final: el morado se quedaba encendido los últimos 90ms. Medido — el cuadro al 90% salía idéntico al del 35%. Hizo falta un corte explícito al 78%.
+
+**Y una trampa del método, no del código:** dos veces seguidas un cuadro salió «sin morado» y parecía un fallo de CSS. Era el arnés de captura: el primer `screenshot` tras forzar la clase corre antes de que se pinte la capa. Con cuatro `requestAnimationFrame` de espera los mismos valores pintan perfecto. **Un fallo que no se reproduce al reordenar la prueba es un fallo de la prueba.**
+
+Verificado con la caja de `.marca` y la de `.guino` medidas en el navegador a 1440, 1024 y 390px: **idénticas al decimal en los tres**, sin errores de consola.
+
+## Lote 2 de contenido: catorce videos y cinco piezas (2026-09-19)
+
+### Cómo llegaron los archivos
+
+El conector de Drive **no sirve para video**: aguanta PNG de ~2.5 MB y la sesión se cae con cualquier MP4, incluso uno de 7 MB. Y la subida por el formulario de GitHub (`/upload/<rama>`) **manda archivos y commit en una sola operación**, así que 220 MB de una tanda ni siquiera llegó a intentarlo — además `Santiago U.mp4` pesa 25.7 MB y el tope de ese formulario son 25 MB decimales (no MiB; es fácil medir en la unidad equivocada y dar el visto bueno a un archivo que no pasa).
+
+**Lo que sí funciona: un Release.** Cada archivo sube por su cuenta, el tope por archivo son 2 GB, y **los assets no entran al historial de git** — que importa, porque los 4 videos del lote 1 ya pesan para siempre en cualquier clon.
+
+⚠️ **Para bajarlos desde el agente no sirve el `browser_download_url`.** El repo es privado y esa URL devuelve `Not Found` (9 bytes, que parecen una descarga exitosa si solo miras el código de salida). Hay que pegarle al endpoint de la API con la cabecera correcta, que el proxy sí autentica:
+
+```
+curl -sSL -H "Accept: application/octet-stream" \
+  https://api.github.com/repos/<owner>/<repo>/releases/assets/<id>
+```
+
+### Tres piezas que estaban mal clasificadas por su nombre
+
+| archivo | lo que parecía | lo que es |
+|---|---|---|
+| `Match Day.mp4` | Al-Arabi | **León vs Juárez**, Liga MX Femenil |
+| `Render.mp4` → `Hugo.mp4` | Al-Arabi | **Hugo González**, J4 en el Akron |
+| `RENDER.mp4` → `Pirma.mp4` | Al-Arabi | animación de marca de **Pirma** |
+
+El bloque de Al-Arabi no eran cinco piezas, eran tres. **Clasificar por nombre de archivo y fecha de modificación no es clasificar** — hubo que abrir los catorce y leer las tarjetas de partido cuadro por cuadro.
+
+⚠️ Y hay un choque de nombres real: `Render.mp4` y `RENDER.mp4` son archivos distintos, y **Windows no distingue mayúsculas**. Al bajarlos a la misma carpeta uno se pierde sin aviso.
+
+### Dos piezas que NO se montan, y por qué
+
+**`Logos animados` (victorem × FIFA).** El lockup dice FIFA, pero lo que anunciaba es que el director de Victorem **sacó su licencia de agente de talentos ante la FIFA**. No fue un encargo de FIFA. En un portafolio dirigido a agencias, una marca de FIFA que no corresponde a un trabajo de FIFA es el tipo de cosa que, si alguien verifica, cuesta mucho más de lo que la pieza aporta. Y la pieza es una animación de logo: no compensa la ambigüedad.
+
+**`Pirma`.** Rubén lo levantó él mismo: *«solo era para anunciar una posible colaboración en patrocinios con Pirma, no sé si nos podamos meter en un problema por subir esa marca»*. Mismo razonamiento — una marca registrada anunciando un acuerdo que no se cerró.
+
+**La regla que dejan las dos:** una pieza de portafolio no solo tiene que ser tuya, tiene que **afirmar algo cierto**. Si el trabajo es real pero el encabezado da a entender una relación que no existió, no se monta.
+
+`Santiago U` tampoco entra, por otra razón: es el único con material real de partido y la toma es de cámara de tribuna, notoriamente más pobre que el resto. Su falta de audio **no era un error** — estaba pensado como plantilla de historia de IG, donde la canción se elige dentro de la propia app.
+
+### Lo que sí se montó
+
+**Al-Arabi pasa de una pieza a tres, y el texto cambia con ellas.** Una sola pieza demuestra que sabes animar; tres con el mismo esqueleto —acción en vivo, jugador, escudo, tarjeta con los dos escudos y la sede— demuestran que construiste un sistema que aguanta una temporada, que es el encargo que de verdad recibió. Por eso el pie de foto es solo el rival: **lo que tiene que saltar a la vista es lo que no cambia**.
+
+**Hugo pasa de dos a tres** con la J4 en el Akron (Chivas vs Mazatlán, confirmado leyendo los escudos del cuadro, no el nombre del archivo).
+
+**Cuatro piezas nuevas en Jugadores** y un grupo nuevo, **Queens League Américas**, que es la primera pieza 9:16 del visor y la única del lote que no parece Victorem: negro y oro, sin el verde. Rango es lo que mira una agencia cuando decide si te contrata para algo que no es su estilo de siempre.
+
+Compresión, igual que el lote 1: 810×1440, AAC 128k. CRF 25 para el voleibol en vivo, CRF 26 a 60 fps para la de Hugo (a CRF 23 daba 13 MB; a 26 da 8.9 MB y el cielo sigue sin bandear — comparado cuadro a cuadro contra el original).
+
+### Un falso positivo que casi queda documentado como cierto
+
+La miniatura de Queens League salía **negra** en mi captura, y escribí la regla `.visor-thumb.alto{object-position:center}` con un comentario explicando el fallo. Al comprobar el antes y el después con capturas del elemento en vez de recortes de una composición, resultó que **las dos versiones se veían bien** — el negro eran mis coordenadas de recorte. Anclado arriba incluso se ve mejor: entra el lockup de victorem.
+
+Se revirtió la regla **y el comentario**. Un «por qué» equivocado en el código es peor que no tener ninguno: el siguiente que lo lea va a creerlo. **Antes de documentar una causa hay que reproducir el fallo al revés.**
+
+## Caso de fútbol femenil y muro en movimiento (2026-09-19)
+
+### El caso: `/casos/futbol-femenil/`
+
+Cuarto caso del sitio, y el primero que **no se organiza por cliente sino por una idea**. Los tres anteriores son Al-Arabi SC, Hugo González y diseño web. Este junta piezas de Necaxa, León, Cruz Azul, Guadalajara, la selección de Argentina, un club de Nueva Zelanda y la Queens League — y lo que las une no es quién pagó, es qué demuestran juntas.
+
+**El argumento es Nayrobi García.** Aparece tres veces: la firma de su contrato, una jornada de Liga MX Femenil Sub-19 con Guadalajara, y su debut en primera división. Una campaña se entrega y se acaba; aquí hay una carrera acompañada durante años, y cada pieza tuvo que verse como parte de lo mismo aunque las separaran temporadas y un cambio de club. **Eso es lo que le vendes a una agencia de representación**, y ninguna otra página del sitio lo contaba.
+
+Seis piezas en movimiento, diez gráficos fijos, versión en inglés escrita a mano (`/casos/futbol-femenil/en/`), enlaces cruzados desde los otros tres casos, y dos URLs nuevas en el sitemap. Ficha OG propia, compuesta de tres verticales sobre fondo oscuro — una 9:16 recortada a 1200×630 no se lee.
+
+⚠️ **Rótulos verificados leyendo las tarjetas de partido cuadro por cuadro**, no los nombres de archivo. Cada jornada, sede, fecha y escudo salió de mirar el video. El lote anterior ya había enseñado que el nombre de archivo miente.
+
+### El muro en movimiento de la home
+
+La galería de la home son cuadros fijos de piezas que se mueven — un motion designer presentado en estático. El muro lo arregla: seis mosaicos en bucle bajo la galería, cada uno enlazando al caso donde vive la pieza completa.
+
+**El peso es el diseño entero.** Las piezas completas van de 1.5 a 9 MB. Los recortes del muro son de 3.5s, sin audio, a 400×712 y CRF 30: **1.3 MB los seis**, carátulas incluidas. Y no se descarga ni uno hasta que la sección entra en pantalla — el `src` lo pone un IntersectionObserver.
+
+Verificado en el navegador, las cuatro conductas:
+
+| | resultado |
+|---|---|
+| antes de bajar al muro | **0** peticiones de video |
+| con el muro a la vista | 6 con `src`, **6 corriendo** |
+| al subir de vuelta al hero | **6 pausados** |
+| con `prefers-reduced-motion` | **0** peticiones |
+
+⚠️ **El navegador de prueba no puede reproducir H.264.** `canPlayType('video/mp4; codecs="avc1.42E01E")` devuelve cadena vacía en el Chromium que trae Playwright, así que `play()` fallaba con `NotSupportedError: The element has no supported sources` y los seis mosaicos salían en `corriendo=0`. **Eso no es un fallo del sitio.** Se aisló sirviendo un VP9 bajo las mismas URLs con `page.route()`: con la lógica intacta, los seis arrancan. Sin esa separación, el diagnóstico correcto habría sido indistinguible de «mi código no funciona».
+
+⚠️ **`min-width:0` en `.muro-tile` no sobra.** Es exactamente el fallo que rompió el scroll lateral de la galería en móvil: un item de flex trae `min-width:auto`, se niega a encogerse por debajo de su contenido y la pista deja de poder desplazarse. Comprobado a 390px: `scrollWidth 866 > clientWidth 342`.
+
+⚠️ **Los `data-es`/`data-en` van en `.muro-cap`, nunca en el `<a>`.** El traductor hace `el.innerHTML = el.getAttribute('data-en')` sobre el elemento que los lleva — ponerlos en el `<a>` **borraría el `<video>`** al cambiar de idioma. El `href` sí va en el `<a>` con `data-href-es/en`, porque eso es un `setAttribute` y no toca a los hijos.
+
+Y la regla de oro de siempre: la escala del hover va en el `<video>`, no en `.muro-tile`. Si la caja que detecta el hover se mueve, se sale de debajo del cursor y el ciclo se repite decenas de veces por segundo.
+
+Sin desbordamiento horizontal a 390, 768 ni 1280px, y sin errores de consola en las cuatro páginas nuevas.
+
 ## Notas para quien retome esto
 
 - El dashboard de Cloudflare y Gmail están bloqueados para el agente vía navegador — pero **la API de Cloudflare sí responde** usando el token OAuth que Wrangler guarda en `~/Library/Preferences/.wrangler/config/default.toml`. Ese token puede leer/escribir Pages y Email Routing, pero **no** puede escribir registros DNS — eso lo tiene que hacer Rubén a mano en el dashboard.

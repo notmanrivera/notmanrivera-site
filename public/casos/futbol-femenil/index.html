@@ -1,0 +1,651 @@
+<!doctype html>
+<html lang="es">
+<head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-KMZ6Q35TJ8"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-KMZ6Q35TJ8');
+
+  // Mismo evento de conversion que en index.html (ver ahi el comentario
+  // completo): clic en cualquier link de contacto, delegado en document.
+  document.addEventListener('click', function (e) {
+    var a = e.target.closest('a[href^="mailto:"], a.whatsapp-flotante');
+    if (!a) return;
+    gtag('event', 'contacto_click', {
+      metodo: a.href.indexOf('mailto:') === 0 ? 'email' : 'whatsapp',
+    });
+  }, true);
+</script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fútbol femenil — Piezas para jugadoras en Liga MX Femenil y Queens League | NotMan Rivera</title>
+<meta name="description" content="Fichajes, presentaciones, matchday y goles para jugadoras de Liga MX Femenil, su categoría Sub-19 y Queens League Américas — incluida una carrera seguida desde la firma en Sub-17 hasta el debut en primera división.">
+
+<meta property="og:title" content="Fútbol femenil: piezas que siguen una carrera">
+<meta property="og:description" content="Fichajes, presentaciones, matchday y goles para jugadoras de Liga MX Femenil, su categoría Sub-19 y Queens League Américas — incluida una carrera seguida desde la firma en Sub-17 hasta el debut en primera división.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://notmanrivera.com/casos/futbol-femenil/">
+<meta property="og:image" content="https://notmanrivera.com/assets/og-caso-futbol-femenil.jpg">
+<meta property="og:locale" content="es_MX">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Fútbol femenil: piezas que siguen una carrera">
+<meta name="twitter:description" content="Fichajes, presentaciones, matchday y goles para jugadoras de Liga MX Femenil, su categoría Sub-19 y Queens League Américas — incluida una carrera seguida desde la firma en Sub-17 hasta el debut en primera división.">
+<meta name="twitter:image" content="https://notmanrivera.com/assets/og-caso-futbol-femenil.jpg">
+<link rel="canonical" href="https://notmanrivera.com/casos/futbol-femenil/">
+<link rel="alternate" hreflang="es" href="https://notmanrivera.com/casos/futbol-femenil/">
+<link rel="alternate" hreflang="en" href="https://notmanrivera.com/casos/futbol-femenil/en/">
+<link rel="alternate" hreflang="x-default" href="https://notmanrivera.com/casos/futbol-femenil/">
+<link rel="icon" type="image/png" href="/assets/favicon.png">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<meta name="theme-color" content="#000000">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "CreativeWork",
+  "name": "Fútbol femenil: piezas que siguen una carrera",
+  "url": "https://notmanrivera.com/casos/futbol-femenil/",
+  "inLanguage": "es",
+  "image": "https://notmanrivera.com/assets/galeria/nayrobi-garcia-debut.webp",
+  "about": "Piezas de fichaje, presentación, matchday y gol para jugadoras de Liga MX Femenil, Sub-19 y Queens League Américas.",
+  "creator": {
+    "@type": "Person",
+    "name": "Rubén Núñez Rivera",
+    "alternateName": "NotMan Rivera",
+    "url": "https://notmanrivera.com/"
+  }
+}
+</script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+<link rel="preload" href="/assets/kenyan-coffee.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/monument-black.woff2" as="font" type="font/woff2" crossorigin>
+
+<style>
+  @font-face{font-family:"Kenyan Coffee";src:url("/assets/kenyan-coffee.woff2") format("woff2");font-weight:400;font-style:normal;font-display:swap}
+  @font-face{font-family:"Monument Extended";src:url("/assets/monument-black.woff2") format("woff2");font-weight:900;font-style:normal;font-display:swap}
+  @font-face{font-family:"Monument Extended";src:url("/assets/monument-light.woff2") format("woff2");font-weight:300;font-style:normal;font-display:swap}
+
+  :root{
+    --ink:#000000;--ink-2:#1A1A1A;
+    --violet:#8B3FFF;--violet-hi:#A96BFF;
+    --sombra:#2b2b2b;--rojo:#E50012;
+    --paper:#FFFFFF;--muted:#A99CC4;--line:#33204f;
+    --filo:polygon(9px 0%, 100% 6px, calc(100% - 9px) 100%, 0% calc(100% - 6px));
+    --disp:"Kenyan Coffee",Impact,"Haettenschweiler","Arial Narrow Bold",sans-serif;
+    --ui:"Monument Extended","Arial Black","Helvetica Neue",sans-serif;
+    --body:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{overflow-x:hidden}
+  body{background:var(--ink);color:var(--paper);font-family:var(--body);line-height:1.65;font-size:1.05rem}
+  a{color:var(--violet-hi)}
+  .wrap{max-width:880px;margin:0 auto;padding:0 24px}
+
+  header{padding:22px 0;border-bottom:2px solid var(--line)}
+  header .wrap{display:flex;align-items:center;justify-content:space-between;gap:16px}
+  .marca-link img{display:block;height:34px;width:auto}
+  .volver{
+    font-family:var(--ui);font-weight:900;text-transform:uppercase;font-size:.72rem;
+    letter-spacing:.1em;color:var(--paper);text-decoration:none;
+  }
+  .volver:hover{color:var(--rojo)}
+  .header-links{display:flex;align-items:center;gap:18px}
+  .idioma{
+    font-family:var(--ui);font-weight:900;text-transform:uppercase;font-size:.72rem;
+    letter-spacing:.1em;color:var(--muted);text-decoration:none;
+  }
+  .idioma:hover{color:var(--paper)}
+
+  /* ===== TEXTURA AMBIENTE (CSS puro, sin librería) =====
+     Las tres piezas de abajo existen para cerrar el hueco de que estas
+     paginas se leen como un articulo generico al lado de la home. Todo
+     anima SOLO transform/opacity: el compositor las resuelve en GPU y un
+     loop infinito sale practicamente gratis. Animar background-position o
+     clip-path aqui obligaria a repintar cada cuadro -- que es justo lo que
+     tumba el scroll en movil. */
+
+  /* 1. Halftone que deriva. El mismo patron de puntos de la home, en una
+        capa fija detras de todo. El movimiento va en transform sobre el
+        pseudo-elemento, no en background-position: por eso es barato.
+        La capa se hace mas grande que la pantalla (-25%/150%) para que al
+        desplazarse no descubra un borde vacio. */
+  body::before{
+    content:"";position:fixed;left:-25%;top:-25%;width:150%;height:150%;
+    z-index:0;pointer-events:none;
+    background-image:radial-gradient(var(--line) 1px, transparent 1px);
+    background-size:7px 7px;
+    -webkit-mask-image:linear-gradient(160deg,#000 0%,transparent 55%);
+    mask-image:linear-gradient(160deg,#000 0%,transparent 55%);
+    opacity:.5;
+    animation:derivaHalftone 38s linear infinite;
+  }
+  /* 7px es exactamente un tile del patron: al recorrer esa distancia el
+     dibujo coincide consigo mismo y el loop no tiene salto visible. */
+  @keyframes derivaHalftone{
+    to{transform:translate3d(7px,7px,0)}
+  }
+  /* El contenido tiene que quedar por encima de la capa de textura. */
+  header,main,footer{position:relative;z-index:1}
+
+  /* 2. Numero gigante en contorno detras del titulo -- el recurso firma de
+        la home, que a estas paginas les faltaba por completo. Es lo que mas
+        trabajo hace de las tres, y ni siquiera se mueve.
+        ⚠️ El trazo NO puede ir en currentColor: el elemento lleva
+        color:transparent para que solo se vea el contorno, asi que
+        currentColor resolveria a transparente y el numero se pintaria
+        invisible, sin error y sin aviso (ver PROJECT.md). */
+  .caso-hero{padding-top:64px;padding-bottom:36px;position:relative}
+  .num-caso{
+    /* top positivo: con valores negativos el numero se salia por arriba de
+       .caso-hero y el borde del header lo cortaba a la mitad. */
+    position:absolute;right:8px;top:14px;z-index:-1;
+    font-variant-numeric:tabular-nums;
+    font-family:var(--ui);font-weight:900;font-size:clamp(3.4rem,13vw,9rem);
+    line-height:.9;color:transparent;
+    -webkit-text-stroke:2px var(--violet);
+    opacity:.28;transform:skewX(-6deg);
+    /* Respira: 4% de escala en 9s. Apenas se percibe conscientemente, que
+       es justo el punto -- da la sensacion de que la pagina esta viva sin
+       pedir atencion mientras alguien lee. */
+    animation:respiraNum 9s ease-in-out infinite;
+  }
+  @keyframes respiraNum{
+    50%{transform:skewX(-6deg) scale(1.04);opacity:.36}
+  }
+
+  /* 3. Barrido lento sobre la chapa roja del kicker. Un solo elemento, un
+        solo transform. Mismo gesto que el destello de los CTA de la home,
+        estirado a ritmo ambiente en vez de reaccion a un clic. */
+  .kicker{position:relative;overflow:hidden}
+  .kicker::after{
+    content:"";position:absolute;inset:0;pointer-events:none;
+    background:linear-gradient(100deg,transparent 40%,rgba(255,255,255,.32) 50%,transparent 60%);
+    transform:translateX(-100%);
+    animation:barridoKicker 6.5s ease-in-out infinite;
+  }
+  @keyframes barridoKicker{
+    /* La pausa importa: el barrido ocupa el primer 35% del ciclo y el resto
+       se queda quieto. Sin la pausa se lee como un loader, no como acento. */
+    0%,65%{transform:translateX(-100%)}
+    35%,100%{transform:translateX(100%)}
+  }
+
+  /* Las tres se apagan juntas. El sitio ya tiene 27 guardas de estas: un
+     loop continuo es exactamente lo que esta preferencia existe para
+     detener. Se apaga la ANIMACION, no el elemento -- el numero en contorno
+     y el halftone se quedan visibles, quietos. */
+  /* En movil el numero se encima con el kicker (que ahi ocupa 3 lineas) y
+     queda apretado contra el borde: deja de leerse como recurso de fondo y
+     se lee como algo mal puesto. Se retira, igual que la home endereza sus
+     placas en movil por el mismo criterio. El halftone y el barrido siguen. */
+  @media(max-width:560px){
+    .num-caso{display:none}
+  }
+
+  @media(prefers-reduced-motion:reduce){
+    body::before,.num-caso,.kicker::after{animation:none}
+    .kicker::after{opacity:0}
+  }
+  .kicker{
+    display:inline-block;font-family:var(--ui);font-weight:900;text-transform:uppercase;
+    font-size:.8rem;letter-spacing:.12em;color:#fff;background:var(--rojo);
+    padding:8px 16px;transform:skewX(-6deg);margin-bottom:22px;
+  }
+  h1{
+    font-family:var(--disp);font-weight:400;text-transform:uppercase;line-height:.95;
+    font-size:clamp(2.4rem,6vw,4rem);letter-spacing:.01em;margin-bottom:18px;
+  }
+  .dek{color:var(--muted);font-size:1.15rem;max-width:60ch}
+
+  .caso-galeria{
+    display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));
+    gap:14px;padding-top:36px;padding-bottom:56px;
+  }
+  .caso-galeria figure{position:relative}
+  .caso-galeria img{
+    width:100%;height:auto;display:block;border:2px solid var(--ink);
+    outline:1px solid var(--line);
+  }
+  .caso-galeria figcaption{
+    margin-top:8px;font-family:var(--ui);font-weight:300;text-transform:uppercase;
+    font-size:.62rem;letter-spacing:.08em;color:var(--muted);
+  }
+
+  /* ⚠️ El limite de medida va en los HIJOS, no en la seccion. Con
+     max-width aqui, el margin:0 auto que .caso-cuerpo hereda de
+     .wrap centraba la columna angosta y el cuerpo quedaba 132px
+     a la derecha del titulo, el dek y la galeria (medido). */
+  .caso-cuerpo{padding-top:20px;padding-bottom:60px}
+  .caso-cuerpo h2,.caso-cuerpo p{max-width:66ch}
+  .caso-cuerpo h2{
+    font-family:var(--disp);font-weight:400;text-transform:uppercase;
+    font-size:1.7rem;letter-spacing:.01em;margin:0 0 16px;transform:skewX(-4deg);
+    transform-origin:left;
+  }
+  .caso-cuerpo p{margin-bottom:20px;color:#e8e2f2}
+  .caso-cuerpo p:last-child{margin-bottom:0}
+
+  /* ===== BLOQUE DE AUTORIA =====
+     Estas paginas decian "como parte del equipo de X" y dejaban al lector
+     sin saber que toco el autor y que no -- que es justo la pregunta que
+     trae quien esta evaluando contratarlo. El panel la contesta antes de
+     que se la haga: va primero en el cuerpo, inmediatamente debajo del dek
+     que menciona a la agencia. Violeta porque en el sistema de color el
+     violeta es identidad y estructura; el rojo es accion y aqui no se pide
+     nada. El h2 necesita mas especificidad que .caso-cuerpo h2 (0,2,1) o
+     hereda el display de 1.7rem inclinado, que aqui no va. */
+  .caso-rol{
+    max-width:66ch;margin:0 0 34px;padding:18px 22px;
+    border:1px solid var(--line);
+    background:linear-gradient(90deg,rgba(139,63,255,.10),rgba(139,63,255,0));
+  }
+  /* ⚠️ Esto era una franja de 3px solo en el borde izquierdo. Es un patron
+     tan repetido en plantillas SaaS que se lee como generado; un hairline
+     completo mas un cuadro de acento junto al titulo dice lo mismo sin el
+     tic. El cuadro va en ::before del h2 y no en el panel, para que el
+     acento marque el ENCABEZADO y no envuelva el bloque entero. */
+  .caso-rol h2::before{
+    content:"";display:inline-block;width:8px;height:8px;
+    background:var(--violet);margin-right:9px;
+    vertical-align:.08em;
+  }
+  .caso-cuerpo .caso-rol h2{
+    font-family:var(--ui);font-weight:900;text-transform:uppercase;
+    font-size:.72rem;letter-spacing:.14em;color:var(--violet-hi);
+    margin:0 0 8px;transform:none;
+  }
+  .caso-cuerpo .caso-rol p{margin:0;font-size:1rem}
+  .caso-cuerpo strong{color:#fff;font-weight:600}
+
+  /* ===== PIEZAS EN MOVIMIENTO =====
+     El portafolio de un motion designer estaba hecho de imagenes fijas.
+     Estas son las piezas como salieron al mundo: vertical 9:16, con audio,
+     de quince a veintitres segundos. No son loops de fondo -- son contenido
+     terminado de redes, y se presentan como tal: caratula, boton de play y
+     los controles nativos del navegador una vez que arranca.
+
+     ⚠️ preload="none" es la decision de peso de toda la seccion. Sin eso,
+     entrar a la pagina costaria ~25 MB a cualquiera que pase. Asi, lo unico
+     que viaja de entrada es la caratula (~100-280 KB en webp) y el video se
+     baja solo si alguien lo pide. Por eso tambien hace falta el poster
+     explicito: sin preload el navegador no tiene un cuadro que mostrar.
+
+     El audio no se silencia. Es musica de libreria, pero va sincronizada a
+     la pieza y es parte de lo que comunica -- silenciarlas seria
+     presentarlas a medias. Arrancan solo por clic, nunca en automatico. */
+  .piezas{padding-top:8px;padding-bottom:44px}
+  .piezas h2{
+    font-family:var(--disp);font-weight:400;text-transform:uppercase;
+    font-size:1.7rem;letter-spacing:.01em;margin:0 0 16px;transform:skewX(-4deg);
+    transform-origin:left;max-width:66ch;
+  }
+  .piezas-intro{max-width:66ch;margin:0 0 26px;color:#e8e2f2}
+  .piezas-lista{
+    display:flex;flex-wrap:wrap;gap:24px;align-items:flex-start;margin:0;padding:0;
+  }
+  .pieza{margin:0;flex:1 1 280px;max-width:340px}
+  .pieza-marco{
+    position:relative;aspect-ratio:9/16;background:#0a0410;
+    border:2px solid var(--line);overflow:hidden;
+  }
+  .pieza video{
+    display:block;width:100%;height:100%;object-fit:cover;background:#0a0410;
+  }
+  .pieza-play{
+    position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+    background:rgba(10,4,16,.32);border:0;cursor:pointer;padding:0;
+    transition:background .18s;
+  }
+  .pieza-play:hover,.pieza-play:focus-visible{background:rgba(10,4,16,.12)}
+  .pieza-play span{
+    width:62px;height:62px;display:grid;place-items:center;
+    background:var(--rojo);clip-path:var(--filo);
+    box-shadow:5px 5px 0 var(--sombra);transition:transform .18s;
+  }
+  .pieza-play:hover span{transform:translate(-2px,-2px)}
+  .pieza-play svg{width:20px;height:20px;fill:#fff;margin-left:3px}
+  .pieza figcaption{
+    margin-top:10px;font-family:var(--ui);font-weight:900;text-transform:uppercase;
+    font-size:.62rem;letter-spacing:.1em;color:var(--muted);line-height:1.5;
+  }
+  .pieza figcaption b{color:var(--paper);font-weight:900;display:block}
+  @media(max-width:560px){
+    .piezas-lista{gap:20px}
+    .pieza{flex:1 1 100%;max-width:none}
+  }
+
+  .caso-cta{padding-top:48px;padding-bottom:72px;border-top:2px solid var(--line)}
+  .btn{
+    display:inline-block;font-family:var(--ui);font-weight:900;text-transform:uppercase;
+    font-size:.85rem;letter-spacing:.08em;color:#fff;background:var(--rojo);
+    padding:16px 30px;text-decoration:none;clip-path:var(--filo);
+    box-shadow:6px 6px 0 var(--sombra);transition:transform .18s,box-shadow .18s;
+  }
+  .btn:hover{transform:translate(-2px,-2px);box-shadow:8px 8px 0 var(--sombra)}
+
+  footer{padding:28px 0;border-top:2px solid var(--line);color:var(--muted);font-size:.82rem}
+  footer .wrap{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+  footer a{color:var(--muted);text-decoration:none}
+  footer a:hover{color:var(--paper)}
+
+  @media(max-width:560px){
+    .caso-hero{padding-top:44px;padding-bottom:28px}
+    .caso-galeria{grid-template-columns:repeat(auto-fill,minmax(140px,1fr))}
+  }
+
+  /* ===== WHATSAPP FLOTANTE =====
+     Portado tal cual desde index.html (mismo rombo violeta que pasa a rojo
+     al hover). Estas paginas son el aterrizaje real del trafico de Google y
+     de los correos con UTM, y hasta ahora su unica salida era un CTA hasta
+     el fondo que devolvia a la home a buscar el contacto otra vez. */
+  /* ⚠️ El tamano vive en --wa y el icono se calcula desde el (la
+     proporcion original era 20/40 = .5). Si se cambia el ancho a mano sin
+     tocar el svg, el rombo crece y el icono se queda chico en el centro.
+     46px de base: 40 quedaba por debajo del minimo de 44px para un blanco
+     tactil, asi que subirlo arregla dos cosas a la vez. 54 en escritorio,
+     donde Ruben reporto que pasaba desapercibido -- ahi no hay dedo que
+     estorbe y la pantalla sobra. */
+  .whatsapp-flotante{
+    --wa:46px;
+    position:fixed;left:22px;bottom:22px;z-index:90;
+    width:var(--wa);height:var(--wa);
+    display:flex;align-items:center;justify-content:center;
+    background:var(--violet);border:2px solid var(--violet);
+    color:#fff;text-decoration:none;
+    transform:rotate(45deg);
+    transition:background .18s,border-color .18s;
+  }
+  .whatsapp-flotante:hover,.whatsapp-flotante:focus-visible{
+    background:var(--rojo);border-color:var(--rojo);
+  }
+  .whatsapp-flotante svg{width:calc(var(--wa) * .5);height:calc(var(--wa) * .5);transform:rotate(-45deg)}
+  @media(min-width:900px){.whatsapp-flotante{--wa:54px}}
+  /* ⚠️ Este bloque tenia width/height y el svg en pixeles fijos, por fuera
+     de --wa: al subir el tamano base el rombo seguia midiendo 34px aqui y
+     nadie lo avisaba. Ahora solo mueve --wa, que arrastra al icono solo.
+     44px es el minimo de blanco tactil; a 34 el boton era mas chico que la
+     yema de un dedo justo en el dispositivo donde se toca. */
+  @media(max-width:640px){
+    .whatsapp-flotante{left:14px;bottom:14px;--wa:44px}
+  }
+  @media(prefers-reduced-motion:reduce){
+    .whatsapp-flotante{transition:none}
+  }
+
+  /* ===== LOS OTROS DOS CASOS =====
+     Sin esto la pagina es un callejon sin salida: quien termina de leer un
+     caso no tiene forma de ver otro sin volver a la home. Cada tarjeta lleva
+     el filo diagonal (--filo) y el hover blanco que ya son el lenguaje del
+     sitio, para que no se lean como un modulo prestado. */
+  .casos-otros{padding-top:44px;padding-bottom:8px;border-top:2px solid var(--line)}
+  .casos-otros h2{
+    font-family:var(--ui);font-weight:900;text-transform:uppercase;
+    font-size:.72rem;letter-spacing:.12em;color:var(--muted);margin-bottom:18px;
+  }
+  .casos-otros ul{list-style:none;display:grid;gap:12px;grid-template-columns:1fr 1fr}
+  .casos-otros a{
+    display:block;padding:16px 20px;text-decoration:none;
+    background:var(--ink-2);clip-path:var(--filo);
+    color:var(--paper);font-family:var(--disp);text-transform:uppercase;
+    font-size:1.35rem;line-height:1.1;letter-spacing:.01em;
+    transition:background .18s,color .18s;
+  }
+  /* Segunda linea diminuta bajo la etiqueta: el mismo recurso que sostiene
+     las placas del menu de pantalla completa en la home (ver PROJECT.md,
+     "Segunda linea diminuta"). Sin ella la tarjeta se ve vacia. */
+  .casos-otros a span{
+    display:block;margin-top:6px;
+    font-family:var(--ui);font-weight:300;text-transform:uppercase;
+    font-size:.6rem;letter-spacing:.08em;line-height:1.4;color:var(--muted);
+  }
+  .casos-otros a:hover,.casos-otros a:focus-visible{background:var(--paper);color:var(--ink)}
+  .casos-otros a:hover span,.casos-otros a:focus-visible span{color:var(--ink)}
+  @media(max-width:560px){
+    .casos-otros ul{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <a class="marca-link" href="/" aria-label="NotMan Rivera — inicio">
+      <img src="/assets/logo.webp" alt="NotMan" width="120" height="67">
+    </a>
+    <nav class="header-links">
+      <a class="idioma" href="/casos/futbol-femenil/en/">EN</a>
+      <a class="volver" href="/#trabajo">← Ver todo el trabajo</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <section class="caso-hero wrap">
+    <span class="num-caso" aria-hidden="true">04</span>
+    <span class="kicker">Motion graphics 2D/3D · Victorem Sports Marketing</span>
+    <h1>Fútbol femenil: piezas que siguen una carrera, no una campaña</h1>
+    <p class="dek">Fichajes, presentaciones, matchday y goles para jugadoras de Liga MX Femenil, su categoría Sub-19 y Queens League Américas. Lo que distingue a este cuerpo de trabajo no es una pieza: es que hay jugadoras a las que se les siguió el paso durante años — de la firma de su primer contrato al debut en primera división.</p>
+  </section>
+
+  <section class="caso-galeria wrap" aria-label="Piezas entregadas">
+    <figure>
+      <img src="/assets/galeria/sub17-nayrobi-garcia.webp" alt="Nayrobi García — firma de contrato" width="289" height="334" loading="lazy">
+      <figcaption>Nayrobi García · Firma</figcaption>
+    </figure>
+    <figure>
+      <img src="/assets/galeria/nayrobi-garcia-debut.webp" alt="Nayrobi García — debut en primera división" width="760" height="950" loading="lazy">
+      <figcaption>Nayrobi García · Debut en primera</figcaption>
+    </figure>
+    <figure>
+      <img src="/assets/galeria/sub17-andrea-velarde.webp" alt="Andrea Velarde — transferencia de Cruz Azul a Necaxa" width="287" height="333" loading="lazy">
+      <figcaption>Andrea Velarde · Cruz Azul → Necaxa</figcaption>
+    </figure>
+    <figure>
+      <img src="/assets/galeria/andrea-velarde-firma.webp" alt="Andrea Velarde — primer contrato profesional" width="440" height="483" loading="lazy">
+      <figcaption>Andrea Velarde · Primer contrato</figcaption>
+    </figure>
+    <figure>
+      <img src="/assets/galeria/andrea-velarde-presentacion.webp" alt="Andrea Velarde — presentación" width="440" height="552" loading="lazy">
+      <figcaption>Andrea Velarde · Presentación</figcaption>
+    </figure>
+    <figure>
+      <img src="/assets/galeria/hanna-osorio.webp" alt="Hanna Osorio — presentación" width="440" height="551" loading="lazy">
+      <figcaption>Hanna Osorio · Presentación</figcaption>
+    </figure>
+    <figure>
+      <img src="/assets/galeria/devanny-carmona.webp" alt="Devanny Carmona — presentación" width="440" height="552" loading="lazy">
+      <figcaption>Devanny Carmona · Presentación</figcaption>
+    </figure>
+    <figure>
+      <img src="/assets/galeria/juana-schipper-argentina.webp" alt="Juana Schipper — selección de Argentina" width="760" height="950" loading="lazy">
+      <figcaption>Juana Schipper · Argentina</figcaption>
+    </figure>
+    <figure>
+      <img src="/assets/galeria/carolyn-oreilly-transferencia.webp" alt="Carolyn O’Reilly — transferencia de Wellington United a Fencibles United" width="760" height="950" loading="lazy">
+      <figcaption>Carolyn O’Reilly · Wellington United → Fencibles United</figcaption>
+    </figure>
+    <figure>
+      <img src="/assets/galeria/karla-padilla-queens-league.webp" alt="Karla Padilla — Club de Cuervos, Queens League Américas" width="760" height="1351" loading="lazy">
+      <figcaption>Karla Padilla · Queens League Américas</figcaption>
+    </figure>
+  </section>
+
+  <section class="piezas wrap" aria-labelledby="piezasTit">
+    <h2 id="piezasTit">Piezas en movimiento</h2>
+    <p class="piezas-intro">Seis piezas completas, como salieron a redes — con su audio y su ritmo. Cinco clubes, tres competencias y dos divisiones distintas.</p>
+    <div class="piezas-lista">
+      <figure class="pieza">
+        <div class="pieza-marco">
+          <video preload="none" controls playsinline
+                 poster="/assets/video/femenil-sub19-atlas-chivas.webp"
+                 aria-label="Atlas contra Guadalajara, Liga MX Femenil Sub-19, clausura jornada 3">
+            <source src="/assets/video/femenil-sub19-atlas-chivas.mp4" type="video/mp4">
+          </video>
+          <button type="button" class="pieza-play" aria-label="Reproducir: Atlas contra Guadalajara, Liga MX Femenil Sub-19, clausura jornada 3">
+            <span><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M8 5v14l11-7z"/></svg></span>
+          </button>
+        </div>
+        <figcaption><b>Atlas vs Guadalajara</b>Liga MX Femenil Sub-19 · Clausura, jornada 3</figcaption>
+      </figure>
+      <figure class="pieza">
+        <div class="pieza-marco">
+          <video preload="none" controls playsinline
+                 poster="/assets/video/femenil-tigres-necaxa.webp"
+                 aria-label="Tigres contra Necaxa, Liga BBVA Femenil, apertura jornada 2">
+            <source src="/assets/video/femenil-tigres-necaxa.mp4" type="video/mp4">
+          </video>
+          <button type="button" class="pieza-play" aria-label="Reproducir: Tigres contra Necaxa, Liga BBVA Femenil, apertura jornada 2">
+            <span><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M8 5v14l11-7z"/></svg></span>
+          </button>
+        </div>
+        <figcaption><b>Tigres vs Necaxa</b>Liga BBVA Femenil · Apertura, jornada 2</figcaption>
+      </figure>
+      <figure class="pieza">
+        <div class="pieza-marco">
+          <video preload="none" controls playsinline
+                 poster="/assets/video/femenil-leon-tigres.webp"
+                 aria-label="León contra Tigres, Liga BBVA Femenil, clausura jornada 2">
+            <source src="/assets/video/femenil-leon-tigres.mp4" type="video/mp4">
+          </video>
+          <button type="button" class="pieza-play" aria-label="Reproducir: León contra Tigres, Liga BBVA Femenil, clausura jornada 2">
+            <span><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M8 5v14l11-7z"/></svg></span>
+          </button>
+        </div>
+        <figcaption><b>León vs Tigres</b>Liga BBVA Femenil · Clausura, jornada 2</figcaption>
+      </figure>
+      <figure class="pieza">
+        <div class="pieza-marco">
+          <video preload="none" controls playsinline
+                 poster="/assets/video/femenil-leon-juarez.webp"
+                 aria-label="León contra Juárez en el Estadio León">
+            <source src="/assets/video/femenil-leon-juarez.mp4" type="video/mp4">
+          </video>
+          <button type="button" class="pieza-play" aria-label="Reproducir: León contra Juárez en el Estadio León">
+            <span><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M8 5v14l11-7z"/></svg></span>
+          </button>
+        </div>
+        <figcaption><b>León vs Juárez</b>Estadio León</figcaption>
+      </figure>
+      <figure class="pieza">
+        <div class="pieza-marco">
+          <video preload="none" controls playsinline
+                 poster="/assets/video/femenil-cruz-azul-gol.webp"
+                 aria-label="Gol de Hanna Osorio, Cruz Azul">
+            <source src="/assets/video/femenil-cruz-azul-gol.mp4" type="video/mp4">
+          </video>
+          <button type="button" class="pieza-play" aria-label="Reproducir: Gol de Hanna Osorio, Cruz Azul">
+            <span><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M8 5v14l11-7z"/></svg></span>
+          </button>
+        </div>
+        <figcaption><b>Hanna Osorio · Gol</b>Cruz Azul · Plantilla reutilizable</figcaption>
+      </figure>
+      <figure class="pieza">
+        <div class="pieza-marco">
+          <video preload="none" controls playsinline
+                 poster="/assets/video/femenil-queens-cuervos-galacticas.webp"
+                 aria-label="Club de Cuervos contra Galácticas del Caribe, cuartos de final de la Queens League Américas en El Domo">
+            <source src="/assets/video/femenil-queens-cuervos-galacticas.mp4" type="video/mp4">
+          </video>
+          <button type="button" class="pieza-play" aria-label="Reproducir: Club de Cuervos contra Galácticas del Caribe, cuartos de final de la Queens League Américas en El Domo">
+            <span><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M8 5v14l11-7z"/></svg></span>
+          </button>
+        </div>
+        <figcaption><b>Club de Cuervos vs Galácticas</b>Queens League Américas · Cuartos, El Domo</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section class="caso-cuerpo wrap">
+    <div class="caso-rol">
+      <h2>Mi rol</h2>
+      <p>Diseño, composición y animación de principio a fin. Todas las piezas de este caso las produje yo; el trabajo se entregó bajo el nombre de Victorem Sports Marketing, la agencia donde estaba en ese momento.</p>
+    </div>
+
+    <h2>Una carrera en tres tiempos</h2>
+    <p>Nayrobi García aparece tres veces en esta página, y las tres son momentos distintos de la misma carrera: la <strong>firma de su contrato</strong>, una <strong>jornada de Liga MX Femenil Sub-19</strong> con Guadalajara, y su <strong>debut en primera división</strong>.</p>
+    <p>Eso es lo que separa este trabajo de una campaña. Una campaña se entrega y se acaba. Aquí hay jugadoras a las que se les acompañó el paso durante años, y cada pieza tuvo que verse como parte de lo mismo aunque la separaran temporadas enteras y el club cambiara en medio.</p>
+
+    <h2>El alcance</h2>
+    <p>Liga BBVA Femenil y su categoría Sub-19, con piezas para jugadoras de Necaxa, León, Cruz Azul y Guadalajara; y Queens League Américas, que es otro deporte en la práctica — siete contra siete, en pabellón, con un registro visual propio.</p>
+    <p>No todo es fútbol mexicano: hay una presentación con la <strong>selección de Argentina</strong> y una transferencia entre clubes de <strong>Nueva Zelanda</strong>. El mismo criterio gráfico tuvo que funcionar en contextos que no comparten ni la liga ni el idioma.</p>
+
+    <h2>Los momentos que se comunican</h2>
+    <p>Un club o una representante no publican lo mismo todo el año. Este paquete cubre los cuatro momentos que se repiten: la <strong>firma</strong>, la <strong>presentación</strong> con el nuevo escudo, el <strong>matchday</strong> con rival, sede y hora, y el <strong>gol</strong>.</p>
+    <p>Los tres primeros cambian de jugadora en jugadora. El último no: la pieza de gol se diseñó como <strong>plantilla reutilizable</strong> — se cambia el nombre y la foto y sirve para cualquier jugadora del plantel, la misma noche del partido. Eso es lo que la vuelve utilizable en una jornada real, donde nadie tiene dos días para producir una celebración.</p>
+
+    <h2>Por qué importa el registro</h2>
+    <p>La pieza de Queens League no se parece a ninguna otra de esta página: negro y dorado, sin una sola brocha verde. No es un descuido de consistencia — es que una competencia con producción de espectáculo pide un registro distinto al de una jornada de liga. Saber cuándo <em>no</em> aplicar tu propia plantilla es parte del oficio.</p>
+  </section>
+
+  <section class="casos-otros wrap">
+    <h2>Otros casos</h2>
+    <ul>
+      <li><a href="/casos/al-arabi-sc/">Al-Arabi SC<span>Matchday, temporada completa</span></a></li>
+      <li><a href="/casos/hugo-gonzalez/">Hugo González<span>Branding deportivo</span></a></li>
+      <li><a href="/casos/diseno-web/">Diseño web<span>Seis industrias, un estándar</span></a></li>
+    </ul>
+  </section>
+
+  <section class="caso-cta wrap">
+    <a class="btn" href="/#contacto">¿Representas jugadoras o llevas el contenido de un club? Hablemos</a>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>NotMan Rivera — Motion graphics, video y diseño web</span>
+    <a href="/">notmanrivera.com</a>
+  </div>
+</footer>
+
+<!-- Fuera de <main> a proposito: es position:fixed y no pertenece al
+     hilo de lectura del caso. El <aside> existe para que no quede
+     contenido huerfano fuera de todo landmark (axe: regla "region"). -->
+<aside class="flotantes" aria-label="Accesos rápidos">
+<a href="https://wa.me/524421411230?text=Hola%20Rub%C3%A9n%2C%20vi%20tu%20sitio%20y%20me%20interesa%20platicar%20sobre%20un%20proyecto." target="_blank" rel="noopener" class="whatsapp-flotante" aria-label="Escríbeme por WhatsApp">
+  <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+    <path d="M17.47 14.38c-.29-.15-1.71-.85-1.98-.94-.27-.1-.46-.15-.65.14-.19.29-.75.94-.92 1.13-.17.19-.34.22-.63.07-.29-.15-1.22-.45-2.32-1.44-.86-.76-1.44-1.71-1.61-2-.17-.29-.02-.44.13-.59.13-.13.29-.34.44-.51.15-.17.19-.29.29-.48.1-.19.05-.36-.02-.51-.07-.15-.65-1.58-.9-2.16-.24-.57-.48-.5-.65-.5-.17-.01-.36-.01-.55-.01-.19 0-.5.07-.76.36-.26.29-1 .98-1 2.38 0 1.4 1.03 2.76 1.17 2.95.14.19 2.03 3.1 4.93 4.35.69.3 1.22.48 1.64.61.69.22 1.32.19 1.82.11.55-.08 1.71-.7 1.95-1.37.24-.68.24-1.26.17-1.38-.07-.12-.26-.19-.55-.34z"/>
+    <path d="M12.04 2.5c-5.26 0-9.54 4.28-9.54 9.54 0 1.68.44 3.32 1.28 4.76L2.5 21.5l4.85-1.27a9.5 9.5 0 0 0 4.69 1.25h.01c5.26 0 9.54-4.28 9.54-9.54 0-2.55-.99-4.94-2.79-6.75a9.47 9.47 0 0 0-6.76-2.69zm0 17.46h-.01a7.9 7.9 0 0 1-4.03-1.1l-.29-.17-3 .79.8-2.92-.19-.3a7.9 7.9 0 0 1-1.22-4.22c0-4.38 3.57-7.94 7.95-7.94a7.9 7.9 0 0 1 5.62 2.33 7.88 7.88 0 0 1 2.32 5.61c0 4.38-3.57 7.92-7.95 7.92z"/>
+  </svg>
+</a>
+</aside>
+
+<script>
+/* Un clic cambia la caratula por el video corriendo. El <video> ya trae
+   controls desde el HTML, asi que si este script no corre --o falla-- la
+   pieza sigue siendo reproducible con los controles nativos: la capa de
+   play es una mejora, no un requisito.
+   play() devuelve una promesa que el navegador rechaza si bloquea la
+   reproduccion; si eso pasa se devuelve el boton a su lugar en vez de
+   dejar una caratula muerta que no responde. */
+(function(){
+  var capas = document.querySelectorAll('.pieza-play');
+  for (var i = 0; i < capas.length; i++) {
+    (function(capa){
+      var v = capa.parentNode.querySelector('video');
+      if (!v) return;
+      /* El HTML trae controls puesto para que la pieza siga siendo
+         reproducible si este script nunca corre. Cuando si corre, la barra
+         nativa sobre la caratula estorba --dos botones de play compitiendo
+         por el mismo clic-- asi que se apaga aqui y vuelve al arrancar. */
+      v.controls = false;
+      capa.addEventListener('click', function(){
+        capa.hidden = true;
+        v.controls = true;
+        var p = v.play();
+        if (p && p.catch) p.catch(function(){ capa.hidden = false; v.controls = true; });
+      });
+      v.addEventListener('ended', function(){ capa.hidden = false; });
+    })(capas[i]);
+  }
+})();
+</script>
+</body>
+</html>
