@@ -1521,6 +1521,59 @@ Bajo `prefers-reduced-motion:reduce` no hay animación **ni descarga** — verif
 
 Verificado con la caja de `.marca` y la de `.guino` medidas en el navegador a 1440, 1024 y 390px: **idénticas al decimal en los tres**, sin errores de consola.
 
+## Lote 2 de contenido: catorce videos y cinco piezas (2026-09-19)
+
+### Cómo llegaron los archivos
+
+El conector de Drive **no sirve para video**: aguanta PNG de ~2.5 MB y la sesión se cae con cualquier MP4, incluso uno de 7 MB. Y la subida por el formulario de GitHub (`/upload/<rama>`) **manda archivos y commit en una sola operación**, así que 220 MB de una tanda ni siquiera llegó a intentarlo — además `Santiago U.mp4` pesa 25.7 MB y el tope de ese formulario son 25 MB decimales (no MiB; es fácil medir en la unidad equivocada y dar el visto bueno a un archivo que no pasa).
+
+**Lo que sí funciona: un Release.** Cada archivo sube por su cuenta, el tope por archivo son 2 GB, y **los assets no entran al historial de git** — que importa, porque los 4 videos del lote 1 ya pesan para siempre en cualquier clon.
+
+⚠️ **Para bajarlos desde el agente no sirve el `browser_download_url`.** El repo es privado y esa URL devuelve `Not Found` (9 bytes, que parecen una descarga exitosa si solo miras el código de salida). Hay que pegarle al endpoint de la API con la cabecera correcta, que el proxy sí autentica:
+
+```
+curl -sSL -H "Accept: application/octet-stream" \
+  https://api.github.com/repos/<owner>/<repo>/releases/assets/<id>
+```
+
+### Tres piezas que estaban mal clasificadas por su nombre
+
+| archivo | lo que parecía | lo que es |
+|---|---|---|
+| `Match Day.mp4` | Al-Arabi | **León vs Juárez**, Liga MX Femenil |
+| `Render.mp4` → `Hugo.mp4` | Al-Arabi | **Hugo González**, J4 en el Akron |
+| `RENDER.mp4` → `Pirma.mp4` | Al-Arabi | animación de marca de **Pirma** |
+
+El bloque de Al-Arabi no eran cinco piezas, eran tres. **Clasificar por nombre de archivo y fecha de modificación no es clasificar** — hubo que abrir los catorce y leer las tarjetas de partido cuadro por cuadro.
+
+⚠️ Y hay un choque de nombres real: `Render.mp4` y `RENDER.mp4` son archivos distintos, y **Windows no distingue mayúsculas**. Al bajarlos a la misma carpeta uno se pierde sin aviso.
+
+### Dos piezas que NO se montan, y por qué
+
+**`Logos animados` (victorem × FIFA).** El lockup dice FIFA, pero lo que anunciaba es que el director de Victorem **sacó su licencia de agente de talentos ante la FIFA**. No fue un encargo de FIFA. En un portafolio dirigido a agencias, una marca de FIFA que no corresponde a un trabajo de FIFA es el tipo de cosa que, si alguien verifica, cuesta mucho más de lo que la pieza aporta. Y la pieza es una animación de logo: no compensa la ambigüedad.
+
+**`Pirma`.** Rubén lo levantó él mismo: *«solo era para anunciar una posible colaboración en patrocinios con Pirma, no sé si nos podamos meter en un problema por subir esa marca»*. Mismo razonamiento — una marca registrada anunciando un acuerdo que no se cerró.
+
+**La regla que dejan las dos:** una pieza de portafolio no solo tiene que ser tuya, tiene que **afirmar algo cierto**. Si el trabajo es real pero el encabezado da a entender una relación que no existió, no se monta.
+
+`Santiago U` tampoco entra, por otra razón: es el único con material real de partido y la toma es de cámara de tribuna, notoriamente más pobre que el resto. Su falta de audio **no era un error** — estaba pensado como plantilla de historia de IG, donde la canción se elige dentro de la propia app.
+
+### Lo que sí se montó
+
+**Al-Arabi pasa de una pieza a tres, y el texto cambia con ellas.** Una sola pieza demuestra que sabes animar; tres con el mismo esqueleto —acción en vivo, jugador, escudo, tarjeta con los dos escudos y la sede— demuestran que construiste un sistema que aguanta una temporada, que es el encargo que de verdad recibió. Por eso el pie de foto es solo el rival: **lo que tiene que saltar a la vista es lo que no cambia**.
+
+**Hugo pasa de dos a tres** con la J4 en el Akron (Chivas vs Mazatlán, confirmado leyendo los escudos del cuadro, no el nombre del archivo).
+
+**Cuatro piezas nuevas en Jugadores** y un grupo nuevo, **Queens League Américas**, que es la primera pieza 9:16 del visor y la única del lote que no parece Victorem: negro y oro, sin el verde. Rango es lo que mira una agencia cuando decide si te contrata para algo que no es su estilo de siempre.
+
+Compresión, igual que el lote 1: 810×1440, AAC 128k. CRF 25 para el voleibol en vivo, CRF 26 a 60 fps para la de Hugo (a CRF 23 daba 13 MB; a 26 da 8.9 MB y el cielo sigue sin bandear — comparado cuadro a cuadro contra el original).
+
+### Un falso positivo que casi queda documentado como cierto
+
+La miniatura de Queens League salía **negra** en mi captura, y escribí la regla `.visor-thumb.alto{object-position:center}` con un comentario explicando el fallo. Al comprobar el antes y el después con capturas del elemento en vez de recortes de una composición, resultó que **las dos versiones se veían bien** — el negro eran mis coordenadas de recorte. Anclado arriba incluso se ve mejor: entra el lockup de victorem.
+
+Se revirtió la regla **y el comentario**. Un «por qué» equivocado en el código es peor que no tener ninguno: el siguiente que lo lea va a creerlo. **Antes de documentar una causa hay que reproducir el fallo al revés.**
+
 ## Notas para quien retome esto
 
 - El dashboard de Cloudflare y Gmail están bloqueados para el agente vía navegador — pero **la API de Cloudflare sí responde** usando el token OAuth que Wrangler guarda en `~/Library/Preferences/.wrangler/config/default.toml`. Ese token puede leer/escribir Pages y Email Routing, pero **no** puede escribir registros DNS — eso lo tiene que hacer Rubén a mano en el dashboard.
