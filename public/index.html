@@ -1079,6 +1079,78 @@
     }
   }
 
+  /* ===== GUIÑO A LA VERSION DE 2018 =====
+     Cada cierto rato el cromado parpadea y deja ver, un instante, el logo
+     morado original -- el que existia ocho años antes que este. Es una capa
+     aparte encima de .marca, no un cambio de src: cambiar el src provoca una
+     recarga visible y el hueco entre imagen vieja y nueva se lee como un
+     error de carga, que es justo lo contrario de lo que se busca.
+
+     ⚠️ Los dos archivos estan REGISTRADOS: el morado se reescalo y recorto
+     para que su silueta caiga sobre la del cromado en el mismo lienzo de
+     1200x675. Medido: 98.8% de solape directo, y lo que sobra es una banda
+     de un pixel en el contorno (el bisel del cromo). Si algun dia se cambia
+     uno de los dos archivos hay que rehacer ese registro, o el guiño va a
+     verse como un salto.
+
+     ⚠️ step-end y no un easing: un glitch es discreto, no interpolado. Con
+     transicion suave esto se lee como un crossfade de presentacion; a saltos
+     secos se lee como una interferencia. Es el detalle que decide si parece
+     un guiño o parece que la pagina se rompio.
+
+     La geometria repite la de .brillo y .trazo al pie de la letra porque
+     tiene que quedar clavada sobre .marca. No lleva el drop-shadow de
+     .marca a proposito: la sombra del cromado asoma por debajo (va desplazada
+     abajo-derecha, fuera de la silueta) y eso es exactamente lo correcto --
+     lo que parpadea es el logo, no su sombra. */
+  .marca-guino{
+    position:absolute;left:0;top:0;z-index:5;
+    height:min(29vh,330px);aspect-ratio:1200/675;
+    /* ⚠️ width:auto NO sobra: los atributos width/height del HTML entran como
+       pista de presentacion y fijan la capa en 1200px de ancho, ignorando el
+       aspect-ratio. Medido en Chromium antes de ponerlo: 1200x261 contra los
+       578.9x325.6 de .marca. .trazo y .brillo no lo necesitan porque no son
+       <img> y no tienen esos atributos. */
+    width:auto;object-fit:contain;
+    margin-left:-1.5%;
+    transform-origin:left center;transform:scale(var(--marca-escala,1));
+    pointer-events:none;opacity:0;
+    /* no pinta nada hasta que el JS le pone el src */
+  }
+  /* ⚠️ El desplazamiento del glitch va en `translate`, la propiedad
+     independiente, y NO dentro de `transform`. Motivo concreto: en el hero
+     centrado (.orbita) la capa lleva transform:translateX(-50%) scale(...),
+     y un keyframe que escriba `transform` lo reemplaza entero -- transform
+     nunca acumula -- asi que el logo saltaria al borde izquierdo justo en el
+     cuadro del guiño. `translate` se compone con `transform` en vez de
+     pisarlo, y por eso funciona igual en el hero alineado y en el centrado
+     sin duplicar un solo keyframe. */
+  .marca-guino.guina{animation:guino280 .28s step-end 1 both}
+  /* Las bandas son inset() horizontales con desplazamientos distintos: es el
+     lenguaje del glitch por desplazamiento, no un fundido. El 44% apaga la
+     capa un cuadro -- ese hueco es el tartamudeo, y sin el son 280ms de
+     morado seguido, que ya no es un parpadeo sino un cambio de logo. */
+  @keyframes guino280{
+    0%   {opacity:0;clip-path:inset(0 0 0 0);      translate:0 0}
+    7%   {opacity:1;clip-path:inset(0 0 58% 0);    translate:-1.1% 0}
+    18%  {opacity:1;clip-path:inset(34% 0 24% 0);  translate:2.4% 0}
+    29%  {opacity:1;clip-path:inset(0 0 0 0);      translate:0 0}
+    44%  {opacity:0}
+    57%  {opacity:1;clip-path:inset(66% 0 0 0);    translate:-.8% 0}
+    68%  {opacity:1;clip-path:inset(0 0 0 0);      translate:0 0}
+    /* ⚠️ Este 78% no es decorativo. Con step-end el valor de un keyframe se
+       MANTIENE hasta el siguiente, asi que el 100% no llega a pintarse nunca
+       durante la animacion: sin este corte, el morado se quedaba encendido
+       los ultimos 90ms y el guiño terminaba con un logo morado quieto en
+       pantalla. Medido: el cuadro al 90% salia identico al 35%. */
+    78%  {opacity:0}
+    100% {opacity:0;clip-path:inset(0 0 0 0);      translate:0 0}
+  }
+  @media(prefers-reduced-motion:reduce){
+    /* Ni la animacion ni la descarga: el JS tampoco le pone src. */
+    .marca-guino{display:none}
+  }
+
   /* ===== RAFAGA: lineas cineticas al aterrizar el logo =====
      El logo es el momento de impacto mas grande y singular del sitio --
      aparece una sola vez al cargar, no cinco veces por cada seccion como
@@ -1237,6 +1309,7 @@
        brillo 5px a la derecha del logo. */
     .brillo{height:auto;width:94%;aspect-ratio:1200/675}
     .trazo {height:auto;width:94%;aspect-ratio:1200/675}
+    .marca-guino{height:auto;width:94%;aspect-ratio:1200/675}
   }
   @media(prefers-reduced-motion:reduce){
     .brillo{display:none}
@@ -1418,6 +1491,11 @@
        origen de escala, y left:50% + translateX(-50%) para caer exactamente
        sobre él ahora que .marca está centrado con margin:auto. */
     .orbita .trazo{
+      height:min(27vh,320px);width:auto;margin-left:0;
+      left:50%;transform-origin:center;
+      transform:translateX(-50%) scale(var(--marca-escala,1));
+    }
+    .orbita .marca-guino{
       height:min(27vh,320px);width:auto;margin-left:0;
       left:50%;transform-origin:center;
       transform:translateX(-50%) scale(var(--marca-escala,1));
@@ -3282,6 +3360,11 @@
       <path class="linea" d="M351,244.2l-12.4,1.9v11.5c27.4-5.5,52.6-5.2,80.4-4.5,1.8,0,4.5,2.6,4.5,4.2v21.3c0,2.9-2.4,4.8-5.5,4.7-37.3-1.9-74,2.4-109.8,12.7s-3.7.5-4.6-.2-2-2.9-2.3-4.2c-10.9-49.8-1.2-109.9,11.1-159.3.8-3.2,3.3-4.4,6.2-4,39.6,5.3,78.5,4.6,118.4,2.8s3.4.4,4.2,1.2,1.4,3.6,1.1,4.8l-5.9,23.1c-.3,1.3-3,3.6-4.4,3.7-29.9,3.4-55.5,5.8-85.9,1.6v14s9.3-1.1,9.3-1.1c1.5-.2,4.2,2.7,4,4.4l-4.2,57.1c-.1,1.8-2.5,3.9-4.1,4.1Z"/>
       <path class="linea" d="M457.3,415c-36.2.8-70.6,4.7-105.9,10.2-6.2-9.7-11.2-18.8-15.7-29-12.8-28.9-22.5-58.1-31.3-89.2,39.5-9.4,82.5-10.8,122.1-8.7,7.1,39.6,19.3,76.1,33.4,113,.5,1.3-.7,3.8-2.6,3.8ZM396,383.2c1.7-.4,4-2.3,3.3-4.1-5.9-15.9-10.3-30.9-13.8-47.7-7-.2-13.4,1.2-19.6,4.7l5.9,24.1c2.3,9.3,6.1,17.8,11.1,25.9l13.1-2.8Z"/>
     </svg>
+      <!-- El guiño a la version morada de 2018. Nace sin src: lo pone el JS
+           bastante despues de la carga, y solo si el navegador no pide menos
+           movimiento. Asi no compite con el logo cromado, que es el LCP. -->
+      <img class="marca-guino" alt="" aria-hidden="true"
+           width="1200" height="675" decoding="async" fetchpriority="low">
       <i class="rafaga" aria-hidden="true"></i>
       <!-- Destello especular: capa exterior enmascarada con el alfa del logo,
            capa interior (la banda de luz) es la que viaja. Ver .brillo. -->
@@ -4295,6 +4378,59 @@
   setTimeout(entradaHero, 700);
   // Ultimo recurso, ya pasado el tope del cargador: destapa el hero pase lo que pase.
   setTimeout(() => raiz.classList.add('hero-a-salvo'), 3600);
+
+  /* ===== GUIÑO A LA VERSION DE 2018 =====
+     El cromado parpadea de vez en cuando y deja ver el logo morado original.
+     Tres reglas gobiernan esto y las tres son a proposito:
+
+     1) RARO. Primer guiño entre 45 y 75s, y luego entre 60 y 120s, siempre
+        con azar. Un guiño cada pocos segundos deja de ser un guiño y pasa a
+        ser un tic: el ojo lo aprende, lo espera y estorba al leer.
+     2) SOLO SI SE ESTA VIENDO. Si el hero salio de pantalla o la pestaña
+        esta en segundo plano, el reloj no corre. Un parpadeo que nadie ve es
+        trabajo de GPU tirado, y peor: al volver a la pestaña se acumulan.
+     3) CARGA DIFERIDA. El archivo morado (124 KB) no se pide hasta que hay
+        hueco de verdad. El cromado es el LCP del sitio; meterle un hermano
+        de 124 KB en la carga inicial seria pagar el guiño con la primera
+        impresion, que es exactamente al reves. Quien se va en los primeros
+        45 segundos -- la mayoria -- no lo descarga nunca. */
+  (function(){
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const capa = document.querySelector('header h1 .marca-guino');
+    const marca = document.querySelector('header h1 .marca');
+    if (!capa || !marca) return;
+
+    const PRIMERO = [45000, 75000];
+    const LUEGO   = [60000, 120000];
+    const azar = ([a, b]) => a + Math.random() * (b - a);
+
+    let visible = true;
+    if ('IntersectionObserver' in window) {
+      new IntersectionObserver(([e]) => { visible = e.isIntersecting; },
+                               { threshold: .35 }).observe(marca);
+    }
+
+    function guinar(){
+      // ⚠️ Si no se esta viendo NO se cuenta como turno gastado: se vuelve a
+      // agendar igual, para que al volver a la pestaña el guiño llegue con su
+      // ritmo normal y no de golpe.
+      if (visible && !document.hidden) {
+        capa.classList.remove('guina');
+        void capa.offsetWidth;          // reinicia la animacion si seguia viva
+        capa.classList.add('guina');
+      }
+      setTimeout(guinar, azar(LUEGO));
+    }
+
+    // El src se pone tarde y por detras de todo lo demas.
+    function armar(){
+      capa.addEventListener('load', () => setTimeout(guinar, azar(PRIMERO)), { once: true });
+      capa.src = '/assets/logo-morado.webp';
+    }
+    const pedir = window.requestIdleCallback || (f => setTimeout(f, 1200));
+    if (document.readyState === 'complete') pedir(armar, { timeout: 4000 });
+    else window.addEventListener('load', () => pedir(armar, { timeout: 4000 }), { once: true });
+  })();
 
   /* ===== CIERRE DEL CARGADOR =====
      Se va cuando la pagina termina de cargar, pero nunca antes de MINIMO

@@ -1459,6 +1459,49 @@ No es una página del sitio. Es **Cloudflare Email Address Obfuscation** (Scrape
 
 **`www` no está configurado como dominio personalizado del proyecto de Cloudflare Pages.** Mientras siga ambiguo, Google puede tratar `www` y el ápice como dos sitios distintos y repartir señales entre los dos. Se arregla desde el panel de Cloudflare, no desde el repo: agregar `www.notmanrivera.com` como dominio personalizado del proyecto (redirige solo al primario), o una Redirect Rule de `www` al ápice.
 
+## El guiño al logo de 2018 (2026-09-19)
+
+Rubén lo propuso así: *«estaba pensando en que cada cierto tiempo glitcheara y la versión cromada mostrase la versión morada con azul, por un segundo y regresara a la versión cromada, como un guiño»*.
+
+Antes de escribir una línea había que contestar una pregunta que lo tumbaba todo si salía mal: **¿las dos versiones tienen exactamente la misma letra?** Si el dibujo cambió entre 2018 y el cromo, el parpadeo no se lee como guiño sino como un error de carga.
+
+### La medición
+
+La primera comparación dio 1% de diferencia de proporción, lo bastante para dudar. Rubén identificó la causa antes que el agente: *«le quité un outer glow que tenía, puede que eso sea el cambio de tamaño»*. Era eso. Con el resplandor fuera:
+
+| | caja de la obra | proporción |
+|---|---|---|
+| morado 2018 (sin glow) | 945 × 520 | 1.8173 |
+| cromado actual | 1167 × 643 | 1.8149 |
+
+0.13% de diferencia. Y la prueba que de verdad importa, la silueta superpuesta: **99.08% de solape (IoU)**, con la diferencia repartida en una banda de un píxel en el contorno — el bisel del cromo, no un cambio de dibujo. Es la misma letra. Luz verde.
+
+### Cómo se montó
+
+`public/assets/logo-morado.webp` **no es el archivo original recortado a ojo**: se reescaló (1482×1484) y se recortó (1200×675 en el offset 140,404) para que su silueta caiga sobre la del cromado en el mismo lienzo. Registro directo medido, sin normalizar nada después: **98.84%**.
+
+⚠️ **Si algún día se cambia uno de los dos archivos hay que rehacer ese registro.** Sin él, el guiño deja de ser un parpadeo y se convierte en un salto.
+
+### Las tres decisiones de oficio
+
+1. **Raro.** Primer guiño entre 45 y 75s, después entre 60 y 120s, con azar. Un guiño cada pocos segundos deja de ser guiño y pasa a ser tic: el ojo lo aprende, lo espera, y estorba al leer.
+2. **Corto y a saltos.** 280ms, no el segundo que se planteó, y con `step-end` en vez de un easing. Un glitch es discreto, no interpolado — con transición suave esto se lee como un crossfade de presentación; a saltos secos se lee como interferencia. Tres bandas `inset()` desplazadas + un tartamudeo (se apaga un cuadro a mitad) hacen el resto.
+3. **Diferido.** El archivo morado son 124 KB y el cromado es el LCP del sitio. El `src` lo pone el JS después de `load` y en `requestIdleCallback`; quien se va en los primeros 45 segundos no lo descarga nunca.
+
+Bajo `prefers-reduced-motion:reduce` no hay animación **ni descarga**.
+
+### Tres trampas que costaron una medición cada una
+
+⚠️ **Los atributos `width`/`height` del HTML son una pista de presentación.** En un `<img>` fijan `width:1200px` e ignoran el `aspect-ratio` del CSS. La capa salía de 1200×261 contra los 578.9×325.6 de `.marca`. Se arregla con `width:auto` — y por eso `.trazo` y `.brillo` no lo necesitan: no son `<img>`.
+
+⚠️ **`transform` no acumula, reemplaza.** En el hero centrado (`.orbita`) la capa lleva `translateX(-50%) scale(...)`, así que un keyframe que escriba `transform` la manda al borde izquierdo justo en el cuadro del guiño. El desplazamiento va en la propiedad independiente **`translate`**, que se compone en vez de pisar. Un solo juego de keyframes sirve para el hero alineado y el centrado.
+
+⚠️ **Con `step-end`, el keyframe del 100% no se pinta nunca durante la animación.** El valor del 68% se mantenía hasta el final: el morado se quedaba encendido los últimos 90ms. Medido — el cuadro al 90% salía idéntico al del 35%. Hizo falta un corte explícito al 78%.
+
+**Y una trampa del método, no del código:** dos veces seguidas un cuadro salió «sin morado» y parecía un fallo de CSS. Era el arnés de captura: el primer `screenshot` tras forzar la clase corre antes de que se pinte la capa. Con cuatro `requestAnimationFrame` de espera los mismos valores pintan perfecto. **Un fallo que no se reproduce al reordenar la prueba es un fallo de la prueba.**
+
+Verificado con la caja de `.marca` y la de `.marca-guino` medidas en el navegador a 1440, 1024 y 390px: **idénticas al decimal en los tres**.
+
 ## Notas para quien retome esto
 
 - El dashboard de Cloudflare y Gmail están bloqueados para el agente vía navegador — pero **la API de Cloudflare sí responde** usando el token OAuth que Wrangler guarda en `~/Library/Preferences/.wrangler/config/default.toml`. Ese token puede leer/escribir Pages y Email Routing, pero **no** puede escribir registros DNS — eso lo tiene que hacer Rubén a mano en el dashboard.
