@@ -1574,6 +1574,43 @@ La miniatura de Queens League salía **negra** en mi captura, y escribí la regl
 
 Se revirtió la regla **y el comentario**. Un «por qué» equivocado en el código es peor que no tener ninguno: el siguiente que lo lea va a creerlo. **Antes de documentar una causa hay que reproducir el fallo al revés.**
 
+## Caso de fútbol femenil y muro en movimiento (2026-09-19)
+
+### El caso: `/casos/futbol-femenil/`
+
+Cuarto caso del sitio, y el primero que **no se organiza por cliente sino por una idea**. Los tres anteriores son Al-Arabi SC, Hugo González y diseño web. Este junta piezas de Necaxa, León, Cruz Azul, Guadalajara, la selección de Argentina, un club de Nueva Zelanda y la Queens League — y lo que las une no es quién pagó, es qué demuestran juntas.
+
+**El argumento es Nayrobi García.** Aparece tres veces: la firma de su contrato, una jornada de Liga MX Femenil Sub-19 con Guadalajara, y su debut en primera división. Una campaña se entrega y se acaba; aquí hay una carrera acompañada durante años, y cada pieza tuvo que verse como parte de lo mismo aunque las separaran temporadas y un cambio de club. **Eso es lo que le vendes a una agencia de representación**, y ninguna otra página del sitio lo contaba.
+
+Seis piezas en movimiento, diez gráficos fijos, versión en inglés escrita a mano (`/casos/futbol-femenil/en/`), enlaces cruzados desde los otros tres casos, y dos URLs nuevas en el sitemap. Ficha OG propia, compuesta de tres verticales sobre fondo oscuro — una 9:16 recortada a 1200×630 no se lee.
+
+⚠️ **Rótulos verificados leyendo las tarjetas de partido cuadro por cuadro**, no los nombres de archivo. Cada jornada, sede, fecha y escudo salió de mirar el video. El lote anterior ya había enseñado que el nombre de archivo miente.
+
+### El muro en movimiento de la home
+
+La galería de la home son cuadros fijos de piezas que se mueven — un motion designer presentado en estático. El muro lo arregla: seis mosaicos en bucle bajo la galería, cada uno enlazando al caso donde vive la pieza completa.
+
+**El peso es el diseño entero.** Las piezas completas van de 1.5 a 9 MB. Los recortes del muro son de 3.5s, sin audio, a 400×712 y CRF 30: **1.3 MB los seis**, carátulas incluidas. Y no se descarga ni uno hasta que la sección entra en pantalla — el `src` lo pone un IntersectionObserver.
+
+Verificado en el navegador, las cuatro conductas:
+
+| | resultado |
+|---|---|
+| antes de bajar al muro | **0** peticiones de video |
+| con el muro a la vista | 6 con `src`, **6 corriendo** |
+| al subir de vuelta al hero | **6 pausados** |
+| con `prefers-reduced-motion` | **0** peticiones |
+
+⚠️ **El navegador de prueba no puede reproducir H.264.** `canPlayType('video/mp4; codecs="avc1.42E01E")` devuelve cadena vacía en el Chromium que trae Playwright, así que `play()` fallaba con `NotSupportedError: The element has no supported sources` y los seis mosaicos salían en `corriendo=0`. **Eso no es un fallo del sitio.** Se aisló sirviendo un VP9 bajo las mismas URLs con `page.route()`: con la lógica intacta, los seis arrancan. Sin esa separación, el diagnóstico correcto habría sido indistinguible de «mi código no funciona».
+
+⚠️ **`min-width:0` en `.muro-tile` no sobra.** Es exactamente el fallo que rompió el scroll lateral de la galería en móvil: un item de flex trae `min-width:auto`, se niega a encogerse por debajo de su contenido y la pista deja de poder desplazarse. Comprobado a 390px: `scrollWidth 866 > clientWidth 342`.
+
+⚠️ **Los `data-es`/`data-en` van en `.muro-cap`, nunca en el `<a>`.** El traductor hace `el.innerHTML = el.getAttribute('data-en')` sobre el elemento que los lleva — ponerlos en el `<a>` **borraría el `<video>`** al cambiar de idioma. El `href` sí va en el `<a>` con `data-href-es/en`, porque eso es un `setAttribute` y no toca a los hijos.
+
+Y la regla de oro de siempre: la escala del hover va en el `<video>`, no en `.muro-tile`. Si la caja que detecta el hover se mueve, se sale de debajo del cursor y el ciclo se repite decenas de veces por segundo.
+
+Sin desbordamiento horizontal a 390, 768 ni 1280px, y sin errores de consola en las cuatro páginas nuevas.
+
 ## Notas para quien retome esto
 
 - El dashboard de Cloudflare y Gmail están bloqueados para el agente vía navegador — pero **la API de Cloudflare sí responde** usando el token OAuth que Wrangler guarda en `~/Library/Preferences/.wrangler/config/default.toml`. Ese token puede leer/escribir Pages y Email Routing, pero **no** puede escribir registros DNS — eso lo tiene que hacer Rubén a mano en el dashboard.
