@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="en">
+<head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-KMZ6Q35TJ8"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-KMZ6Q35TJ8');
+
+  document.addEventListener('click', function (e) {
+    var a = e.target.closest('a[href^="mailto:"], a.whatsapp-flotante');
+    if (!a) return;
+    gtag('event', 'contacto_click', {
+      metodo: a.href.indexOf('mailto:') === 0 ? 'email' : 'whatsapp',
+    });
+  }, true);
+</script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Privacy Notice — NotMan Rivera</title>
+<meta name="description" content="What data notmanrivera.com collects, what it is used for, and how to exercise your rights over it.">
+<link rel="canonical" href="https://notmanrivera.com/aviso-de-privacidad/en/">
+<link rel="alternate" hreflang="es" href="https://notmanrivera.com/aviso-de-privacidad/">
+<link rel="alternate" hreflang="en" href="https://notmanrivera.com/aviso-de-privacidad/en/">
+<link rel="alternate" hreflang="x-default" href="https://notmanrivera.com/aviso-de-privacidad/">
+<link rel="icon" type="image/png" href="/assets/favicon.png">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<meta name="theme-color" content="#000000">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+<link rel="preload" href="/assets/kenyan-coffee.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/monument-black.woff2" as="font" type="font/woff2" crossorigin>
+
+<style>
+  @font-face{font-family:"Kenyan Coffee";src:url("/assets/kenyan-coffee.woff2") format("woff2");font-weight:400;font-style:normal;font-display:swap}
+  @font-face{font-family:"Monument Extended";src:url("/assets/monument-black.woff2") format("woff2");font-weight:900;font-style:normal;font-display:swap}
+  @font-face{font-family:"Monument Extended";src:url("/assets/monument-light.woff2") format("woff2");font-weight:300;font-style:normal;font-display:swap}
+
+  :root{
+    --ink:#000000;--ink-2:#1A1A1A;
+    --violet:#8B3FFF;--violet-hi:#A96BFF;
+    --sombra:#2b2b2b;--rojo:#E50012;
+    --paper:#FFFFFF;--muted:#A99CC4;--line:#33204f;
+    --filo:polygon(9px 0%, 100% 6px, calc(100% - 9px) 100%, 0% calc(100% - 6px));
+    --disp:"Kenyan Coffee",Impact,"Haettenschweiler","Arial Narrow Bold",sans-serif;
+    --ui:"Monument Extended","Arial Black","Helvetica Neue",sans-serif;
+    --body:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{overflow-x:hidden;scroll-behavior:smooth}
+  body{
+    background:var(--ink);color:var(--paper);font-family:var(--body);
+    line-height:1.7;font-size:1.02rem;
+    min-height:100vh;display:flex;flex-direction:column;
+  }
+
+  body::before{
+    content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
+    background-image:radial-gradient(var(--line) 1px, transparent 1px);
+    background-size:7px 7px;
+    -webkit-mask-image:linear-gradient(160deg,#000 0%,transparent 62%);
+    mask-image:linear-gradient(160deg,#000 0%,transparent 62%);
+    opacity:.55;
+  }
+
+  main{
+    position:relative;z-index:1;flex:1;
+    max-width:760px;margin:0 auto;padding:72px 24px 90px;width:100%;
+  }
+
+  .kicker{
+    display:inline-block;font-family:var(--ui);font-weight:900;text-transform:uppercase;
+    font-size:.72rem;letter-spacing:.12em;color:#fff;background:var(--rojo);
+    padding:8px 16px;transform:skewX(-6deg);margin-bottom:22px;
+  }
+  h1{
+    font-family:var(--disp);font-weight:400;text-transform:uppercase;line-height:.95;
+    font-size:clamp(2.2rem,6vw,3.6rem);letter-spacing:.01em;margin-bottom:14px;
+  }
+  .fecha{
+    font-family:var(--ui);font-weight:300;text-transform:uppercase;
+    font-size:.66rem;letter-spacing:.1em;color:var(--muted);
+    padding-bottom:26px;margin-bottom:34px;border-bottom:2px solid var(--line);
+  }
+
+  h2{
+    font-family:var(--disp);font-weight:400;text-transform:uppercase;
+    font-size:clamp(1.35rem,3.4vw,1.75rem);line-height:1.05;letter-spacing:.01em;
+    margin:44px 0 14px;color:var(--violet-hi);
+  }
+  h2:first-of-type{margin-top:0}
+
+  p{color:#d8d2e6;margin-bottom:16px}
+  p.intro{color:var(--paper);font-size:1.1rem}
+
+  ul{list-style:none;margin:0 0 18px;padding:0}
+  ul li{
+    color:#d8d2e6;padding-left:22px;position:relative;margin-bottom:10px;
+  }
+  ul li::before{
+    content:"";position:absolute;left:0;top:.62em;
+    width:9px;height:2px;background:var(--violet);
+  }
+  ul li b{color:var(--paper);font-weight:600}
+
+  code{
+    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+    font-size:.92em;color:var(--paper);background:var(--ink-2);padding:1px 6px;
+  }
+
+  a{color:var(--violet-hi);text-decoration:underline;text-underline-offset:3px}
+  a:hover{color:var(--paper)}
+  a:focus-visible{outline:3px solid var(--paper);outline-offset:3px}
+
+  .caja{
+    background:var(--ink-2);clip-path:var(--filo);
+    padding:24px 26px;margin:22px 0 4px;
+  }
+  .caja p:last-child{margin-bottom:0}
+
+  .volver{
+    display:inline-block;margin-top:46px;padding:14px 22px;
+    background:var(--ink-2);clip-path:var(--filo);
+    color:var(--paper);text-decoration:none;
+    font-family:var(--disp);text-transform:uppercase;font-size:1.2rem;
+    transition:background .18s,color .18s;
+  }
+  .volver:hover,.volver:focus-visible{background:var(--paper);color:var(--ink)}
+
+  footer{
+    position:relative;z-index:1;
+    padding:28px 24px;border-top:2px solid var(--line);
+    color:var(--muted);font-size:.82rem;
+    max-width:760px;margin:0 auto;width:100%;
+    display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;
+  }
+  footer a{color:var(--muted);text-decoration:none}
+  footer a:hover{color:var(--paper)}
+
+  @media(max-width:560px){
+    main{padding:52px 22px 70px}
+  }
+  @media(prefers-reduced-motion:reduce){
+    html{scroll-behavior:auto}
+    .volver{transition:none}
+  }
+</style>
+</head>
+<body>
+
+<main>
+  <span class="kicker">Privacy Notice</span>
+  <h1>What this site collects</h1>
+  <p class="fecha">Last updated: 21 September 2026</p>
+
+  <p class="intro">This notice explains, in plain terms, what information is collected when you visit notmanrivera.com or write to me, what it is used for, and what you can do about it.</p>
+
+  <h2>Who is responsible</h2>
+  <div class="caja">
+    <p><b>Rubén Núñez Rivera</b> — NotMan Rivera<br>
+    Querétaro, Mexico<br>
+    <a href="mailto:hola@notmanrivera.com">hola@notmanrivera.com</a></p>
+  </div>
+
+  <h2>What is collected</h2>
+  <p>Two different things, through two different routes:</p>
+  <ul>
+    <li><b>Browsing data.</b> When the site loads, it records your IP address, device and browser type, pages visited, time spent, the site you came from, and any campaign parameters (UTM) carried by the link you arrived through.</li>
+    <li><b>Data you provide.</b> If you write to me by email or WhatsApp: your name, your email address or phone number, and whatever you include in the message.</li>
+  </ul>
+  <p>Two technical events are also recorded: when someone clicks a contact link — the click itself, not the content of whatever you write afterwards — and when someone lands on a broken route, so it can be fixed.</p>
+
+  <h2>What it is used for</h2>
+  <ul>
+    <li>Understanding which parts of the portfolio get looked at, and improving the site accordingly.</li>
+    <li>Measuring whether the introduction emails I send to agencies and prospective clients actually lead anyone to view the work.</li>
+    <li>Answering your enquiry and following up on it.</li>
+    <li>Detecting and fixing technical errors.</li>
+  </ul>
+  <p>Data is never sold, never shared with advertisers, and never used for targeted advertising or to build profiles for third parties.</p>
+
+  <h2>Cookies and analytics</h2>
+  <p>This site uses <b>Google Analytics 4</b>, which sets Google's own cookies (<code>_ga</code> and <code>_ga_*</code>) lasting up to two years. They exist to tell visits apart and measure sessions.</p>
+  <p>You can prevent this in three ways, and the site works exactly the same in all of them:</p>
+  <ul>
+    <li>Install the <a href="https://tools.google.com/dlpage/gaoptout" target="_blank" rel="noopener">Google Analytics opt-out browser add-on</a>.</li>
+    <li>Block third-party cookies in your browser settings.</li>
+    <li>Use any tracker-blocking extension.</li>
+  </ul>
+
+  <h2>Third parties involved</h2>
+  <ul>
+    <li><b>Google.</b> Processes the analytics and serves the Inter typeface from its servers; your IP address reaches Google through both when the page loads.</li>
+    <li><b>Cloudflare.</b> Hosts the site and processes every request, including technical logs and abuse protection.</li>
+  </ul>
+  <p>Both operate servers outside Mexico. There are no data transfer arrangements with any other provider.</p>
+
+  <h2>How long it is kept</h2>
+  <p>Analytics data is retained according to the Google Analytics 4 configuration, which defaults to fourteen months. Email and WhatsApp correspondence is kept for as long as there is a working relationship or an open conversation; you can ask for it to be deleted at any point.</p>
+
+  <h2>Your rights</h2>
+  <p>You have the right to <b>access</b> your data, <b>correct</b> it if it is wrong, <b>delete</b> it, and <b>object</b> to its use — known as ARCO rights under Mexican law. If you are in the European Union or the United Kingdom, you also have the right to data portability and to lodge a complaint with your national data protection authority.</p>
+  <p>To exercise any of them, simply write to <a href="mailto:hola@notmanrivera.com">hola@notmanrivera.com</a> and say what you need. There is no form and no procedure: I reply within twenty working days at most.</p>
+
+  <h2>Changes to this notice</h2>
+  <p>Any change is published on this same page, with the update date at the top. There is no other notification channel, so if this matters to you it is worth checking back occasionally.</p>
+
+  <a class="volver" href="/en/">Back to home</a>
+</main>
+
+<footer>
+  <span>NotMan Rivera — Motion graphics, video and web design</span>
+  <a href="/en/">notmanrivera.com</a>
+</footer>
+
+</body>
+</html>

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Diez URLs, sin build step que mantenga fechas. Se quitaron <lastmod>,
+<!-- Doce URLs, sin build step que mantenga fechas. Se quitaron <lastmod>,
      <changefreq> y <priority> a proposito: Google ignora los dos ultimos por
      completo, y solo hace caso a lastmod si es fiable. Una fecha puesta a
      mano se queda vieja al primer cambio que se nos olvide, y una fecha
@@ -76,5 +76,21 @@
     <xhtml:link rel="alternate" hreflang="es" href="https://notmanrivera.com/casos/futbol-femenil/"/>
     <xhtml:link rel="alternate" hreflang="en" href="https://notmanrivera.com/casos/futbol-femenil/en/"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://notmanrivera.com/casos/futbol-femenil/"/>
+  </url>
+  <!-- Aviso de privacidad: paginas propias escritas a mano, igual que los
+       casos. Viven fuera de /en/ a proposito — esa carpeta la genera
+       build-en.js y esta en .gitignore, asi que un archivo puesto ahi no
+       se versionaria nunca. -->
+  <url>
+    <loc>https://notmanrivera.com/aviso-de-privacidad/</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://notmanrivera.com/aviso-de-privacidad/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://notmanrivera.com/aviso-de-privacidad/en/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://notmanrivera.com/aviso-de-privacidad/"/>
+  </url>
+  <url>
+    <loc>https://notmanrivera.com/aviso-de-privacidad/en/</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://notmanrivera.com/aviso-de-privacidad/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://notmanrivera.com/aviso-de-privacidad/en/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://notmanrivera.com/aviso-de-privacidad/"/>
   </url>
 </urlset>

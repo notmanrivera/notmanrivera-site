@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="es">
+<head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-KMZ6Q35TJ8"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-KMZ6Q35TJ8');
+
+  document.addEventListener('click', function (e) {
+    var a = e.target.closest('a[href^="mailto:"], a.whatsapp-flotante');
+    if (!a) return;
+    gtag('event', 'contacto_click', {
+      metodo: a.href.indexOf('mailto:') === 0 ? 'email' : 'whatsapp',
+    });
+  }, true);
+</script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Aviso de privacidad — NotMan Rivera</title>
+<meta name="description" content="Qué datos recopila notmanrivera.com, para qué se usan y cómo ejercer tus derechos ARCO.">
+<link rel="canonical" href="https://notmanrivera.com/aviso-de-privacidad/">
+<link rel="alternate" hreflang="es" href="https://notmanrivera.com/aviso-de-privacidad/">
+<link rel="alternate" hreflang="en" href="https://notmanrivera.com/aviso-de-privacidad/en/">
+<link rel="alternate" hreflang="x-default" href="https://notmanrivera.com/aviso-de-privacidad/">
+<link rel="icon" type="image/png" href="/assets/favicon.png">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<meta name="theme-color" content="#000000">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+<link rel="preload" href="/assets/kenyan-coffee.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/monument-black.woff2" as="font" type="font/woff2" crossorigin>
+
+<style>
+  @font-face{font-family:"Kenyan Coffee";src:url("/assets/kenyan-coffee.woff2") format("woff2");font-weight:400;font-style:normal;font-display:swap}
+  @font-face{font-family:"Monument Extended";src:url("/assets/monument-black.woff2") format("woff2");font-weight:900;font-style:normal;font-display:swap}
+  @font-face{font-family:"Monument Extended";src:url("/assets/monument-light.woff2") format("woff2");font-weight:300;font-style:normal;font-display:swap}
+
+  :root{
+    --ink:#000000;--ink-2:#1A1A1A;
+    --violet:#8B3FFF;--violet-hi:#A96BFF;
+    --sombra:#2b2b2b;--rojo:#E50012;
+    --paper:#FFFFFF;--muted:#A99CC4;--line:#33204f;
+    --filo:polygon(9px 0%, 100% 6px, calc(100% - 9px) 100%, 0% calc(100% - 6px));
+    --disp:"Kenyan Coffee",Impact,"Haettenschweiler","Arial Narrow Bold",sans-serif;
+    --ui:"Monument Extended","Arial Black","Helvetica Neue",sans-serif;
+    --body:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{overflow-x:hidden;scroll-behavior:smooth}
+  body{
+    background:var(--ink);color:var(--paper);font-family:var(--body);
+    line-height:1.7;font-size:1.02rem;
+    min-height:100vh;display:flex;flex-direction:column;
+  }
+
+  body::before{
+    content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
+    background-image:radial-gradient(var(--line) 1px, transparent 1px);
+    background-size:7px 7px;
+    -webkit-mask-image:linear-gradient(160deg,#000 0%,transparent 62%);
+    mask-image:linear-gradient(160deg,#000 0%,transparent 62%);
+    opacity:.55;
+  }
+
+  main{
+    position:relative;z-index:1;flex:1;
+    max-width:760px;margin:0 auto;padding:72px 24px 90px;width:100%;
+  }
+
+  .kicker{
+    display:inline-block;font-family:var(--ui);font-weight:900;text-transform:uppercase;
+    font-size:.72rem;letter-spacing:.12em;color:#fff;background:var(--rojo);
+    padding:8px 16px;transform:skewX(-6deg);margin-bottom:22px;
+  }
+  h1{
+    font-family:var(--disp);font-weight:400;text-transform:uppercase;line-height:.95;
+    font-size:clamp(2.2rem,6vw,3.6rem);letter-spacing:.01em;margin-bottom:14px;
+  }
+  .fecha{
+    font-family:var(--ui);font-weight:300;text-transform:uppercase;
+    font-size:.66rem;letter-spacing:.1em;color:var(--muted);
+    padding-bottom:26px;margin-bottom:34px;border-bottom:2px solid var(--line);
+  }
+
+  h2{
+    font-family:var(--disp);font-weight:400;text-transform:uppercase;
+    font-size:clamp(1.35rem,3.4vw,1.75rem);line-height:1.05;letter-spacing:.01em;
+    margin:44px 0 14px;color:var(--violet-hi);
+  }
+  h2:first-of-type{margin-top:0}
+
+  p{color:#d8d2e6;margin-bottom:16px}
+  p.intro{color:var(--paper);font-size:1.1rem}
+
+  ul{list-style:none;margin:0 0 18px;padding:0}
+  ul li{
+    color:#d8d2e6;padding-left:22px;position:relative;margin-bottom:10px;
+  }
+  ul li::before{
+    content:"";position:absolute;left:0;top:.62em;
+    width:9px;height:2px;background:var(--violet);
+  }
+  ul li b{color:var(--paper);font-weight:600}
+
+  code{
+    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+    font-size:.92em;color:var(--paper);background:var(--ink-2);padding:1px 6px;
+  }
+
+  a{color:var(--violet-hi);text-decoration:underline;text-underline-offset:3px}
+  a:hover{color:var(--paper)}
+  a:focus-visible{outline:3px solid var(--paper);outline-offset:3px}
+
+  /* Caja de datos de contacto: mismo filo diagonal que las tarjetas del
+     resto del sitio, para que la pagina legal no se lea como un documento
+     pegado de otro lado. */
+  .caja{
+    background:var(--ink-2);clip-path:var(--filo);
+    padding:24px 26px;margin:22px 0 4px;
+  }
+  .caja p:last-child{margin-bottom:0}
+
+  .volver{
+    display:inline-block;margin-top:46px;padding:14px 22px;
+    background:var(--ink-2);clip-path:var(--filo);
+    color:var(--paper);text-decoration:none;
+    font-family:var(--disp);text-transform:uppercase;font-size:1.2rem;
+    transition:background .18s,color .18s;
+  }
+  .volver:hover,.volver:focus-visible{background:var(--paper);color:var(--ink)}
+
+  footer{
+    position:relative;z-index:1;
+    padding:28px 24px;border-top:2px solid var(--line);
+    color:var(--muted);font-size:.82rem;
+    max-width:760px;margin:0 auto;width:100%;
+    display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;
+  }
+  footer a{color:var(--muted);text-decoration:none}
+  footer a:hover{color:var(--paper)}
+
+  @media(max-width:560px){
+    main{padding:52px 22px 70px}
+  }
+  @media(prefers-reduced-motion:reduce){
+    html{scroll-behavior:auto}
+    .volver{transition:none}
+  }
+</style>
+</head>
+<body>
+
+<main>
+  <span class="kicker">Aviso de privacidad</span>
+  <h1>Qué datos recopila este sitio</h1>
+  <p class="fecha">Última actualización: 21 de septiembre de 2026</p>
+
+  <p class="intro">Este aviso explica en lenguaje directo qué información se recoge cuando visitas notmanrivera.com o me escribes, para qué se usa y qué puedes hacer al respecto.</p>
+
+  <h2>Responsable</h2>
+  <div class="caja">
+    <p><b>Rubén Núñez Rivera</b> — NotMan Rivera<br>
+    Querétaro, México<br>
+    <a href="mailto:hola@notmanrivera.com">hola@notmanrivera.com</a></p>
+  </div>
+
+  <h2>Qué se recopila</h2>
+  <p>Dos cosas distintas, por vías distintas:</p>
+  <ul>
+    <li><b>Datos de navegación.</b> Al cargar el sitio se registran dirección IP, tipo de dispositivo y navegador, páginas visitadas, tiempo de permanencia, el sitio del que vienes y los parámetros de campaña (UTM) que traiga el enlace con el que llegaste.</li>
+    <li><b>Datos que tú das.</b> Si me escribes por correo o WhatsApp: tu nombre, tu dirección de correo o número de teléfono, y lo que incluyas en el mensaje.</li>
+  </ul>
+  <p>También se registran dos eventos técnicos: cuándo alguien hace clic en un enlace de contacto —el hecho del clic, no el contenido de lo que escribas después— y cuándo alguien llega a una ruta rota, para poder arreglarla.</p>
+
+  <h2>Para qué se usa</h2>
+  <ul>
+    <li>Entender qué partes del portafolio se consultan y mejorar el sitio en consecuencia.</li>
+    <li>Medir si los correos de presentación que envío a agencias y clientes potenciales efectivamente llevan a alguien a ver el trabajo.</li>
+    <li>Responder tu consulta y darle seguimiento comercial.</li>
+    <li>Detectar y corregir errores técnicos.</li>
+  </ul>
+  <p>No se venden datos, no se comparten con anunciantes y no se usan para publicidad dirigida ni para construir perfiles destinados a terceros.</p>
+
+  <h2>Cookies y analítica</h2>
+  <p>El sitio usa <b>Google Analytics 4</b>, que instala cookies propias de Google (<code>_ga</code> y <code>_ga_*</code>) con una duración de hasta dos años. Sirven para distinguir visitas entre sí y medir sesiones.</p>
+  <p>Puedes impedirlo de tres maneras, y el sitio sigue funcionando igual en todas:</p>
+  <ul>
+    <li>Instalar el <a href="https://tools.google.com/dlpage/gaoptout" target="_blank" rel="noopener">complemento de inhabilitación de Google Analytics</a>.</li>
+    <li>Bloquear cookies de terceros desde la configuración de tu navegador.</li>
+    <li>Usar cualquier extensión de bloqueo de rastreadores.</li>
+  </ul>
+
+  <h2>Terceros que intervienen</h2>
+  <ul>
+    <li><b>Google.</b> Procesa la analítica y sirve la tipografía Inter desde sus servidores; al cargar la página tu dirección IP llega a Google por ambas vías.</li>
+    <li><b>Cloudflare.</b> Aloja el sitio y procesa cada solicitud, incluyendo registros técnicos y protección contra abuso.</li>
+  </ul>
+  <p>Ambos operan servidores fuera de México. No tengo acuerdos de transferencia de datos con ningún otro proveedor.</p>
+
+  <h2>Cuánto tiempo se conserva</h2>
+  <p>Los datos de analítica se conservan según la configuración de Google Analytics 4, que por defecto es de catorce meses. La correspondencia por correo o WhatsApp se conserva mientras exista una relación comercial o una conversación abierta; puedes pedir que se elimine en cualquier momento.</p>
+
+  <h2>Tus derechos</h2>
+  <p>Tienes derecho a <b>acceder</b> a tus datos, <b>rectificarlos</b> si son incorrectos, <b>cancelarlos</b> y <b>oponerte</b> a su uso — los llamados derechos ARCO bajo la legislación mexicana. Si estás en la Unión Europea o el Reino Unido, tienes además derecho a la portabilidad de tus datos y a presentar una reclamación ante tu autoridad de protección de datos.</p>
+  <p>Para ejercer cualquiera de ellos basta con escribirme a <a href="mailto:hola@notmanrivera.com">hola@notmanrivera.com</a> diciendo qué necesitas. No hay formato ni trámite: respondo en un plazo máximo de veinte días hábiles.</p>
+
+  <h2>Cambios a este aviso</h2>
+  <p>Cualquier modificación se publica en esta misma página, con la fecha de actualización al principio. No se notifica por otro medio, así que si el tema te interesa vale la pena volver a revisarla de vez en cuando.</p>
+
+  <a class="volver" href="/">Volver al inicio</a>
+</main>
+
+<footer>
+  <span>NotMan Rivera — Motion graphics, video y diseño web</span>
+  <a href="/">notmanrivera.com</a>
+</footer>
+
+</body>
+</html>
