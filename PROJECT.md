@@ -486,7 +486,7 @@ Verificado con Playwright: sin solape logo↔menú (`gapLogoAMenu` positivo), ce
 
 ## Pendientes conocidos
 
-- Cerrar el envío desde el dominio propio (Workspace o SMTP externo) para que la firma de los correos de prospección coincida con `hola@notmanrivera.com`.
+- ~~Cerrar el envío desde el dominio propio (Workspace o SMTP externo) para que la firma de los correos de prospección coincida con `hola@notmanrivera.com`.~~ Resuelto: Google Workspace activo desde finales de agosto, la prospección ya sale de `hola@notmanrivera.com`.
 
 ## Botón "volver arriba" (2026-08-17)
 
@@ -1610,6 +1610,28 @@ Verificado en el navegador, las cuatro conductas:
 Y la regla de oro de siempre: la escala del hover va en el `<video>`, no en `.muro-tile`. Si la caja que detecta el hover se mueve, se sale de debajo del cursor y el ciclo se repite decenas de veces por segundo.
 
 Sin desbordamiento horizontal a 390, 768 ni 1280px, y sin errores de consola en las cuatro páginas nuevas.
+
+## Firma de correo con movimiento (2026-09-22)
+
+Reemplaza a la firma estática de `/firma.html`. Dos versiones: `/firma.html` (español) y `/firma-en.html`. Se instalan abriendo la página, seleccionando todo y pegando en Gmail > Configuración > Firma — por eso cada página contiene **solo** la firma.
+
+**Es un híbrido a propósito.** La marca (logo, nombre, las cuatro placas de servicios) va como GIF animado, porque Gmail y Outlook ignoran `clip-path`, fuentes propias, rotaciones y animaciones CSS: Kenyan Coffee no carga, el filo no existe. Los datos de contacto van como **texto vivo** — clicables, y legibles aunque el cliente bloquee imágenes, que Outlook hace por defecto con remitentes desconocidos. Justo el caso de un correo en frío.
+
+**El GIF sale del CSS real, no de un editor.** `scripts/firma/banner.html` compone el banner con el `--filo`, `.placa-negra`, los números en contorno y el halftone de la home, y `scripts/firma/render.js` lo fotografía cuadro por cuadro. No corre en el deploy; se ejecuta a mano (`npm i --no-save playwright` y ffmpeg). El movimiento son dos gestos que ya existen en el sitio: el **guiño** del logo — keyframes copiados literales de `index.html` — y un **barrido** que recorre las placas como si un cursor pasara por encima, con el hover de `.svc`: la placa se invierte, el título avanza, el número se retira y sale la chispa.
+
+⚠️ **El cuadro 0 es el reposo completo, no el principio de una entrada.** Outlook de escritorio muestra solo el primer cuadro de un GIF y nunca lo anima; si la animación arrancara con las placas vacías, en Outlook la firma saldría vacía para siempre.
+
+⚠️ **Los tiempos exigen `option framerate 100` en la lista de ffmpeg.** Sin eso cada PNG entra a 25 fps y el demuxer `concat` redondea todas las duraciones a una rejilla de 40 ms: las ranuras de 30 ms del guiño salían como 40, 40, 10, 30… Medido con `ffprobe`. A 1/100 s la base coincide con la unidad del GIF.
+
+**Peso: 541 KB (español) y 535 KB (inglés), partiendo de 745.** Lo que funcionó, medido cuadro por cuadro: quitar el dithering (el grano propio del cromado tapa cualquier banda — comparado lado a lado) y cambiar el fundido de fondo del barrido por un corte seco, porque los grises intermedios eran los cuadros más caros. Lo que **no** se hizo: bajar a 1.5x. Pesaba 438 KB, pero en retina el filo blanco de las placas salía doble y borroso al reescalar, y ese borde es media estética del sitio. El guiño, la mitad del peso, se dejó completo.
+
+Se reproduce tres veces y se queda en reposo (`REPETICIONES` en `render.js`): el guiño del sitio aparece cada 45–120 s, no en bucle, y la firma respeta esa contención.
+
+⚠️ **Nunca sobrescribir un GIF publicado.** `/assets/*` se sirve con caché inmutable de un año (`_headers`), y los correos ya enviados siguen cargando la imagen. Un rediseño se publica como `-v2` y se actualizan las dos páginas; los correos viejos se quedan con la versión con la que salieron. Por la misma razón se conserva `/assets/firma-logo.png`, de la firma anterior.
+
+⚠️ **La celda del GIF lleva `line-height:0` y el `<img>` necesita su propio `line-height`.** El cero evita el hueco bajo la imagen, pero el texto alternativo lo heredaba: con imágenes bloqueadas la segunda línea se pintaba encima de la primera. Detectado bloqueando las peticiones en Playwright.
+
+Los enlaces de la firma llevan `utm_medium=firma` para distinguirlos en GA4. No pueden saber a qué prospecto pertenece el correo — eso solo lo sabe el enlace del cuerpo, que sigue siendo el que carga `utm_content` por prospecto.
 
 ## Notas para quien retome esto
 

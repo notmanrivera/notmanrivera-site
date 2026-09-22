@@ -1,0 +1,257 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Banner de firma</title>
+<!-- Fuente del GIF de la firma de correo. No se sirve: render.js la abre en
+     Chromium, congela las animaciones y fotografía cuadro por cuadro. Todo lo
+     que aquí es CSS real (filo, giros, Kenyan Coffee, el guiño) en el correo
+     llega como píxeles, porque Gmail y Outlook no soportan nada de eso.
+     Las rutas /public/... son relativas a la raíz del repo: render.js sirve
+     el repo entero, no public/. -->
+<style>
+  @font-face{font-family:"Kenyan Coffee";src:url("/public/assets/kenyan-coffee.woff2") format("woff2")}
+  @font-face{font-family:"Monument Extended";src:url("/public/assets/monument-black.woff2") format("woff2");font-weight:900}
+
+  :root{
+    --ink:#000;--paper:#fff;--rojo:#E50012;--violet:#8B3FFF;--line:#33204f;
+    /* El --filo del sitio (9px/6px) a escala de placa chica. */
+    --filo:polygon(7px 0%, 100% 5px, calc(100% - 7px) 100%, 0% calc(100% - 5px));
+    --disp:"Kenyan Coffee",Impact,sans-serif;
+    --ui:"Monument Extended","Arial Black",sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{width:520px;height:208px;overflow:hidden;background:var(--ink)}
+  body{position:relative;color:var(--paper)}
+
+  /* Halftone de la home: mismo punto, mismo paso, mismo desvanecido. */
+  body::before{
+    content:"";position:absolute;inset:0;pointer-events:none;
+    background-image:radial-gradient(var(--line) 1px, transparent 1px);
+    background-size:7px 7px;
+    -webkit-mask-image:linear-gradient(160deg,#000 0%,transparent 62%);
+            mask-image:linear-gradient(160deg,#000 0%,transparent 62%);
+    opacity:.55;
+  }
+
+  .marca{position:absolute;left:12px;top:10px;width:176px;aspect-ratio:1200/675}
+  .marca > img{position:absolute;inset:0;width:100%;height:100%}
+
+  .nombre{
+    position:absolute;left:204px;top:20px;
+    font-family:var(--disp);font-size:44px;line-height:.9;letter-spacing:.01em;
+    text-transform:uppercase;transform:skewX(-6deg);transform-origin:left;
+  }
+  .kicker{
+    position:absolute;left:206px;top:70px;
+    font-family:var(--ui);font-weight:900;font-size:8.5px;letter-spacing:.14em;
+    text-transform:uppercase;background:var(--rojo);color:var(--paper);
+    padding:6px 11px 5px;transform:skewX(-6deg);transform-origin:left;
+  }
+
+  /* ===== PLACAS =====
+     Réplica de .svc + .placa-negra: la placa entera blanca y una capa interior
+     negra recortada con el mismo filo encima. El "borde" es el blanco que
+     asoma -- ver PLACA NEGRA CON BORDE en index.html para el porqué. */
+  .placas{position:absolute;left:12px;top:112px;width:496px;display:grid;grid-template-columns:1fr 1fr;gap:8px 10px}
+  .placa{
+    position:relative;height:38px;overflow:hidden;isolation:isolate;
+    background:var(--paper);color:var(--paper);clip-path:var(--filo);
+    transform:rotate(var(--giro));
+  }
+  .placa .in{position:absolute;inset:1.5px;z-index:-1;background:var(--ink);clip-path:var(--filo)}
+  .placa h3{
+    position:absolute;left:12px;top:50%;translate:0 -50%;
+    font-family:var(--disp);font-weight:400;font-size:17.5px;letter-spacing:.02em;
+    text-transform:uppercase;white-space:nowrap;transform:skewX(-8deg);transform-origin:left;
+  }
+  .placa .num{
+    position:absolute;right:6px;top:50%;translate:0 -50%;
+    font-family:var(--ui);font-weight:900;font-size:36px;line-height:1;
+    color:transparent;-webkit-text-stroke:1px rgba(255,255,255,.26);
+    transform:skewX(-10deg);font-variant-numeric:tabular-nums;
+  }
+  .placa .chispa{
+    position:absolute;top:4px;right:5px;width:9px;height:9px;z-index:1;
+    clip-path:polygon(50% 0%,58% 42%,100% 50%,58% 58%,50% 100%,42% 58%,0% 50%,42% 42%);
+    background:var(--ink);opacity:0;transform:scale(0);
+  }
+
+  /* ===== EL BARRIDO =====
+     El hover de las placas del sitio, como si un cursor pasara por las cuatro:
+     la capa interior se aclara, el texto se oscurece, el titulo avanza y el
+     numero se retira en sentido contrario (el parallax inverso de .svc), con
+     la chispa de hover.
+     ⚠️ El fondo cambia de GOLPE (step-end), no con el fundido de .2s del
+     sitio. Medido: los grises intermedios del fundido eran los cuadros más
+     caros del GIF, y a 16 fps un fundido se ve entrecortado de todos modos;
+     el corte seco se lee intencional -- es el mismo lenguaje del snap-in
+     estilo Persona del sitio. El texto sí conserva el resorte del hover. */
+  .barre .in  {animation:inBarrido   var(--dur) step-end both}
+  .barre      {animation:colBarrido  var(--dur) step-end both}
+  .barre h3   {animation:h3Barrido   var(--dur) linear both}
+  /* El trazo va en su propia animación step-end: el transform necesita la
+     curva de resorte, el color tiene que cortar junto con el fondo. En una
+     sola animación el trazo se interpolaría con la curva del transform. */
+  .barre .num {animation:numBarrido var(--dur) linear both, numTrazo var(--dur) step-end both}
+  .barre .chispa{animation:chispaTwinkle 900ms cubic-bezier(.2,1,.3,1) both}
+  @keyframes inBarrido{
+    0%  {background:var(--ink)}
+    3%  {background:var(--paper)}
+    80% {background:var(--ink)}
+    100%{background:var(--ink)}
+  }
+  @keyframes colBarrido{
+    0%  {color:var(--paper)}
+    3%  {color:var(--ink)}
+    80% {color:var(--paper)}
+    100%{color:var(--paper)}
+  }
+  @keyframes h3Barrido{
+    0%  {transform:skewX(-8deg) translateX(0);animation-timing-function:cubic-bezier(.2,1.4,.3,1)}
+    26% {transform:skewX(-8deg) translateX(6px)}
+    80% {transform:skewX(-8deg) translateX(6px);animation-timing-function:cubic-bezier(.4,0,.2,1)}
+    92% {transform:skewX(-8deg) translateX(0)}
+    100%{transform:skewX(-8deg) translateX(0)}
+  }
+  @keyframes numBarrido{
+    0%  {transform:skewX(-10deg) translateX(0);animation-timing-function:cubic-bezier(.2,1.4,.3,1)}
+    26% {transform:skewX(-10deg) translateX(-7px)}
+    80% {transform:skewX(-10deg) translateX(-7px);animation-timing-function:cubic-bezier(.4,0,.2,1)}
+    92% {transform:skewX(-10deg) translateX(0)}
+    100%{transform:skewX(-10deg) translateX(0)}
+  }
+  @keyframes numTrazo{
+    0%  {-webkit-text-stroke-color:rgba(255,255,255,.26)}
+    3%  {-webkit-text-stroke-color:rgba(0,0,0,.24)}
+    80% {-webkit-text-stroke-color:rgba(255,255,255,.26)}
+    100%{-webkit-text-stroke-color:rgba(255,255,255,.26)}
+  }
+  @keyframes chispaTwinkle{
+    0%  {opacity:0;transform:scale(0) rotate(0deg)}
+    40% {opacity:1}
+    100%{opacity:0;transform:scale(1.4) rotate(35deg)}
+  }
+
+  /* ===== EL GUIÑO =====
+     Copiado literal de index.html (capas, máscaras y los cinco keyframes),
+     para que la firma guiñe exactamente igual que el logo del sitio. Si el
+     guiño del sitio cambia, este tiene que cambiar con él. */
+  .guino{position:absolute;inset:0;pointer-events:none}
+  .guino > *{position:absolute;inset:0;display:block;opacity:0;width:100%;height:100%}
+  .g-rgb,.g-tear{
+    mix-blend-mode:screen;
+    -webkit-mask-image:url("/public/assets/logo-mask.png");
+    -webkit-mask-size:100% 100%;-webkit-mask-repeat:no-repeat;
+  }
+  .g-r{background:#FF0040}
+  .g-c{background:#2BE9FF}
+  .g-tear{background:repeating-linear-gradient(0deg,rgba(255,255,255,.92) 0 2px,rgba(255,255,255,0) 2px 5px)}
+  .guina{animation:gCaja .36s step-end both}
+  .guina > *{animation-duration:.36s;animation-timing-function:step-end;animation-fill-mode:both;animation-delay:inherit}
+  .guina .g-old {animation-name:gOld}
+  .guina .g-r   {animation-name:gRojo}
+  .guina .g-c   {animation-name:gCian}
+  .guina .g-tear{animation-name:gTear}
+  @keyframes gCaja{
+    0%{translate:0 0}8%{translate:0 -1.2%}17%{translate:0 0}25%{translate:0 .9%}33%{translate:0 0}
+    50%{translate:0 -.7%}58%{translate:0 0}75%{translate:0 1.4%}83%{translate:0 0}100%{translate:0 0}
+  }
+  @keyframes gOld{
+    0%  {opacity:0}
+    17% {opacity:1;clip-path:inset(0 0 60% 0);  translate:-1.6% 0}
+    25% {opacity:1;clip-path:inset(28% 0 36% 0);translate:3.2% 0}
+    33% {opacity:1;clip-path:inset(0 0 0 0);    translate:0 0}
+    42% {opacity:0}
+    50% {opacity:1;clip-path:inset(0 0 0 0);    translate:0 0}
+    58% {opacity:1;clip-path:inset(70% 0 0 0);  translate:-2.4% 0}
+    67% {opacity:0}
+    100%{opacity:0;clip-path:inset(0 0 0 0);    translate:0 0}
+  }
+  @keyframes gRojo{
+    0%{opacity:0;translate:0 0}8%{opacity:.85;translate:-1.5% 0}17%{opacity:.8;translate:-2.3% 0}25%{opacity:0}
+    33%{opacity:.7;translate:-.4% 0}42%{opacity:0}50%{opacity:.9;translate:-1.1% .6%}58%{opacity:.6;translate:-.5% 0}
+    67%{opacity:0}75%{opacity:.9;translate:-2.8% 0}83%{opacity:0}100%{opacity:0;translate:0 0}
+  }
+  @keyframes gCian{
+    0%{opacity:0;translate:0 0}8%{opacity:.85;translate:1.5% 0}17%{opacity:.8;translate:2.3% 0}25%{opacity:0}
+    33%{opacity:.7;translate:.4% 0}42%{opacity:0}50%{opacity:.9;translate:1.1% -.6%}58%{opacity:.6;translate:.5% 0}
+    67%{opacity:0}75%{opacity:.9;translate:2.8% 0}83%{opacity:0}100%{opacity:0;translate:0 0}
+  }
+  @keyframes gTear{
+    0%  {opacity:0}
+    25% {opacity:1;clip-path:inset(30% 0 52% 0);translate:2.6% 0}
+    33% {opacity:0}
+    58% {opacity:1;clip-path:inset(62% 0 24% 0);translate:-3.4% 0}
+    67% {opacity:0}
+    100%{opacity:0;clip-path:inset(0 0 0 0);    translate:0 0}
+  }
+</style>
+</head>
+<body>
+  <div class="marca">
+    <img src="/public/assets/logo-lg.webp" alt="">
+    <div class="guino guina" id="guino">
+      <div class="g-rgb g-r"></div>
+      <div class="g-rgb g-c"></div>
+      <img class="g-old" src="/public/assets/logo-morado.webp" alt="">
+      <div class="g-tear"></div>
+    </div>
+  </div>
+
+  <div class="nombre">Rubén Rivera</div>
+  <div class="kicker" id="kicker"></div>
+
+  <div class="placas" id="placas"></div>
+
+<script>
+  // Una sola fuente de textos para los dos idiomas: ?lang=en cambia todo.
+  const TEXTOS = {
+    es: {
+      kicker: 'Diseño y animación deportiva',
+      placas: ['Motion graphics 2D/3D', 'Edición de video', 'Diseño web UI/UX', 'Soporte marca blanca'],
+    },
+    en: {
+      kicker: 'Sports design & animation',
+      placas: ['2D/3D motion graphics', 'Video editing', 'Web design UI/UX', 'White-label support'],
+    },
+  };
+  const lang = new URLSearchParams(location.search).get('lang') === 'en' ? 'en' : 'es';
+  const t = TEXTOS[lang];
+  document.documentElement.lang = lang;
+  document.getElementById('kicker').textContent = t.kicker;
+
+  // Giros chicos: en el sitio llegan a 3.4deg, pero en placas de 38px de alto
+  // eso se come media placa. La alternancia de signo es la del sitio.
+  const GIROS = ['-1.1deg', '.8deg', '-.7deg', '1.2deg'];
+
+  // Línea de tiempo en ms. render.js la lee de aquí -- es la única copia.
+  // El cuadro 0 tiene que ser el estado completo en reposo: Outlook de
+  // escritorio solo muestra el primer cuadro de un GIF, nunca lo anima.
+  window.LINEA = {
+    total: 5600,
+    guino: 1500,
+    barrido: 2250,
+    escalon: 240,
+    hover: 950,
+  };
+
+  const cont = document.getElementById('placas');
+  t.placas.forEach((titulo, i) => {
+    const p = document.createElement('div');
+    p.className = 'placa barre';
+    p.style.setProperty('--giro', GIROS[i]);
+    p.style.setProperty('--dur', LINEA.hover + 'ms');
+    p.innerHTML = '<div class="in"></div><h3></h3><span class="num">0' + (i + 1) + '</span><span class="chispa"></span>';
+    p.querySelector('h3').textContent = titulo;
+    const retraso = (LINEA.barrido + i * LINEA.escalon) + 'ms';
+    p.style.animationDelay = retraso;
+    p.querySelectorAll('.in,h3,.num').forEach(el => el.style.animationDelay = retraso);
+    p.querySelector('.chispa').style.animationDelay = (LINEA.barrido + i * LINEA.escalon + 60) + 'ms';
+    cont.appendChild(p);
+  });
+
+  document.getElementById('guino').style.animationDelay = LINEA.guino + 'ms';
+</script>
+</body>
+</html>
