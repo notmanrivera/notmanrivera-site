@@ -1,0 +1,41 @@
+{
+  "folio": "COT-2026-001",
+  "fecha": "2026-09-29",
+  "cliente": "Boost Sports Marketing",
+  "atencion": "José Carlos Reynoso",
+  "proyecto": "Edición de video · Activación",
+  "vigencia": "15 días",
+  "items": [
+    {
+      "titulo": "Revisión y curaduría del material.",
+      "puntos": ["~120 videos de degustación y 10 a 15 de la caja misteriosa."],
+      "incluye": ["Selección de las mejores reacciones y momentos.", "Animación del logo de Boost para la intro."],
+      "unidades": 1,
+      "precio": 1500
+    },
+    {
+      "titulo": "Reels de degustación de salsas.",
+      "etiqueta": "(TikTok / IG)",
+      "puntos": ["4 reels verticales de 45 a 60 segundos."],
+      "incluye": ["Intro con logo animado, títulos y subtítulos.", "Montaje, transiciones animadas, zooms y efectos de sonido.", "Música con licencia para uso comercial."],
+      "unidades": 4,
+      "precio": 2000
+    },
+    {
+      "titulo": "Video de la caja misteriosa.",
+      "puntos": ["Storytelling de 60 a 90 segundos: la dinámica, quienes se animaron y quienes pasaron de largo.", "Mismo tratamiento gráfico que los reels."],
+      "unidades": 1,
+      "precio": 3000
+    }
+  ],
+  "descuento": { "concepto": "Descuento por paquete", "monto": 1000 },
+  "iva": 0.16,
+  "opciones": [
+    "3 reels de degustación: $7,500  ·  5 reels: $11,500",
+    "Video de la caja misteriosa por separado: $3,000"
+  ],
+  "notas": [
+    "Para comenzar es necesario compartir el material en bruto y los archivos de marca (logo, tipografías y colores).",
+    "Se entregará un primer reel en 4 días hábiles para aprobar el estilo; el resto, en 7 a 10 días hábiles a partir de esa aprobación."
+  ]
+}

@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Cotización — {{cliente}}</title>
+<!-- Plantilla de cotización, réplica del formato de Synteck (feb 2024). No se
+     edita a mano por cotización: los datos van en cotizaciones/<folio>.json y
+     render.js llena los huecos entre llaves dobles. Carta, una sola hoja, medidas en pt para
+     que coincidan con el PDF original. -->
+<style>
+  @page{size:612pt 792pt;margin:0}
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{width:612pt;height:792pt}
+  body{
+    position:relative;background:#fff;color:#202020;overflow:hidden;
+    /* FreeSans antes que Helvetica: en Linux "Helvetica" cae en Liberation
+       Sans, que es más ancha y descuadra la tabla. */
+    font-family:"Helvetica Neue",FreeSans,Helvetica,Arial,sans-serif;
+    -webkit-print-color-adjust:exact;print-color-adjust:exact;
+  }
+
+  /* Encabezado: la ilustración aclarada por un velo negro, como en el original */
+  .cabeza{position:absolute;left:0;top:0;width:612pt;height:135pt;overflow:hidden;background:#000}
+  .cabeza .ilus{position:absolute;left:0;top:-75pt;width:612pt;height:232.6pt;object-fit:cover}
+  .cabeza .velo{position:absolute;inset:0;background:rgba(0,0,0,.85)}
+  .cabeza .logo{position:absolute;left:235.7pt;top:35pt;width:140.6pt}
+  .tira{position:absolute;left:30pt;right:30pt;display:flex;justify-content:space-between;font-size:7pt}
+  .tira.arriba{top:8.5pt;color:#fff}
+  .tira.abajo{top:765pt;color:#8b8b8b}
+  .tira span{flex:1}.tira span:nth-child(2){text-align:center}.tira span:nth-child(3){text-align:right}
+
+  /* Marco negro del cuerpo */
+  .marco{position:absolute;left:9pt;top:135pt;width:594pt;height:648pt;border:1.5pt solid #000;border-top:0}
+
+  h1{position:absolute;left:28pt;top:148pt;font-size:54pt;font-weight:700;letter-spacing:-.5pt;line-height:1}
+  .regla{position:absolute;left:30pt;top:222.5pt;width:377pt;height:1pt;background:#202020}
+  .sub{position:absolute;left:30pt;top:228pt;font-size:12pt}
+  .sub b{font-weight:700}.sub i{font-style:normal;margin:0 10pt}
+  .folio{position:absolute;right:35pt;top:190pt;text-align:right;font-size:8pt;line-height:1.55;color:#555}
+  .folio b{color:#202020}
+
+  /* Tabla. Crece hacia abajo; render.js avisa si invade la zona de totales. */
+  .tabla{position:absolute;left:35pt;top:282pt;width:542pt;border-collapse:collapse}
+  .tabla th{font-size:8pt;font-weight:400;padding:0 0 7pt;border-bottom:.5pt solid #202020}
+  .tabla th:first-child{text-align:left;padding-left:19pt}
+  .c-u{width:70pt;text-align:center}.c-p{width:82pt;text-align:right;padding-right:12pt}.c-i{width:76pt;text-align:right}
+  .tabla td{vertical-align:top;font-size:11pt}
+  .tabla tr.item td{padding-top:9pt}
+  .desc b{font-style:italic;font-weight:500}
+  .desc em{font-weight:400}
+  .desc ul{list-style:none;margin:4pt 0 0 30pt;font-size:9.5pt;font-style:italic;line-height:1.3}
+  .desc ul li::before{content:"•";margin-right:5pt}
+  .desc .incl{margin:1pt 0 0 25pt;font-size:9.5pt;font-style:italic}
+  .desc ul.sub2{margin:1pt 0 0 30pt}
+  tr.desc-row td{padding-top:6pt}
+  tr.desc-row .desc{font-style:italic;font-size:10pt;color:#444;padding-left:25pt}
+
+  /* Totales */
+  .totales{position:absolute;right:35pt;top:590pt;width:161pt;font-size:11pt}
+  .totales .fila{display:flex;justify-content:space-between;padding:2pt 9pt}
+  .totales .total{margin-top:5pt;background:#646464;color:#fff;font-size:12pt;font-weight:700;padding:6pt 9pt}
+  .opciones{position:absolute;left:35pt;top:592pt;width:320pt;font-size:8.5pt;line-height:1.45;
+    border-left:2pt solid #646464;padding:3pt 0 3pt 9pt;color:#333}
+  .opciones b{color:#202020}
+
+  /* Condiciones */
+  h2{position:absolute;left:30pt;top:651pt;font-size:12pt;font-weight:500}
+  .notas{position:absolute;left:34pt;top:670pt;width:405pt;font-size:8pt;line-height:1.28;list-style:none}
+  .notas li{padding-left:8pt;text-indent:-8pt}
+  .notas li::before{content:"•";margin-right:4pt}
+  .notas b{font-weight:700}
+  /* Silueta plana gris claro; con grayscale+brightness el cromado del logo
+     casi desaparecía sobre blanco. */
+  .marca-agua{position:absolute;left:461pt;top:662pt;width:118pt;filter:brightness(0) invert(.84)}
+</style>
+</head>
+<body>
+  <div class="cabeza">
+    <img class="ilus" src="ilustracion.png" alt="">
+    <div class="velo"></div>
+    <img class="logo" src="logo.png" alt="NotMan">
+  </div>
+  <div class="tira arriba"><span>Cotización</span><span>{{fecha}}</span><span>{{cliente}}</span></div>
+  <div class="marco"></div>
+
+  <h1>Cotización</h1>
+  <div class="regla"></div>
+  <div class="sub"><b>{{cliente}}</b><i>|</i>{{proyecto}}</div>
+  <div class="folio">
+    Folio <b>{{folio}}</b><br>
+    Atención: <b>{{atencion}}</b><br>
+    Vigencia: <b>{{vigencia}}</b>
+  </div>
+
+  <table class="tabla">
+    <thead><tr><th>Descripción de servicio</th><th class="c-u">Unidades</th><th class="c-p">Precio</th><th class="c-i">Importe</th></tr></thead>
+    <tbody>
+{{filas}}
+    </tbody>
+  </table>
+
+{{opciones}}
+
+  <div class="totales">
+{{totales}}
+  </div>
+
+  <h2>Notas, Términos y Condiciones:</h2>
+  <ul class="notas">
+{{notas}}
+  </ul>
+  <img class="marca-agua" src="logo.png" alt="">
+
+  <div class="tira abajo"><span>Cotización</span><span>{{fecha}}</span><span>{{cliente}}</span></div>
+</body>
+</html>

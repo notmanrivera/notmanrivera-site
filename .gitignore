@@ -6,3 +6,8 @@ node_modules/
 # .github/workflows/deploy.yml) -- no se versiona, index.html es la unica
 # fuente de verdad.
 public/en/
+
+# PDFs de cotizaciones generados por scripts/cotizacion/render.js
+scripts/cotizacion/salida/
+scripts/cotizacion/.*.html
+scripts/cotizacion/privado.json
