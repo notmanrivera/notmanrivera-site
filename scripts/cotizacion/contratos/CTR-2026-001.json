@@ -4,14 +4,14 @@
   "fecha": "2026-09-30",
   "lugar": "Santiago de Querétaro, Querétaro",
   "titulo": "Contrato de prestación de servicios",
-  "prestador": { "nombre": "Rubén Núñez Rivera", "comercial": "NotMan" },
+  "prestador": { "nombre": "Rubén Núñez Rivera" },
   "cliente": {
     "comercial": "Boost Sports Marketing",
     "firma": "José Carlos Reynoso"
   },
   "declaraciones": {
     "prestador": [
-      "Ser persona física con capacidad legal para obligarse, dedicada profesionalmente al diseño gráfico, la animación (motion graphics 2D/3D) y la edición de video bajo el nombre comercial NotMan.",
+      "Ser persona física con capacidad legal para obligarse, dedicada profesionalmente al diseño gráfico, la animación (motion graphics 2D/3D) y la edición de video.",
       "Contar con los conocimientos, el equipo y la experiencia necesarios para prestar los servicios objeto de este contrato."
     ],
     "cliente": [

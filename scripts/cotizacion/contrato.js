@@ -94,7 +94,7 @@ function armar(k) {
 
   const P = k.prestador, Cl = k.cliente;
   const out = [];
-  out.push(`<p>Contrato de prestación de servicios que celebran, por una parte, <b>${esc(P.nombre)}</b> (${esc(P.comercial)}), a quien en lo sucesivo se denominará <b>“EL PRESTADOR”</b>, y por la otra, <b>${esc(Cl.comercial)}</b>, representada en este acto por <b>${esc(Cl.firma)}</b>, a quien en lo sucesivo se denominará <b>“EL CLIENTE”</b>, al tenor de las siguientes declaraciones y cláusulas.</p>`);
+  out.push(`<p>Contrato de prestación de servicios que celebran, por una parte, <b>${esc(P.nombre)}</b>${P.comercial ? ` (${esc(P.comercial)})` : ""}, a quien en lo sucesivo se denominará <b>“EL PRESTADOR”</b>, y por la otra, <b>${esc(Cl.comercial)}</b>, representada en este acto por <b>${esc(Cl.firma)}</b>, a quien en lo sucesivo se denominará <b>“EL CLIENTE”</b>, al tenor de las siguientes declaraciones y cláusulas.</p>`);
 
   out.push('<h2>Declaraciones</h2>');
   const decl = (quien, xs, extra) => `<h3>${quien} declara:</h3><ul class="decl">${xs.map((x, i) =>
@@ -115,7 +115,7 @@ function armar(k) {
   out.push(`<div class="firmas"><p>Leído que fue el presente contrato y enteradas las partes de su contenido y alcance, lo firman por duplicado en ${esc(k.lugar)}, el ${fechaLarga(k.fecha)}.</p>
     <div class="cols">
       <div class="col"><div class="raya"></div><em>EL CLIENTE</em><br><b>${esc(Cl.firma)}</b><br>En representación de ${esc(Cl.comercial)}</div>
-      <div class="col"><div class="raya"></div><em>EL PRESTADOR</em><br><b>${esc(P.nombre)}</b><br>${esc(P.comercial)}</div>
+      <div class="col"><div class="raya"></div><em>EL PRESTADOR</em><br><b>${esc(P.nombre)}</b><br>${P.comercial ? esc(P.comercial) : "Por su propio derecho"}</div>
     </div>
   </div>`);
 
