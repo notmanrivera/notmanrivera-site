@@ -50,6 +50,18 @@ function letra(n) {
   return `${palabras} pesos ${String(centavos).padStart(2, '0')}/100 M.N.`;
 }
 
+// ⚠️ Los datos bancarios NO se versionan: van en privado.json (en .gitignore),
+// por folio, porque quien recibe el pago y factura puede cambiar por cliente:
+//   { "contratos": { "CTR-2026-001": { "banco": "BBVA", "clabe": "...", "titular": "..." } } }
+// Los textos los usan con {{banco}}, {{clabe}} y {{titular}}. Solo la CLABE:
+// el número de tarjeta nunca va en un documento.
+function deposito(folio) {
+  const archivo = path.join(DIR, 'privado.json');
+  const p = fs.existsSync(archivo) ? JSON.parse(fs.readFileSync(archivo, 'utf8')) : {};
+  const d = (p.contratos || {})[folio];
+  return d ? { banco: d.banco, clabe: d.clabe, titular: d.titular } : {};
+}
+
 function fechaLarga(iso) {
   const [a, m, d] = iso.split('-').map(Number);
   return `${d} de ${MESES[m - 1]} de ${a}`;
@@ -72,6 +84,7 @@ function armar(k) {
     subtotal: dinero(subtotal), subtotalLetra: letra(subtotal), iva: dinero(iva),
     total: dinero(total), totalLetra: letra(total),
     anticipo: dinero(anticipo), finiquito: dinero(total - anticipo),
+    ...deposito(k.folio),
   };
 
   const texto = s => esc(s)
