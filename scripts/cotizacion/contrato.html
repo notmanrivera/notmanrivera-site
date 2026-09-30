@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Contrato — {{cliente}}</title>
+<!-- Plantilla de contrato con el mismo lenguaje visual que plantilla.html,
+     pero de varias hojas: el texto fluye y lo que se repite en cada hoja
+     (barra superior y marco) va con position:fixed. El pie con el número de
+     página lo pone contrato.js con el footerTemplate de Chromium. -->
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    background:#fff;color:#202020;
+    font-family:"Helvetica Neue",FreeSans,Helvetica,Arial,sans-serif;
+    -webkit-print-color-adjust:exact;print-color-adjust:exact;
+  }
+
+  /* Se repiten en cada hoja */
+  .barra{position:fixed;left:0;top:0;width:612pt;height:22pt;background:#000;z-index:1}
+  .tira{position:fixed;left:30pt;right:30pt;top:8.5pt;display:flex;justify-content:space-between;font-size:7pt;color:#fff;z-index:3}
+  .tira span{flex:1}.tira span:nth-child(2){text-align:center}.tira span:nth-child(3){text-align:right}
+  .marco{position:fixed;left:9pt;top:0;width:594pt;bottom:0;border:1.5pt solid #000;border-top:0}
+
+  /* Solo en la primera hoja: tapa la barra */
+  .cabeza{position:absolute;left:0;top:0;width:612pt;height:135pt;overflow:hidden;background:#000;z-index:2}
+  .cabeza .ilus{position:absolute;left:0;top:-75pt;width:612pt;height:232.6pt;object-fit:cover}
+  .cabeza .velo{position:absolute;inset:0;background:rgba(0,0,0,.85)}
+  .cabeza .logo{position:absolute;left:235.7pt;top:35pt;width:140.6pt}
+
+  /* thead/tfoot vacíos que Chromium repite en cada hoja = márgenes del texto */
+  table.flujo{width:100%;border-collapse:collapse}
+  .flujo thead td{height:42pt}
+  .flujo tfoot td{height:26pt}
+  .flujo > tbody > tr > td{padding:0 42pt 0 38pt}
+
+  .portada{height:106pt}
+  h1{font-size:54pt;font-weight:700;letter-spacing:-.5pt;line-height:1;margin-left:-10pt}
+  .regla{width:377pt;height:1pt;background:#202020;margin:10pt 0 0 -8pt}
+  .sub{font-size:12pt;margin:5pt 0 0 -8pt}
+  .sub b{font-weight:700}.sub i{font-style:normal;margin:0 10pt}
+  .folio{position:absolute;right:-7pt;top:148pt;text-align:right;font-size:8pt;line-height:1.55;color:#555}
+  .folio b{color:#202020}
+  .encabezado{position:relative;margin-bottom:18pt}
+
+  .texto{font-size:9.5pt;line-height:1.5;text-align:justify;hyphens:auto}
+  .texto p{margin-bottom:6pt}
+  .texto b{font-weight:700}
+  h2{font-size:12pt;font-weight:500;margin:16pt 0 8pt;break-after:avoid}
+  h3{font-size:9.5pt;font-weight:700;margin:12pt 0 4pt;break-after:avoid;text-transform:uppercase;letter-spacing:.4pt}
+  h3 span{color:#646464;margin-right:6pt}
+  .decl{margin:0 0 6pt 0}
+  .decl li{list-style:none;padding-left:16pt;text-indent:-16pt;margin-bottom:4pt}
+  .decl li span{display:inline-block;width:16pt;text-indent:0;color:#646464}
+  .clausula{break-inside:auto}
+  .clausula p.inciso{padding-left:14pt}
+
+  .linea{display:inline-block;min-width:120pt;border-bottom:.5pt solid #202020;height:11pt;vertical-align:bottom}
+
+  /* Datos del cliente para llenar a mano */
+  .datos{margin:4pt 0 10pt 16pt;font-size:9pt;break-inside:avoid}
+  .datos .f{display:flex;align-items:flex-end;height:21pt}
+  .datos .f span{width:118pt;color:#555;padding-bottom:1pt}
+  .datos .f div{flex:1;border-bottom:.5pt solid #202020;padding:0 0 1pt 4pt;font-weight:700}
+
+  /* Tabla de entregables */
+  .tabla{width:100%;border-collapse:collapse;margin:6pt 0 8pt;font-size:9pt;break-inside:avoid}
+  .tabla th{font-size:7.5pt;font-weight:400;padding:0 0 5pt;border-bottom:.5pt solid #202020;text-align:right}
+  .tabla th:first-child{text-align:left;padding-left:4pt}
+  .tabla td{padding:5pt 0 0;vertical-align:top;text-align:right}
+  .tabla td:first-child{text-align:left;padding-left:4pt}
+  .tabla td:first-child b{font-style:italic;font-weight:500}
+  .tabla td:first-child small{display:block;font-size:8pt;font-style:italic;color:#555;margin-top:1pt}
+  .tabla .c-u{width:52pt;text-align:center}.tabla .c-p,.tabla .c-i{width:74pt}
+  .tabla tr.dto td{font-style:italic;color:#444}
+  .tabla tr.sep td{border-top:.5pt solid #bbb;padding-top:6pt}
+  .tabla tr.tot td{padding-top:4pt}
+  .tabla tr.tot .caja{background:#646464;color:#fff;font-weight:700;font-size:10pt;padding:5pt 6pt 5pt 8pt;display:flex;justify-content:space-between}
+
+  .firmas{break-inside:avoid;margin-top:10pt}
+  .firmas p{margin-bottom:6pt}
+  .firmas .cols{display:flex;gap:50pt;padding:0 14pt}
+  .firmas .col{flex:1;text-align:center;font-size:9pt;line-height:1.45}
+  .firmas .col .raya{border-bottom:.8pt solid #202020;height:52pt;margin-bottom:6pt}
+  .firmas .col b{font-size:10pt}
+  .firmas .col em{font-style:normal;color:#646464;font-size:8pt;letter-spacing:.6pt}
+</style>
+</head>
+<body>
+  <div class="barra"></div>
+  <div class="tira"><span>Contrato</span><span>{{fechaCorta}}</span><span>{{cliente}}</span></div>
+  <div class="marco"></div>
+  <div class="cabeza">
+    <img class="ilus" src="ilustracion.png" alt="">
+    <div class="velo"></div>
+    <img class="logo" src="logo.png" alt="NotMan">
+  </div>
+
+  <table class="flujo">
+    <thead><tr><td></td></tr></thead>
+    <tfoot><tr><td></td></tr></tfoot>
+    <tbody><tr><td>
+      <div class="encabezado">
+        <div class="portada"></div>
+        <h1>Contrato</h1>
+        <div class="regla"></div>
+        <div class="sub"><b>{{cliente}}</b><i>|</i>Prestación de servicios</div>
+        <div class="folio">
+          Folio <b>{{folio}}</b><br>
+          Cotización: <b>{{cotizacion}}</b><br>
+          Fecha: <b>{{fechaCorta}}</b>
+        </div>
+      </div>
+
+      <div class="texto">
+{{cuerpo}}
+      </div>
+    </td></tr></tbody>
+  </table>
+</body>
+</html>

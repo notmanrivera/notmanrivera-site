@@ -1,0 +1,106 @@
+{
+  "folio": "CTR-2026-001",
+  "cotizacion": "COT-2026-001",
+  "fecha": "2026-09-30",
+  "lugar": "Santiago de Querétaro, Querétaro",
+  "titulo": "Contrato de prestación de servicios",
+  "prestador": { "nombre": "Rubén Núñez Rivera", "comercial": "NotMan" },
+  "cliente": {
+    "comercial": "Boost Sports Marketing",
+    "firma": "José Carlos Reynoso"
+  },
+  "declaraciones": {
+    "prestador": [
+      "Ser persona física con capacidad legal para obligarse, dedicada profesionalmente al diseño gráfico, la animación (motion graphics 2D/3D) y la edición de video bajo el nombre comercial NotMan.",
+      "Contar con los conocimientos, el equipo y la experiencia necesarios para prestar los servicios objeto de este contrato."
+    ],
+    "cliente": [
+      "Ser una persona con capacidad legal para obligarse, con los siguientes datos:",
+      "Que su representante cuenta con facultades suficientes para celebrar este contrato, y que tiene interés en contratar los servicios de EL PRESTADOR en los términos aquí establecidos."
+    ]
+  },
+  "clausulas": [
+    {
+      "titulo": "Objeto",
+      "parrafos": [
+        "EL PRESTADOR realizará para EL CLIENTE la edición de video del proyecto **\"Edición de video · Activación\"**, conforme a la cotización **{{cotizacion}}** de fecha {{fechaCotizacion}}, que EL CLIENTE aprobó en su versión completa y que forma parte de este contrato. Los entregables son:"
+      ],
+      "tabla": true
+    },
+    {
+      "titulo": "Precio",
+      "parrafos": [
+        "EL CLIENTE pagará a EL PRESTADOR la cantidad de **{{subtotal}} ({{subtotalLetra}})** más el Impuesto al Valor Agregado (16%) por {{iva}}, para un total de **{{total}} ({{totalLetra}})**.",
+        "Este precio cubre únicamente el alcance descrito en la cláusula primera. Cualquier pieza, cambio de alcance o ajuste adicional se cotizará por separado y requerirá aceptación por escrito de ambas partes."
+      ]
+    },
+    {
+      "titulo": "Forma de pago",
+      "parrafos": [
+        "El pago se hará en dos exhibiciones: **50% ({{anticipo}}, IVA incluido) como anticipo** al firmar este contrato, y **50% ({{finiquito}}, IVA incluido) contra la entrega final** de las piezas.",
+        "Los pagos se harán mediante transferencia a la cuenta que EL PRESTADOR indique por escrito. Por cada pago, EL CLIENTE recibirá el comprobante fiscal (CFDI) correspondiente, que podrá ser emitido por un tercero designado por EL PRESTADOR, sin que ello modifique las obligaciones de las partes en este contrato."
+      ]
+    },
+    {
+      "titulo": "Material e insumos",
+      "parrafos": [
+        "EL CLIENTE entregará a EL PRESTADOR el material en bruto (aproximadamente 120 videos de degustación y de 10 a 15 videos de la caja misteriosa) y los archivos de marca (logotipo, tipografías y colores) a más tardar el **1 de octubre de 2026**.",
+        "EL CLIENTE garantiza que es titular de los derechos sobre dicho material o que cuenta con las autorizaciones necesarias para usarlo, incluido el consentimiento de las personas que aparecen en los videos para el uso de su imagen y voz con fines publicitarios. EL CLIENTE será responsable de cualquier reclamación de terceros derivada de ese material."
+      ]
+    },
+    {
+      "titulo": "Plazos de entrega",
+      "parrafos": [
+        "Los plazos corren a partir de que EL PRESTADOR reciba el material completo y el anticipo, lo que ocurra al último:",
+        "a) Un primer reel, en un plazo de **4 días hábiles**, para que EL CLIENTE apruebe el estilo gráfico.",
+        "b) Los reels restantes y el video de la caja misteriosa, en un plazo de **7 a 10 días hábiles** a partir de la aprobación del estilo.",
+        "Los retrasos en la entrega del material, en los pagos o en las respuestas de EL CLIENTE recorrerán estos plazos en la misma medida."
+      ]
+    },
+    {
+      "titulo": "Revisiones y ajustes",
+      "parrafos": [
+        "Cada pieza incluye **dos rondas de ajustes**. EL CLIENTE enviará sus comentarios de cada ronda de forma consolidada y por escrito. Los ajustes adicionales, o los cambios que modifiquen el concepto ya aprobado, se cotizarán por separado.",
+        "Si EL CLIENTE no envía comentarios sobre una entrega dentro de los 5 días hábiles siguientes, la pieza se considerará aprobada."
+      ]
+    },
+    {
+      "titulo": "Entregables y formatos",
+      "parrafos": [
+        "Las piezas se entregarán en formato MP4 (H.264), en versión vertical para TikTok e Instagram y listas para publicarse, a través de un enlace de descarga. Los archivos de proyecto editables no forman parte de la entrega, salvo acuerdo por escrito."
+      ]
+    },
+    {
+      "titulo": "Propiedad de los videos",
+      "parrafos": [
+        "Una vez cubierto el pago total, los videos finales serán propiedad de EL CLIENTE, quien podrá usarlos, publicarlos y difundirlos libremente, en cualquier medio y sin límite de tiempo ni territorio.",
+        "La música incluida cuenta con licencia para uso comercial y se entrega integrada a los videos. EL CLIENTE podrá usarla solo como parte de estas piezas, conforme a los términos de la licencia, y no por separado.",
+        "EL PRESTADOR conserva el derecho de mostrar los videos, o fragmentos de ellos, en su portafolio, sitio web y redes sociales como muestra de su trabajo, una vez que EL CLIENTE los haya publicado."
+      ]
+    },
+    {
+      "titulo": "Cancelación",
+      "parrafos": [
+        "Si EL CLIENTE cancela el proyecto una vez iniciados los trabajos, el anticipo no será reembolsable. EL PRESTADOR entregará las piezas que para entonces estén terminadas y aprobadas."
+      ]
+    },
+    {
+      "titulo": "Confidencialidad",
+      "parrafos": [
+        "EL PRESTADOR mantendrá como confidencial el material en bruto y la información de EL CLIENTE, y no la compartirá con terceros ni la usará para fines distintos a este contrato, salvo lo previsto en la cláusula de propiedad sobre el uso en portafolio."
+      ]
+    },
+    {
+      "titulo": "Relación entre las partes",
+      "parrafos": [
+        "EL PRESTADOR actúa de manera independiente, con sus propios medios. Este contrato no crea ninguna relación laboral, de subordinación ni de sociedad entre las partes."
+      ]
+    },
+    {
+      "titulo": "Jurisdicción",
+      "parrafos": [
+        "Para la interpretación y el cumplimiento de este contrato, las partes se someten a las leyes y a los tribunales competentes de la ciudad de Santiago de Querétaro, Querétaro, y renuncian a cualquier otro fuero que pudiera corresponderles."
+      ]
+    }
+  ]
+}
