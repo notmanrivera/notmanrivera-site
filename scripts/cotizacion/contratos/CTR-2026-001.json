@@ -40,7 +40,8 @@
       "titulo": "Forma de pago",
       "parrafos": [
         "El pago se hará en dos exhibiciones: **50% ({{anticipo}}, IVA incluido) como anticipo** al firmar este contrato, y **50% ({{finiquito}}, IVA incluido) contra la entrega final** de las piezas.",
-        "Los pagos se harán mediante transferencia a la cuenta **{{banco}} · CLABE {{clabe}}**, a nombre de **{{titular}}**, tercero designado por EL PRESTADOR para recibir los pagos y emitir el comprobante fiscal (CFDI) correspondiente a cada uno. Esta designación no modifica las obligaciones de las partes en este contrato. Cualquier cambio de cuenta deberá notificarse por escrito."
+        "Los pagos se harán mediante transferencia a la cuenta **{{banco}} · CLABE {{clabe}}**, a nombre de **{{titular}}**, tercero designado por EL PRESTADOR para recibir los pagos y emitir el comprobante fiscal (CFDI) correspondiente a cada uno. Esta designación no modifica las obligaciones de las partes en este contrato. Cualquier cambio de cuenta deberá notificarse por escrito.",
+        "Para la emisión de cada CFDI, EL CLIENTE entregará su **Constancia de Situación Fiscal** vigente e indicará por escrito el uso del CFDI y el concepto con el que deberá expedirse, a más tardar al firmar este contrato."
       ]
     },
     {

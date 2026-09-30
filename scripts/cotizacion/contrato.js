@@ -115,7 +115,7 @@ function armar(k) {
   out.push(decl('I. EL PRESTADOR', k.declaraciones.prestador));
   const campo = (etq, v = '') => `<div class="f"><span>${etq}</span><div>${esc(v)}</div></div>`;
   const datos = `<div class="datos">${campo('Razón social')}${campo('Nombre comercial', Cl.comercial)}${campo('RFC')}` +
-    `${campo('Domicilio fiscal')}${campo('')}${campo('Representante', Cl.firma)}${campo('Cargo')}${campo('Correo electrónico')}</div>`;
+    `${campo('Domicilio fiscal')}${campo('')}${campo('Régimen fiscal')}${campo('Uso del CFDI')}${campo('Representante', Cl.firma)}${campo('Cargo')}${campo('Correo para facturas')}</div>`;
   out.push(decl('II. EL CLIENTE', k.declaraciones.cliente, datos));
   out.push('<p>Expuesto lo anterior, las partes se sujetan a las siguientes:</p>');
 
