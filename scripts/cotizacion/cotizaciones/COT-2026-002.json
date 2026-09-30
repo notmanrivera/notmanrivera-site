@@ -1,0 +1,55 @@
+{
+  "folio": "COT-2026-002",
+  "fecha": "2026-09-30",
+  "cliente": "NOVAQ Infraestructura",
+  "atencion": "Arq. Fabián Navarro",
+  "proyecto": "Gestión de redes sociales",
+  "vigencia": "15 días",
+  "paquetes": true,
+  "items": [
+    {
+      "titulo": "Esencial.",
+      "etiqueta": "(LinkedIn + Instagram)",
+      "puntos": [
+        "8 publicaciones al mes: 6 posts o carruseles y 2 reels.",
+        "8 historias al mes.",
+        "Contenido a partir de renders, fotos y videos de NOVAQ."
+      ],
+      "precio": 7500
+    },
+    {
+      "titulo": "Profesional.",
+      "etiqueta": "(LinkedIn + Instagram + Facebook)",
+      "puntos": [
+        "12 publicaciones al mes: 8 posts o carruseles y 4 reels.",
+        "10 historias al mes.",
+        "1 visita a obra al mes para toma de foto y video.",
+        "Gestión de pauta publicitaria."
+      ],
+      "precio": 11900
+    },
+    {
+      "titulo": "Corporativo.",
+      "etiqueta": "(LinkedIn + Instagram + Facebook)",
+      "puntos": [
+        "16 publicaciones al mes: 10 posts o carruseles y 6 reels.",
+        "12 historias al mes.",
+        "2 visitas a obra al mes para toma de foto y video.",
+        "LinkedIn personal del director: 4 publicaciones al mes.",
+        "Gestión de pauta y respuesta a comentarios y mensajes."
+      ],
+      "precio": 17900
+    }
+  ],
+  "iva": 0.16,
+  "incluyen": "**Todos los paquetes incluyen:** optimización de perfiles y plantillas con la imagen de NOVAQ (sin costo adicional), estrategia y calendario de contenido, copys enfocados en clientes corporativos, programación de publicaciones y reporte mensual de métricas.",
+  "notas": [
+    "**LinkedIn es la red principal.** El contenido se enfoca en empresas que buscan proyectos llave en mano o un contratista integral, con énfasis en oficinas y consultorios.",
+    "El presupuesto de pauta publicitaria no está incluido; se paga directamente a la plataforma. Visitas dentro de la zona metropolitana de Querétaro; fuera de ella se cotizan viáticos."
+  ],
+  "condiciones": [
+    "Incluye dos rondas de ajustes por pieza. Cambios adicionales o de alcance se cotizan por separado.",
+    "Precios mensuales en pesos mexicanos, **más IVA (16%)**. **Pago mensual por adelantado**, al inicio de cada mes. Sin plazo mínimo de contratación."
+  ],
+  "deposito": false
+}

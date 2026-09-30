@@ -62,6 +62,8 @@
   .opciones{position:absolute;left:35pt;top:592pt;width:320pt;font-size:8.5pt;line-height:1.45;
     border-left:2pt solid #646464;padding:3pt 0 3pt 9pt;color:#333}
   .opciones b{color:#202020}
+  /* En cotizaciones por paquetes no hay totales: la caja ocupa el ancho */
+  .opciones.ancha{width:542pt}
 
   /* Condiciones */
   h2{position:absolute;left:30pt;top:651pt;font-size:12pt;font-weight:500}
@@ -93,7 +95,7 @@
   </div>
 
   <table class="tabla">
-    <thead><tr><th>Descripción de servicio</th><th class="c-u">Unidades</th><th class="c-p">Precio</th><th class="c-i">Importe</th></tr></thead>
+    <thead><tr><th>Descripción de servicio</th><th class="c-u">{{thU}}</th><th class="c-p">{{thP}}</th><th class="c-i">{{thI}}</th></tr></thead>
     <tbody>
 {{filas}}
     </tbody>

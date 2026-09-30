@@ -57,7 +57,25 @@ function fechaLarga(iso) {
   return `${d} / ${MESES[m - 1]} / ${a}`;
 }
 
+// Cotización por paquetes ("paquetes": true): cada concepto es una opción
+// excluyente con su precio mensual, así que no se suman ni hay caja de
+// totales; en su lugar, "incluyen" lista lo que traen todos.
+function armarPaquetes(c, tasa) {
+  const filas = c.items.map((it, i) => `      <tr class="item">
+        <td class="desc"><b>${i + 1}. ${texto(it.titulo)}</b>${it.etiqueta ? ` <em>${texto(it.etiqueta)}</em>` : ''}
+          ${lista('', it.puntos)}
+        </td>
+        <td class="c-u">${esc(it.periodo || 'Mensual')}</td><td class="c-p">${dinero(it.precio)}</td><td class="c-i">${dinero(Math.round(it.precio * (1 + tasa) * 100) / 100)}</td>
+      </tr>`);
+  const opciones = c.incluyen
+    ? `  <div class="opciones ancha">\n    ${texto(c.incluyen)}\n  </div>`
+    : '';
+  return { filas, opciones, totales: [], th: ['Periodo', 'Precio', tasa ? `Con IVA ${Math.round(tasa * 100)}%` : 'Total'] };
+}
+
 function armar(c) {
+  const tasa = c.iva === undefined ? 0.16 : c.iva;
+  if (c.paquetes) return rellenar(c, armarPaquetes(c, tasa), {});
   const filas = c.items.map((it, i) => `      <tr class="item">
         <td class="desc"><b>${i + 1}. ${texto(it.titulo)}</b>${it.etiqueta ? ` <em>${texto(it.etiqueta)}</em>` : ''}
           ${lista('', it.puntos)}
@@ -73,7 +91,6 @@ function armar(c) {
   }
 
   const subtotal = c.items.reduce((s, it) => s + it.unidades * it.precio, 0) - (c.descuento ? c.descuento.monto : 0);
-  const tasa = c.iva === undefined ? 0.16 : c.iva;
   const iva = Math.round(subtotal * tasa * 100) / 100;
   const fila = (k, v, extra = '') => `    <div class="fila${extra}"><span>${k}</span><span>${dinero(v)}</span></div>`;
   const totales = [fila('Subtotal:', subtotal)];
@@ -84,9 +101,17 @@ function armar(c) {
     ? `  <div class="opciones">\n    <b>También disponible</b>${tasa ? ' (precios más IVA)' : ''}:<br>\n    ${c.opciones.map(texto).join('<br>\n    ')}\n  </div>`
     : '';
 
-  const notas = [...(c.notas || []), ...NOTAS_FIJAS, notaDeposito()].map(n => `    <li>${texto(n)}</li>`).join('\n');
+  return rellenar(c, { filas, opciones, totales, th: ['Unidades', 'Precio', 'Importe'] }, { subtotal, iva, total: subtotal + iva });
+}
+
+// "condiciones" sustituye a NOTAS_FIJAS cuando no aplican (p. ej. sin factura
+// o pago mensual), y "deposito": false quita la nota con la CLABE.
+function rellenar(c, { filas, opciones, totales, th }, montos) {
+  const notas = [...(c.notas || []), ...(c.condiciones || NOTAS_FIJAS), ...(c.deposito === false ? [] : [notaDeposito()])]
+    .map(n => `    <li>${texto(n)}</li>`).join('\n');
 
   const valores = {
+    thU: th[0], thP: th[1], thI: th[2],
     cliente: esc(c.cliente), proyecto: esc(c.proyecto), folio: esc(c.folio),
     atencion: esc(c.atencion), vigencia: esc(c.vigencia || '15 días'),
     fecha: fechaLarga(c.fecha || new Date().toISOString().slice(0, 10)),
@@ -97,7 +122,7 @@ function armar(c) {
       if (!(k in valores)) throw new Error(`La plantilla pide {{${k}}} y no hay dato`);
       return valores[k];
     });
-  return { html, subtotal, iva, total: subtotal + iva };
+  return { html, ...montos };
 }
 
 (async () => {
@@ -132,5 +157,5 @@ function armar(c) {
     fs.rmSync(tmp, { force: true });
   }
   console.log(`OK  ${path.relative(process.cwd(), pdf)}`);
-  console.log(`    Subtotal ${dinero(subtotal)}  IVA ${dinero(iva)}  Total ${dinero(total)}`);
+  if (subtotal !== undefined) console.log(`    Subtotal ${dinero(subtotal)}  IVA ${dinero(iva)}  Total ${dinero(total)}`);
 })().catch(e => { console.error(e.message || e); process.exit(1); });
