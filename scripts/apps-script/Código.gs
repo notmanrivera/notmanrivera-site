@@ -306,7 +306,7 @@ function firmaPara(esIngles) {
     if (r.getResponseCode() === 200) {
       const html = r.getContentText('UTF-8');
       const a = html.indexOf('<table'), b = html.lastIndexOf('</table>');
-      if (a !== -1 && b > a) firma = html.slice(a, b + '</table>'.length);
+      if (a !== -1 && b > a) firma = descifrarCorreosCloudflare(html.slice(a, b + '</table>'.length));
     }
   } catch (e) {
     Logger.log('No se pudo leer la firma del sitio (' + clave + '): ' + e.message);
@@ -314,6 +314,29 @@ function firmaPara(esIngles) {
   if (!firma) firma = firmaGmail();
   FIRMA_SITIO_CACHE[clave] = firma;
   return firma;
+}
+
+/**
+ * Deshace la protección de correos de Cloudflare: cambia el link a
+ * /cdn-cgi/l/email-protection#… por mailto: y "[email protected]" por la
+ * dirección. En el navegador lo hace un JavaScript; en un correo no hay.
+ * Las páginas de firma ya excluyen el correo con email_off; esto es la red
+ * por si alguien vuelve a quitar esas marcas.
+ */
+function descifrarCorreosCloudflare(html) {
+  const descifra = function (hex) {
+    const clave = parseInt(hex.substr(0, 2), 16);
+    let correo = '';
+    for (let i = 2; i < hex.length; i += 2) {
+      correo += String.fromCharCode(parseInt(hex.substr(i, 2), 16) ^ clave);
+    }
+    return correo;
+  };
+  return String(html)
+    .replace(/href="\/cdn-cgi\/l\/email-protection#([0-9a-f]+)"/gi,
+             function (_, hex) { return 'href="mailto:' + descifra(hex) + '"'; })
+    .replace(/<span class="__cf_email__" data-cfemail="([0-9a-f]+)">[^<]*<\/span>/gi,
+             function (_, hex) { return descifra(hex); });
 }
 
 /**
