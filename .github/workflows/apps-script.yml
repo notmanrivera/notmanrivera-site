@@ -1,0 +1,61 @@
+name: Subir Apps Script de prospección
+
+# Sube scripts/apps-script/ al proyecto de Apps Script ligado a la hoja de
+# prospección cada vez que cambia en main. Reemplaza el `clasp push` a mano
+# desde la Mac.
+#
+# Necesita el secreto CLASPRC_JSON: el contenido de ~/.clasprc.json de la Mac
+# después de `clasp login` con hola@notmanrivera.com. Si se revoca el acceso
+# (o se vuelve a hacer `clasp login`), hay que volver a copiarlo.
+#
+# ⚠️ El push reemplaza TODO el proyecto con lo que hay en la carpeta: lo que
+# se edite a mano en el editor de Apps Script se pierde en el siguiente push.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/apps-script/**'
+  workflow_dispatch: {}
+
+concurrency:
+  group: apps-script
+  cancel-in-progress: false
+
+jobs:
+  push:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      # Los 4 archivos juntos, como los ve Apps Script: un error de sintaxis
+      # en cualquiera tumba todo el proyecto, incluido el envío de las 9 am.
+      - name: Revisar sintaxis
+        working-directory: scripts/apps-script
+        run: |
+          cat *.gs > /tmp/todo.js
+          node --check /tmp/todo.js
+          echo "Sintaxis OK"
+
+      - name: Instalar clasp
+        run: npm install -g @google/clasp
+
+      - name: Credenciales de clasp
+        env:
+          CLASPRC_JSON: ${{ secrets.CLASPRC_JSON }}
+        run: |
+          if [ -z "$CLASPRC_JSON" ]; then
+            echo "::error::Falta el secreto CLASPRC_JSON (ver el comentario al inicio de este archivo)."
+            exit 1
+          fi
+          printf '%s' "$CLASPRC_JSON" > ~/.clasprc.json
+
+      - name: clasp push
+        working-directory: scripts/apps-script
+        run: clasp push --force

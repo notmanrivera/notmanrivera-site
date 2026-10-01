@@ -24,8 +24,13 @@ const CONFIG = {
   // 'enviar'   → envía directo, sin que nadie lo lea antes.
   MODO: 'enviar',
 
-  // En modo 'enviar', solo salen las filas con "sí" en la columna Aprobado.
+  // En modo 'enviar', solo salen las filas aprobadas. Una fila está aprobada si
+  // tiene "sí" en Aprobado, o -- con APROBACION_AUTOMATICA -- si la agregó la
+  // rutina diaria de Claude ("Generado por Claude" en Notas) con Verificación
+  // 'safe' y nadie escribió "no" en Aprobado. Para frenar una fila: "no".
+  // Para volver a aprobar todo a mano: APROBACION_AUTOMATICA: false.
   EXIGIR_APROBACION: true,
+  APROBACION_AUTOMATICA: true,
 
   MAX_POR_DIA: 10,       // escalón del dominio nuevo; súbelo a 20 en un par de semanas
   PAUSA_MIN_SEG: 5,
@@ -94,7 +99,7 @@ function procesarPendientes() {
     // el código. Ver yaProcesada().
     if (yaProcesada(estado)) { cerradas++; continue; }
 
-    const problema = validar(email, asunto, cuerpo, aprobado);
+    const problema = validar(email, asunto, cuerpo, aprobado, datos[i]);
     if (problema) {
       if (problema !== 'pendiente de aprobación') {
         marcar(hoja, fila, 'Omitido', problema);
@@ -204,7 +209,7 @@ function contarListas(datos) {
   for (let i = 0; i < datos.length; i++) {
     const [empresa, email, asunto, cuerpo, aprobado, estado] = datos[i];
     if (yaProcesada(estado)) continue;
-    if (validar(email, asunto, cuerpo, aprobado)) continue;
+    if (validar(email, asunto, cuerpo, aprobado, datos[i])) continue;
     if (String(datos[i][COL.VERIFICACION - 1] || '').trim().toLowerCase() !== 'safe') continue;
     n++;
   }
@@ -396,7 +401,7 @@ function ensayoFirma() {
 // ══════════════════════════════════════════════════════════════
 //  APOYO
 // ══════════════════════════════════════════════════════════════
-function validar(email, asunto, cuerpo, aprobado) {
+function validar(email, asunto, cuerpo, aprobado, filaDatos) {
   const e = String(email || '').trim();
   if (!e) return 'sin correo';
   if (!/^[^@\s]+@[^@\s]+\.[a-z]{2,}$/i.test(e)) return 'correo inválido';
@@ -406,12 +411,26 @@ function validar(email, asunto, cuerpo, aprobado) {
   if (!c) return 'sin cuerpo';
   if (/\{\{|\[\[|\bXXXX?\b|\[nombre\]|\[empresa\]/i.test(c)) return 'texto con marcadores sin llenar';
 
-  if (CONFIG.MODO === 'enviar' && CONFIG.EXIGIR_APROBACION) {
-    if (!/^(s[ií]|yes|ok|x|1|true)$/i.test(String(aprobado || '').trim())) {
-      return 'pendiente de aprobación';
-    }
+  if (CONFIG.MODO === 'enviar' && CONFIG.EXIGIR_APROBACION && !estaAprobada(aprobado, filaDatos)) {
+    return 'pendiente de aprobación';
   }
   return null;
+}
+
+/**
+ * "sí" explícito siempre aprueba y "no" explícito siempre frena. Vacío
+ * aprueba solo con APROBACION_AUTOMATICA y solo si la fila la agregó la
+ * rutina diaria con el correo verificado en el sitio de la empresa: las filas
+ * viejas de Spark o las agregadas a mano siguen necesitando "sí".
+ */
+function estaAprobada(aprobado, filaDatos) {
+  const a = String(aprobado || '').trim();
+  if (/^no$/i.test(a)) return false;
+  if (/^(s[ií]|yes|ok|x|1|true)$/i.test(a)) return true;
+  if (a || !CONFIG.APROBACION_AUTOMATICA || !filaDatos) return false;
+  const notas = String(filaDatos[COL.NOTAS - 1] || '');
+  const verificacion = String(filaDatos[COL.VERIFICACION - 1] || '').trim().toLowerCase();
+  return notas.indexOf('Generado por Claude') !== -1 && verificacion === 'safe';
 }
 
 function correosYaUsados(datos) {
@@ -482,7 +501,7 @@ function ensayoUtm() {
   for (let i = 0; i < datos.length; i++) {
     const [empresa, email, asunto, cuerpo, aprobado, estado] = datos[i];
     if (yaProcesada(estado)) { cerradas++; continue; }
-    const prob = validar(email, asunto, cuerpo, aprobado);
+    const prob = validar(email, asunto, cuerpo, aprobado, datos[i]);
     if (prob) {
       if (prob === 'pendiente de aprobación') sinAprobar++;
       else Logger.log('Fila ' + (i + 2) + ' · ' + empresa + ' → OMITIDA: ' + prob);

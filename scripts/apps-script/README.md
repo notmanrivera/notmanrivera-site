@@ -15,32 +15,25 @@ Apps Script se pierde en el siguiente `clasp push`.
 Las filas nuevas las agrega una rutina diaria de Claude (7:45 am) con
 Verificación `safe`. `procesarPendientes` solo manda filas aprobadas **y** `safe`.
 
-## Subir cambios (desde la Mac)
+## Cómo se sube
 
-⚠️ Todo con la cuenta **hola@notmanrivera.com**. Con otra cuenta, clasp sube
-a otro proyecto o el script manda correos desde otra bandeja (pasó el 29/9).
-
-Una sola vez:
-
-1. Instala Node.js (nodejs.org) y luego `npm install -g @google/clasp`.
-2. Entra a https://script.google.com/home/usersettings con hola@ y activa
-   **Google Apps Script API**.
-3. `clasp login` y elige hola@notmanrivera.com.
-`.clasp.json` ya trae el ID del proyecto (Configuración del proyecto → ID de
-la secuencia de comandos).
-
-Cada vez que haya cambios:
-
-```
-cd notmanrivera-site
-git pull
-cd scripts/apps-script
-clasp push
-```
+**Solo.** Cada push a `main` que toque esta carpeta corre
+`.github/workflows/apps-script.yml`: revisa la sintaxis de los 4 archivos
+juntos y hace `clasp push`. Necesita el secreto `CLASPRC_JSON` en GitHub
+(contenido de `~/.clasprc.json` después de `clasp login` con hola@).
 
 `clasp push` **reemplaza todo el proyecto** con lo que hay en esta carpeta: un
 archivo que exista en el editor y no aquí se borra. Los triggers y las
 propiedades del proyecto no se tocan.
 
-Después del push, en el editor corre `ensayoUtm` y `ensayoEnvioBorradores`;
-ninguno manda nada y los dos tienen que terminar sin errores.
+A mano, solo si la automatización falla (desde la Mac, con hola@):
+
+```
+cd /Users/rubenrivera/Desktop/notmanrivera-site && git pull && cd scripts/apps-script && clasp push
+```
+
+## Aprobación
+
+Con `APROBACION_AUTOMATICA` (Código.gs), las filas que agrega la rutina diaria
+con Verificación `safe` salen a las 9 am sin "sí". Para frenar una: "no" en
+Aprobado. Las filas viejas o agregadas a mano siguen necesitando "sí".
