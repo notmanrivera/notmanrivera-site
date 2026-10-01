@@ -125,8 +125,8 @@ function generarBorradoresSeguimiento() {
 
     try {
       const esIngles = String(datos[i][COL.IDIOMA - 1] || '').trim().toLowerCase() === 'en';
-      const texto = cuerpoSeguimiento(empresa, esIngles, datos[i][COL_TIPO - 1]);
-      responderEnHilo(orig, asunto, texto, enviando);
+      const cuerpo = cuerpoSeguimiento(empresa, esIngles, datos[i][COL_TIPO - 1]);
+      responderEnHilo(orig, asunto, cuerpo + '\n' + CONFIG.FIRMA, htmlCorreo(cuerpo, esIngles), enviando);
 
       if (enviando) {
         anotar(hoja, fila, notas, CONFIG_SEGUIMIENTO.MARCA_ENVIADO + ' ' + fechaCorta(hoy));
@@ -297,8 +297,12 @@ function normalizarAsunto(s) {
  *
  * threadId lo agrupa en TU bandeja; In-Reply-To y References son los que lo
  * agrupan en la bandeja del prospecto. Hacen falta los dos.
+ *
+ * Con `html` (ver htmlCorreo() en Código.gs) sale como multipart/alternative:
+ * texto plano para los clientes que no muestran HTML y la versión con la
+ * firma de Gmail para todos los demás. Sin `html`, solo texto, como antes.
  */
-function responderEnHilo(orig, asunto, texto, enviar) {
+function responderEnHilo(orig, asunto, texto, html, enviar) {
   const idMensaje = orig.msg.getHeader('Message-ID');
   const cabeceras = [
     'From: ' + mimeUtf8('Rubén Rivera') + ' <' + Session.getEffectiveUser().getEmail() + '>',
@@ -306,13 +310,39 @@ function responderEnHilo(orig, asunto, texto, enviar) {
     'Subject: ' + mimeUtf8('Re: ' + normalizarAsuntoOriginal(asunto)),
   ];
   if (idMensaje) cabeceras.push('In-Reply-To: ' + idMensaje, 'References: ' + idMensaje);
-  const mime = cabeceras.concat([
-    'MIME-Version: 1.0',
-    'Content-Type: text/plain; charset=UTF-8',
-    'Content-Transfer-Encoding: base64',
-    '',
-    Utilities.base64Encode(texto, Utilities.Charset.UTF_8)
-  ]).join('\r\n');
+  const b64 = function (s) {
+    // Líneas de 76: lo que pide MIME para base64.
+    return Utilities.base64Encode(s, Utilities.Charset.UTF_8).replace(/.{76}/g, '$&\r\n');
+  };
+  let partes;
+  if (html) {
+    const limite = 'n' + Utilities.getUuid().replace(/-/g, '');
+    partes = [
+      'MIME-Version: 1.0',
+      'Content-Type: multipart/alternative; boundary="' + limite + '"',
+      '',
+      '--' + limite,
+      'Content-Type: text/plain; charset=UTF-8',
+      'Content-Transfer-Encoding: base64',
+      '',
+      b64(texto),
+      '--' + limite,
+      'Content-Type: text/html; charset=UTF-8',
+      'Content-Transfer-Encoding: base64',
+      '',
+      b64(html),
+      '--' + limite + '--'
+    ];
+  } else {
+    partes = [
+      'MIME-Version: 1.0',
+      'Content-Type: text/plain; charset=UTF-8',
+      'Content-Transfer-Encoding: base64',
+      '',
+      b64(texto)
+    ];
+  }
+  const mime = cabeceras.concat(partes).join('\r\n');
 
   const recurso = { raw: Utilities.base64EncodeWebSafe(mime, Utilities.Charset.UTF_8),
                     threadId: orig.hilo.getId() };
@@ -350,6 +380,7 @@ const COL_TIPO = 15;
  * seguimiento -- es la huella con la que enviarBorradoresSeguimientoPendientes()
  * reconoce sus borradores.
  */
+/** Solo el cuerpo: la firma (texto y HTML) la pone quien arma el correo. */
 function cuerpoSeguimiento(empresa, esIngles, tipo) {
   const representante = String(tipo || '').toLowerCase().indexOf('represent') !== -1;
   const caso = representante ? 'hugo-gonzalez' : 'al-arabi-sc';
@@ -390,7 +421,7 @@ function cuerpoSeguimiento(empresa, esIngles, tipo) {
       + 'Si tienen una campaña o activación en puerta donde les sirva capacidad extra, cuéntame y te mando '
       + 'las piezas más cercanas a ese brief. Si no es el momento, lo dejamos para más adelante.';
   }
-  return cuerpo + '\n' + CONFIG.FIRMA;
+  return cuerpo;
 }
 
 function esFinDeSemana() {

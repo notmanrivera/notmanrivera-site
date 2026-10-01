@@ -136,12 +136,16 @@ function procesarPendientes() {
       if (!/https:\/\/notmanrivera\.com\//.test(cuerpoUtm)) sinLink++;
 
       const texto = cuerpoUtm.trim() + '\n' + CONFIG.FIRMA;
+      const esIngles = String(datos[i][COL.IDIOMA - 1] || '').trim().toLowerCase() === 'en';
+      const opciones = { name: 'Rubén Rivera' };
+      const html = htmlCorreo(cuerpoUtm, esIngles);
+      if (html) opciones.htmlBody = html;
 
       if (CONFIG.MODO === 'borrador') {
-        GmailApp.createDraft(email, asunto, texto);
+        GmailApp.createDraft(email, asunto, texto, opciones);
         marcar(hoja, fila, 'Borrador', '');
       } else {
-        GmailApp.sendEmail(email, asunto, texto, { name: 'Rubén Rivera' });
+        GmailApp.sendEmail(email, asunto, texto, opciones);
         etiquetar(email);
         marcar(hoja, fila, 'Enviado', '');
       }
@@ -253,6 +257,83 @@ function cuerpoConUtm(cuerpo, empresa, campana) {
       return base + '?' + qs + (otros.length ? '&' + otros.join('&') : '') + hash + cola;
     }
   );
+}
+
+// ══════════════════════════════════════════════════════════════
+//  FIRMA DE GMAIL EN LOS CORREOS AUTOMÁTICOS
+// ══════════════════════════════════════════════════════════════
+/**
+ * La firma que Rubén tiene configurada en Gmail, como HTML, o '' si no hay.
+ *
+ * ⚠️ Gmail solo pega la firma cuando se escribe desde su ventana. GmailApp y
+ * la API mandan el correo tal cual lo arma el script, así que hasta el 1/10
+ * todos los correos automáticos salían con la firma de texto de CONFIG.FIRMA
+ * y nunca con la del sitio. Se lee de la configuración de Gmail (no se copia
+ * aquí) para que un cambio de firma en Gmail llegue solo a los automáticos.
+ * Usa el servicio avanzado de Gmail, igual que Seguimientos.gs.
+ */
+let FIRMA_HTML_CACHE = null;
+function firmaGmail() {
+  if (FIRMA_HTML_CACHE !== null) return FIRMA_HTML_CACHE;
+  FIRMA_HTML_CACHE = '';
+  try {
+    const yo = Session.getEffectiveUser().getEmail();
+    FIRMA_HTML_CACHE = Gmail.Users.Settings.SendAs.get('me', yo).signature || '';
+  } catch (e) {
+    Logger.log('No se pudo leer la firma de Gmail (sale solo texto): ' + e.message);
+  }
+  return FIRMA_HTML_CACHE;
+}
+
+/**
+ * Versión HTML de un correo: el cuerpo tal cual (párrafos y links), la firma
+ * de Gmail y la línea para darse de baja. Devuelve '' si no hay firma: en ese
+ * caso el correo sale solo en texto, como antes, en vez de salir sin firma.
+ *
+ * El cuerpo NO se diseña: sigue viéndose escrito a mano. Un correo en frío con
+ * maquetación de boletín cae en Promociones y se lee como envío masivo.
+ */
+function htmlCorreo(cuerpo, esIngles) {
+  const firma = firmaGmail();
+  if (!firma) return '';
+  const esc = function (s) {
+    return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  };
+  const parrafos = String(cuerpo).trim().split(/\n{2,}/).map(function (p) {
+    const conLinks = esc(p).replace(/https?:\/\/[^\s<]+/g, function (url) {
+      let cola = '';
+      const m = url.match(/[.,;:!?)]+$/);
+      if (m) { cola = m[0]; url = url.slice(0, -cola.length); }
+      // Se muestra la dirección sin los UTM; el href los conserva para GA4.
+      const visible = url.replace(/^https?:\/\//, '').replace(/\?.*$/, '').replace(/\/$/, '');
+      return '<a href="' + url + '">' + visible + '</a>' + cola;
+    });
+    return '<p style="margin:0 0 12px 0">' + conLinks.replace(/\n/g, '<br>') + '</p>';
+  }).join('');
+  const baja = esIngles
+    ? 'If you\'d rather not hear from me again, reply "unsubscribe" and I won\'t follow up.'
+    : 'Si prefieres que no te vuelva a escribir, respóndeme "baja" y no insisto.';
+  return '<div style="font-family:Arial,Helvetica,sans-serif;font-size:14px;line-height:1.5;color:#222">' +
+         parrafos + '</div>' +
+         '<div style="margin-top:16px">' + firma + '</div>' +
+         '<p style="font-family:Arial,Helvetica,sans-serif;font-size:11px;color:#888;margin-top:12px">' +
+         esc(baja) + '</p>';
+}
+
+/**
+ * Deja en Borradores un correo de prueba dirigido a ti mismo, con la firma,
+ * para ver cómo llega. No escribe en la hoja ni le manda nada a nadie.
+ * Córrela una vez después de cada `clasp push` que toque la firma: también
+ * sirve para autorizar el permiso de leer la configuración de Gmail.
+ */
+function ensayoFirma() {
+  const yo = Session.getEffectiveUser().getEmail();
+  const cuerpo = 'Hola, equipo de Prueba: este es un borrador de ensayo para ver la firma.\n\n' +
+                 'Portafolio: https://notmanrivera.com/?utm_source=email&utm_medium=outreach&utm_campaign=ensayo';
+  const html = htmlCorreo(cuerpo, false);
+  if (!html) { aviso('No se pudo leer la firma de Gmail: revisa el registro.'); return; }
+  GmailApp.createDraft(yo, 'Ensayo de firma (borrar)', cuerpo + '\n' + CONFIG.FIRMA, { htmlBody: html, name: 'Rubén Rivera' });
+  aviso('Listo: en Borradores está "Ensayo de firma (borrar)". Ábrelo, revisa y bórralo.');
 }
 
 // ══════════════════════════════════════════════════════════════
@@ -375,6 +456,7 @@ function onOpen() {
     .addSeparator()
     .addItem('Ensayo UTM (no manda nada)', 'ensayoUtm')
     .addItem('Ensayo: qué borradores se mandarían', 'ensayoEnvioBorradores')
+    .addItem('Ensayo de firma (borrador a ti mismo)', 'ensayoFirma')
     .addItem('Enviar borradores de seguimiento', 'enviarBorradoresSeguimientoPendientes')
     .addSeparator()
     .addItem('Instalar envío diario', 'instalarTrigger')
