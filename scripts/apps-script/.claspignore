@@ -1,0 +1,4 @@
+# clasp sube todo lo que no esté aquí. Solo van el código y el manifiesto.
+**/**
+!*.gs
+!appsscript.json
