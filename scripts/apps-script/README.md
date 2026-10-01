@@ -34,6 +34,10 @@ cd /Users/rubenrivera/Desktop/notmanrivera-site && git pull && cd scripts/apps-s
 
 ## Aprobación
 
-Con `APROBACION_AUTOMATICA` (Código.gs), las filas que agrega la rutina diaria
-con Verificación `safe` salen a las 9 am sin "sí". Para frenar una: "no" en
-Aprobado. Las filas viejas o agregadas a mano siguen necesitando "sí".
+Hoy cada fila necesita "sí" en Aprobado para salir.
+
+`APROBACION_AUTOMATICA` (Código.gs) existe pero está **apagada**: con `true`,
+las filas que agrega la rutina con Verificación `safe` saldrían a las 9 am sin
+"sí", y "no" las frenaría. Encenderla es decisión de Rubén; si se enciende,
+también hay que cambiar las instrucciones de la rutina, que hoy asumen que él
+aprueba cada fila.

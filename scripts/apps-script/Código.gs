@@ -30,7 +30,7 @@ const CONFIG = {
   // 'safe' y nadie escribió "no" en Aprobado. Para frenar una fila: "no".
   // Para volver a aprobar todo a mano: APROBACION_AUTOMATICA: false.
   EXIGIR_APROBACION: true,
-  APROBACION_AUTOMATICA: true,
+  APROBACION_AUTOMATICA: false,   // apagada: activarla es decisión de Rubén
 
   MAX_POR_DIA: 10,       // escalón del dominio nuevo; súbelo a 20 en un par de semanas
   PAUSA_MIN_SEG: 5,
