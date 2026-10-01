@@ -26,9 +26,8 @@ Una sola vez:
 2. Entra a https://script.google.com/home/usersettings con hola@ y activa
    **Google Apps Script API**.
 3. `clasp login` y elige hola@notmanrivera.com.
-4. En el editor de Apps Script: **Configuración del proyecto → ID de la
-   secuencia de comandos**. Pégalo en `.clasp.json` en lugar de
-   `PEGAR_AQUI_EL_ID_DEL_SCRIPT`.
+`.clasp.json` ya trae el ID del proyecto (Configuración del proyecto → ID de
+la secuencia de comandos).
 
 Cada vez que haya cambios:
 
