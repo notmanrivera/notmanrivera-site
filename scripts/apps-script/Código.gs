@@ -286,15 +286,46 @@ function firmaGmail() {
 }
 
 /**
+ * La firma en el idioma del prospecto, tomada de las páginas publicadas en el
+ * sitio (public/firma.html y public/firma-en.html en el repo). Si el sitio no
+ * responde, cae a la firma configurada en Gmail.
+ *
+ * ⚠️ La firma de Gmail es UNA sola, y la que está puesta es la de inglés: sin
+ * esto, los prospectos en español recibían banner, "Mexico" y el mensaje de
+ * WhatsApp en inglés. Cloudflare sirve las páginas sin ".html" (/firma.html
+ * responde 308 a /firma).
+ */
+const FIRMA_SITIO_CACHE = {};
+function firmaPara(esIngles) {
+  const clave = esIngles ? 'en' : 'es';
+  if (clave in FIRMA_SITIO_CACHE) return FIRMA_SITIO_CACHE[clave];
+  let firma = '';
+  try {
+    const url = 'https://notmanrivera.com/' + (esIngles ? 'firma-en' : 'firma');
+    const r = UrlFetchApp.fetch(url, { muteHttpExceptions: true, followRedirects: true });
+    if (r.getResponseCode() === 200) {
+      const html = r.getContentText('UTF-8');
+      const a = html.indexOf('<table'), b = html.lastIndexOf('</table>');
+      if (a !== -1 && b > a) firma = html.slice(a, b + '</table>'.length);
+    }
+  } catch (e) {
+    Logger.log('No se pudo leer la firma del sitio (' + clave + '): ' + e.message);
+  }
+  if (!firma) firma = firmaGmail();
+  FIRMA_SITIO_CACHE[clave] = firma;
+  return firma;
+}
+
+/**
  * Versión HTML de un correo: el cuerpo tal cual (párrafos y links), la firma
- * de Gmail y la línea para darse de baja. Devuelve '' si no hay firma: en ese
+ * en su idioma y la línea para darse de baja. Devuelve '' si no hay firma: en ese
  * caso el correo sale solo en texto, como antes, en vez de salir sin firma.
  *
  * El cuerpo NO se diseña: sigue viéndose escrito a mano. Un correo en frío con
  * maquetación de boletín cae en Promociones y se lee como envío masivo.
  */
 function htmlCorreo(cuerpo, esIngles) {
-  const firma = firmaGmail();
+  const firma = firmaPara(esIngles);
   if (!firma) return '';
   const esc = function (s) {
     return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
@@ -330,10 +361,13 @@ function ensayoFirma() {
   const yo = Session.getEffectiveUser().getEmail();
   const cuerpo = 'Hola, equipo de Prueba: este es un borrador de ensayo para ver la firma.\n\n' +
                  'Portafolio: https://notmanrivera.com/?utm_source=email&utm_medium=outreach&utm_campaign=ensayo';
-  const html = htmlCorreo(cuerpo, false);
-  if (!html) { aviso('No se pudo leer la firma de Gmail: revisa el registro.'); return; }
-  GmailApp.createDraft(yo, 'Ensayo de firma (borrar)', cuerpo + '\n' + CONFIG.FIRMA, { htmlBody: html, name: 'Rubén Rivera' });
-  aviso('Listo: en Borradores está "Ensayo de firma (borrar)". Ábrelo, revisa y bórralo.');
+  [false, true].forEach(function (esIngles) {
+    const html = htmlCorreo(cuerpo, esIngles);
+    if (!html) { aviso('No se pudo leer la firma: revisa el registro.'); return; }
+    GmailApp.createDraft(yo, 'Ensayo de firma ' + (esIngles ? 'EN' : 'ES') + ' (borrar)',
+                         cuerpo + '\n' + CONFIG.FIRMA, { htmlBody: html, name: 'Rubén Rivera' });
+  });
+  aviso('Listo: en Borradores están "Ensayo de firma ES" y "EN". Ábrelos, revisa y bórralos.');
 }
 
 // ══════════════════════════════════════════════════════════════
