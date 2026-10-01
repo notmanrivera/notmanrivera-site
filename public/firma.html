@@ -14,6 +14,12 @@
      cliente bloquee imágenes, que Outlook hace por defecto con remitentes
      desconocidos. Fuente del GIF: scripts/firma/.
 
+     ⚠️ El correo va entre <!--email_off--> y <!--/email_off-->: sin eso la
+     protección de correos de Cloudflare lo cambia por "[email protected]"
+     con un link a /cdn-cgi/, que solo se arregla con JavaScript en el
+     navegador. Los correos automáticos leen esta página tal cual (ver
+     firmaPara() en scripts/apps-script/Código.gs) y salían con el correo roto.
+
      ⚠️ Nunca borrar ni sobrescribir los GIF de /assets/firma/: los correos ya
      enviados los siguen cargando. Un rediseño se publica como -v2. Por lo
      mismo se conserva /assets/firma-logo.png, de la firma anterior. -->
@@ -33,7 +39,7 @@
       <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="border-collapse:collapse;">
         <tr>
           <td style="font-family:Arial,Helvetica,sans-serif;font-size:13px;line-height:20px;color:#ffffff;">
-            <a href="mailto:hola@notmanrivera.com" style="color:#ffffff;text-decoration:none;font-weight:bold;">hola@notmanrivera.com</a><span style="color:#E50012;font-weight:bold;">&nbsp;&nbsp;&times;&nbsp;&nbsp;</span><a href="https://wa.me/524421411230?text=Hola%20Rub%C3%A9n%2C%20te%20escribo%20por%20tu%20correo." style="color:#ffffff;text-decoration:none;">WhatsApp&nbsp;+52&nbsp;442&nbsp;141&nbsp;1230</a>
+            <!--email_off--><a href="mailto:hola@notmanrivera.com" style="color:#ffffff;text-decoration:none;font-weight:bold;">hola@notmanrivera.com</a><!--/email_off--><span style="color:#E50012;font-weight:bold;">&nbsp;&nbsp;&times;&nbsp;&nbsp;</span><a href="https://wa.me/524421411230?text=Hola%20Rub%C3%A9n%2C%20te%20escribo%20por%20tu%20correo." style="color:#ffffff;text-decoration:none;">WhatsApp&nbsp;+52&nbsp;442&nbsp;141&nbsp;1230</a>
           </td>
         </tr>
         <tr>
