@@ -24,6 +24,15 @@ const CONFIG_SEGUIMIENTO = {
   MARCA_ENVIADO: 'Seguimiento enviado',
   CAMPANA_UTM: 'seguimiento-2026',         // distinta del primer toque, para separarlos en GA4
 
+  // Último toque: un correo corto de cierre a quien no contestó el
+  // seguimiento, DIAS_ULTIMO_TOQUE días después. Es el tercero y el último:
+  // después de este no se le vuelve a escribir. Lleva su propia campaña UTM
+  // para medirlo aparte en GA4, y su propia marca en Notas.
+  DIAS_ULTIMO_TOQUE: 10,
+  MARCA_ULTIMO: 'Último toque en borrador',
+  MARCA_ULTIMO_ENVIADO: 'Último toque enviado',
+  CAMPANA_ULTIMO: 'ultimo-toque-2026',
+
   // 'borrador' → deja el seguimiento en Borradores para que lo revises.
   // 'enviar'   → lo manda solo. Menos riesgoso que automatizar el primer
   //              toque: a esta dirección YA le escribiste y no reboto, asi
@@ -36,7 +45,9 @@ const CONFIG_SEGUIMIENTO = {
   // todo lo del lunes.
   SOLO_ENTRE_SEMANA: true,
 
-  MAX_POR_DIA: 10,       // tope propio, aparte del de Código.gs
+  MAX_POR_DIA: 10,       // tope propio, aparte del de Código.gs. Aplica a
+                         // lo que se genera al día (seguimientos + últimos
+                         // toques) y a lo que se manda al día.
   PAUSA_MIN_SEG: 5,
   PAUSA_MAX_SEG: 15,
 
@@ -70,83 +81,127 @@ function generarBorradoresSeguimiento() {
   const datos = hoja.getRange(2, 1, ultimaFila - 1, TOTAL_COLUMNAS).getValues();
   const hoy = new Date();
   const enviando = CONFIG_SEGUIMIENTO.MODO === 'enviar';
+  // ⚠️ Tope también en modo borrador: sin él, la primera corrida con último
+  // toque habría generado ~100 borradores de golpe (todas las filas viejas
+  // que ya tuvieron seguimiento), y el envío de las 4pm solo vacía 10 al día.
   let restantes = enviando
     ? Math.min(CONFIG_SEGUIMIENTO.MAX_POR_DIA, MailApp.getRemainingDailyQuota())
-    : Number.MAX_SAFE_INTEGER;
+    : CONFIG_SEGUIMIENTO.MAX_POR_DIA;
 
-  let hechos = 0, respondidos = 0, vetados = 0, rebotados = 0, sinHilo = 0, cortado = false;
+  const cuenta = { seguimiento: 0, ultimo: 0, respondidos: 0, vetados: 0, rebotados: 0, sinHilo: 0 };
+  let cortado = false;
 
-  for (let i = 0; i < datos.length; i++) {
-    if (Date.now() - INICIO > LIMITE_MS) { cortado = true; break; }
-    if (restantes <= 0) { Logger.log('Tope diario de seguimientos alcanzado.'); break; }
+  // Dos pasadas: primero el seguimiento (va a gente que acaba de recibir el
+  // primer correo, es lo más valioso), luego el último toque con lo que sobre.
+  ['seguimiento', 'ultimo'].forEach(function (etapa) {
+    for (let i = 0; i < datos.length; i++) {
+      if (cortado) return;
+      if (Date.now() - INICIO > LIMITE_MS) { cortado = true; return; }
+      if (restantes <= 0) return;
 
-    const fila    = i + 2;
-    const empresa = datos[i][COL.EMPRESA - 1];
-    const email   = datos[i][COL.EMAIL - 1];
-    const asunto  = datos[i][COL.ASUNTO - 1];
-    const estado  = datos[i][COL.ESTADO - 1];
-    const fecha   = datos[i][COL.FECHA - 1];
-    const notas   = datos[i][COL.NOTAS - 1];
+      const fila    = i + 2;
+      const empresa = datos[i][COL.EMPRESA - 1];
+      const email   = datos[i][COL.EMAIL - 1];
+      const asunto  = datos[i][COL.ASUNTO - 1];
+      const estado  = datos[i][COL.ESTADO - 1];
+      const fecha   = datos[i][COL.FECHA - 1];
+      const notas   = String(datos[i][COL.NOTAS - 1] || '');
 
-    if (estado !== 'Enviado') continue;
-    if (!(fecha instanceof Date)) continue;
-    // Ya se le dio seguimiento (borrador pendiente o enviado): no duplicar
-    if (String(notas || '').indexOf(CONFIG_SEGUIMIENTO.MARCA_NOTAS) !== -1) continue;
+      if (estado !== 'Enviado') continue;
+      if (!(fecha instanceof Date)) continue;
+      if (etapaPendiente(notas, fecha, hoy) !== etapa) continue;
 
-    if (vetado(notas)) { vetados++; continue; }
+      if (vetado(notas)) { cuenta.vetados++; continue; }
 
-    const dias = (hoy - fecha) / 86400000;
-    if (dias < CONFIG_SEGUIMIENTO.DIAS_ESPERA) continue;
-
-    if (tieneRespuesta(email, fecha)) {
-      anotar(hoja, fila, notas, 'Respondió, no seguir');
-      respondidos++;
-      continue;
-    }
-
-    // No depender de que alguien haya corrido "Revisar rebotes" antes.
-    if (reboto(email)) {
-      anotar(hoja, fila, notas, 'Rebotó, no seguir');
-      rebotados++;
-      continue;
-    }
-
-    // ⚠️ El seguimiento sale al destinatario del correo ORIGINAL, no al de la
-    // hoja. El 28/9 la fila de MVP Group decía info@mvgroup.com.ar (sin la
-    // "p") mientras el primer correo había salido bien a mvpgroup.com.ar: el
-    // seguimiento rebotó contra un dominio que no existe. Si la dirección de
-    // la hoja ya no coincide con nada en Enviados, no hay hilo y no se manda.
-    const orig = hiloOriginal(email, asunto);
-    if (!orig) {
-      anotar(hoja, fila, notas, 'Sin correo original en Enviados, no seguir (revisar dirección)');
-      sinHilo++;
-      continue;
-    }
-
-    try {
-      const esIngles = String(datos[i][COL.IDIOMA - 1] || '').trim().toLowerCase() === 'en';
-      const cuerpo = cuerpoSeguimiento(empresa, esIngles, datos[i][COL_TIPO - 1]);
-      responderEnHilo(orig, asunto, cuerpo + '\n' + CONFIG.FIRMA, htmlCorreo(cuerpo, esIngles), enviando);
-
-      if (enviando) {
-        anotar(hoja, fila, notas, CONFIG_SEGUIMIENTO.MARCA_ENVIADO + ' ' + fechaCorta(hoy));
-        restantes--;
-        pausa(restantes);
-      } else {
-        anotar(hoja, fila, notas, CONFIG_SEGUIMIENTO.MARCA_NOTAS + ' ' + fechaCorta(hoy));
+      if (tieneRespuesta(email, fecha)) {
+        anotar(hoja, fila, notas, 'Respondió, no seguir');
+        datos[i][COL.NOTAS - 1] = notas + ' · Respondió, no seguir';
+        cuenta.respondidos++;
+        continue;
       }
-      hechos++;
-    } catch (e) {
-      anotar(hoja, fila, notas, 'Error generando seguimiento: ' + e.message);
-    }
-  }
 
-  Logger.log('Seguimientos ' + (enviando ? 'ENVIADOS' : 'en borrador') + ': ' + hechos +
-             ' · ya habían respondido: ' + respondidos +
-             ' · rebotados: ' + rebotados +
-             ' · sin correo original: ' + sinHilo +
-             ' · vetados por Notas: ' + vetados +
+      // No depender de que alguien haya corrido "Revisar rebotes" antes.
+      if (reboto(email)) {
+        anotar(hoja, fila, notas, 'Rebotó, no seguir');
+        datos[i][COL.NOTAS - 1] = notas + ' · Rebotó, no seguir';
+        cuenta.rebotados++;
+        continue;
+      }
+
+      // ⚠️ El seguimiento sale al destinatario del correo ORIGINAL, no al de la
+      // hoja. El 28/9 la fila de MVP Group decía info@mvgroup.com.ar (sin la
+      // "p") mientras el primer correo había salido bien a mvpgroup.com.ar: el
+      // seguimiento rebotó contra un dominio que no existe. Si la dirección de
+      // la hoja ya no coincide con nada en Enviados, no hay hilo y no se manda.
+      const orig = hiloOriginal(email, asunto);
+      if (!orig) {
+        anotar(hoja, fila, notas, 'Sin correo original en Enviados, no seguir (revisar dirección)');
+        cuenta.sinHilo++;
+        continue;
+      }
+
+      try {
+        const esIngles = String(datos[i][COL.IDIOMA - 1] || '').trim().toLowerCase() === 'en';
+        const tipo = datos[i][COL_TIPO - 1];
+        const cuerpo = etapa === 'ultimo'
+          ? cuerpoUltimoToque(empresa, esIngles, tipo)
+          : cuerpoSeguimiento(empresa, esIngles, tipo);
+        responderEnHilo(orig, asunto, cuerpo + '\n' + CONFIG.FIRMA, htmlCorreo(cuerpo, esIngles), enviando);
+
+        const marca = etapa === 'ultimo'
+          ? (enviando ? CONFIG_SEGUIMIENTO.MARCA_ULTIMO_ENVIADO : CONFIG_SEGUIMIENTO.MARCA_ULTIMO)
+          : (enviando ? CONFIG_SEGUIMIENTO.MARCA_ENVIADO : CONFIG_SEGUIMIENTO.MARCA_NOTAS);
+        anotar(hoja, fila, notas, marca + ' ' + fechaCorta(hoy));
+        restantes--;
+        cuenta[etapa]++;
+        if (enviando) pausa(restantes);
+      } catch (e) {
+        anotar(hoja, fila, notas, 'Error generando ' + etapa + ': ' + e.message);
+      }
+    }
+  });
+
+  Logger.log((enviando ? 'ENVIADOS' : 'En borrador') +
+             ' · seguimientos: ' + cuenta.seguimiento +
+             ' · últimos toques: ' + cuenta.ultimo +
+             ' · ya habían respondido: ' + cuenta.respondidos +
+             ' · rebotados: ' + cuenta.rebotados +
+             ' · sin correo original: ' + cuenta.sinHilo +
+             ' · vetados por Notas: ' + cuenta.vetados +
+             (restantes <= 0 ? ' · TOPE DEL DÍA ALCANZADO, el resto sigue mañana' : '') +
              (cortado ? ' · CORTADO POR TIEMPO, vuelve a correrlo' : ''));
+}
+
+/**
+ * Qué le toca a una fila ya enviada: 'seguimiento', 'ultimo' o null.
+ *
+ * ⚠️ La marca de "ya se le dio seguimiento" es cualquiera de las dos
+ * ('Seguimiento en borrador' o 'Seguimiento enviado'). Antes solo se revisaba
+ * la de borrador, así que con MODO:'enviar' la misma fila habría recibido
+ * seguimiento todos los días.
+ */
+function etapaPendiente(notas, fechaPrimerCorreo, hoy) {
+  const n = String(notas || '');
+  if (n.indexOf('Último toque') !== -1) return null;   // ya tuvo los tres
+
+  const conSeguimiento = n.indexOf(CONFIG_SEGUIMIENTO.MARCA_NOTAS) !== -1 ||
+                         n.indexOf(CONFIG_SEGUIMIENTO.MARCA_ENVIADO) !== -1;
+  if (!conSeguimiento) {
+    return (hoy - fechaPrimerCorreo) / 86400000 >= CONFIG_SEGUIMIENTO.DIAS_ESPERA ? 'seguimiento' : null;
+  }
+  // Se cuenta desde que el seguimiento SALIÓ, no desde que se generó el
+  // borrador: uno que se quedó días en Borradores no adelanta el cierre.
+  const enviado = fechaUltimaMarca(n, CONFIG_SEGUIMIENTO.MARCA_ENVIADO);
+  if (!enviado) return null;
+  return (hoy - enviado) / 86400000 >= CONFIG_SEGUIMIENTO.DIAS_ULTIMO_TOQUE ? 'ultimo' : null;
+}
+
+/** La fecha (d/M/yyyy) que sigue a la última aparición de `marca` en Notas. */
+function fechaUltimaMarca(notas, marca) {
+  const re = new RegExp(marca + ' (\\d{1,2})/(\\d{1,2})/(\\d{4})', 'g');
+  let m, ultima = null;
+  while ((m = re.exec(notas)) !== null) ultima = new Date(+m[3], +m[2] - 1, +m[1]);
+  return ultima;
 }
 
 // ══════════════════════════════════════════════════════════════
@@ -184,7 +239,6 @@ function enviarBorradoresSeguimientoPendientes() {
     if (e) porEmail[e] = { fila: i + 2, notas: datos[i][COL.NOTAS - 1], fecha: datos[i][COL.FECHA - 1] };
   }
 
-  const huella = 'utm_campaign=' + CONFIG_SEGUIMIENTO.CAMPANA_UTM;
   const borradores = GmailApp.getDrafts();
   let restantes = Math.min(CONFIG_SEGUIMIENTO.MAX_POR_DIA, MailApp.getRemainingDailyQuota());
   let enviados = 0, saltados = 0, ajenos = 0;
@@ -194,8 +248,8 @@ function enviarBorradoresSeguimientoPendientes() {
     if (restantes <= 0) { Logger.log('Tope diario alcanzado.'); break; }
 
     const msg = borradores[d].getMessage();
-    if (msg.getBody().indexOf(huella) === -1 &&
-        msg.getPlainBody().indexOf(huella) === -1) { ajenos++; continue; }
+    const tipoBorrador = huellaDe(msg);
+    if (!tipoBorrador) { ajenos++; continue; }
 
     const para = String(msg.getTo()).toLowerCase().replace(/.*</, '').replace(/>.*/, '').trim();
     const reg = porEmail[para];
@@ -213,7 +267,9 @@ function enviarBorradoresSeguimientoPendientes() {
     }
 
     borradores[d].send();
-    anotar(hoja, reg.fila, reg.notas, CONFIG_SEGUIMIENTO.MARCA_ENVIADO + ' ' + fechaCorta(new Date()));
+    anotar(hoja, reg.fila, reg.notas,
+           (tipoBorrador === 'ultimo' ? CONFIG_SEGUIMIENTO.MARCA_ULTIMO_ENVIADO : CONFIG_SEGUIMIENTO.MARCA_ENVIADO) +
+           ' ' + fechaCorta(new Date()));
     enviados++;
     restantes--;
     pausa(restantes);
@@ -235,23 +291,34 @@ function ensayoEnvioBorradores() {
     if (e) porEmail[e] = { fila: i + 2, notas: datos[i][COL.NOTAS - 1], fecha: datos[i][COL.FECHA - 1] };
   }
 
-  const huella = 'utm_campaign=' + CONFIG_SEGUIMIENTO.CAMPANA_UTM;
   const borradores = GmailApp.getDrafts();
   let irian = 0, ajenos = 0;
 
   for (let d = 0; d < borradores.length; d++) {
     const msg = borradores[d].getMessage();
-    if (msg.getBody().indexOf(huella) === -1 &&
-        msg.getPlainBody().indexOf(huella) === -1) { ajenos++; continue; }
+    const tipoBorrador = huellaDe(msg);
+    if (!tipoBorrador) { ajenos++; continue; }
     const para = String(msg.getTo()).toLowerCase().replace(/.*</, '').replace(/>.*/, '').trim();
     const reg = porEmail[para];
     const motivo = motivoParaNoMandar(msg, para, reg);
     if (motivo) { Logger.log('NO IRÍA (' + motivo + '): ' + para); continue; }
-    Logger.log('IRÍA → ' + para + '  (fila ' + reg.fila + ')');
+    Logger.log('IRÍA → ' + para + '  (fila ' + reg.fila + ', ' + tipoBorrador + ')');
     irian++;
   }
   Logger.log('Se mandarían ' + irian + ' · borradores ajenos que ni se tocan: ' + ajenos +
              (esFinDeSemana() ? ' · OJO: hoy es fin de semana, la corrida real no manda nada' : ''));
+}
+
+/**
+ * 'seguimiento', 'ultimo' o null según la campaña UTM del borrador. La
+ * campaña es la huella que solo pone este script: un borrador sin ella es de
+ * Rubén y no se toca.
+ */
+function huellaDe(msg) {
+  const cuerpo = msg.getBody() + '\n' + msg.getPlainBody();
+  if (cuerpo.indexOf('utm_campaign=' + CONFIG_SEGUIMIENTO.CAMPANA_ULTIMO) !== -1) return 'ultimo';
+  if (cuerpo.indexOf('utm_campaign=' + CONFIG_SEGUIMIENTO.CAMPANA_UTM) !== -1) return 'seguimiento';
+  return null;
 }
 
 /** null si el borrador puede salir; si no, la razón. */
@@ -383,6 +450,7 @@ const COL_TIPO = 15;
 /** Solo el cuerpo: la firma (texto y HTML) la pone quien arma el correo. */
 function cuerpoSeguimiento(empresa, esIngles, tipo) {
   const representante = String(tipo || '').toLowerCase().indexOf('represent') !== -1;
+  const club = String(tipo || '').toLowerCase().indexOf('club') !== -1;
   const caso = representante ? 'hugo-gonzalez' : 'al-arabi-sc';
   const link = 'https://notmanrivera.com/casos/' + caso + '/' + (esIngles ? 'en/' : '') +
     '?utm_source=email&utm_medium=outreach' +
@@ -390,7 +458,23 @@ function cuerpoSeguimiento(empresa, esIngles, tipo) {
     '&utm_content=' + slugEmpresa(empresa);
 
   let cuerpo;
-  if (esIngles && representante) {
+  if (club) {
+    // A un equipo se le habla de SU temporada, no de "sus campañas": el caso
+    // Al-Arabi es justo un club, partido a partido.
+    cuerpo = esIngles
+      ? 'Hi again — I wrote a few days ago about a matchday graphics kit for your season.\n\n'
+        + 'This is what it looks like over a full season for a club: Al-Arabi SC in Qatar — lineups, '
+        + 'next-opponent announcements, results and one animated piece per match.\n\n'
+        + link + '\n\n'
+        + 'Happy to walk you through it in a 15-minute call before the season starts. '
+        + 'If the timing isn\'t right, we can leave it for later.'
+      : 'Hola de nuevo — te escribí hace unos días sobre un kit de gráficos de partido para su temporada.\n\n'
+        + 'Así se ve a lo largo de una temporada completa para un club: Al-Arabi SC en Qatar — alineaciones, '
+        + 'anuncio del próximo rival, resultados y una pieza animada por partido.\n\n'
+        + link + '\n\n'
+        + 'Si les late, lo platicamos en 15 minutos antes de que arranque la temporada. '
+        + 'Si no es el momento, lo dejamos para más adelante.';
+  } else if (esIngles && representante) {
     cuerpo = 'Hi again — I wrote a few days ago about content for the players you represent.\n\n'
       + 'The closest case to your work: the digital image of Hugo González, a Liga MX goalkeeper, '
       + 'match by match across a full season (Liga MX and Leagues Cup).\n\n'
@@ -422,6 +506,37 @@ function cuerpoSeguimiento(empresa, esIngles, tipo) {
       + 'las piezas más cercanas a ese brief. Si no es el momento, lo dejamos para más adelante.';
   }
   return cuerpo;
+}
+
+/**
+ * El tercer y último correo: corto, sin pedir nada, y deja la puerta abierta.
+ * Va dentro del hilo, debajo del primero y del seguimiento.
+ */
+function cuerpoUltimoToque(empresa, esIngles, tipo) {
+  const representante = String(tipo || '').toLowerCase().indexOf('represent') !== -1;
+  const club = String(tipo || '').toLowerCase().indexOf('club') !== -1;
+  const link = (esIngles ? 'https://notmanrivera.com/en/' : 'https://notmanrivera.com/') +
+    '?utm_source=email&utm_medium=outreach' +
+    '&utm_campaign=' + encodeURIComponent(CONFIG_SEGUIMIENTO.CAMPANA_ULTIMO) +
+    '&utm_content=' + slugEmpresa(empresa);
+  if (esIngles) {
+    return 'Hi again — I\'ve written a couple of times and don\'t want to crowd your inbox, so I\'ll close the loop here.\n\n'
+      + (club
+          ? 'If you ever want to give your matchday graphics a lift for a new season, my portfolio is here: '
+          : representante
+          ? 'If any of your players ever needs pieces for a signing, a renewal or their socials, my portfolio is here: '
+          : 'If you ever need extra hands for motion graphics, editing or vertical cuts on a campaign, my portfolio is here: ')
+      + link + '\n\n'
+      + 'All the best with what\'s ahead.';
+  }
+  return 'Hola de nuevo. Te escribí un par de veces y no quiero llenarte la bandeja, así que cierro el tema por aquí.\n\n'
+    + (club
+        ? 'Si para una próxima temporada quieren subir el nivel de sus gráficos de partido, mi portafolio sigue aquí: '
+        : representante
+        ? 'Si más adelante alguno de sus jugadores necesita piezas para un fichaje, una renovación o sus redes, mi portafolio sigue aquí: '
+        : 'Si más adelante les hace falta apoyo con motion graphics, edición o piezas verticales para alguna campaña, mi portafolio sigue aquí: ')
+    + link + '\n\n'
+    + 'Mucho éxito con lo que viene.';
 }
 
 function esFinDeSemana() {
