@@ -540,5 +540,7 @@ function onOpen() {
     .addItem('Ver cuota de hoy', 'verCuota')
     .addItem('Revisar rebotes', 'revisarRebotes')
     .addItem('Verificar dominios', 'verificarDominios')
+    .addSeparator()
+    .addItem('Nueva invitación de reseña', 'nuevaInvitacionResena')
     .addToUi();
 }

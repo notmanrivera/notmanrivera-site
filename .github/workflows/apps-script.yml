@@ -29,12 +29,14 @@ jobs:
       contents: read
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # para saber si cambió Resenas.gs desde el push anterior
 
       - uses: actions/setup-node@v4
         with:
           node-version: 22
 
-      # Los 4 archivos juntos, como los ve Apps Script: un error de sintaxis
+      # Todos los .gs juntos, como los ve Apps Script: un error de sintaxis
       # en cualquiera tumba todo el proyecto, incluido el envío de las 9 am.
       - name: Revisar sintaxis
         working-directory: scripts/apps-script
@@ -59,3 +61,37 @@ jobs:
       - name: clasp push
         working-directory: scripts/apps-script
         run: clasp push --force
+
+      # La web app del formulario de reseñas (Resenas.gs) corre una VERSIÓN
+      # fija del código, no lo último que subió el push: hay que volver a
+      # desplegarla para que tome cambios. Siempre sobre el mismo despliegue
+      # ("Reseñas web"), así la URL /exec que usa el sitio nunca cambia.
+      # Cada despliegue crea una versión y Apps Script admite 200 por
+      # proyecto, por eso solo se hace cuando cambia lo que usa la web app.
+      - name: Desplegar la web app de reseñas
+        working-directory: scripts/apps-script
+        env:
+          ANTES: ${{ github.event.before }}
+          EVENTO: ${{ github.event_name }}
+        run: |
+          ID=$(clasp --json list-deployments | node -e '
+            let s = "";
+            process.stdin.on("data", d => s += d).on("end", () => {
+              const d = JSON.parse(s).find(x => x.description === "Reseñas web");
+              process.stdout.write(d ? d.deploymentId : "");
+            });')
+          if [ -n "$ID" ] && [ "$EVENTO" = "push" ] && git diff --quiet "$ANTES" HEAD -- Resenas.gs appsscript.json 2>/dev/null; then
+            echo "Sin cambios en la web app de reseñas; no se redespliega."
+          elif [ -n "$ID" ]; then
+            clasp update-deployment "$ID" -d "Reseñas web"
+          else
+            clasp create-deployment -d "Reseñas web"
+            ID=$(clasp --json list-deployments | node -e '
+              let s = "";
+              process.stdin.on("data", d => s += d).on("end", () => {
+                const d = JSON.parse(s).find(x => x.description === "Reseñas web");
+                process.stdout.write(d ? d.deploymentId : "");
+              });')
+          fi
+          echo "URL de la web app: https://script.google.com/macros/s/$ID/exec"
+          echo "Web app de reseñas: https://script.google.com/macros/s/$ID/exec" >> "$GITHUB_STEP_SUMMARY"
