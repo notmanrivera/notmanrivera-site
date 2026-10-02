@@ -2772,7 +2772,9 @@
     margin-bottom:28px;
   }
   .resenas-titulo em{font-style:normal;color:var(--rojo)}
-  .resenas-lista{display:grid;gap:28px;grid-template-columns:repeat(auto-fit,minmax(320px,1fr))}
+  /* auto-fill, no auto-fit: con una sola reseña la tarjeta ocupa media
+     fila en vez de estirarse a renglones de 150 caracteres. */
+  .resenas-lista{display:grid;gap:28px;grid-template-columns:repeat(auto-fill,minmax(min(100%,440px),1fr))}
   .resena{--giro:0deg}
   @media(min-width:1000px){.resena{--giro:var(--giro-d,0deg)}}
   .resena{
@@ -4075,7 +4077,17 @@
     <!-- Reseñas de clientes: las escribe scripts/resenas.js (Action
          resenas.yml) con las aprobadas en la hoja. No editar a mano entre
          las marcas: se sobrescribe. -->
-    <!-- resenas:inicio --><!-- resenas:fin -->
+    <!-- resenas:inicio -->
+    <div class="resenas">
+      <h3 class="resenas-titulo rv" data-es="Lo que <em>dicen</em>" data-en="What they <em>say</em>">Lo que <em>dicen</em></h3>
+      <div class="resenas-lista">
+      <figure class="resena rv" style="--giro-d:-1.8deg">
+        <blockquote><p>Rubén es un diseñador muy talentoso y creativo. Maneja todas las herramientas de Adobe a la perfección. Tiene iniciativa y es muy responsable. Los resultados siempre superaban la expectativa.</p></blockquote>
+        <figcaption><a class="resena-nombre" href="https://www.linkedin.com/in/victortrejo87" target="_blank" rel="noopener">Victor Trejo</a><span class="resena-puesto">Director General · Victorem</span><span class="resena-idioma" data-es="" data-en="Original in Spanish"></span></figcaption>
+      </figure>
+      </div>
+    </div>
+    <!-- resenas:fin -->
   </div>
 </section>
 
