@@ -85,7 +85,7 @@ function armar(c) {
       </tr>`);
   if (c.descuento) {
     filas.push(`      <tr class="desc-row">
-        <td class="desc">${texto(c.descuento.concepto || 'Descuento por paquete')}</td>
+        <td class="desc">${texto(c.descuento.concepto ?? 'Descuento por paquete')}</td>
         <td class="c-u">-</td><td class="c-p"></td><td class="c-i">${dinero(-c.descuento.monto)}</td>
       </tr>`);
   }

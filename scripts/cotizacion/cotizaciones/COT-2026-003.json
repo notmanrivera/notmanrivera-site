@@ -9,7 +9,9 @@
     {
       "titulo": "Lyric video de “Colapso”.",
       "etiqueta": "(3:22 min)",
-      "puntos": ["Video horizontal 16:9 en MP4 Full HD (1920×1080), listo para YouTube."],
+      "puntos": [
+        "Video horizontal 16:9 en MP4 Full HD (1920×1080), listo para YouTube."
+      ],
       "incluye": [
         "Toma casi estática en loop durante toda la canción.",
         "Animación 2D de la letra, sincronizada con la voz."
@@ -18,6 +20,10 @@
       "precio": 1500
     }
   ],
+  "descuento": {
+    "concepto": "",
+    "monto": 300
+  },
   "iva": 0,
   "notas": [
     "El material (audio final, letra y video) ya fue entregado por la banda.",
