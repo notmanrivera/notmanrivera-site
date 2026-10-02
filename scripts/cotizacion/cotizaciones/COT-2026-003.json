@@ -1,0 +1,31 @@
+{
+  "folio": "COT-2026-003",
+  "fecha": "2026-10-02",
+  "cliente": "Pollock",
+  "atencion": "Felipe Fonseca y Axel Paredes",
+  "proyecto": "Lyric video · Colapso",
+  "vigencia": "15 días",
+  "items": [
+    {
+      "titulo": "Lyric video de “Colapso”.",
+      "etiqueta": "(3:22 min)",
+      "puntos": ["Video horizontal 16:9 en MP4 Full HD (1920×1080), listo para YouTube."],
+      "incluye": [
+        "Toma casi estática en loop durante toda la canción.",
+        "Animación 2D de la letra, sincronizada con la voz."
+      ],
+      "unidades": 1,
+      "precio": 1500
+    }
+  ],
+  "iva": 0,
+  "notas": [
+    "El material (audio final, letra y video) ya fue entregado por la banda.",
+    "Entrega del video final: **16 de octubre de 2026**."
+  ],
+  "condiciones": [
+    "Incluye dos rondas de ajustes. Cambios adicionales o de alcance se cotizan por separado.",
+    "Los pagos se realizarán de manera que se cubra el **50% al aprobar la cotización y 50% contra entrega final.**",
+    "Precio en pesos mexicanos. No se emite factura."
+  ]
+}
