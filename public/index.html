@@ -2761,6 +2761,53 @@
   .cred:hover h3{transform:skewX(-8deg) translateX(9px)}
   .cred:hover p{transform:translateX(9px)}
 
+  /* ===== RESEÑAS (dentro de #experiencia) =====
+     Las pinta scripts/resenas.js. Misma placa que .cred (anillo blanco +
+     capa negra con el mismo filo), pero SIN el volteo a blanco del hover:
+     es texto para leer, no algo que se pueda pulsar. */
+  .resenas{margin-top:64px}
+  .resenas-titulo{
+    font-family:var(--disp);font-weight:400;text-transform:uppercase;
+    font-size:clamp(2.2rem,5vw,3.2rem);line-height:.95;letter-spacing:.01em;
+    margin-bottom:28px;
+  }
+  .resenas-titulo em{font-style:normal;color:var(--rojo)}
+  .resenas-lista{display:grid;gap:28px;grid-template-columns:repeat(auto-fit,minmax(320px,1fr))}
+  .resena{--giro:0deg}
+  @media(min-width:1000px){.resena{--giro:var(--giro-d,0deg)}}
+  .resena{
+    position:relative;margin:0;padding:34px 30px 26px;
+    clip-path:var(--filo);transform:rotate(var(--giro,0deg));
+    background:var(--paper);color:var(--paper);isolation:isolate;
+  }
+  .resena::after{
+    content:"";position:absolute;inset:3px;z-index:-1;
+    background:var(--ink);clip-path:var(--filo);
+  }
+  .resena::before{
+    content:"";position:absolute;top:0;left:8%;width:46px;height:7px;
+    background:var(--rojo);z-index:2;
+  }
+  .resena blockquote{margin:0 0 20px}
+  .resena blockquote p{font-size:1.05rem;line-height:1.7;opacity:.94;margin:0 0 12px}
+  .resena blockquote p:first-child::before{
+    content:"\201C";font-family:var(--disp);font-size:3.2rem;line-height:0;
+    color:var(--violet-hi);vertical-align:-.42em;margin-right:6px;
+  }
+  .resena figcaption{display:flex;flex-direction:column;gap:3px}
+  .resena-nombre{
+    font-family:var(--disp);text-transform:uppercase;font-size:1.5rem;letter-spacing:.02em;
+    color:var(--paper);text-decoration:none;transform:skewX(-8deg);transform-origin:left;
+    align-self:flex-start;
+  }
+  a.resena-nombre:hover,a.resena-nombre:focus-visible{color:var(--violet-hi)}
+  .resena-puesto,.resena-idioma{
+    font-family:var(--ui);font-weight:300;text-transform:uppercase;
+    font-size:.64rem;letter-spacing:.1em;color:var(--muted);
+  }
+  .resena-idioma:empty{display:none}
+  @media(max-width:560px){.resenas-lista{grid-template-columns:1fr}.resena{padding:30px 22px 22px}}
+
   /* ===== STATUS (ficha de personaje, tipo pantalla de Persona) ===== */
   #perfil{background:linear-gradient(180deg,var(--ink) 0%,#12081f 55%,var(--ink) 100%)}
   .ficha{
@@ -4024,6 +4071,11 @@
         <span class="chispa-btn" aria-hidden="true"></span>
       </div>
     </div>
+
+    <!-- Reseñas de clientes: las escribe scripts/resenas.js (Action
+         resenas.yml) con las aprobadas en la hoja. No editar a mano entre
+         las marcas: se sobrescribe. -->
+    <!-- resenas:inicio --><!-- resenas:fin -->
   </div>
 </section>
 

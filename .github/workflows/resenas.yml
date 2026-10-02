@@ -1,0 +1,55 @@
+name: Publicar reseñas aprobadas
+
+# Cada dos horas pide a la web app de reseñas las que tienen "sí" en
+# Aprobada (pestaña Reseñas de la hoja) y las pinta en la portada con
+# scripts/resenas.js. Si algo cambió, hace commit y lanza deploy.yml (un
+# push hecho con GITHUB_TOKEN no dispara otros workflows por sí solo).
+#
+# Quitar el "sí" retira la reseña en la siguiente pasada. Para no esperar:
+# Actions → Publicar reseñas aprobadas → Run workflow.
+
+on:
+  schedule:
+    - cron: '23 */2 * * *'
+  workflow_dispatch: {}
+
+concurrency:
+  group: resenas
+  cancel-in-progress: false
+
+jobs:
+  publicar:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      actions: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Traer las aprobadas
+        env:
+          WEBAPP: https://script.google.com/macros/s/AKfycbzfijfCkpyR_mZhE96eu4qa8rXkj4KJIfhE_sOZCCsKfiCyu-mj7pwxWcfSMBE6dsUh/exec
+        run: curl -fsSL --retry 3 "$WEBAPP?accion=publicadas" -o /tmp/resenas.json
+
+      # Si la respuesta no es válida, resenas.js falla sin tocar nada: mejor
+      # dejar publicadas las de antes que borrarlas por un error pasajero.
+      - name: Pintarlas en la portada
+        run: node scripts/resenas.js /tmp/resenas.json
+
+      - name: Commit y deploy si cambió
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if git diff --quiet; then
+            echo "Sin cambios."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -am "Reseñas: actualiza las publicadas en la portada"
+          git push
+          gh workflow run deploy.yml --ref main

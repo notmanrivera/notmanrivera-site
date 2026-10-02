@@ -77,22 +77,14 @@ jobs:
       - name: clasp push
         run: clasp push --force
 
+      # Siempre sobre el mismo despliegue: su ID es la URL /exec que usa
+      # public/resena/ y resenas.yml. Va fijo aquí y no buscado por su
+      # descripción porque esa búsqueda falló la primera vez (devolvió vacío
+      # justo después de crearlo) y un segundo intento habría creado otro
+      # despliegue con otra URL.
       - name: Desplegar
+        env:
+          DESPLIEGUE: AKfycbzfijfCkpyR_mZhE96eu4qa8rXkj4KJIfhE_sOZCCsKfiCyu-mj7pwxWcfSMBE6dsUh
         run: |
-          buscar() {
-            clasp --json list-deployments | node -e '
-              let s = "";
-              process.stdin.on("data", d => s += d).on("end", () => {
-                const d = JSON.parse(s).find(x => x.description === "Reseñas web");
-                process.stdout.write(d ? d.deploymentId : "");
-              });'
-          }
-          ID=$(buscar)
-          if [ -n "$ID" ]; then
-            clasp update-deployment "$ID" -d "Reseñas web"
-          else
-            clasp create-deployment -d "Reseñas web"
-            ID=$(buscar)
-          fi
-          echo "URL de la web app: https://script.google.com/macros/s/$ID/exec"
-          echo "Web app: https://script.google.com/macros/s/$ID/exec" >> "$GITHUB_STEP_SUMMARY"
+          clasp update-deployment "$DESPLIEGUE" -d "Reseñas web"
+          echo "Web app: https://script.google.com/macros/s/$DESPLIEGUE/exec" >> "$GITHUB_STEP_SUMMARY"

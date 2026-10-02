@@ -1,0 +1,512 @@
+<!doctype html>
+<html lang="es">
+<head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-KMZ6Q35TJ8"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-KMZ6Q35TJ8');
+</script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- Formulario por invitación (liga personal con ?c=<código>): no tiene
+     nada que buscar Google, y sin código no sirve de nada. -->
+<meta name="robots" content="noindex">
+<title>Reseña — NotMan Rivera</title>
+<link rel="icon" type="image/png" href="/assets/favicon.png">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<meta name="theme-color" content="#000000">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+<link rel="preload" href="/assets/kenyan-coffee.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/monument-black.woff2" as="font" type="font/woff2" crossorigin>
+
+<style>
+  @font-face{font-family:"Kenyan Coffee";src:url("/assets/kenyan-coffee.woff2") format("woff2");font-weight:400;font-style:normal;font-display:swap}
+  @font-face{font-family:"Monument Extended";src:url("/assets/monument-black.woff2") format("woff2");font-weight:900;font-style:normal;font-display:swap}
+  @font-face{font-family:"Monument Extended";src:url("/assets/monument-light.woff2") format("woff2");font-weight:300;font-style:normal;font-display:swap}
+
+  :root{
+    --ink:#000000;--ink-2:#1A1A1A;
+    --violet:#8B3FFF;--violet-hi:#A96BFF;
+    --sombra:#2b2b2b;--rojo:#E50012;
+    --paper:#FFFFFF;--muted:#A99CC4;--line:#33204f;
+    --filo:polygon(9px 0%, 100% 6px, calc(100% - 9px) 100%, 0% calc(100% - 6px));
+    --disp:"Kenyan Coffee",Impact,"Haettenschweiler","Arial Narrow Bold",sans-serif;
+    --ui:"Monument Extended","Arial Black","Helvetica Neue",sans-serif;
+    --body:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{overflow-x:hidden;scroll-behavior:smooth}
+  body{
+    background:var(--ink);color:var(--paper);font-family:var(--body);
+    line-height:1.7;font-size:1.02rem;
+    min-height:100vh;display:flex;flex-direction:column;
+  }
+  body::before{
+    content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
+    background-image:radial-gradient(var(--line) 1px, transparent 1px);
+    background-size:7px 7px;
+    -webkit-mask-image:linear-gradient(160deg,#000 0%,transparent 62%);
+    mask-image:linear-gradient(160deg,#000 0%,transparent 62%);
+    opacity:.55;
+  }
+
+  main{
+    position:relative;z-index:1;flex:1;
+    max-width:720px;margin:0 auto;padding:64px 24px 90px;width:100%;
+  }
+  .barra{display:flex;justify-content:space-between;align-items:center;margin-bottom:22px;gap:16px}
+  .kicker{
+    display:inline-block;font-family:var(--ui);font-weight:900;text-transform:uppercase;
+    font-size:.72rem;letter-spacing:.12em;color:#fff;background:var(--rojo);
+    padding:8px 16px;transform:skewX(-6deg);
+  }
+  .idioma{
+    font-family:var(--ui);font-weight:300;text-transform:uppercase;font-size:.66rem;
+    letter-spacing:.12em;color:var(--muted);background:none;border:0;cursor:pointer;
+    padding:8px 0;text-decoration:underline;text-underline-offset:4px;
+  }
+  .idioma:hover,.idioma:focus-visible{color:var(--paper)}
+  h1{
+    font-family:var(--disp);font-weight:400;text-transform:uppercase;line-height:.95;
+    font-size:clamp(2.2rem,6vw,3.6rem);letter-spacing:.01em;margin-bottom:18px;
+  }
+  h1 em{font-style:normal;color:var(--violet-hi)}
+  p{color:#d8d2e6;margin-bottom:16px}
+  p.intro{color:var(--paper);font-size:1.1rem}
+  a{color:var(--violet-hi);text-decoration:underline;text-underline-offset:3px}
+  a:hover{color:var(--paper)}
+  a:focus-visible,button:focus-visible{outline:3px solid var(--paper);outline-offset:3px}
+
+  .regla{border:0;border-top:2px solid var(--line);margin:30px 0 34px}
+
+  /* ===== FORMULARIO ===== */
+  form{display:grid;gap:22px}
+  .doble{display:grid;gap:22px;grid-template-columns:1fr 1fr}
+  .campo{display:grid;gap:8px}
+  label,.etiqueta{
+    font-family:var(--ui);font-weight:900;text-transform:uppercase;
+    font-size:.68rem;letter-spacing:.12em;color:var(--paper);
+  }
+  label .opc{font-weight:300;color:var(--muted);letter-spacing:.08em}
+  .ayuda{font-size:.86rem;color:var(--muted);margin:0}
+
+  /* Mismo filo que las tarjetas del sitio. El borde es un fondo violeta
+     tenue que asoma 2px alrededor de la capa interior (no border/outline:
+     el clip-path los cortaría a trozos, ver .placa-negra en la portada). */
+  .marco{
+    background:var(--line);clip-path:var(--filo);padding:2px;
+    transition:background .18s;
+  }
+  .marco:focus-within{background:var(--violet)}
+  .marco.mal{background:var(--rojo)}
+  input[type=text],input[type=url],select,textarea{
+    display:block;width:100%;border:0;border-radius:0;
+    background:var(--ink-2);color:var(--paper);clip-path:var(--filo);
+    font-family:var(--body);font-size:1rem;line-height:1.5;
+    padding:14px 16px;outline:none;
+    -webkit-appearance:none;appearance:none;
+  }
+  select{
+    background-image:linear-gradient(45deg,transparent 50%,var(--muted) 50%),linear-gradient(135deg,var(--muted) 50%,transparent 50%);
+    background-position:calc(100% - 22px) 50%,calc(100% - 16px) 50%;
+    background-size:6px 6px;background-repeat:no-repeat;padding-right:40px;
+  }
+  select:invalid{color:var(--muted)}
+  option{background:var(--ink-2);color:var(--paper)}
+  textarea{min-height:220px;resize:vertical}
+  ::placeholder{color:#6f6488}
+
+  .contador{
+    font-family:var(--ui);font-weight:300;font-size:.62rem;letter-spacing:.1em;
+    text-transform:uppercase;color:var(--muted);text-align:right;
+  }
+  .contador.mal{color:#ff5a66}
+
+  .permiso{
+    display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:start;
+    background:var(--ink-2);clip-path:var(--filo);padding:20px 22px;cursor:pointer;
+  }
+  .permiso input{
+    -webkit-appearance:none;appearance:none;width:22px;height:22px;margin-top:2px;
+    background:var(--ink);border:2px solid var(--violet);cursor:pointer;
+    display:grid;place-content:center;
+  }
+  .permiso input::before{
+    content:"";width:12px;height:12px;background:var(--rojo);
+    transform:scale(0) skewX(-8deg);transition:transform .14s;
+  }
+  .permiso input:checked::before{transform:scale(1) skewX(-8deg)}
+  .permiso input:focus-visible{outline:3px solid var(--paper);outline-offset:3px}
+  /* Es un <label> (para que todo el bloque marque la casilla) pero no debe
+     heredar la tipografía de etiqueta de los campos. */
+  .permiso span{
+    font-family:var(--body);font-weight:400;text-transform:none;letter-spacing:0;
+    color:#d8d2e6;font-size:.94rem;line-height:1.6;
+  }
+  .permiso b{color:var(--paper);font-weight:600}
+
+  .trampa{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+
+  .enviar{
+    justify-self:start;border:0;cursor:pointer;
+    background:var(--rojo);color:var(--paper);clip-path:var(--filo);
+    font-family:var(--disp);text-transform:uppercase;font-size:1.5rem;letter-spacing:.02em;
+    padding:14px 34px 12px;transition:background .18s,color .18s,transform .18s;
+  }
+  .enviar:hover,.enviar:focus-visible{background:var(--paper);color:var(--ink)}
+  .enviar:active{transform:translateY(2px)}
+  .enviar[disabled]{background:var(--sombra);color:var(--muted);cursor:wait}
+
+  .error{
+    display:none;background:var(--ink-2);clip-path:var(--filo);
+    padding:16px 20px;color:var(--paper);border-left:0;
+  }
+  .error.ver{display:block}
+  .error::before{
+    content:"";display:block;width:46px;height:5px;background:var(--rojo);margin-bottom:10px;
+  }
+
+  /* Pantallas de estado: cargando, liga inválida, gracias */
+  .estado{display:none}
+  .estado.ver{display:block}
+  .caja{
+    background:var(--ink-2);clip-path:var(--filo);
+    padding:24px 26px;margin:22px 0 4px;
+  }
+  .caja p:last-child{margin-bottom:0}
+  .cita{
+    position:relative;background:var(--ink-2);clip-path:var(--filo);
+    padding:28px 28px 24px;margin:24px 0;white-space:pre-line;color:var(--paper);
+  }
+  .cita::before{
+    content:"";position:absolute;top:0;left:8%;width:46px;height:7px;background:var(--rojo);
+  }
+
+  .volver{
+    display:inline-block;margin-top:30px;padding:14px 22px;
+    background:var(--ink-2);clip-path:var(--filo);
+    color:var(--paper);text-decoration:none;
+    font-family:var(--disp);text-transform:uppercase;font-size:1.2rem;
+    transition:background .18s,color .18s;
+  }
+  .volver:hover,.volver:focus-visible{background:var(--paper);color:var(--ink)}
+
+  footer{
+    position:relative;z-index:1;
+    padding:28px 24px;border-top:2px solid var(--line);
+    color:var(--muted);font-size:.82rem;
+    max-width:720px;margin:0 auto;width:100%;
+    display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;
+  }
+  footer a{color:var(--muted);text-decoration:none}
+  footer a:hover{color:var(--paper)}
+
+  @media(max-width:560px){
+    main{padding:44px 16px 70px}
+    .doble{grid-template-columns:1fr}
+    .enviar{justify-self:stretch}
+    footer{padding:24px 16px}
+  }
+  @media(prefers-reduced-motion:reduce){
+    html{scroll-behavior:auto}
+    *{transition:none !important}
+  }
+</style>
+</head>
+<body>
+
+<main>
+  <div class="barra">
+    <span class="kicker" data-es="Reseña" data-en="Review">Reseña</span>
+    <button type="button" class="idioma" id="idioma" data-es="English" data-en="Español">English</button>
+  </div>
+
+  <!-- Mientras se valida la liga -->
+  <section class="estado ver" id="cargando" aria-live="polite">
+    <p data-es="Cargando…" data-en="Loading…">Cargando…</p>
+  </section>
+
+  <!-- Sin código, código que no existe, o invitación cerrada -->
+  <section class="estado" id="invalida">
+    <h1 data-es="Esta liga no <em>funciona</em>" data-en="This link doesn't <em>work</em>">Esta liga no <em>funciona</em></h1>
+    <p class="intro" data-es="Este formulario es solo por invitación y la liga que abriste no es válida o ya se cerró." data-en="This form is by invitation only, and the link you opened isn't valid or has been closed.">Este formulario es solo por invitación y la liga que abriste no es válida o ya se cerró.</p>
+    <p><span data-es="Si te pedí una reseña, escríbeme a" data-en="If I asked you for a review, write to me at">Si te pedí una reseña, escríbeme a</span> <!--email_off--><a href="mailto:hola@notmanrivera.com">hola@notmanrivera.com</a><!--/email_off--> <span data-es="y te mando una nueva." data-en="and I'll send you a new one.">y te mando una nueva.</span></p>
+    <a class="volver" href="/" data-es="Ir a notmanrivera.com" data-en="Go to notmanrivera.com">Ir a notmanrivera.com</a>
+  </section>
+
+  <!-- El formulario -->
+  <section class="estado" id="formulario">
+    <h1 data-es="¿Cómo fue trabajar <em>juntos</em>?" data-en="How was working <em>together</em>?">¿Cómo fue trabajar <em>juntos</em>?</h1>
+    <p class="intro" id="saludo"></p>
+    <p data-es="Escríbela como te salga, con tus palabras. Antes de publicarla solo corrijo ortografía, acentos, mayúsculas y puntuación; nunca cambio lo que dices." data-en="Write it however it comes out, in your own words. Before publishing I only fix spelling, capitalization and punctuation; I never change what you say.">Escríbela como te salga, con tus palabras. Antes de publicarla solo corrijo ortografía, acentos, mayúsculas y puntuación; nunca cambio lo que dices.</p>
+    <div class="caja" id="aviso-previa" hidden>
+      <p data-es="Ya recibí una reseña tuya. Si mandas esta, sustituye a la anterior." data-en="I already got a review from you. If you send this one, it replaces the previous one.">Ya recibí una reseña tuya. Si mandas esta, sustituye a la anterior.</p>
+    </div>
+
+    <hr class="regla">
+
+    <form id="form" novalidate>
+      <div class="doble">
+        <div class="campo">
+          <label for="nombre" data-es="Nombre" data-en="Name">Nombre</label>
+          <div class="marco"><input type="text" id="nombre" name="nombre" autocomplete="name" maxlength="120" required></div>
+        </div>
+        <div class="campo">
+          <label for="cargo" data-es="Cargo" data-en="Role">Cargo</label>
+          <div class="marco"><input type="text" id="cargo" name="cargo" autocomplete="organization-title" maxlength="120" required data-ph-es="Ej.: Director general" data-ph-en="e.g. Managing Director" placeholder="Ej.: Director general"></div>
+        </div>
+      </div>
+
+      <div class="doble">
+        <div class="campo">
+          <label for="empresa" data-es="Empresa" data-en="Company">Empresa</label>
+          <div class="marco"><input type="text" id="empresa" name="empresa" autocomplete="organization" maxlength="120" required></div>
+        </div>
+        <div class="campo">
+          <label for="relacion" data-es="Tu relación conmigo" data-en="How you know me">Tu relación conmigo</label>
+          <div class="marco">
+            <select id="relacion" name="relacion" required>
+              <option value="" disabled selected data-es="Elige una opción" data-en="Choose one">Elige una opción</option>
+              <option value="cliente" data-es="Fui tu cliente" data-en="I was your client">Fui tu cliente</option>
+              <option value="jefe" data-es="Fui tu jefe o director" data-en="I was your manager">Fui tu jefe o director</option>
+              <option value="colega" data-es="Fuimos colegas" data-en="We were colleagues">Fuimos colegas</option>
+              <option value="proyecto" data-es="Colaboramos en un proyecto" data-en="We collaborated on a project">Colaboramos en un proyecto</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="campo">
+        <label for="resena" data-es="Tu reseña" data-en="Your review">Tu reseña</label>
+        <p class="ayuda" data-es="Por ejemplo: en qué proyectos trabajamos, cómo fue el proceso, qué resultado tuvo, si me volverías a llamar." data-en="For example: what we worked on, what the process was like, how it turned out, whether you'd hire me again.">Por ejemplo: en qué proyectos trabajamos, cómo fue el proceso, qué resultado tuvo, si me volverías a llamar.</p>
+        <div class="marco"><textarea id="resena" name="resena" maxlength="1500" required></textarea></div>
+        <div class="contador" id="contador" aria-live="polite"></div>
+      </div>
+
+      <div class="campo">
+        <label for="linkedin">LinkedIn <span class="opc" data-es="(opcional)" data-en="(optional)">(opcional)</span></label>
+        <div class="marco"><input type="url" id="linkedin" name="linkedin" inputmode="url" maxlength="200" placeholder="https://www.linkedin.com/in/…"></div>
+        <p class="ayuda" data-es="Si lo pones, tu nombre enlaza a tu perfil junto a la reseña." data-en="If you add it, your name links to your profile next to the review.">Si lo pones, tu nombre enlaza a tu perfil junto a la reseña.</p>
+      </div>
+
+      <div class="trampa" aria-hidden="true">
+        <label for="web">Web</label><input type="text" id="web" name="web" tabindex="-1" autocomplete="off">
+      </div>
+
+      <label class="permiso" for="permiso">
+        <input type="checkbox" id="permiso" name="permiso" required>
+        <span><span data-es="<b>Autorizo que se publique</b> esta reseña en notmanrivera.com con mi nombre, cargo y empresa. Rubén puede corregir ortografía y puntuación sin cambiar el contenido, y puedo pedir que la quite cuando quiera." data-en="<b>I authorize publishing</b> this review on notmanrivera.com with my name, role and company. Rubén may fix spelling and punctuation without changing the content, and I can ask for it to be removed at any time."><b>Autorizo que se publique</b> esta reseña en notmanrivera.com con mi nombre, cargo y empresa. Rubén puede corregir ortografía y puntuación sin cambiar el contenido, y puedo pedir que la quite cuando quiera.</span> <a href="/aviso-de-privacidad/#resenas" id="liga-aviso" target="_blank" rel="noopener" data-es="Aviso de privacidad" data-en="Privacy notice">Aviso de privacidad</a></span>
+      </label>
+
+      <div class="error" id="error" role="alert"></div>
+
+      <button type="submit" class="enviar" id="enviar" data-es="Enviar reseña" data-en="Send review">Enviar reseña</button>
+    </form>
+  </section>
+
+  <!-- Enviada -->
+  <section class="estado" id="gracias" tabindex="-1">
+    <h1 id="gracias-titulo"></h1>
+    <p class="intro" data-es="Tu reseña ya me llegó. La reviso, corrijo solo lo de estilo y la publico en el sitio en los próximos días." data-en="Your review reached me. I'll review it, fix only the style, and publish it on the site in the next few days.">Tu reseña ya me llegó. La reviso, corrijo solo lo de estilo y la publico en el sitio en los próximos días.</p>
+    <div class="cita" id="copia"></div>
+    <p><span data-es="Si quieres cambiar algo, vuelve a abrir tu liga y mándala otra vez, o escríbeme a" data-en="If you want to change anything, open your link again and resend it, or write to me at">Si quieres cambiar algo, vuelve a abrir tu liga y mándala otra vez, o escríbeme a</span> <!--email_off--><a href="mailto:hola@notmanrivera.com">hola@notmanrivera.com</a><!--/email_off-->.</p>
+    <a class="volver" href="/" data-es="Ir a notmanrivera.com" data-en="Go to notmanrivera.com">Ir a notmanrivera.com</a>
+  </section>
+</main>
+
+<footer>
+  <span data-es="NotMan Rivera — Motion graphics, video y diseño web" data-en="NotMan Rivera — Motion graphics, video and web design">NotMan Rivera — Motion graphics, video y diseño web</span>
+  <a href="/">notmanrivera.com</a>
+</footer>
+
+<script>
+(function () {
+  // Web app de Apps Script (scripts/apps-script/Resenas.gs). Despliegue fijo
+  // "Reseñas web": la URL no cambia aunque se actualice el código.
+  var WEBAPP = 'https://script.google.com/macros/s/AKfycbzfijfCkpyR_mZhE96eu4qa8rXkj4KJIfhE_sOZCCsKfiCyu-mj7pwxWcfSMBE6dsUh/exec';
+  var MIN = 40, MAX = 1500;
+
+  var q = new URLSearchParams(location.search);
+  var codigo = (q.get('c') || '').trim().toLowerCase();
+  var lang = q.get('lang') === 'en' ? 'en' : (q.get('lang') === 'es' ? 'es' : null);
+  var invitacion = null;
+  var $ = function (id) { return document.getElementById(id); };
+
+  var TXT = {
+    es: {
+      hola: function (n, e) { return 'Hola, ' + n + '. Gracias por tomarte unos minutos para contar cómo fue trabajar conmigo' + (e ? ' en ' + e : '') + '.'; },
+      holaSin: 'Gracias por tomarte unos minutos para contar cómo fue trabajar conmigo.',
+      gracias: function (n) { return '¡Gracias, <em>' + esc(n) + '</em>!'; },
+      faltan: function (n) { return 'Faltan ' + n + ' caracteres'; },
+      cuenta: function (n) { return n + ' / ' + MAX; },
+      enviando: 'Enviando…',
+      err: {
+        faltan: 'Llena nombre, cargo, empresa y tu relación conmigo.',
+        corta: 'La reseña necesita al menos ' + MIN + ' caracteres.',
+        larga: 'La reseña puede tener hasta ' + MAX + ' caracteres.',
+        permiso: 'Para publicarla necesito que marques la autorización.',
+        linkedin: 'La liga de LinkedIn no parece válida. Puedes dejarla vacía.',
+        codigo: 'Esta liga ya no es válida. Escríbeme a hola@notmanrivera.com.',
+        cerrada: 'Esta invitación ya se cerró. Escríbeme a hola@notmanrivera.com.',
+        red: 'No se pudo enviar. Revisa tu conexión e inténtalo otra vez; lo que escribiste sigue aquí.',
+        otro: 'Algo falló de mi lado. Inténtalo en un momento o escríbeme a hola@notmanrivera.com.'
+      }
+    },
+    en: {
+      hola: function (n, e) { return 'Hi, ' + n + '. Thanks for taking a few minutes to share what it was like working with me' + (e ? ' at ' + e : '') + '.'; },
+      holaSin: 'Thanks for taking a few minutes to share what it was like working with me.',
+      gracias: function (n) { return 'Thank you, <em>' + esc(n) + '</em>!'; },
+      faltan: function (n) { return n + ' more characters needed'; },
+      cuenta: function (n) { return n + ' / ' + MAX; },
+      enviando: 'Sending…',
+      err: {
+        faltan: 'Please fill in name, role, company and how you know me.',
+        corta: 'The review needs at least ' + MIN + ' characters.',
+        larga: 'The review can be up to ' + MAX + ' characters.',
+        permiso: 'I need you to check the authorization box to publish it.',
+        linkedin: "The LinkedIn link doesn't look right. You can leave it empty.",
+        codigo: "This link isn't valid anymore. Write to me at hola@notmanrivera.com.",
+        cerrada: 'This invitation has been closed. Write to me at hola@notmanrivera.com.',
+        red: "It couldn't be sent. Check your connection and try again; what you wrote is still here.",
+        otro: 'Something failed on my end. Try again in a moment or write to me at hola@notmanrivera.com.'
+      }
+    }
+  };
+
+  function esc(s) {
+    return String(s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+
+  function idioma(l) {
+    lang = l;
+    document.documentElement.lang = l;
+    document.title = (l === 'en' ? 'Review' : 'Reseña') + ' — NotMan Rivera';
+    document.querySelectorAll('[data-es]').forEach(function (el) { el.innerHTML = el.getAttribute('data-' + l); });
+    document.querySelectorAll('[data-ph-es]').forEach(function (el) { el.placeholder = el.getAttribute('data-ph-' + l); });
+    $('liga-aviso').href = l === 'en' ? '/aviso-de-privacidad/en/#resenas' : '/aviso-de-privacidad/#resenas';
+    saludar();
+    contar();
+    if ($('error').classList.contains('ver') && $('error').dataset.clave) mostrarError($('error').dataset.clave);
+    if ($('gracias').classList.contains('ver')) $('gracias-titulo').innerHTML = TXT[l].gracias($('nombre').value.split(' ')[0]);
+  }
+
+  function pantalla(id) {
+    ['cargando', 'invalida', 'formulario', 'gracias'].forEach(function (s) {
+      $(s).classList.toggle('ver', s === id);
+    });
+  }
+
+  function saludar() {
+    if (!invitacion) return;
+    $('saludo').textContent = invitacion.nombre
+      ? TXT[lang].hola(invitacion.nombre, invitacion.empresa)
+      : TXT[lang].holaSin;
+  }
+
+  function contar() {
+    var n = $('resena').value.trim().length;
+    var c = $('contador');
+    c.textContent = n < MIN ? TXT[lang].faltan(MIN - n) : TXT[lang].cuenta(n);
+    c.classList.toggle('mal', n > 0 && n < MIN);
+  }
+
+  function mostrarError(clave) {
+    var e = $('error');
+    e.dataset.clave = clave;
+    e.textContent = TXT[lang].err[clave] || TXT[lang].err.otro;
+    e.classList.add('ver');
+  }
+
+  function marcar(id, mal) { $(id).parentNode.classList.toggle('mal', !!mal); }
+
+  $('idioma').addEventListener('click', function () { idioma(lang === 'en' ? 'es' : 'en'); });
+  $('resena').addEventListener('input', contar);
+  ['nombre', 'cargo', 'empresa', 'relacion', 'resena', 'linkedin'].forEach(function (id) {
+    $(id).addEventListener('input', function () { marcar(id, false); });
+  });
+
+  $('form').addEventListener('submit', function (ev) {
+    ev.preventDefault();
+    $('error').classList.remove('ver');
+    var d = {
+      c: codigo,
+      nombre: $('nombre').value.trim(),
+      cargo: $('cargo').value.trim(),
+      empresa: $('empresa').value.trim(),
+      relacion: $('relacion').value ? $('relacion').selectedOptions[0].textContent.trim() : '',
+      resena: $('resena').value.trim(),
+      linkedin: $('linkedin').value.trim(),
+      permiso: $('permiso').checked,
+      idioma: lang,
+      web: $('web').value
+    };
+    var faltan = ['nombre', 'cargo', 'empresa', 'relacion'].filter(function (k) { return !$(k).value.trim(); });
+    faltan.forEach(function (k) { marcar(k, true); });
+    if (faltan.length) { mostrarError('faltan'); $(faltan[0]).focus(); return; }
+    if (d.resena.length < MIN) { marcar('resena', true); mostrarError('corta'); $('resena').focus(); return; }
+    if (d.resena.length > MAX) { marcar('resena', true); mostrarError('larga'); $('resena').focus(); return; }
+    if (d.linkedin && !/^https?:\/\/([a-z]{2,3}\.)?linkedin\.com\/\S+$/i.test(d.linkedin)) {
+      marcar('linkedin', true); mostrarError('linkedin'); $('linkedin').focus(); return;
+    }
+    d.linkedin = d.linkedin.replace(/^http:/i, 'https:');
+    if (!d.permiso) { mostrarError('permiso'); $('permiso').focus(); return; }
+
+    var b = $('enviar');
+    b.disabled = true;
+    b.textContent = TXT[lang].enviando;
+    // text/plain: petición "simple", sin la consulta previa de CORS que
+    // Apps Script no contesta.
+    fetch(WEBAPP, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(d) })
+      .then(function (r) { return r.json(); })
+      .then(function (r) {
+        if (!r.ok) throw { clave: r.error };
+        gtag('event', 'resena_enviada', { idioma: lang });
+        $('gracias-titulo').innerHTML = TXT[lang].gracias(d.nombre.split(' ')[0]);
+        $('copia').textContent = d.resena;
+        pantalla('gracias');
+        window.scrollTo(0, 0);
+        $('gracias').focus({ preventScroll: true });
+      })
+      .catch(function (e) {
+        mostrarError(e && e.clave ? e.clave : 'red');
+        b.disabled = false;
+        b.textContent = b.getAttribute('data-' + lang);
+      });
+  });
+
+  idioma(lang || 'es');
+  if (!/^[a-z0-9-]{6,40}$/.test(codigo)) { pantalla('invalida'); return; }
+
+  fetch(WEBAPP + '?accion=invitacion&c=' + encodeURIComponent(codigo))
+    .then(function (r) { return r.json(); })
+    .then(function (r) {
+      if (!r.ok) { pantalla('invalida'); return; }
+      invitacion = r;
+      if (!lang) idioma(r.idioma);
+      saludar();
+      if (r.nombre) $('nombre').value = r.nombre;
+      if (r.empresa) $('empresa').value = r.empresa;
+      $('aviso-previa').hidden = !r.recibida;
+      pantalla('formulario');
+    })
+    .catch(function () {
+      // Si la web app no contesta, mejor dejar escribir que bloquear: el
+      // envío valida el código de todas formas.
+      invitacion = { nombre: '', empresa: '' };
+      saludar();
+      pantalla('formulario');
+    });
+})();
+</script>
+
+</body>
+</html>
