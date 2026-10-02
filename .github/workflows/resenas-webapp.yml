@@ -1,0 +1,98 @@
+name: Desplegar la web app de reseñas
+
+# Sube scripts/resenas-webapp/ a su proyecto de Apps Script (propiedad de
+# hola@) y lo vuelve a desplegar sobre el mismo despliegue, "Reseñas web":
+# la URL /exec que usa public/resena/ nunca cambia.
+#
+# Por qué es un proyecto aparte del de prospección: ver el comentario al
+# inicio de scripts/resenas-webapp/Resenas.gs.
+#
+# Usa el mismo secreto CLASPRC_JSON que apps-script.yml (clasp login de hola@).
+#
+# Cada despliegue crea una versión del proyecto y Apps Script admite 200 por
+# proyecto. Por eso solo corre cuando cambia esta carpeta.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/resenas-webapp/**'
+  workflow_dispatch: {}
+
+concurrency:
+  group: apps-script
+  cancel-in-progress: false
+
+jobs:
+  desplegar:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    defaults:
+      run:
+        working-directory: scripts/resenas-webapp
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Revisar sintaxis
+        run: |
+          cat *.gs > /tmp/todo.js
+          node --check /tmp/todo.js
+          echo "Sintaxis OK"
+
+      - name: Instalar clasp
+        run: npm install -g @google/clasp
+
+      - name: Credenciales de clasp
+        env:
+          CLASPRC_JSON: ${{ secrets.CLASPRC_JSON }}
+        run: |
+          if [ -z "$CLASPRC_JSON" ]; then
+            echo "::error::Falta el secreto CLASPRC_JSON (ver apps-script.yml)."
+            exit 1
+          fi
+          printf '%s' "$CLASPRC_JSON" > ~/.clasprc.json
+
+      # Solo la primera vez: crea el proyecto. create-script descarga los
+      # archivos del proyecto vacío encima de los locales, por eso se crea en
+      # una carpeta aparte y solo se trae el .clasp.json. Hay que commitear
+      # ese .clasp.json (el ID sale en el resumen de esta ejecución) para que
+      # la siguiente vez no cree otro.
+      - name: Crear el proyecto si no existe
+        run: |
+          if [ -f .clasp.json ]; then exit 0; fi
+          AQUI=$PWD
+          mkdir -p /tmp/nuevo && cd /tmp/nuevo
+          clasp create-script --type standalone --title "Reseñas notmanrivera.com"
+          ID=$(node -p 'require("./.clasp.json").scriptId')
+          printf '{"scriptId":"%s","rootDir":"."}\n' "$ID" > "$AQUI/.clasp.json"
+          echo "::notice::Proyecto nuevo: $ID. Commitea scripts/resenas-webapp/.clasp.json con este scriptId."
+          echo "Proyecto nuevo, scriptId: \`$ID\` — commitear \`scripts/resenas-webapp/.clasp.json\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "Autorizar una vez: https://script.google.com/d/$ID/edit → función autorizar → Ejecutar" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: clasp push
+        run: clasp push --force
+
+      - name: Desplegar
+        run: |
+          buscar() {
+            clasp --json list-deployments | node -e '
+              let s = "";
+              process.stdin.on("data", d => s += d).on("end", () => {
+                const d = JSON.parse(s).find(x => x.description === "Reseñas web");
+                process.stdout.write(d ? d.deploymentId : "");
+              });'
+          }
+          ID=$(buscar)
+          if [ -n "$ID" ]; then
+            clasp update-deployment "$ID" -d "Reseñas web"
+          else
+            clasp create-deployment -d "Reseñas web"
+            ID=$(buscar)
+          fi
+          echo "URL de la web app: https://script.google.com/macros/s/$ID/exec"
+          echo "Web app: https://script.google.com/macros/s/$ID/exec" >> "$GITHUB_STEP_SUMMARY"

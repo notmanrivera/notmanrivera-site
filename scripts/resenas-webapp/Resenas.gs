@@ -2,8 +2,17 @@
  * Reseñas de clientes: web app que recibe el formulario de
  * notmanrivera.com/resena/ y entrega las aprobadas al sitio.
  *
+ * ⚠️ Es un proyecto APARTE del de prospección, propiedad de hola@. El de
+ * prospección vive dentro de la hoja, y la hoja es de rnrivera93@gmail.com:
+ * Google solo deja publicar una web app a usuarios del dominio del dueño
+ * ("Only users in the same domain as the script owner may deploy this
+ * script"), así que hola@ no podía desplegarla ahí. Este proyecto abre la
+ * misma hoja por ID (hola@ es editor) y solo pide dos permisos: hojas de
+ * cálculo y mandar correo como hola@ (MailApp, no acceso a la bandeja).
+ *
  * Flujo:
- *   1. "Nueva invitación de reseña" (menú) crea un código en la pestaña
+ *   1. "Nueva invitación de reseña" (menú Prospección de la hoja, en
+ *      scripts/apps-script/Invitaciones.gs) crea un código en la pestaña
  *      Invitaciones y da la liga personal: /resena/?c=<código>.
  *   2. El cliente llena el formulario. doPost guarda su texto tal cual en
  *      Reseñas y avisa a hola@.
@@ -18,13 +27,13 @@
  */
 
 const RESENAS = {
+  HOJA_ID: '1240Zwpx5A8QslkJonFUdGXSTyV4wbS_PuIX_0JvoMe0', // Prospección deportiva
   HOJA_INVITACIONES: 'Invitaciones',
   HOJA_RESENAS: 'Reseñas',
   AVISAR_A: 'hola@notmanrivera.com',
   MIN: 40,
   MAX: 1500,
   MAX_CAMPO: 120,
-  SITIO: 'https://notmanrivera.com/resena/',
 };
 
 // Columnas (base 1)
@@ -81,7 +90,7 @@ function doPost(e) {
   const candado = LockService.getScriptLock();
   if (!candado.tryLock(20000)) return json_({ ok: false, error: 'ocupado' });
   try {
-    const ss = SpreadsheetApp.getActiveSpreadsheet();
+    const ss = libro_();
     const inv = buscarInvitacion_(ss, r.codigo);
     if (!inv) return json_({ ok: false, error: 'codigo' });
     if (/^cerrada$/i.test(inv.estado)) return json_({ ok: false, error: 'cerrada' });
@@ -119,7 +128,7 @@ function doPost(e) {
 
 /** Lo mínimo para saludar por nombre: nada que no haya escrito Rubén. */
 function invitacionPublica_(codigo) {
-  const inv = buscarInvitacion_(SpreadsheetApp.getActiveSpreadsheet(), limpiar_(codigo, 40).toLowerCase());
+  const inv = buscarInvitacion_(libro_(), limpiar_(codigo, 40).toLowerCase());
   if (!inv) return { ok: false, error: 'codigo' };
   if (/^cerrada$/i.test(inv.estado)) return { ok: false, error: 'cerrada' };
   return {
@@ -132,7 +141,7 @@ function invitacionPublica_(codigo) {
 }
 
 function resenasPublicadas_() {
-  const hoja = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(RESENAS.HOJA_RESENAS);
+  const hoja = libro_().getSheetByName(RESENAS.HOJA_RESENAS);
   const n = hoja.getLastRow();
   if (n < 2) return [];
   const datos = hoja.getRange(2, 1, n - 1, RES_TOTAL).getValues();
@@ -202,39 +211,25 @@ function avisarResena_(r, urlHoja) {
     'La rutina de mañana propone la corrección de estilo en "Texto corregido".',
     'Para publicarla pon "sí" en Aprobada: ' + urlHoja,
   ].filter(function (l, i) { return l || i > 2; }).join('\n');
-  GmailApp.sendEmail(RESENAS.AVISAR_A, 'Nueva reseña: ' + r.nombre + ' (' + r.empresa + ')', cuerpo,
+  MailApp.sendEmail(RESENAS.AVISAR_A, 'Nueva reseña: ' + r.nombre + ' (' + r.empresa + ')', cuerpo,
     { name: 'Reseñas notmanrivera.com' });
 }
 
-/** Menú: crea una invitación y muestra la liga para mandarla. */
-function nuevaInvitacionResena() {
-  const ui = SpreadsheetApp.getUi();
-  const pedir = function (pregunta) {
-    const resp = ui.prompt('Nueva invitación de reseña', pregunta, ui.ButtonSet.OK_CANCEL);
-    return resp.getSelectedButton() === ui.Button.OK ? resp.getResponseText().trim() : null;
-  };
-  const nombre = pedir('Nombre de la persona (como lo saludará el formulario):');
-  if (!nombre) return;
-  const empresa = pedir('Empresa:');
-  if (empresa === null) return;
-  const idioma = /^en/i.test(pedir('Idioma del formulario: es o en') || '') ? 'en' : 'es';
-
-  const codigo = codigoInvitacion_(nombre);
-  const liga = RESENAS.SITIO + (idioma === 'en' ? '?lang=en&c=' : '?c=') + codigo;
-  SpreadsheetApp.getActiveSpreadsheet().getSheetByName(RESENAS.HOJA_INVITACIONES)
-    .appendRow([codigo, nombre, empresa, idioma, fechaCorta(new Date()), 'Pendiente', 'Liga: ' + liga]);
-  ui.alert('Liga para ' + nombre, liga, ui.ButtonSet.OK);
+function libro_() {
+  return SpreadsheetApp.openById(RESENAS.HOJA_ID);
 }
 
-/** nombre-xxxxxxxx: legible, pero imposible de adivinar. */
-function codigoInvitacion_(nombre) {
-  const base = String(nombre).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '')
-    .replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').split('-')[0] || 'invitado';
-  const letras = 'abcdefghjkmnpqrstuvwxyz23456789';
-  const bytes = Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256, Utilities.getUuid());
-  let sufijo = '';
-  for (let i = 0; i < 8; i++) sufijo += letras[(bytes[i] + 256) % letras.length];
-  return base + '-' + sufijo;
+/**
+ * Córrela UNA vez desde el editor (como hola@) para aceptar los permisos.
+ * Sin eso la web app contesta "Authorization is required" a todo el mundo.
+ */
+function autorizar() {
+  const libro = libro_();
+  Logger.log('Hoja: ' + libro.getName() + ' · pestañas: ' +
+    [RESENAS.HOJA_INVITACIONES, RESENAS.HOJA_RESENAS].map(function (n) {
+      return n + (libro.getSheetByName(n) ? ' OK' : ' NO EXISTE');
+    }).join(', '));
+  Logger.log('Correos que quedan hoy: ' + MailApp.getRemainingDailyQuota());
 }
 
 function json_(obj) {
