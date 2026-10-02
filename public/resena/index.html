@@ -486,7 +486,7 @@
   idioma(lang || 'es');
   if (!/^[a-z0-9-]{6,40}$/.test(codigo)) { pantalla('invalida'); return; }
 
-  fetch(WEBAPP + '?accion=invitacion&c=' + encodeURIComponent(codigo))
+  fetch(WEBAPP + '?accion=invitacion&codigo=' + encodeURIComponent(codigo))
     .then(function (r) { return r.json(); })
     .then(function (r) {
       if (!r.ok) { pantalla('invalida'); return; }

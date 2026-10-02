@@ -47,7 +47,9 @@ const RES_TOTAL = 13;
 function doGet(e) {
   const p = (e && e.parameter) || {};
   try {
-    if (p.accion === 'invitacion') return json_(invitacionPublica_(p.c));
+    // ⚠️ "codigo", no "c": Apps Script reserva ?c= en las URL de sus web
+    // apps y contesta con una página de error de Drive sin llegar a doGet.
+    if (p.accion === 'invitacion') return json_(invitacionPublica_(p.codigo));
     if (p.accion === 'publicadas') return json_({ ok: true, resenas: resenasPublicadas_() });
     return json_({ ok: true });
   } catch (err) {
