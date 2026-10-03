@@ -26,6 +26,9 @@ Dueña: rnrivera93@gmail.com (hola@ es editora). Pestañas:
 
 - **Prospectos**: cada prospecto y su correo. Columna Aprobado: "sí" / "no".
 - **Pipeline**: tratos en curso. Ganado / Perdido y Valor estimado solo los cambias tú.
+  La columna **Origen** dice de dónde salió cada trato (segmento y fila); con
+  ella el reporte de los lunes calcula cuánto dinero trae cada segmento. Cuando
+  un trato pasa a Ganado, la rutina crea su invitación de reseña.
 - **Invitaciones** y **Reseñas**: reseñas de clientes (ver abajo).
 - **Analytics**: de solo lectura, se reescribe a las 7 am.
 - **Bitácora**.
@@ -65,6 +68,12 @@ hola@ publique una web app en un proyecto ajeno.
 "Prospección diaria NotMan", lunes a viernes 7:45. Nunca manda correos ni
 pone "sí": solo deja borradores, agrega filas y te resume. Conectores: Gmail,
 Sheets, Drive y Calendar de hola@.
+
+## Correos en inglés
+
+EE. UU. (CAN-SPAM) y Canadá (CASL) exigen una dirección postal en el correo
+comercial. Va en `CONFIG.DIRECCION_POSTAL` de `scripts/apps-script/Código.gs`:
+se agrega sola al pie de los correos en inglés. Mientras esté vacía no sale.
 
 ## Reseñas, paso a paso
 1. Menú Prospección → **Nueva invitación de reseña** → copias la liga y se la mandas al cliente.
