@@ -29,7 +29,8 @@ function instalarAutomatizaciones() {
  */
 function instalarFiltros_() {
   const etiquetas = {};
-  const existentes = Gmail.Users.Labels.list('me').labels || [];
+  // Sin etiquetas o filtros propios, Gmail devuelve null y no una lista vacía.
+  const existentes = (Gmail.Users.Labels.list('me') || {}).labels || [];
   ['Sistema', 'Sistema/DMARC', 'Sistema/Rebotes'].forEach(function (nombre) {
     const ya = existentes.filter(function (l) { return l.name === nombre; })[0];
     etiquetas[nombre] = ya ? ya.id : Gmail.Users.Labels.create(
@@ -52,7 +53,7 @@ function instalarFiltros_() {
     },
   ];
 
-  const actuales = Gmail.Users.Settings.Filters.list('me').filter || [];
+  const actuales = (Gmail.Users.Settings.Filters.list('me') || {}).filter || [];
   const firma = function (f) { return JSON.stringify([f.criteria.from || '', f.criteria.to || '', f.criteria.query || '']); };
   const yaHay = actuales.map(firma);
   let creados = 0;
