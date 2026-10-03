@@ -95,11 +95,11 @@ function actualizarPestana() {
 
   // 2. Visitas desde los correos, por empresa
   bloque('Visitas desde los correos (últimos ' + ANALYTICS.DIAS_CORREOS + ' días), la más reciente arriba',
-    ['Empresa', 'Fila en Prospectos', 'Campaña', 'Sesiones', 'Tiempo total (min)', 'Páginas vistas', 'Última visita', 'Lectura', 'Estado / notas'],
+    ['Empresa', 'Fila en Prospectos', 'Campaña', 'Entró por', 'Sesiones', 'Tiempo total (min)', 'Páginas vistas', 'Última visita', 'Lectura', 'Estado / notas'],
     visitasDesdeCorreos_(ANALYTICS.DIAS_CORREOS + 'daysAgo').map(function (v) {
       const e = empresas[v.slug];
       return [e ? e.nombre : v.slug + ' (no está en la hoja)', e ? e.fila : '', v.campanas.join(', '),
-              v.sesiones, Math.round(v.segundos / 60 * 10) / 10, v.paginas, fechaCorta_(v.ultima),
+              v.entradas.join(', '), v.sesiones, Math.round(v.segundos / 60 * 10) / 10, v.paginas, fechaCorta_(v.ultima),
               lectura_(v), e ? notaCorta_(e.notas) : ''];
     }),
     'Nadie ha llegado desde un correo en este periodo');
@@ -126,7 +126,7 @@ function actualizarPestana() {
     hoja.getRange(n + 1, 1, 1, ancho).setFontWeight('bold').setBackground('#000000').setFontColor('#ffffff');
   });
   hoja.setColumnWidth(1, 260);
-  hoja.setColumnWidth(9, 360);
+  hoja.setColumnWidth(10, 360);
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -169,7 +169,7 @@ function avisarLeadsCalientes() {
 function visitasDesdeCorreos_(desde) {
   const filas = reporte_({
     dateRanges: [{ startDate: desde, endDate: 'yesterday' }],
-    dimensions: [{ name: 'sessionManualAdContent' }, { name: 'sessionCampaignName' }, { name: 'date' }],
+    dimensions: [{ name: 'sessionManualAdContent' }, { name: 'sessionCampaignName' }, { name: 'date' }, { name: 'landingPage' }],
     metrics: [{ name: 'sessions' }, { name: 'userEngagementDuration' }, { name: 'screenPageViews' }],
     dimensionFilter: { filter: { fieldName: 'sessionMedium', stringFilter: { value: 'outreach' } } },
     limit: 10000,
@@ -178,8 +178,11 @@ function visitasDesdeCorreos_(desde) {
   filas.forEach(function (r) {
     const slug = decodificar_(r.d[0]);
     if (!slug || slug === '(not set)') return;
-    const v = porSlug[slug] || (porSlug[slug] = { slug: slug, campanas: [], sesiones: 0, segundos: 0, paginas: 0, ultima: '' });
+    const v = porSlug[slug] || (porSlug[slug] = { slug: slug, campanas: [], entradas: [], sesiones: 0, segundos: 0, paginas: 0, ultima: '' });
     if (v.campanas.indexOf(r.d[1]) === -1) v.campanas.push(r.d[1]);
+    // Página de entrada, para la prueba portada contra caso de estudio.
+    const entrada = String(r.d[3] || '').split('?')[0];
+    if (entrada && entrada !== '(not set)' && v.entradas.indexOf(entrada) === -1) v.entradas.push(entrada);
     v.sesiones += num_(r.m[0]);
     v.segundos += num_(r.m[1]);
     v.paginas += num_(r.m[2]);
