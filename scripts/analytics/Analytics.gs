@@ -26,9 +26,13 @@ const ANALYTICS = {
   MEDICION: 'G-KMZ6Q35TJ8', // la etiqueta del sitio; con esto se encuentra la propiedad
   AVISAR_A: 'hola@notmanrivera.com',
   DIAS_CORREOS: 90,          // ventana de "visitas desde los correos"
-  // Lead caliente: una visita desde un correo con al menos esto.
+  // Lead caliente: al menos un minuto de interacción, o 3 páginas con algo
+  // de interacción. Las visitas con 0 s casi siempre son el filtro antispam
+  // de la empresa abriendo el link (Mimecast, Safe Links...): llegan el día
+  // del envío, a veces varias, y nadie lee nada. No cuentan.
   CALIENTE_SEGUNDOS: 60,
   CALIENTE_PAGINAS: 3,
+  CALIENTE_PAGINAS_MIN_SEGUNDOS: 20,
   HORA: 7,
 };
 
@@ -91,12 +95,12 @@ function actualizarPestana() {
 
   // 2. Visitas desde los correos, por empresa
   bloque('Visitas desde los correos (últimos ' + ANALYTICS.DIAS_CORREOS + ' días), la más reciente arriba',
-    ['Empresa', 'Fila en Prospectos', 'Campaña', 'Sesiones', 'Tiempo total (min)', 'Páginas vistas', 'Última visita', 'Estado / notas'],
+    ['Empresa', 'Fila en Prospectos', 'Campaña', 'Sesiones', 'Tiempo total (min)', 'Páginas vistas', 'Última visita', 'Lectura', 'Estado / notas'],
     visitasDesdeCorreos_(ANALYTICS.DIAS_CORREOS + 'daysAgo').map(function (v) {
       const e = empresas[v.slug];
       return [e ? e.nombre : v.slug + ' (no está en la hoja)', e ? e.fila : '', v.campanas.join(', '),
               v.sesiones, Math.round(v.segundos / 60 * 10) / 10, v.paginas, fechaCorta_(v.ultima),
-              e ? notaCorta_(e.notas) : ''];
+              lectura_(v), e ? notaCorta_(e.notas) : ''];
     }),
     'Nadie ha llegado desde un correo en este periodo');
 
@@ -122,7 +126,7 @@ function actualizarPestana() {
     hoja.getRange(n + 1, 1, 1, ancho).setFontWeight('bold').setBackground('#000000').setFontColor('#ffffff');
   });
   hoja.setColumnWidth(1, 260);
-  hoja.setColumnWidth(8, 360);
+  hoja.setColumnWidth(9, 360);
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -133,9 +137,7 @@ function avisarLeadsCalientes() {
   const props = PropertiesService.getScriptProperties();
   if (props.getProperty('ULTIMO_AVISO') === ayer) return; // ya se avisó de ese día
 
-  const calientes = visitasDesdeCorreos_('yesterday').filter(function (v) {
-    return v.segundos >= ANALYTICS.CALIENTE_SEGUNDOS || v.paginas >= ANALYTICS.CALIENTE_PAGINAS;
-  });
+  const calientes = visitasDesdeCorreos_('yesterday').filter(esCaliente_);
   props.setProperty('ULTIMO_AVISO', ayer);
   if (!calientes.length) return;
 
@@ -286,6 +288,17 @@ function notaCorta_(notas) {
   const marcas = String(notas).split('·').map(function (s) { return s.trim(); })
     .filter(function (s) { return /respondi|seguimiento|último toque|bounce|baja|no seguir/i.test(s); });
   return marcas.slice(-2).join(' · ');
+}
+
+function esCaliente_(v) {
+  return v.segundos >= ANALYTICS.CALIENTE_SEGUNDOS ||
+    (v.paginas >= ANALYTICS.CALIENTE_PAGINAS && v.segundos >= ANALYTICS.CALIENTE_PAGINAS_MIN_SEGUNDOS);
+}
+
+function lectura_(v) {
+  if (esCaliente_(v)) return 'Interés real';
+  if (v.segundos > 0) return 'Vistazo';
+  return 'Probable antispam (0 s)';
 }
 
 function fechaCorta_(aaaammdd) {
