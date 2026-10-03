@@ -1,0 +1,56 @@
+name: "Salud: credenciales de clasp"
+
+# Cada lunes confirma que la credencial de clasp (secreto CLASPRC_JSON, de
+# hola@) sigue sirviendo para los tres proyectos de Apps Script. Así una
+# credencial caducada se descubre el lunes temprano y no el día que hace
+# falta subir algo. Si falla, revisarSalud() (scripts/resenas-webapp/Salud.gs)
+# lo ve en GitHub y le escribe a hola@ ese mismo día.
+#
+# Arreglo: docs/sistema.md → "La credencial de clasp caducó".
+
+on:
+  schedule:
+    - cron: '7 12 * * 1'   # lunes 6:07 am en Querétaro
+  workflow_dispatch: {}
+
+concurrency:
+  group: apps-script
+  cancel-in-progress: false
+
+jobs:
+  credenciales:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Instalar clasp
+        run: npm install -g @google/clasp
+
+      - name: Credenciales de clasp
+        env:
+          CLASPRC_JSON: ${{ secrets.CLASPRC_JSON }}
+        run: |
+          if [ -z "$CLASPRC_JSON" ]; then
+            echo "::error::Falta el secreto CLASPRC_JSON."
+            exit 1
+          fi
+          printf '%s' "$CLASPRC_JSON" > ~/.clasprc.json
+
+      - name: Probar acceso a cada proyecto
+        run: |
+          falla=0
+          for dir in scripts/apps-script scripts/resenas-webapp scripts/analytics; do
+            if (cd "$dir" && clasp list-deployments > /tmp/salida.txt 2>&1); then
+              echo "OK  $dir"
+            else
+              echo "::error::Sin acceso a $dir: $(head -c 300 /tmp/salida.txt)"
+              falla=1
+            fi
+          done
+          exit $falla

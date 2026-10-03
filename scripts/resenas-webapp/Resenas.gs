@@ -51,6 +51,7 @@ function doGet(e) {
     // apps y contesta con una página de error de Drive sin llegar a doGet.
     if (p.accion === 'invitacion') return json_(invitacionPublica_(p.codigo));
     if (p.accion === 'publicadas') return json_({ ok: true, resenas: resenasPublicadas_() });
+    if (p.accion === 'pendientes') return json_(pendientesPublicos_(p.t)); // Aprobaciones.gs
     return json_({ ok: true });
   } catch (err) {
     Logger.log('doGet: ' + err.message);
@@ -69,6 +70,17 @@ function doPost(e) {
   } catch (err) {
     return json_({ ok: false, error: 'formato' });
   }
+  // Aprobar o descartar un prospecto desde notmanrivera.com/aprobar/
+  // (Aprobaciones.gs). Va antes que todo lo de reseñas.
+  if (datos.accion === 'aprobar') {
+    try {
+      return json_(aprobarFila_(datos));
+    } catch (err) {
+      Logger.log('aprobar: ' + err.message);
+      return json_({ ok: false, error: 'interno' });
+    }
+  }
+
   // Campo trampa: invisible para personas, los bots lo llenan.
   if (String(datos.web || '').trim()) return json_({ ok: true });
 

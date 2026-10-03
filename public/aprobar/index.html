@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- Página privada: la abre Rubén desde el correo "Por aprobar hoy" con un
+     token en el #fragmento (no viaja al servidor ni a los registros). Sin
+     Analytics a propósito: no es tráfico del sitio. -->
+<meta name="robots" content="noindex, nofollow">
+<meta name="referrer" content="no-referrer">
+<title>Por aprobar — NotMan</title>
+<link rel="icon" type="image/png" href="/assets/favicon.png">
+<meta name="theme-color" content="#000000">
+<link rel="preload" href="/assets/kenyan-coffee.woff2" as="font" type="font/woff2" crossorigin>
+<style>
+  @font-face{font-family:"Kenyan Coffee";src:url("/assets/kenyan-coffee.woff2") format("woff2");font-weight:400;font-display:swap}
+  @font-face{font-family:"Monument Extended";src:url("/assets/monument-black.woff2") format("woff2");font-weight:900;font-display:swap}
+  @font-face{font-family:"Monument Extended";src:url("/assets/monument-light.woff2") format("woff2");font-weight:300;font-display:swap}
+  :root{
+    --ink:#000;--ink-2:#1A1A1A;--violet:#8B3FFF;--violet-hi:#A96BFF;--rojo:#E50012;
+    --paper:#fff;--muted:#A99CC4;--line:#33204f;--verde:#2bd47d;
+    --filo:polygon(9px 0%,100% 6px,calc(100% - 9px) 100%,0% calc(100% - 6px));
+    --disp:"Kenyan Coffee",Impact,"Arial Narrow Bold",sans-serif;
+    --ui:"Monument Extended","Arial Black",sans-serif;
+    --body:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  [hidden]{display:none !important}
+  body{background:var(--ink);color:var(--paper);font-family:var(--body);line-height:1.55;font-size:1rem}
+  main{max-width:720px;margin:0 auto;padding:28px 16px 80px}
+  .kicker{display:inline-block;font-family:var(--ui);font-weight:900;text-transform:uppercase;font-size:.68rem;
+    letter-spacing:.12em;background:var(--rojo);padding:7px 14px;transform:skewX(-6deg);margin-bottom:14px}
+  h1{font-family:var(--disp);font-weight:400;text-transform:uppercase;font-size:2.6rem;line-height:.95;margin-bottom:8px}
+  .sub{color:var(--muted);font-size:.92rem;margin-bottom:18px}
+  .barra{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:22px}
+  a{color:var(--violet-hi)}
+  button{font:inherit;border:0;cursor:pointer;clip-path:var(--filo)}
+  .btn{font-family:var(--disp);text-transform:uppercase;font-size:1.25rem;letter-spacing:.02em;padding:12px 22px 10px;
+    color:var(--paper);background:var(--ink-2);transition:background .15s,color .15s}
+  .btn.si{background:var(--rojo)}
+  .btn:active{transform:translateY(1px)}
+  .btn[disabled]{opacity:.45;cursor:wait}
+  .tarjeta{position:relative;background:var(--ink-2);clip-path:var(--filo);padding:22px 20px 18px;margin-bottom:18px}
+  .tarjeta::before{content:"";position:absolute;top:0;left:8%;width:46px;height:6px;background:var(--rojo)}
+  .tarjeta h2{font-family:var(--disp);font-weight:400;text-transform:uppercase;font-size:1.7rem;line-height:1;margin-bottom:6px}
+  .meta{font-family:var(--ui);font-weight:300;text-transform:uppercase;font-size:.6rem;letter-spacing:.1em;color:var(--muted);margin-bottom:10px}
+  .chip{display:inline-block;font-family:var(--ui);font-weight:900;font-size:.56rem;letter-spacing:.1em;text-transform:uppercase;
+    padding:3px 8px;margin-left:6px;background:var(--line);color:var(--paper);vertical-align:2px}
+  .dato{font-size:.86rem;color:#d8d2e6;margin-bottom:4px;word-break:break-word}
+  .dato b{color:var(--paper);font-weight:600}
+  .asunto{font-weight:600;margin:12px 0 8px}
+  .cuerpo{white-space:pre-wrap;background:var(--ink);padding:14px;font-size:.92rem;color:#e8e3f2;max-height:220px;overflow:hidden;position:relative}
+  .cuerpo.abierto{max-height:none}
+  .cuerpo:not(.abierto)::after{content:"";position:absolute;left:0;right:0;bottom:0;height:60px;background:linear-gradient(transparent,var(--ink))}
+  .mas{background:none;clip-path:none;color:var(--violet-hi);font-size:.86rem;padding:6px 0;text-decoration:underline}
+  .acciones{display:flex;gap:10px;margin-top:14px}
+  .acciones .btn{flex:1}
+  .hecho{display:none;margin-top:14px;font-family:var(--ui);font-weight:900;text-transform:uppercase;font-size:.72rem;letter-spacing:.1em}
+  .tarjeta.decidida .acciones{display:none}
+  .tarjeta.decidida .hecho{display:flex;justify-content:space-between;align-items:center}
+  .tarjeta.decidida .cuerpo,.tarjeta.decidida .asunto,.tarjeta.decidida .dato,.tarjeta.decidida .mas{display:none}
+  .hecho .si{color:var(--verde)} .hecho .no{color:var(--muted)}
+  .hecho button{background:none;clip-path:none;color:var(--violet-hi);text-decoration:underline;font-size:.8rem}
+  .aviso{background:var(--ink-2);clip-path:var(--filo);padding:18px 20px;color:#d8d2e6}
+  .error{color:#ff5a66;font-size:.86rem;margin-top:8px}
+</style>
+</head>
+<body>
+<main>
+  <span class="kicker">Prospección</span>
+  <h1 id="titulo">Por aprobar</h1>
+  <p class="sub" id="sub">Cargando…</p>
+  <div class="barra" id="barra" hidden>
+    <button class="btn si" id="todos" type="button">Aprobar todos</button>
+    <a id="hoja" href="#" target="_blank" rel="noopener">Abrir la hoja para editar algo</a>
+  </div>
+  <div id="lista"></div>
+</main>
+
+<script>
+(function () {
+  // Misma web app que el formulario de reseñas (scripts/resenas-webapp/).
+  var WEBAPP = 'https://script.google.com/macros/s/AKfycbzfijfCkpyR_mZhE96eu4qa8rXkj4KJIfhE_sOZCCsKfiCyu-mj7pwxWcfSMBE6dsUh/exec';
+  var token = (location.hash.match(/t=([0-9a-f]{32})/) || [])[1] || '';
+  var $ = function (id) { return document.getElementById(id); };
+  var pendientes = [];
+
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+
+  function aviso(texto) {
+    $('sub').textContent = '';
+    $('barra').hidden = true;
+    $('lista').innerHTML = '<div class="aviso">' + texto + '</div>';
+  }
+
+  function restantes() {
+    return pendientes.filter(function (p) { return !p.decision; });
+  }
+
+  function encabezado() {
+    var n = restantes().length;
+    $('titulo').textContent = n ? n + ' por aprobar' : 'Listo';
+    var hora = new Date().toLocaleString('en-US', { timeZone: 'America/Mexico_City', hour: 'numeric', hour12: false });
+    $('sub').textContent = n
+      ? (Number(hora) < 9 ? 'Lo que apruebes antes de las 9 sale hoy.' : 'Ya pasaron las 9: lo que apruebes sale mañana a las 9.')
+      : 'No queda nada por decidir.';
+    $('todos').hidden = n < 2;
+  }
+
+  function tarjeta(p, i) {
+    var meta = [p.pais, p.tipo, p.segmento].filter(Boolean).map(esc).join(' · ');
+    var chip = p.prueba ? '<span class="chip">A/B: ' + esc(p.prueba) + '</span>' : '';
+    return '<article class="tarjeta" id="t' + i + '">' +
+      '<h2>' + esc(p.empresa) + '</h2>' +
+      '<div class="meta">Fila ' + p.fila + (meta ? ' · ' + meta : '') + chip + '</div>' +
+      '<div class="dato"><b>Para:</b> ' + esc(p.email) + '</div>' +
+      (p.fuente ? '<div class="dato"><b>Correo publicado en:</b> <a href="' + esc(p.fuente) + '" target="_blank" rel="noopener">' + esc(p.fuente.replace(/^https?:\/\//, '')) + '</a></div>' : '') +
+      '<div class="asunto">' + esc(p.asunto) + '</div>' +
+      '<div class="cuerpo" id="c' + i + '">' + esc(p.cuerpo) + '</div>' +
+      '<button class="mas" type="button" data-i="' + i + '">Ver correo completo</button>' +
+      '<div class="acciones">' +
+        '<button class="btn si" type="button" data-i="' + i + '" data-v="sí">Aprobar</button>' +
+        '<button class="btn" type="button" data-i="' + i + '" data-v="no">Descartar</button>' +
+      '</div>' +
+      '<div class="hecho"><span id="h' + i + '"></span><button type="button" data-i="' + i + '" data-v="">Deshacer</button></div>' +
+      '<div class="error" id="e' + i + '"></div>' +
+    '</article>';
+  }
+
+  function decidir(i, valor) {
+    var p = pendientes[i];
+    var botones = document.querySelectorAll('#t' + i + ' button');
+    botones.forEach(function (b) { b.disabled = true; });
+    $('e' + i).textContent = '';
+    return fetch(WEBAPP, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({ accion: 'aprobar', t: token, fila: p.fila, empresa: p.empresa, email: p.email, valor: valor })
+    }).then(function (r) { return r.json(); }).then(function (r) {
+      if (!r.ok) throw r.error;
+      p.decision = valor;
+      var t = $('t' + i);
+      t.classList.toggle('decidida', !!valor);
+      $('h' + i).className = valor === 'sí' ? 'si' : 'no';
+      $('h' + i).textContent = valor === 'sí' ? '✓ Aprobado' : 'Descartado';
+      encabezado();
+    }).catch(function (err) {
+      $('e' + i).textContent = {
+        token: 'La liga caducó: usa la del correo de hoy.',
+        cambio: 'La hoja cambió (se movieron filas). Recarga la página.',
+        enviada: 'Esta fila ya no está pendiente de envío.'
+      }[err] || 'No se pudo guardar. Revisa tu conexión e inténtalo otra vez.';
+    }).then(function () {
+      botones.forEach(function (b) { b.disabled = false; });
+    });
+  }
+
+  $('lista').addEventListener('click', function (ev) {
+    var b = ev.target.closest('button');
+    if (!b) return;
+    var i = Number(b.getAttribute('data-i'));
+    if (b.classList.contains('mas')) {
+      var c = $('c' + i);
+      c.classList.toggle('abierto');
+      b.textContent = c.classList.contains('abierto') ? 'Ver menos' : 'Ver correo completo';
+      return;
+    }
+    decidir(i, b.getAttribute('data-v'));
+  });
+
+  $('todos').addEventListener('click', function () {
+    var quedan = restantes();
+    if (!confirm('¿Aprobar los ' + quedan.length + ' que quedan sin leerlos uno por uno?')) return;
+    // Uno por uno, en orden: la web app escribe con candado de todas formas.
+    quedan.reduce(function (cadena, p) {
+      return cadena.then(function () { return decidir(pendientes.indexOf(p), 'sí'); });
+    }, Promise.resolve());
+  });
+
+  if (!token) { aviso('Esta página se abre desde el correo "Por aprobar hoy". Sin esa liga no hay nada que mostrar.'); return; }
+
+  fetch(WEBAPP + '?accion=pendientes&t=' + token)
+    .then(function (r) { return r.json(); })
+    .then(function (r) {
+      if (!r.ok) { aviso(r.error === 'token' ? 'La liga caducó: usa la del correo de hoy.' : 'Algo falló al cargar. Recarga en un momento.'); return; }
+      pendientes = r.pendientes;
+      $('hoja').href = r.hojaUrl;
+      $('barra').hidden = false;
+      if (!pendientes.length) { encabezado(); $('lista').innerHTML = '<div class="aviso">Nada pendiente: o ya decidiste todo, o la rutina de hoy no agregó prospectos.</div>'; return; }
+      $('lista').innerHTML = pendientes.map(tarjeta).join('');
+      encabezado();
+    })
+    .catch(function () { aviso('No se pudo conectar. Revisa tu conexión y recarga.'); });
+})();
+</script>
+</body>
+</html>

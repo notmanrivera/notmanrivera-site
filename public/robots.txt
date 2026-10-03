@@ -11,4 +11,9 @@ Allow: /
 # protegiendo la direccion y el 404 fantasma desaparece del informe.
 Disallow: /cdn-cgi/
 
+# Páginas privadas: el formulario de reseñas (por invitación) y la de
+# aprobar prospectos. Además llevan noindex.
+Disallow: /resena/
+Disallow: /aprobar/
+
 Sitemap: https://notmanrivera.com/sitemap.xml
