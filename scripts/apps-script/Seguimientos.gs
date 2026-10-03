@@ -146,7 +146,7 @@ function generarBorradoresSeguimiento() {
         const cuerpo = etapa === 'ultimo'
           ? cuerpoUltimoToque(empresa, esIngles, tipo)
           : cuerpoSeguimiento(empresa, esIngles, tipo);
-        responderEnHilo(orig, asunto, cuerpo + '\n' + CONFIG.FIRMA, htmlCorreo(cuerpo, esIngles), enviando);
+        responderEnHilo(orig, asunto, cuerpo + '\n' + firmaTexto(esIngles), htmlCorreo(cuerpo, esIngles), enviando);
 
         const marca = etapa === 'ultimo'
           ? (enviando ? CONFIG_SEGUIMIENTO.MARCA_ULTIMO_ENVIADO : CONFIG_SEGUIMIENTO.MARCA_ULTIMO)

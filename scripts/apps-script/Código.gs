@@ -46,6 +46,11 @@ const CONFIG = {
     'Si prefieres que no te vuelva a escribir, respóndeme "baja" y no insisto.'
   ].join('\n'),
 
+  // Dirección postal para los correos en inglés (EE. UU. y Canadá la exigen
+  // en correo comercial: CAN-SPAM y CASL). Puede ser un apartado postal.
+  // Vacía = no se agrega nada. Se agrega en el HTML y en el texto plano.
+  DIRECCION_POSTAL: '',
+
   ETIQUETA: 'Prospección'
 };
 
@@ -140,8 +145,8 @@ function procesarPendientes() {
       const cuerpoUtm = cuerpoConUtm(cuerpo, empresa, CONFIG.CAMPANA_UTM);
       if (!/https:\/\/notmanrivera\.com\//.test(cuerpoUtm)) sinLink++;
 
-      const texto = cuerpoUtm.trim() + '\n' + CONFIG.FIRMA;
       const esIngles = String(datos[i][COL.IDIOMA - 1] || '').trim().toLowerCase() === 'en';
+      const texto = cuerpoUtm.trim() + '\n' + firmaTexto(esIngles);
       const opciones = { name: 'Rubén Rivera' };
       const html = htmlCorreo(cuerpoUtm, esIngles);
       if (html) opciones.htmlBody = html;
@@ -372,11 +377,24 @@ function htmlCorreo(cuerpo, esIngles) {
   const baja = esIngles
     ? 'If you\'d rather not hear from me again, reply "unsubscribe" and I won\'t follow up.'
     : 'Si prefieres que no te vuelva a escribir, respóndeme "baja" y no insisto.';
+  const direccion = esIngles && CONFIG.DIRECCION_POSTAL ? '<br>' + esc(CONFIG.DIRECCION_POSTAL) : '';
   return '<div style="font-family:Arial,Helvetica,sans-serif;font-size:14px;line-height:1.5;color:#222">' +
          parrafos + '</div>' +
          '<div style="margin-top:16px">' + firma + '</div>' +
          '<p style="font-family:Arial,Helvetica,sans-serif;font-size:11px;color:#888;margin-top:12px">' +
-         esc(baja) + '</p>';
+         esc(baja) + direccion + '</p>';
+}
+
+/**
+ * Firma de la versión en texto plano (la que ven los clientes de correo sin
+ * HTML), en el idioma del prospecto. Antes era siempre CONFIG.FIRMA, en
+ * español, también en los correos en inglés.
+ */
+function firmaTexto(esIngles) {
+  if (!esIngles) return CONFIG.FIRMA;
+  return ['', '—', 'Rubén Rivera · Sports design & motion', 'Querétaro, Mexico',
+          'If you\'d rather not hear from me again, reply "unsubscribe" and I won\'t follow up.']
+    .concat(CONFIG.DIRECCION_POSTAL ? [CONFIG.DIRECCION_POSTAL] : []).join('\n');
 }
 
 /**
@@ -393,7 +411,7 @@ function ensayoFirma() {
     const html = htmlCorreo(cuerpo, esIngles);
     if (!html) { aviso('No se pudo leer la firma: revisa el registro.'); return; }
     GmailApp.createDraft(yo, 'Ensayo de firma ' + (esIngles ? 'EN' : 'ES') + ' (borrar)',
-                         cuerpo + '\n' + CONFIG.FIRMA, { htmlBody: html, name: 'Rubén Rivera' });
+                         cuerpo + '\n' + firmaTexto(esIngles), { htmlBody: html, name: 'Rubén Rivera' });
   });
   aviso('Listo: en Borradores están "Ensayo de firma ES" y "EN". Ábrelos, revisa y bórralos.');
 }
