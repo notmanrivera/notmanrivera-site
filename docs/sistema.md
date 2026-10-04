@@ -25,6 +25,9 @@ nunca con rnrivera93@gmail.com. Lo ideal es un perfil de Chrome solo para hola@.
 Dueña: rnrivera93@gmail.com (hola@ es editora). Pestañas:
 
 - **Prospectos**: cada prospecto y su correo. Columna Aprobado: "sí" / "no".
+  Columnas Q y R: el **seguimiento personalizado** que escribe la rutina y tu
+  aprobación. Aprobado antes de las 11, sale a las 4:47 en vez de la
+  plantilla; si no decides en 3 días, sale la plantilla.
 - **Pipeline**: tratos en curso. Ganado / Perdido y Valor estimado solo los cambias tú.
   La columna **Origen** dice de dónde salió cada trato (segmento y fila); con
   ella el reporte de los lunes calcula cuánto dinero trae cada segmento. Cuando
