@@ -44,6 +44,7 @@
   .tarjeta::before{content:"";position:absolute;top:0;left:8%;width:46px;height:6px;background:var(--rojo)}
   .tarjeta h2{font-family:var(--disp);font-weight:400;text-transform:uppercase;font-size:1.7rem;line-height:1;margin-bottom:6px}
   .meta{font-family:var(--ui);font-weight:300;text-transform:uppercase;font-size:.6rem;letter-spacing:.1em;color:var(--muted);margin-bottom:10px}
+  .chip.seg{background:var(--violet)}
   .chip{display:inline-block;font-family:var(--ui);font-weight:900;font-size:.56rem;letter-spacing:.1em;text-transform:uppercase;
     padding:3px 8px;margin-left:6px;background:var(--line);color:var(--paper);vertical-align:2px}
   .dato{font-size:.86rem;color:#d8d2e6;margin-bottom:4px;word-break:break-word}
@@ -105,15 +106,18 @@
     var n = restantes().length;
     $('titulo').textContent = n ? n + ' por aprobar' : 'Listo';
     var hora = new Date().toLocaleString('en-US', { timeZone: 'America/Mexico_City', hour: 'numeric', hour12: false });
+    var segs = restantes().filter(function (p) { return p.tipo === 'seguimiento'; }).length;
     $('sub').textContent = n
-      ? (Number(hora) < 9 ? 'Lo que apruebes antes de las 9 sale hoy.' : 'Ya pasaron las 9: lo que apruebes sale mañana a las 9.')
+      ? ((n > segs ? (Number(hora) < 9 ? 'Primeros correos: si los apruebas antes de las 9 salen hoy. ' : 'Primeros correos: ya pasaron las 9, salen mañana. ') : '') +
+         (segs ? 'Seguimientos: aprobados antes de las 11 salen hoy a las 4:47.' : ''))
       : 'No queda nada por decidir.';
     $('todos').hidden = n < 2;
   }
 
   function tarjeta(p, i) {
-    var meta = [p.pais, p.tipo, p.segmento].filter(Boolean).map(esc).join(' · ');
-    var chip = p.prueba ? '<span class="chip">A/B: ' + esc(p.prueba) + '</span>' : '';
+    var meta = [p.pais, p.tipoEmpresa, p.segmento].filter(Boolean).map(esc).join(' · ');
+    var chip = (p.tipo === 'seguimiento' ? '<span class="chip seg">Seguimiento</span>' : '') +
+      (p.prueba ? '<span class="chip">A/B: ' + esc(p.prueba) + '</span>' : '');
     return '<article class="tarjeta" id="t' + i + '">' +
       '<h2>' + esc(p.empresa) + '</h2>' +
       '<div class="meta">Fila ' + p.fila + (meta ? ' · ' + meta : '') + chip + '</div>' +
@@ -139,14 +143,15 @@
     return fetch(WEBAPP, {
       method: 'POST',
       headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-      body: JSON.stringify({ accion: 'aprobar', t: token, fila: p.fila, empresa: p.empresa, email: p.email, valor: valor })
+      body: JSON.stringify({ accion: 'aprobar', tipo: p.tipo, t: token, fila: p.fila, empresa: p.empresa, email: p.email, valor: valor })
     }).then(function (r) { return r.json(); }).then(function (r) {
       if (!r.ok) throw r.error;
       p.decision = valor;
       var t = $('t' + i);
       t.classList.toggle('decidida', !!valor);
       $('h' + i).className = valor === 'sí' ? 'si' : 'no';
-      $('h' + i).textContent = valor === 'sí' ? '✓ Aprobado' : 'Descartado';
+      $('h' + i).textContent = valor === 'sí' ? '✓ Aprobado'
+        : (p.tipo === 'seguimiento' ? 'Descartado: sale la plantilla' : 'Descartado');
       encabezado();
     }).catch(function (err) {
       $('e' + i).textContent = {

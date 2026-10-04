@@ -3339,11 +3339,19 @@
      unico afectado es el cargador y el sitio sigue viendose entero. -->
 <script>document.documentElement.classList.add('cargando');</script>
 
+<!-- Logo en tres tamaños (480/800/1200). El "260px" de sizes en celular es
+     a propósito más chico que el ancho real (~320px): a densidad 3 eso pide
+     la versión de 800 y no la de 1200 (205 KB), que era el elemento que más
+     tardaba en cargar con 4G lento (LCP ≈5 s, 4/10/2026). Todas las copias
+     del logo usan el mismo srcset y en celular eligen el mismo archivo, así
+     que se descarga uno solo. -->
 <div id="cargador" aria-hidden="true">
   <div class="carga-campo"></div>
   <div class="carga-puntos"></div>
   <div class="carga-centro">
-    <img src="/assets/logo-lg.webp" alt="" width="1200" height="675" fetchpriority="high" decoding="async">
+    <img src="/assets/logo-lg.webp"
+         srcset="/assets/logo-lg-480.webp 480w, /assets/logo-lg-800.webp 800w, /assets/logo-lg.webp 1200w"
+         sizes="(max-width:600px) 260px, 460px" alt="" width="1200" height="675" fetchpriority="high" decoding="async">
     <div class="carga-pista"><i></i></div>
     <span class="carga-txt" data-es="Cargando" data-en="Loading">Cargando</span>
   </div>
@@ -3459,7 +3467,9 @@
 <div class="menu-full" id="menuFull" data-abierto="no" role="dialog" aria-modal="true"
      aria-label="Menú de navegación" data-aria-es="Menú de navegación" data-aria-en="Navigation menu">
   <div class="menu-figura" aria-hidden="true">
-    <img src="/assets/logo-lg.webp" alt="" width="1200" height="675" loading="lazy">
+    <img src="/assets/logo-lg.webp"
+         srcset="/assets/logo-lg-480.webp 480w, /assets/logo-lg-800.webp 800w, /assets/logo-lg.webp 1200w"
+         sizes="(max-width:600px) 260px, 50vw" alt="" width="1200" height="675" loading="lazy">
   </div>
   <div class="halftone" aria-hidden="true"></div>
 
@@ -3544,6 +3554,8 @@
            lectores de pantalla, porque un <img> dentro del h1 aporta su alt
            como encabezado de la pagina. -->
       <img class="marca" src="/assets/logo-lg.webp"
+         srcset="/assets/logo-lg-480.webp 480w, /assets/logo-lg-800.webp 800w, /assets/logo-lg.webp 1200w"
+         sizes="(max-width:600px) 260px, (max-width:1000px) 90vw, 580px"
            alt="NotMan Rivera — Rubén Rivera, motion graphics, video y diseño web"
            data-alt-es="NotMan Rivera — Rubén Rivera, motion graphics, video y diseño web"
            data-alt-en="NotMan Rivera — Rubén Rivera, motion graphics, video, and web design"
@@ -4105,7 +4117,9 @@
 
       <!-- quien soy -->
       <div class="ficha-yo rv" style="--giro-d:-2deg">
-        <img class="yo-retrato" src="/assets/logo-lg.webp" alt="" aria-hidden="true"
+        <img class="yo-retrato" src="/assets/logo-lg.webp"
+         srcset="/assets/logo-lg-480.webp 480w, /assets/logo-lg-800.webp 800w, /assets/logo-lg.webp 1200w"
+         sizes="(max-width:600px) 260px, (max-width:1000px) 640px, 400px" alt="" aria-hidden="true"
              width="1200" height="675" loading="lazy" decoding="async">
 
         <span class="yo-nombre">Rubén Núñez Rivera</span>
@@ -4277,7 +4291,9 @@
        subtitulo: es una evocacion en miniatura del menu grande, no una
        réplica 1:1. -->
   <div class="wrap foot-menu">
-    <img class="foot-logo" src="/assets/logo-lg.webp" alt="NotMan" width="1200" height="675" loading="lazy">
+    <img class="foot-logo" src="/assets/logo-lg.webp"
+         srcset="/assets/logo-lg-480.webp 480w, /assets/logo-lg-800.webp 800w, /assets/logo-lg.webp 1200w"
+         sizes="(max-width:600px) 260px, 300px" alt="NotMan" width="1200" height="675" loading="lazy">
     <nav class="foot-mini" aria-label="Atajos" data-aria-es="Atajos" data-aria-en="Shortcuts">
       <a href="#trabajo" style="--giro:-2deg">
         <i>01</i>
@@ -4819,7 +4835,10 @@
     const capa = document.getElementById('cargador');
     if (!capa || heroListo) { entradaHero(); return; }
 
-    const MINIMO = 950, TOPE = 2600;
+    // TOPE era 2600: con 4G lento siempre se llegaba al tope (la carga
+    // completa tarda más), y el contenido principal aparecía a los ~5 s, en
+    // la zona "mala" de Google (LCP > 4 s). Medido el 4/10/2026.
+    const MINIMO = 950, TOPE = 1600;
     const t0 = performance.now();
     let cerrado = false;
 

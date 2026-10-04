@@ -78,7 +78,7 @@ function generarBorradoresSeguimiento() {
   const ultimaFila = hoja.getLastRow();
   if (ultimaFila < 2) { Logger.log('Hoja vacía.'); return; }
 
-  const datos = hoja.getRange(2, 1, ultimaFila - 1, TOTAL_COLUMNAS).getValues();
+  const datos = hoja.getRange(2, 1, ultimaFila - 1, COL_SEG_APROBADO).getValues();
   const hoy = new Date();
   const enviando = CONFIG_SEGUIMIENTO.MODO === 'enviar';
   // ⚠️ Tope también en modo borrador: sin él, la primera corrida con último
@@ -88,7 +88,7 @@ function generarBorradoresSeguimiento() {
     ? Math.min(CONFIG_SEGUIMIENTO.MAX_POR_DIA, MailApp.getRemainingDailyQuota())
     : CONFIG_SEGUIMIENTO.MAX_POR_DIA;
 
-  const cuenta = { seguimiento: 0, ultimo: 0, respondidos: 0, vetados: 0, rebotados: 0, sinHilo: 0 };
+  const cuenta = { seguimiento: 0, ultimo: 0, personalizados: 0, esperando: 0, respondidos: 0, vetados: 0, rebotados: 0, sinHilo: 0 };
   let cortado = false;
 
   // Dos pasadas: primero el seguimiento (va a gente que acaba de recibir el
@@ -112,6 +112,18 @@ function generarBorradoresSeguimiento() {
       if (etapaPendiente(notas, fecha, hoy) !== etapa) continue;
 
       if (vetado(notas)) { cuenta.vetados++; continue; }
+
+      // Seguimiento personalizado pendiente de aprobación: se espera unos días
+      // antes de caer en la plantilla. Con "no" en la columna R se usa la
+      // plantilla de inmediato.
+      const personal = String(datos[i][COL_SEG_PERSONAL - 1] || '').trim();
+      const aprobado = String(datos[i][COL_SEG_APROBADO - 1] || '').trim();
+      const usarPersonal = etapa === 'seguimiento' && personal && /^s[ií]$/i.test(aprobado);
+      if (etapa === 'seguimiento' && personal && !aprobado &&
+          (hoy - fecha) / 86400000 < CONFIG_SEGUIMIENTO.DIAS_ESPERA + DIAS_GRACIA_APROBACION) {
+        cuenta.esperando++;
+        continue;
+      }
 
       if (tieneRespuesta(email, fecha)) {
         anotar(hoja, fila, notas, 'Respondió, no seguir');
@@ -143,9 +155,16 @@ function generarBorradoresSeguimiento() {
       try {
         const esIngles = String(datos[i][COL.IDIOMA - 1] || '').trim().toLowerCase() === 'en';
         const tipo = datos[i][COL_TIPO - 1];
-        const cuerpo = etapa === 'ultimo'
+        let cuerpo = etapa === 'ultimo'
           ? cuerpoUltimoToque(empresa, esIngles, tipo)
-          : cuerpoSeguimiento(empresa, esIngles, tipo);
+          : (usarPersonal ? cuerpoConUtm(personal, empresa, CONFIG_SEGUIMIENTO.CAMPANA_UTM)
+                          : cuerpoSeguimiento(empresa, esIngles, tipo));
+        // Sin link con la campaña de seguimiento, el envío de las 4:47 no
+        // reconoce el borrador (huellaDe) y se quedaría sin salir.
+        if (usarPersonal && cuerpo.indexOf('utm_campaign=' + CONFIG_SEGUIMIENTO.CAMPANA_UTM) === -1) {
+          cuerpo += '\n\n' + linkSitio(empresa, esIngles, CONFIG_SEGUIMIENTO.CAMPANA_UTM);
+        }
+        if (usarPersonal) cuenta.personalizados++;
         responderEnHilo(orig, asunto, cuerpo + '\n' + firmaTexto(esIngles), htmlCorreo(cuerpo, esIngles), enviando);
 
         const marca = etapa === 'ultimo'
@@ -164,6 +183,8 @@ function generarBorradoresSeguimiento() {
   Logger.log((enviando ? 'ENVIADOS' : 'En borrador') +
              ' · seguimientos: ' + cuenta.seguimiento +
              ' · últimos toques: ' + cuenta.ultimo +
+             ' · personalizados: ' + cuenta.personalizados +
+             ' · esperando aprobación: ' + cuenta.esperando +
              ' · ya habían respondido: ' + cuenta.respondidos +
              ' · rebotados: ' + cuenta.rebotados +
              ' · sin correo original: ' + cuenta.sinHilo +
@@ -439,6 +460,13 @@ function exigirServicioGmail() {
 // ══════════════════════════════════════════════════════════════
 // Columna O de la hoja. No vive en COL (Código.gs) para no tocar ese archivo.
 const COL_TIPO = 15;
+// Seguimiento personalizado: lo escribe la rutina de las 7:45 (Q) y Rubén lo
+// aprueba en notmanrivera.com/aprobar/ o en la hoja (R). Los seguimientos a
+// mano del 18/9, con un caso concreto y una razón para ESE prospecto,
+// sacaron 2 respuestas de 5; los de plantilla, casi nada de 109.
+const COL_SEG_PERSONAL = 17;
+const COL_SEG_APROBADO = 18;
+const DIAS_GRACIA_APROBACION = 3; // después, sale la plantilla para no perder el momento
 
 /**
  * El seguimiento lleva el caso que más se parece a lo que hace el prospecto,
