@@ -117,9 +117,78 @@ function actualizarPestana() {
     paginas.map(function (r) { return [r.d[0], num_(r.m[0]), Math.round(num_(r.m[1]) / 60)]; }),
     'Sin datos');
 
+  // 4–7. La foto de 90 días: de dónde llega la gente, qué lee y en qué.
+  const seg = function (r, i) { const v = num_(r.m[i]); return v; };
+  const noventa = { startDate: '90daysAgo', endDate: 'yesterday' };
+  const fuentes = reporte_({
+    dateRanges: [noventa],
+    dimensions: [{ name: 'sessionSource' }, { name: 'sessionMedium' }],
+    metrics: [{ name: 'sessions' }, { name: 'engagedSessions' }, { name: 'userEngagementDuration' }],
+    orderBys: [{ metric: { metricName: 'sessions' }, desc: true }],
+    limit: 15,
+  });
+  bloque('Últimos 90 días, por fuente',
+    ['Fuente / medio', 'Sesiones', 'Con interacción', '% con interacción', 'Tiempo por sesión (s)'],
+    fuentes.map(function (r) {
+      const s = seg(r, 0);
+      return [r.d[0] + ' / ' + r.d[1], s, seg(r, 1), s ? Math.round(seg(r, 1) / s * 100) + '%' : '', s ? Math.round(seg(r, 2) / s) : 0];
+    }),
+    'Sin datos');
+
+  const paginas90 = reporte_({
+    dateRanges: [noventa],
+    dimensions: [{ name: 'pagePath' }],
+    metrics: [{ name: 'screenPageViews' }, { name: 'userEngagementDuration' }, { name: 'activeUsers' }],
+    orderBys: [{ metric: { metricName: 'screenPageViews' }, desc: true }],
+    limit: 20,
+  });
+  bloque('Últimos 90 días, por página',
+    ['Página', 'Vistas', 'Usuarios', 'Tiempo por vista (s)'],
+    paginas90.map(function (r) {
+      const v = seg(r, 0);
+      return [r.d[0], v, seg(r, 2), v ? Math.round(seg(r, 1) / v) : 0];
+    }),
+    'Sin datos');
+
+  const dispositivos = reporte_({
+    dateRanges: [noventa],
+    dimensions: [{ name: 'deviceCategory' }],
+    metrics: [{ name: 'sessions' }, { name: 'engagedSessions' }, { name: 'userEngagementDuration' }],
+    orderBys: [{ metric: { metricName: 'sessions' }, desc: true }],
+  });
+  bloque('Últimos 90 días, por dispositivo',
+    ['Dispositivo', 'Sesiones', '% con interacción', 'Tiempo por sesión (s)'],
+    dispositivos.map(function (r) {
+      const s = seg(r, 0);
+      return [r.d[0], s, s ? Math.round(seg(r, 1) / s * 100) + '%' : '', s ? Math.round(seg(r, 2) / s) : 0];
+    }),
+    'Sin datos');
+
+  const paises = reporte_({
+    dateRanges: [noventa],
+    dimensions: [{ name: 'country' }],
+    metrics: [{ name: 'sessions' }, { name: 'engagedSessions' }, { name: 'userEngagementDuration' }],
+    orderBys: [{ metric: { metricName: 'sessions' }, desc: true }],
+    limit: 12,
+  });
+  bloque('Últimos 90 días, por país',
+    ['País', 'Sesiones', '% con interacción', 'Tiempo por sesión (s)'],
+    paises.map(function (r) {
+      const s = seg(r, 0);
+      return [r.d[0], s, s ? Math.round(seg(r, 1) / s * 100) + '%' : '', s ? Math.round(seg(r, 2) / s) : 0];
+    }),
+    'Sin datos');
+
   const ancho = filas.reduce(function (a, f) { return Math.max(a, f.length); }, 1);
   const rect = filas.map(function (f) { const c = f.slice(); while (c.length < ancho) c.push(''); return c; });
-  hoja.getRange(1, 1, rect.length, ancho).setValues(rect);
+  // ⚠️ Texto plano antes de escribir: si no, Sheets reinterpreta las celdas
+  // (una columna que antes tuvo fechas mostraba "1 página" como 31/12/1899, y
+  // "2/10/2026" podía leerse como 10 de febrero). La rutina lee texto de todas
+  // formas.
+  hoja.getRange(1, 1, rect.length, ancho).setNumberFormat('@');
+  hoja.getRange(1, 1, rect.length, ancho).setValues(rect.map(function (f) {
+    return f.map(function (c) { return c === '' ? '' : String(c); });
+  }));
   hoja.getRange(1, 1).setFontColor('#666666');
   titulos.forEach(function (n) {
     hoja.getRange(n, 1).setFontWeight('bold').setFontSize(12);
