@@ -2,12 +2,12 @@
  * Una sola vez, desde el editor y con hola@: instalarAutomatizaciones.
  * Pide los permisos nuevos y deja instalado:
  *   - correoPorAprobar, todos los días ≈8:15 (Aprobaciones.gs)
- *   - revisarSalud, todos los días ≈10:30 (Salud.gs)
+ *   - revisarSalud, todos los días ≈14:30 (Salud.gs), después de los envíos de 9 y 1
  *   - los filtros de Gmail que sacan lo automático de la bandeja
  * Se puede volver a correr: no duplica nada.
  */
 function instalarAutomatizaciones() {
-  const quiero = { correoPorAprobar: [8, 15], revisarSalud: [10, 30] };
+  const quiero = { correoPorAprobar: [8, 15], revisarSalud: [14, 30] };
   ScriptApp.getProjectTriggers().forEach(function (t) {
     if (quiero[t.getHandlerFunction()]) ScriptApp.deleteTrigger(t);
   });
@@ -15,7 +15,7 @@ function instalarAutomatizaciones() {
     ScriptApp.newTrigger(fn).timeBased().everyDays(1).atHour(quiero[fn][0]).nearMinute(quiero[fn][1])
       .inTimezone('America/Mexico_City').create();
   });
-  Logger.log('Disparadores: correoPorAprobar ≈8:15 y revisarSalud ≈10:30.');
+  Logger.log('Disparadores: correoPorAprobar ≈8:15 y revisarSalud ≈14:30.');
   Logger.log(instalarFiltros_());
 }
 

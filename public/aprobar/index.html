@@ -108,7 +108,7 @@
     var hora = new Date().toLocaleString('en-US', { timeZone: 'America/Mexico_City', hour: 'numeric', hour12: false });
     var segs = restantes().filter(function (p) { return p.tipo === 'seguimiento'; }).length;
     $('sub').textContent = n
-      ? ((n > segs ? (Number(hora) < 9 ? 'Primeros correos: si los apruebas antes de las 9 salen hoy. ' : 'Primeros correos: ya pasaron las 9, salen mañana. ') : '') +
+      ? ((n > segs ? (Number(hora) < 13 ? 'Primeros correos: si los apruebas ahora salen hoy (' + (Number(hora) < 9 ? 'a las 9' : 'a la 1 pm') + '). ' : 'Primeros correos: ya pasó el último envío, salen mañana a las 9. ') : '') +
          (segs ? 'Seguimientos: aprobados antes de las 11 salen hoy a las 4:47.' : ''))
       : 'No queda nada por decidir.';
     $('todos').hidden = n < 2;

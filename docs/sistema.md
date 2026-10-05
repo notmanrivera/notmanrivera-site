@@ -12,9 +12,10 @@ nunca con rnrivera93@gmail.com. Lo ideal es un perfil de Chrome solo para hola@.
 | 7:00 | Se actualiza la pestaña **Analytics**; si alguien leyó tu sitio ayer desde un correo, te llega **"Lead caliente"** | Script *Analytics notmanrivera.com* |
 | 7:45 | La **rutina** revisa la bandeja, agrega prospectos verificados, corrige reseñas y te manda el resumen | Rutina de Claude "Prospección diaria NotMan" (lunes a viernes) |
 | ≈8:15 | Te llega **"Por aprobar hoy"** con el botón a la página de aprobar | Script *Reseñas notmanrivera.com* |
-| 9:00 | Salen los primeros correos (solo filas con "sí" y Verificación `safe`, máx. 10) | Apps Script de la hoja |
-| ≈10:30 | **Revisión de salud**: solo te escribe si algo falló (y los lunes, "todo en orden") | Script *Reseñas notmanrivera.com* |
+| 9:00 | Salen los primeros correos (solo filas con "sí" y Verificación `safe`) | Apps Script de la hoja |
 | 11:00 | Se generan seguimientos y últimos toques, dentro del hilo original | Apps Script de la hoja |
+| 1:00 pm | Segundo envío de primeros correos: lo que aprobaste después de las 9 (tope de 10 al día entre los dos) | Apps Script de la hoja |
+| ≈2:30 pm | **Revisión de salud**: solo te escribe si algo falló (y los lunes, "todo en orden") | Script *Reseñas notmanrivera.com* |
 | 4:47 pm | Se mandan esos seguimientos | Apps Script de la hoja |
 | Cada 2 h | Las reseñas con "sí" se publican en la portada | GitHub Action `resenas.yml` |
 | Lunes 6:07 | Se prueba que la credencial de clasp siga viva | GitHub Action `salud.yml` |

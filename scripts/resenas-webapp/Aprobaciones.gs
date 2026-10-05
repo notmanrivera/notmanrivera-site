@@ -118,7 +118,7 @@ function correoPorAprobar() {
     '<div style="font-size:13px;color:#A99CC4;text-transform:uppercase;letter-spacing:.1em">Por aprobar hoy</div>' +
     '<h1 style="font-size:24px;margin:6px 0 4px">' + resumen_(primeros, seguimientos) + '</h1>' +
     '<p style="color:#d8d2e6;margin:0 0 16px">' +
-    (primeros ? 'Primeros correos: lo que apruebes antes de las 9 sale hoy. ' : '') +
+    (primeros ? 'Primeros correos: si los apruebas antes de las 9 salen a las 9; antes de la 1, a la 1; más tarde, mañana. ' : '') +
     (seguimientos ? 'Seguimientos: aprobados antes de las 11 salen hoy a las 4:47; si no decides en 3 días, sale la plantilla.' : '') + '</p>' +
     '<table style="width:100%;border-collapse:collapse">' + filas + '</table>' +
     '<p style="margin:22px 0 6px"><a href="' + liga + '" style="display:inline-block;background:#E50012;color:#fff;' +

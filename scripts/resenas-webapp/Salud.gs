@@ -1,14 +1,15 @@
 /**
- * Revisión de salud del sistema (disparador diario ≈10:30, después del envío
- * de las 9). Solo escribe a hola@ si algo está mal, más un "todo bien" los
+ * Revisión de salud del sistema (disparador diario ≈14:30, después de los
+ * envíos de las 9 y de la 1). Solo escribe a hola@ si algo está mal, más un "todo bien" los
  * lunes para que el silencio no se confunda con que esto dejó de correr.
  *
  * Revisa lo que se puede ver desde fuera de cada pieza:
  *   - GitHub Actions: ejecuciones fallidas en las últimas 26 h (incluye la
  *     revisión semanal de credenciales de clasp, salud.yml).
  *   - Analytics: que la pestaña se haya actualizado hoy.
- *   - Envío de las 9: filas aprobadas y verificadas que no salieron, sin
- *     haber llegado al tope de 10.
+ *   - Envíos de las 9 y la 1: filas aprobadas y verificadas que no salieron,
+ *     sin haber llegado al tope de 10 (las aprobadas desde el celular después
+ *     de la 1 no cuentan: salen mañana).
  *   - Reseñas: que las aprobadas estén en la portada.
  *
  * Lo del día a día del Apps Script de prospección (seguimientos fuera del
@@ -62,17 +63,20 @@ function revisarSalud() {
   const datos = pros.getRange(2, 1, Math.max(pros.getLastRow() - 1, 1), 16).getValues();
   let enviadosHoy = 0;
   const atoradas = [];
+  const hoyDM = Utilities.formatDate(new Date(), 'America/Mexico_City', 'd/M');
+  const tarde = new RegExp('desde el celular ' + hoyDM.replace('/', '\\/') + ' (\\d{1,2}):');
   datos.forEach(function (r, i) {
     const estado = String(r[5]).trim();
     const fecha = r[6] instanceof Date ? Utilities.formatDate(r[6], 'America/Mexico_City', 'd/M/yyyy') : String(r[6]).trim();
     if (/^enviado/i.test(estado) && fecha === hoyCorto) enviadosHoy++;
+    const aprobadaTarde = (String(r[7]).match(tarde) || [])[1] >= 13; // salen mañana a las 9
     if (/^s[ií]$/i.test(String(r[4]).trim()) && /^(|pendiente de env[ií]o)$/i.test(estado) &&
-        String(r[15]).trim().toLowerCase() === 'safe') atoradas.push((i + 2) + ' ' + String(r[0]).trim());
+        String(r[15]).trim().toLowerCase() === 'safe' && !aprobadaTarde) atoradas.push((i + 2) + ' ' + String(r[0]).trim());
   });
   if (atoradas.length && enviadosHoy < SALUD.TOPE_ENVIO) {
-    problemas.push('Envío de las 9: ' + atoradas.length + ' fila(s) aprobada(s) y verificada(s) no salieron y hoy solo salieron ' +
-      enviadosHoy + '. ¿Sigue instalado el disparador de procesarPendientes? (menú Prospección → Instalar envío diario, con hola@)\n  Filas: ' +
-      atoradas.slice(0, 8).join(', '));
+    problemas.push('Envíos de las 9 y la 1: ' + atoradas.length + ' fila(s) aprobada(s) y verificada(s) no salieron y hoy solo salieron ' +
+      enviadosHoy + '. Si las aprobaste en la hoja después de la 1 pm, ignóralo: salen mañana. Si no, revisa que siga instalado el envío ' +
+      '(menú Prospección → Instalar envío diario, con hola@).\n  Filas: ' + atoradas.slice(0, 8).join(', '));
   }
 
   // 4. Reseñas aprobadas que no están en la portada

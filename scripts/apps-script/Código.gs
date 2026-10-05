@@ -83,9 +83,18 @@ function procesarPendientes() {
 
   const datos = hoja.getRange(2, 1, ultimaFila - 1, TOTAL_COLUMNAS).getValues();
 
+  // El tope es por DÍA, no por corrida: desde el 5/10 hay dos envíos (9 am y
+  // 1 pm, para lo que se aprueba tarde desde el celular) y entre los dos no
+  // deben pasar de MAX_POR_DIA.
+  const hoyCorto = Utilities.formatDate(new Date(), Session.getScriptTimeZone(), 'd/M/yyyy');
+  const enviadosHoy = datos.filter(function (r) {
+    const f = r[COL.FECHA - 1];
+    const dia = f instanceof Date ? Utilities.formatDate(f, Session.getScriptTimeZone(), 'd/M/yyyy') : String(f).trim();
+    return /^enviado/i.test(String(r[COL.ESTADO - 1]).trim()) && dia === hoyCorto;
+  }).length;
   const cuota = MailApp.getRemainingDailyQuota();
-  let restantes = Math.min(CONFIG.MAX_POR_DIA, cuota);
-  Logger.log('Cuota de Gmail hoy: ' + cuota + ' · tope propio: ' + CONFIG.MAX_POR_DIA);
+  let restantes = Math.max(0, Math.min(CONFIG.MAX_POR_DIA - enviadosHoy, cuota));
+  Logger.log('Cuota de Gmail hoy: ' + cuota + ' · tope propio: ' + CONFIG.MAX_POR_DIA + ' · ya enviados hoy: ' + enviadosHoy);
 
   const yaContactados = correosYaUsados(datos);
   let hechos = 0, saltados = 0, sinLink = 0, cerradas = 0, aprobadasSinEnviar = 0, sinVerificar = 0;
@@ -493,9 +502,12 @@ function prepararHoja() {
 
 function instalarTrigger() {
   quitarTrigger();
-  ScriptApp.newTrigger('procesarPendientes')
-    .timeBased().everyDays(1).atHour(9).create();
-  aviso('Trigger diario instalado (9am).');
+  // 9 am: lo aprobado temprano. 1 pm: lo aprobado más tarde desde el correo
+  // "Por aprobar hoy". El tope de MAX_POR_DIA es por día entre los dos.
+  [9, 13].forEach(function (hora) {
+    ScriptApp.newTrigger('procesarPendientes').timeBased().everyDays(1).atHour(hora).create();
+  });
+  aviso('Envío diario instalado: 9 am y 1 pm (tope de ' + CONFIG.MAX_POR_DIA + ' al día entre los dos).');
 }
 
 function quitarTrigger() {
