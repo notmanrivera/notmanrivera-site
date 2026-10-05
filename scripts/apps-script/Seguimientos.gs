@@ -67,6 +67,7 @@ const CONFIG_SEGUIMIENTO = {
 //  CORRIDA DIARIA
 // ══════════════════════════════════════════════════════════════
 function generarBorradoresSeguimiento() {
+  if (!cuentaCorrecta('Generar seguimientos')) return;
   if (esFinDeSemana()) { Logger.log('Fin de semana: no se generan seguimientos.'); return; }
   exigirServicioGmail();
 
@@ -243,6 +244,7 @@ function fechaUltimaMarca(notas, marca) {
  * quedado obsoleto.
  */
 function enviarBorradoresSeguimientoPendientes() {
+  if (!cuentaCorrecta('Enviar seguimientos')) return;
   if (esFinDeSemana()) { Logger.log('Fin de semana: no se mandan seguimientos.'); return; }
 
   const INICIO = Date.now();

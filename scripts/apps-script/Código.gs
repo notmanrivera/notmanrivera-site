@@ -72,7 +72,28 @@ const TOTAL_COLUMNAS = 16;
 // ══════════════════════════════════════════════════════════════
 //  PROCESO PRINCIPAL
 // ══════════════════════════════════════════════════════════════
+// ══════════════════════════════════════════════════════════════
+//  CANDADO DE CUENTA
+// ══════════════════════════════════════════════════════════════
+// La hoja es de rnrivera93@gmail.com, así que cualquiera de las dos cuentas
+// puede correr el menú o instalar disparadores. Lo que corre con la cuenta
+// equivocada manda DESDE esa cuenta: el 29/9 salieron 8 correos desde
+// rnrivera93, y el 5/10 el envío diario se instaló con ella. Todo lo que
+// manda correo a prospectos pasa por aquí y, con otra cuenta, no hace nada.
+const CUENTA_DE_ENVIO = 'hola@notmanrivera.com';
+
+function cuentaCorrecta(que) {
+  const yo = String(Session.getEffectiveUser().getEmail() || '').toLowerCase();
+  if (yo === CUENTA_DE_ENVIO) return true;
+  aviso('No se hizo "' + que + '": está corriendo con ' + (yo || 'otra cuenta') +
+        '. Esto solo funciona con ' + CUENTA_DE_ENVIO + '. Si fue un disparador, ' +
+        'bórralo desde esa cuenta (menú Prospección → Quitar envío diario) e ' +
+        'instálalo con ' + CUENTA_DE_ENVIO + '.');
+  return false;
+}
+
 function procesarPendientes() {
+  if (!cuentaCorrecta('Procesar pendientes')) return;
   const INICIO = Date.now();
   const LIMITE_MS = 4.5 * 60 * 1000;
   const hoja = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(CONFIG.HOJA);
