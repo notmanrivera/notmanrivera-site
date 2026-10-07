@@ -11,7 +11,7 @@ nunca con rnrivera93@gmail.com. Lo ideal es un perfil de Chrome solo para hola@.
 |---|---|---|
 | 7:00 | Se actualiza la pestaña **Analytics**; si alguien leyó tu sitio ayer desde un correo, te llega **"Lead caliente"** | Script *Analytics notmanrivera.com* |
 | 7:45 | La **rutina** revisa la bandeja, agrega prospectos verificados, corrige reseñas y te manda el resumen | Rutina de Claude "Prospección diaria NotMan" (lunes a viernes) |
-| ≈8:15 | Te llega **"Por aprobar hoy"** con el botón a la página de aprobar | Script *Reseñas notmanrivera.com* |
+| ≈8:15 | Te llega **"Por aprobar hoy"** con el botón a la página de aprobar (prospectos, seguimientos y posts de LinkedIn; martes y jueves, también el post que toca publicar) | Script *Reseñas notmanrivera.com* |
 | 9:00 | Salen los primeros correos (solo filas con "sí" y Verificación `safe`) | Apps Script de la hoja |
 | 11:00 | Se generan seguimientos y últimos toques, dentro del hilo original | Apps Script de la hoja |
 | 1:00 pm | Segundo envío de primeros correos: lo que aprobaste después de las 9 (tope de 10 al día entre los dos) | Apps Script de la hoja |
@@ -35,6 +35,11 @@ Dueña: rnrivera93@gmail.com (hola@ es editora). Pestañas:
   un trato pasa a Ganado, la rutina crea su invitación de reseña.
 - **Invitaciones** y **Reseñas**: reseñas de clientes (ver abajo).
 - **Analytics**: de solo lectura, se reescribe a las 7 am.
+- **LinkedIn**: un post por fila (Publicar el, Idioma, Tema, Texto, Medio,
+  Aprobado, Estado, Notas). Los escribe la rutina de los lunes para el martes
+  (español) y el jueves (inglés).
+- **Medios LinkedIn**: los clips e imágenes del sitio que se pueden usar, con
+  qué muestra cada uno y en qué post ya salió.
 - **Bitácora**.
 
 ⚠️ El acceso general debe ser **Restringido** (Compartir → Acceso general).
@@ -72,6 +77,23 @@ hola@ publique una web app en un proyecto ajeno.
 "Prospección diaria NotMan", lunes a viernes 7:45. Nunca manda correos ni
 pone "sí": solo deja borradores, agrega filas y te resume. Conectores: Gmail,
 Sheets, Drive y Calendar de hola@.
+
+## LinkedIn, paso a paso
+1. El lunes, la rutina escribe dos posts en la pestaña LinkedIn, con un clip o
+   imagen de la pestaña Medios LinkedIn. Todo sale de los casos del sitio: no
+   inventa anécdotas ni números.
+2. Te llegan en "Por aprobar hoy". En la página de aprobar ves el video y el
+   texto; Aprobar o Descartar.
+3. El martes y el jueves, el post aprobado vuelve a llegar como "Publicar hoy":
+   **Copiar texto**, **Abrir el video** (en el iPhone: compartir → Guardar
+   video), publícalo en LinkedIn y toca **Ya lo publiqué**.
+4. Publicar es manual a propósito: la API de LinkedIn pide renovar el permiso
+   cada 60 días y subir video por ahí es frágil.
+
+Los clips viven en `public/assets/video/` y las imágenes, ya en JPG (LinkedIn no
+siempre acepta WebP), en `public/assets/linkedin/`. Las de "calidad baja" son
+miniaturas de 440 px: solo sirven en carrusel; si un post las necesita grandes,
+hay que subir el original.
 
 ## Correos en inglés
 
