@@ -2,6 +2,11 @@
 
 Qué hace cada pieza, con qué cuenta se abre y qué hacer cuando algo falla.
 
+**Bandeja de hola@:** solo quedan correos de prospección y avisos que piden algo
+("Por aprobar", "Lead caliente", "Sistema:"). Rebotes, DMARC, publicidad de
+no2bounce y avisos de Google se archivan solos con etiqueta `Sistema/…`
+(filtros en `scripts/resenas-webapp/Instalar.gs`).
+
 **Regla de oro:** todo lo de prospección se abre con **hola@notmanrivera.com**,
 nunca con rnrivera93@gmail.com. Lo ideal es un perfil de Chrome solo para hola@.
 
