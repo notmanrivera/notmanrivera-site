@@ -49,7 +49,7 @@ const CONFIG = {
   // Dirección postal para los correos en inglés (EE. UU. y Canadá la exigen
   // en correo comercial: CAN-SPAM y CASL). Puede ser un apartado postal.
   // Vacía = no se agrega nada. Se agrega en el HTML y en el texto plano.
-  DIRECCION_POSTAL: '',
+  DIRECCION_POSTAL: 'NotMan · c/o Órbita Coworks, Ignacio Pérez Sur 28, Centro, 76000 Santiago de Querétaro, Qro., Mexico',
 
   ETIQUETA: 'Prospección'
 };

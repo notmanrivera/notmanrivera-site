@@ -99,7 +99,9 @@ hay que subir el original.
 
 EE. UU. (CAN-SPAM) y Canadá (CASL) exigen una dirección postal en el correo
 comercial. Va en `CONFIG.DIRECCION_POSTAL` de `scripts/apps-script/Código.gs`:
-se agrega sola al pie de los correos en inglés. Mientras esté vacía no sale.
+se agrega sola al pie de los correos en inglés. Desde el 12/10/2026 es la de
+Órbita Coworks (Ignacio Pérez Sur 28, Centro, Querétaro), donde está la oficina
+del trabajo de Rubén y le pueden llegar cartas. Mientras esté vacía no sale.
 
 ## Reseñas, paso a paso
 1. Menú Prospección → **Nueva invitación de reseña** → copias la liga y se la mandas al cliente.
