@@ -77,3 +77,15 @@ function instalarFiltros_() {
   });
   return 'Filtros de Gmail: ' + creados + ' nuevos, ' + cambiados + ' actualizados, ' + (filtros.length - creados - cambiados) + ' sin cambios.';
 }
+
+/**
+ * Pide de nuevo el permiso de conectarse a sitios externos (UrlFetchApp), que
+ * la revisión de salud usa para consultar GitHub y la portada. Con el
+ * consentimiento por partes de Google, si alguna vez se desmarcó ese permiso,
+ * correr otras funciones no lo vuelve a pedir; esta sí.
+ */
+function autorizarConexiones() {
+  ScriptApp.requireScopes(ScriptApp.AuthMode.FULL, ['https://www.googleapis.com/auth/script.external_request']);
+  const r = UrlFetchApp.fetch('https://notmanrivera.com/', { muteHttpExceptions: true });
+  Logger.log('Conexión externa correcta (notmanrivera.com respondió HTTP ' + r.getResponseCode() + ').');
+}
