@@ -9,30 +9,43 @@
     {
       "titulo": "Logo principal.",
       "etiqueta": "(2 versiones)",
-      "puntos": ["“Booguita Agency” y “Be Original Agency”, con tipografía cursiva legible y el color #a20621."],
+      "puntos": [
+        "“Booguita Agency” y “Be Original Agency”, con tipografía cursiva legible y el color #a20621."
+      ],
       "unidades": 1,
-      "precio": 3500
+      "precio": 3000
     },
     {
       "titulo": "Sublogo “Bo.”",
-      "puntos": ["Para foto de perfil de WhatsApp, correo y redes."],
+      "puntos": [
+        "Para foto de perfil de WhatsApp, correo y redes."
+      ],
       "unidades": 1,
       "precio": 1200
     },
     {
       "titulo": "Manual básico de uso.",
-      "puntos": ["Tipografías, colores y modos de uso del logo y sublogo."],
+      "puntos": [
+        "Tipografías, colores y modos de uso del logo y sublogo."
+      ],
       "unidades": 1,
       "precio": 1500
     },
     {
       "titulo": "Entregables para imprenta.",
-      "puntos": ["Sticker pequeño de 5 × 5 cm para paquetes chicos.", "Sticker largo de 43 cm para paquetes grandes.", "Flyer promocional con información y descuento."],
+      "puntos": [
+        "Sticker pequeño de 5 × 5 cm para paquetes chicos.",
+        "Sticker largo de 43 cm para paquetes grandes.",
+        "Flyer promocional con información y descuento."
+      ],
       "unidades": 1,
-      "precio": 2000
+      "precio": 1500
     }
   ],
-  "descuento": { "concepto": "Descuento especial", "monto": 1700 },
+  "descuento": {
+    "concepto": "Descuento especial",
+    "monto": 1700
+  },
   "iva": 0,
   "notas": [
     "Entrega en **10 días hábiles** a partir de la aprobación. Se entregan archivos digitales listos para imprenta (no incluye impresión)."
