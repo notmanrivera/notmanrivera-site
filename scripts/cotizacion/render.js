@@ -113,7 +113,7 @@ function rellenar(c, { filas, opciones, totales, th }, montos) {
   const valores = {
     thU: th[0], thP: th[1], thI: th[2],
     cliente: esc(c.cliente), proyecto: esc(c.proyecto), folio: esc(c.folio),
-    atencion: esc(c.atencion), vigencia: esc(c.vigencia || '15 días'),
+    atencion: c.atencion ? `    Atención: <b>${esc(c.atencion)}</b><br>` : '', vigencia: esc(c.vigencia || '15 días'),
     fecha: fechaLarga(c.fecha || new Date().toISOString().slice(0, 10)),
     filas: filas.join('\n'), totales: totales.join('\n'), opciones, notas,
   };
