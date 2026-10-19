@@ -1,0 +1,45 @@
+{
+  "folio": "COT-2026-005",
+  "fecha": "2026-10-19",
+  "cliente": "Bo Agency",
+  "atencion": "Aranza Vega",
+  "proyecto": "Rebranding · Bo Agency",
+  "vigencia": "15 días",
+  "items": [
+    {
+      "titulo": "Logo principal.",
+      "etiqueta": "(2 versiones)",
+      "puntos": ["“Booguita Agency” y “Be Original Agency”, con tipografía cursiva legible y el color #a20621."],
+      "unidades": 1,
+      "precio": 3500
+    },
+    {
+      "titulo": "Sublogo “Bo.”",
+      "puntos": ["Para foto de perfil de WhatsApp, correo y redes."],
+      "unidades": 1,
+      "precio": 1200
+    },
+    {
+      "titulo": "Manual básico de uso.",
+      "puntos": ["Tipografías, colores y modos de uso del logo y sublogo."],
+      "unidades": 1,
+      "precio": 1500
+    },
+    {
+      "titulo": "Entregables para imprenta.",
+      "puntos": ["Sticker pequeño de 5 × 5 cm para paquetes chicos.", "Sticker largo de 43 cm para paquetes grandes.", "Flyer promocional con información y descuento."],
+      "unidades": 1,
+      "precio": 2000
+    }
+  ],
+  "descuento": { "concepto": "Descuento especial", "monto": 1700 },
+  "iva": 0,
+  "notas": [
+    "Entrega en **10 días hábiles** a partir de la aprobación. Se entregan archivos digitales listos para imprenta (no incluye impresión)."
+  ],
+  "condiciones": [
+    "Incluye dos rondas de ajustes por pieza. Cambios adicionales o de alcance se cotizan por separado.",
+    "Los pagos se realizarán de manera que se cubra el **50% al aprobar la cotización y 50% contra entrega final.**",
+    "Precios en pesos mexicanos. No se emite factura."
+  ]
+}
