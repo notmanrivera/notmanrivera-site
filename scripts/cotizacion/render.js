@@ -117,7 +117,7 @@ function rellenar(c, { filas, opciones, totales, th }, montos) {
     fecha: fechaLarga(c.fecha || new Date().toISOString().slice(0, 10)),
     filas: filas.join('\n'), totales: totales.join('\n'), opciones, notas,
   };
-  const html = fs.readFileSync(path.join(DIR, 'plantilla.html'), 'utf8')
+  const html = fs.readFileSync(path.join(DIR, c.plantilla || 'plantilla.html'), 'utf8')
     .replace(/\{\{(\w+)\}\}/g, (_, k) => {
       if (!(k in valores)) throw new Error(`La plantilla pide {{${k}}} y no hay dato`);
       return valores[k];
@@ -147,7 +147,9 @@ function rellenar(c, { filas, opciones, totales, th }, montos) {
     await pagina.evaluate(() => document.fonts.ready);
     // La hoja es de posiciones fijas: si la tabla crece de más se encima con
     // totales y notas sin que nada truene. Mejor fallar que mandar eso.
-    const fondo = await pagina.evaluate(() => document.querySelector('.tabla').getBoundingClientRect().bottom * 0.75);
+    // Otras plantillas ("plantilla" en el JSON) fluyen a varias hojas y no
+    // tienen ese límite.
+    const fondo = c.plantilla ? 0 : await pagina.evaluate(() => document.querySelector('.tabla').getBoundingClientRect().bottom * 0.75);
     if (fondo > LIMITE_TABLA) {
       throw new Error(`La tabla llega a ${fondo.toFixed(0)}pt y el límite es ${LIMITE_TABLA}pt: recortar texto de los conceptos`);
     }
