@@ -9,7 +9,7 @@
   "vigencia": "15 días",
   "items": [
     {
-      "titulo": "Branding integral.",
+      "titulo": "Branding integral",
       "puntos": [
         "Investigación: análisis de notarías en Tabasco, público objetivo y posicionamiento.",
         "Moodboard, pilares de marca (misión, visión y valores), personalidad y tono de comunicación."
@@ -24,7 +24,7 @@
       "precio": 18000
     },
     {
-      "titulo": "Papelería institucional.",
+      "titulo": "Papelería institucional",
       "puntos": [
         "Hoja membretada, tarjetas de presentación, sobre y folder.",
         "Firma de correo electrónico y plantilla de presentación."
@@ -33,7 +33,7 @@
       "precio": 4500
     },
     {
-      "titulo": "Sitio web informativo.",
+      "titulo": "Sitio web informativo",
       "etiqueta": "(diseño desde cero)",
       "puntos": [
         "Arquitectura de contenido y diseño a la medida con la nueva identidad.",
@@ -49,7 +49,7 @@
       "precio": 22000
     },
     {
-      "titulo": "Puesta en línea.",
+      "titulo": "Puesta en línea",
       "puntos": [
         "Configuración de dominio, hosting y correos corporativos.",
         "Alta y optimización del perfil de Google Business."
@@ -64,14 +64,15 @@
   },
   "iva": 0.16,
   "notas": [
-    "**Tiempo estimado:** branding en 3 a 4 semanas; sitio web en 3 a 4 semanas a partir de la aprobación del branding.",
-    "El hosting y el dominio se pagan directamente al proveedor, a nombre del cliente.",
+    "**Precios más IVA (16%).** Se emite factura (CFDI) por cada pago.",
+    "Branding y papelería: **21 días hábiles**. Sitio web: **30 días hábiles** a partir de la aprobación del branding. Entrega de avances cada semana.",
+    "El hosting y el dominio se pagan directamente al proveedor, a nombre del cliente. Se entregan todos los accesos con manual de instrucciones.",
     "Para el sitio web se requieren los textos, fotografías y datos de contacto de la notaría."
   ],
   "condiciones": [
     "Incluye dos rondas de ajustes por entregable. Cambios adicionales o de alcance se cotizan por separado.",
-    "Los pagos se realizarán de manera que se cubra el **50% al aprobar la cotización y 50% contra entrega final.**",
-    "Precios en pesos mexicanos, **más IVA (16%)**. Se emite factura (CFDI) por cada pago."
+    "Pago: **50% al iniciar el proyecto y 50% al finalizar.**",
+    "Esta cotización tiene una vigencia de 15 días naturales."
   ],
   "deposito": false
 }

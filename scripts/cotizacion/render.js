@@ -115,6 +115,7 @@ function rellenar(c, { filas, opciones, totales, th }, montos) {
     cliente: esc(c.cliente), proyecto: esc(c.proyecto), folio: esc(c.folio),
     atencion: c.atencion ? `    Atención: <b>${esc(c.atencion)}</b><br>` : '', vigencia: esc(c.vigencia || '15 días'),
     fecha: fechaLarga(c.fecha || new Date().toISOString().slice(0, 10)),
+    fechaTexto: fechaLarga(c.fecha || new Date().toISOString().slice(0, 10)).split(' / ').join(' de '),
     filas: filas.join('\n'), totales: totales.join('\n'), opciones, notas,
   };
   const html = fs.readFileSync(path.join(DIR, c.plantilla || 'plantilla.html'), 'utf8')

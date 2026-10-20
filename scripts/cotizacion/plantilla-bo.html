@@ -3,82 +3,66 @@
 <head>
 <meta charset="utf-8">
 <title>Cotización — {{cliente}}</title>
-<!-- Plantilla de Bo Agency: solo texto, sin logos, en Syne y con el rojo de
-     su rebranding. Se usa con "plantilla": "plantilla-bo.html" en el JSON.
-     A diferencia de plantilla.html, el contenido fluye y puede ocupar más de
-     una hoja. Mismos huecos que plantilla.html, los llena render.js. -->
+<!-- Plantilla de Bo Agency, adaptada del diseño de Aranza: fondo gris claro,
+     logo "Bo.Agency" (bo/logo.png, el logo convertido en imagen para no
+     depender de sus tipografías comerciales), Montserrat, rojo #a20621 y el
+     listón (bo/liston.png) abajo a la izquierda. Se usa con
+     "plantilla": "plantilla-bo.html" en el JSON. El contenido fluye; con
+     "hojaUnica": true sale en una sola hoja larga. -->
 <style>
-  @font-face{font-family:Syne;src:url(fuentes/Syne.ttf) format("truetype");font-weight:400 800}
+  @font-face{font-family:Montserrat;src:url(fuentes/Montserrat.ttf) format("truetype");font-weight:100 900}
   @page{margin:0}
-  :root{--rojo:#a20621;--tinta:#231d1c;--gris:#7a6f6b;--linea:#e4d8d0;--crema:#f6efe8;--tarjeta:#fffaf6}
+  :root{--rojo:#a20621;--tinta:#0d1416;--fondo:#f5f5f5}
   *{box-sizing:border-box;margin:0;padding:0}
-  html,body{background:var(--crema)}
+  html,body{background:var(--fondo)}
   body{
-    font-family:Syne,sans-serif;color:var(--tinta);font-size:9pt;line-height:1.5;
+    font-family:Montserrat,sans-serif;color:var(--tinta);font-size:10pt;line-height:1.45;
     -webkit-print-color-adjust:exact;print-color-adjust:exact;
   }
-  /* Fondo crema en cada hoja, aunque el contenido no la llene */
-  .fondo{position:fixed;inset:0;background:var(--crema);z-index:-1}
-  /* thead/tfoot vacíos que Chromium repite en cada hoja = márgenes */
+  .fondo{position:fixed;inset:0;background:var(--fondo);z-index:-1}
   table.hoja{width:100%;border-collapse:collapse}
-  .hoja > thead td{height:44pt}
-  .hoja > tfoot td{height:40pt}
-  .hoja > tbody > tr > td{padding:0 50pt}
+  .hoja > thead td{height:40pt}
+  .hoja > tfoot td{height:0}
+  .hoja > tbody > tr > td{padding:0 52pt}
 
-  .cabeza{display:flex;justify-content:space-between;align-items:flex-end;padding-bottom:14pt;border-bottom:.6pt solid var(--tinta)}
-  .marca{display:flex;align-items:flex-end;gap:10pt}
-  .marca .bo{font-size:40pt;font-weight:700;letter-spacing:-1.5pt;line-height:.8;color:var(--rojo)}
-  .marca .nombre{font-size:8pt;font-weight:500;line-height:1.3;color:var(--gris);padding-bottom:1pt}
-  .marca .nombre b{display:block;font-weight:700;color:var(--tinta)}
-  .doc{text-align:right;font-size:8pt;color:var(--gris);line-height:1.55}
-  .doc b{color:var(--tinta);font-weight:600}
+  .cabeza{display:flex;justify-content:space-between;align-items:flex-end}
+  .logo{width:200pt;display:block}
+  .doc{text-align:right;font-size:9pt;line-height:1.5}
+  .doc .fecha{color:var(--rojo);font-weight:600;font-size:12pt;margin-bottom:2pt}
+  .doc b{font-weight:600}
 
-  .intro{display:grid;grid-template-columns:1fr 185pt;gap:24pt;margin:30pt 0 28pt}
-  .intro .tipo{font-size:8pt;font-weight:600;color:var(--rojo);margin-bottom:6pt}
-  h1{font-size:26pt;font-weight:500;letter-spacing:-.6pt;line-height:1.1}
-  .para{font-size:8.5pt;line-height:1.5;border-left:1.5pt solid var(--rojo);padding-left:11pt;align-self:end}
-  .para span{display:block;color:var(--gris);font-size:7.5pt;margin-bottom:2pt}
-  .para b{font-weight:700}
-  .para .vig{margin-top:7pt;color:var(--gris);font-size:7.5pt}
+  /* Conceptos: cada fila de la tabla se ve como una sección */
+  .tabla{width:100%;border-collapse:collapse;margin-top:34pt}
+  .tabla thead{display:none}
+  .tabla tr.item{display:flex;flex-direction:column;margin-bottom:22pt;break-inside:avoid}
+  .tabla td{display:block}
+  .tabla .c-u,.tabla .c-p{display:none}
+  .desc b{display:block;color:var(--rojo);font-weight:600;font-size:16pt;letter-spacing:.2pt;text-transform:uppercase;margin-bottom:6pt;line-height:1.2}
+  .desc em{display:block;font-style:normal;font-size:9pt;color:var(--rojo);margin:-3pt 0 6pt}
+  .desc ul{margin-left:16pt;font-size:10.5pt;line-height:1.5}
+  .desc ul li{margin-bottom:1pt}
+  .desc ul li::marker{color:var(--tinta)}
+  .desc .incl{font-weight:600;margin:6pt 0 2pt}
+  td.c-i{text-align:right;color:var(--rojo);font-weight:600;font-size:14pt;margin-top:6pt}
+  td.c-i::before{content:"VALOR: "}
+  td.c-i::after{content:"No incluye IVA*";display:block;font-size:7.5pt;font-weight:400;margin-top:1pt}
+  tr.desc-row{display:flex;justify-content:space-between;border-top:1.5pt solid var(--rojo);padding-top:10pt;margin-bottom:4pt}
+  tr.desc-row td.desc{color:var(--rojo);font-weight:600;font-size:11pt;padding:0}
+  tr.desc-row td.c-i{margin:0;font-size:11pt}
+  tr.desc-row td.c-i::before,tr.desc-row td.c-i::after{content:none}
 
-  /* Conceptos: cada fila es una tarjeta (mismo marcado que plantilla.html) */
-  .tabla{width:100%;border-collapse:separate;border-spacing:0 7pt;margin-top:-7pt}
-  .tabla th{font-size:7.5pt;font-weight:500;color:var(--gris);text-align:right;padding:0 14pt 0}
-  .tabla th:first-child{text-align:left}
-  /* Sin columna de unidades: en estas cotizaciones siempre es 1 */
-  .tabla .c-u{display:none}.c-p{width:70pt;text-align:right}.c-i{width:84pt;text-align:right}
-  .tabla thead{display:table-row-group}
-  .tabla td{vertical-align:top;padding:13pt 14pt;background:var(--tarjeta);box-shadow:1.5pt 0 0 var(--tarjeta);font-size:9pt}
-  .tabla td:first-child{border-radius:6pt 0 0 6pt}
-  .tabla td:last-child{border-radius:0 6pt 6pt 0}
-  .tabla td.c-u,.tabla td.c-p{color:var(--gris)}
-  tr.item{break-inside:avoid}
-  .desc b{display:block;font-size:11pt;font-weight:700;letter-spacing:-.2pt;line-height:1.25;margin-bottom:5pt}
-  .desc em{display:block;font-style:normal;font-size:7.5pt;font-weight:600;color:var(--rojo);margin:-3pt 0 5pt}
-  .desc ul{list-style:none;font-size:8.2pt;color:#514744;line-height:1.5}
-  .desc ul li{padding-left:10pt;position:relative}
-  .desc ul li::before{content:"·";position:absolute;left:1pt;color:var(--rojo);font-weight:800}
-  .desc .incl{font-size:7.5pt;font-weight:600;color:var(--tinta);margin:7pt 0 2pt}
-  td.c-i{font-weight:700}
-  tr.desc-row td{background:transparent;box-shadow:none;color:var(--rojo);font-weight:600;padding:4pt 14pt}
+  .totales{margin:10pt 0 0 auto;width:240pt;font-size:10.5pt}
+  .totales .fila{display:flex;justify-content:space-between;padding:3pt 0}
+  .totales .total{margin-top:6pt;padding-top:8pt;border-top:1.5pt solid var(--rojo);color:var(--rojo);font-weight:700;font-size:17pt}
 
-  .cierre{display:flex;justify-content:flex-end;margin-top:10pt;break-inside:avoid}
-  .totales{width:230pt;font-size:9pt}
-  .totales .fila{display:flex;justify-content:space-between;padding:3pt 14pt;color:var(--gris)}
-  .totales .fila span:last-child{color:var(--tinta)}
-  .totales .total{margin-top:8pt;background:var(--tinta);color:#fff;font-size:14pt;font-weight:700;padding:12pt 14pt;border-radius:6pt;border-bottom:3pt solid var(--rojo)}
-  .totales .total span:last-child{color:#fff}
-  .opciones{background:var(--tarjeta);padding:10pt 14pt;margin-top:12pt;font-size:8.2pt;border-radius:6pt}
-
-  .condiciones{display:grid;grid-template-columns:110pt 1fr;gap:20pt;margin-top:30pt;padding-top:14pt;border-top:.6pt solid var(--linea);break-inside:avoid}
-  h2{font-size:11pt;font-weight:700;letter-spacing:-.2pt;line-height:1.2}
-  h2 span{color:var(--rojo)}
-  .notas{list-style:none;font-size:8.2pt;color:#4a403d}
-  .notas li{margin-bottom:5pt;padding-left:12pt;position:relative}
-  .notas li::before{content:"—";position:absolute;left:0;color:var(--rojo)}
-  .notas b{font-weight:700;color:var(--tinta)}
-
-  .pie{margin-top:28pt;display:flex;justify-content:space-between;font-size:7.5pt;color:var(--gris);break-inside:avoid}
+  /* Cierre: listón a la izquierda, condiciones en caja y contacto */
+  .cierre{position:relative;margin:10pt -52pt 0;height:330pt;overflow:hidden;break-inside:avoid}
+  .liston{position:absolute;left:-386pt;top:-68pt;width:860pt}
+  .caja{position:absolute;left:52pt;bottom:28pt;width:300pt;background:#fff;border:3pt solid var(--rojo);border-radius:14pt;padding:12pt 14pt 12pt 26pt}
+  .notas{font-size:7.6pt;line-height:1.45}
+  .notas li{margin-bottom:2pt}
+  .notas b{font-weight:600}
+  .contacto{position:absolute;right:52pt;bottom:34pt;color:var(--rojo);font-weight:600;font-size:11pt;line-height:1.55}
 </style>
 </head>
 <body>
@@ -89,13 +73,13 @@
     <tbody><tr><td>
 
       <div class="cabeza">
-        <div class="marca"><span class="bo">Bo.</span><span class="nombre"><b>Bo Agency</b>Be Original Agency</span></div>
-        <div class="doc">Folio <b>{{folio}}</b><br>{{fecha}}</div>
-      </div>
-
-      <div class="intro">
-        <div><div class="tipo">Cotización</div><h1>{{proyecto}}</h1></div>
-        <div class="para"><span>Preparada para</span>{{atencion}}<b>{{cliente}}</b><div class="vig">Vigencia: {{vigencia}}</div></div>
+        <img class="logo" src="bo/logo.png" alt="Bo.Agency">
+        <div class="doc">
+          <div class="fecha">{{fechaTexto}}</div>
+          Folio {{folio}}<br>
+          Preparada para:<br>{{atencion}}{{cliente}}<br>
+          Vigencia: {{vigencia}}
+        </div>
       </div>
 
       <table class="tabla">
@@ -107,18 +91,17 @@
 
 {{opciones}}
 
-      <div class="cierre"><div class="totales">
+      <div class="totales">
 {{totales}}
-      </div></div>
-
-      <div class="condiciones">
-        <h2>Notas y condiciones<span>.</span></h2>
-        <ul class="notas">
-{{notas}}
-        </ul>
       </div>
 
-      <div class="pie"><span>Bo Agency · Be Original Agency</span><span>booguita.agency@gmail.com · (442) 237 35 86</span></div>
+      <div class="cierre">
+        <img class="liston" src="bo/liston.png" alt="">
+        <div class="caja"><ul class="notas">
+{{notas}}
+        </ul></div>
+        <div class="contacto">Aranza Candelas<br>(56) 6618 7335<br>contacto.boagency@gmail.com<br>@booguita_agency</div>
+      </div>
 
     </td></tr></tbody>
   </table>
