@@ -2,14 +2,15 @@
   "folio": "BO-2026-001",
   "plantilla": "plantilla-bo.html",
   "fecha": "2026-10-20",
-  "cliente": "Cynthia Torruco Dagdug",
+  "cliente": "Notaría Pública 2 de Tabasco",
+  "atencion": "Cynthia Torruco Dagdug",
   "proyecto": "Branding y sitio web",
   "vigencia": "15 días",
   "items": [
     {
       "titulo": "Branding integral.",
       "puntos": [
-        "Investigación: análisis de notarías en Querétaro, público objetivo y posicionamiento.",
+        "Investigación: análisis de notarías en Tabasco, público objetivo y posicionamiento.",
         "Moodboard, pilares de marca (misión, visión y valores), personalidad y tono de comunicación."
       ],
       "incluye": [
@@ -56,7 +57,10 @@
       "precio": 2500
     }
   ],
-  "descuento": { "concepto": "Descuento por proyecto integral", "monto": 3000 },
+  "descuento": {
+    "concepto": "Descuento por proyecto integral",
+    "monto": 3000
+  },
   "iva": 0.16,
   "notas": [
     "**Tiempo estimado:** branding en 3 a 4 semanas; sitio web en 3 a 4 semanas a partir de la aprobación del branding.",
