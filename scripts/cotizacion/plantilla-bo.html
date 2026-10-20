@@ -9,7 +9,7 @@
      una hoja. Mismos huecos que plantilla.html, los llena render.js. -->
 <style>
   @font-face{font-family:Syne;src:url(fuentes/Syne.ttf) format("truetype");font-weight:400 800}
-  @page{size:612pt 792pt;margin:0}
+  @page{margin:0}
   :root{--rojo:#a20621;--tinta:#231d1c;--gris:#7a6f6b;--linea:#e4d8d0;--crema:#f6efe8;--tarjeta:#fffaf6}
   *{box-sizing:border-box;margin:0;padding:0}
   html,body{background:var(--crema)}
@@ -45,7 +45,8 @@
   .tabla{width:100%;border-collapse:separate;border-spacing:0 7pt;margin-top:-7pt}
   .tabla th{font-size:7.5pt;font-weight:500;color:var(--gris);text-align:right;padding:0 14pt 0}
   .tabla th:first-child{text-align:left}
-  .c-u{width:44pt;text-align:center!important}.c-p{width:70pt;text-align:right}.c-i{width:84pt;text-align:right}
+  /* Sin columna de unidades: en estas cotizaciones siempre es 1 */
+  .tabla .c-u{display:none}.c-p{width:70pt;text-align:right}.c-i{width:84pt;text-align:right}
   .tabla thead{display:table-row-group}
   .tabla td{vertical-align:top;padding:13pt 14pt;background:var(--tarjeta);box-shadow:1.5pt 0 0 var(--tarjeta);font-size:9pt}
   .tabla td:first-child{border-radius:6pt 0 0 6pt}

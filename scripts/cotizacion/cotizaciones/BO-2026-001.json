@@ -1,6 +1,7 @@
 {
   "folio": "BO-2026-001",
   "plantilla": "plantilla-bo.html",
+  "hojaUnica": true,
   "fecha": "2026-10-20",
   "cliente": "Notaría Pública 2 de Tabasco",
   "atencion": "Cynthia Torruco Dagdug",

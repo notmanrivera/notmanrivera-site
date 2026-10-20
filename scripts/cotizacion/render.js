@@ -142,7 +142,8 @@ function rellenar(c, { filas, opciones, totales, th }, montos) {
 
   const navegador = await chromium.launch(process.env.CHROMIUM ? { executablePath: process.env.CHROMIUM } : {});
   try {
-    const pagina = await navegador.newPage();
+    // Ancho de carta en px para que el alto medido coincida con el PDF.
+    const pagina = await navegador.newPage({ viewport: { width: 816, height: 1056 } });
     await pagina.goto('file://' + tmp, { waitUntil: 'networkidle' });
     await pagina.evaluate(() => document.fonts.ready);
     // La hoja es de posiciones fijas: si la tabla crece de más se encima con
@@ -153,7 +154,15 @@ function rellenar(c, { filas, opciones, totales, th }, montos) {
     if (fondo > LIMITE_TABLA) {
       throw new Error(`La tabla llega a ${fondo.toFixed(0)}pt y el límite es ${LIMITE_TABLA}pt: recortar texto de los conceptos`);
     }
-    await pagina.pdf({ path: pdf, width: '8.5in', height: '11in', printBackground: true, preferCSSPageSize: true });
+    // "hojaUnica": true hace una sola hoja tan alta como el contenido, para
+    // cotizaciones que solo se ven en pantalla.
+    if (c.hojaUnica) {
+      await pagina.emulateMedia({ media: 'print' });
+      const alto = await pagina.evaluate(() => Math.ceil(document.documentElement.scrollHeight));
+      await pagina.pdf({ path: pdf, width: '8.5in', height: `${alto}px`, printBackground: true, pageRanges: '1' });
+    } else {
+      await pagina.pdf({ path: pdf, width: '8.5in', height: '11in', printBackground: true, preferCSSPageSize: true });
+    }
   } finally {
     await navegador.close();
     fs.rmSync(tmp, { force: true });
