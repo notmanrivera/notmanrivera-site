@@ -10,6 +10,8 @@
 //   NotMan-Portfolio-General.pdf         versión general, interactiva
 //   NotMan-Portfolio-General-Print.pdf   versión general, para imprimir (QR)
 // Con --html también deja el HTML de cada una, para revisarlo en el navegador.
+// Con --publicar copia las interactivas a public/portfolio/ (sports.pdf y
+// general.pdf), que es lo que se descarga desde notmanrivera.com/portfolio/…
 //
 // Interactiva: índice con ligas internas, cada video abre el clip en el sitio
 // y el contacto se puede tocar. Impresa: sin ligas; cada caso lleva un QR a
@@ -641,6 +643,10 @@ async function main() {
       await pagina.close();
       if (!conHtml) fs.unlinkSync(archivoHtml);
       console.log('Listo: ' + nombre + '.pdf (' + v.paginas.length + ' páginas)');
+      if (!print && process.argv.includes('--publicar')) {
+        fs.mkdirSync(path.join(PUB, 'portfolio'), { recursive: true });
+        fs.copyFileSync(path.join(SALIDA, nombre + '.pdf'), path.join(PUB, 'portfolio', v.id + '.pdf'));
+      }
     }
   }
   await navegador.close();

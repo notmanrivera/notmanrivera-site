@@ -3,3 +3,7 @@
 # asi que se redirige en vez de dejarlo en 404. 301 = permanente, para que
 # Google transfiera el ranking a la URL nueva.
 /casos/mazatlan-fc/  /casos/hugo-gonzalez/  301
+
+# Liga corta al portafolio en PDF (la versión deportiva es la que más se manda)
+/portfolio  /portfolio/sports.pdf  302
+/portfolio/  /portfolio/sports.pdf  302

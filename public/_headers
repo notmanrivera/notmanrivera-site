@@ -21,3 +21,16 @@
 # La fuente propia no cambia: se puede cachear un ano entero
 /assets/*
   Cache-Control: public, max-age=31536000, immutable
+
+# Portafolio en PDF (scripts/portafolio-pdf/render.js --publicar). Se abre en
+# el navegador y, al guardarlo, sale con nombre de archivo decente. Caché
+# corta: el archivo se regenera con el mismo nombre. Sin la CSP general:
+# su object-src 'none' le impide a Chrome abrir el PDF en su visor.
+/portfolio/sports.pdf
+  ! Content-Security-Policy
+  Content-Disposition: inline; filename="NotMan-Portfolio-Sports.pdf"
+  Cache-Control: public, max-age=3600
+/portfolio/general.pdf
+  ! Content-Security-Policy
+  Content-Disposition: inline; filename="NotMan-Portfolio-General.pdf"
+  Cache-Control: public, max-age=3600
