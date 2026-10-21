@@ -11,3 +11,6 @@ public/en/
 scripts/cotizacion/salida/
 scripts/cotizacion/.*.html
 scripts/cotizacion/privado.json
+
+# Portafolio en PDF generado por scripts/portafolio-pdf/render.js
+scripts/portafolio-pdf/salida/
