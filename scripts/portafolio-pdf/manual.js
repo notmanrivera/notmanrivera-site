@@ -24,7 +24,7 @@ const NOMBRE = 'NotMan-Identity-Guidelines';
 const archivo = (p) => 'file://' + path.join(DIR, 'aplicaciones', p);
 const LOGO = svgsDelLogo();
 const CAJA = 'viewBox="0 0 945 520" xmlns="http://www.w3.org/2000/svg"';
-const LETRAS = ['T', 'H', 'E', 'N', 'O', 'T1', 'M', 'A', 'N1']; // orden de lectura
+const LETRAS = ['T', 'H', 'E', 'N1', 'O', 'T1', 'M', 'A', 'N']; // orden de lectura (en el vector, "N" es la última N y "N1" la primera)
 
 // La ruta de cada letra por su id (T, H, E, N, O, T1, M, A, N1).
 const RUTA = Object.fromEntries(LOGO.rutas.map((r) => [r.match(/id="([^"]+)"/)[1], r]));

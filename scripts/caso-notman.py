@@ -29,7 +29,7 @@ def _aside(html):
 WHATSAPP = {'es': _aside(BASE), 'en': _aside((PUB / 'casos' / 'hugo-gonzalez' / 'en' / 'index.html').read_text(encoding='utf-8'))}
 
 RUTAS = {m.group(1): m.group(0) for m in re.finditer(r'<path id="([^"]+)"[^>]*/>', (RAIZ / 'fuente' / 'logo-vector.svg').read_text())}
-ORDEN = ['T', 'H', 'E', 'N', 'O', 'T1', 'M', 'A', 'N1']  # orden de lectura
+ORDEN = ['T', 'H', 'E', 'N1', 'O', 'T1', 'M', 'A', 'N']  # orden de lectura (en el vector, "N" es la última N y "N1" la primera)
 CAJA = 'viewBox="0 0 945 520"'
 
 
