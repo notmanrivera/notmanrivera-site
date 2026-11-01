@@ -38,7 +38,7 @@ def logo(relleno='none', trazo='none', grosor=0, clase='', tonos=None):
     for i, k in enumerate(ORDEN):
         r = re.sub(r'\s(class|style|fill|stroke)="[^"]*"', '', RUTAS[k]).replace(f' id="{k}"', '')
         if tonos:
-            r = r.replace('<path', f'<path fill="{tonos[i]}" stroke="#000" stroke-width="2"')
+            r = r.replace('<path', f'<path fill="{tonos[i]}" stroke="#000" stroke-width="2" style="--i:{i}"')
         rutas.append(r)
     g = '' if tonos else f' fill="{relleno}" stroke="{trazo}" stroke-width="{grosor}"'
     return f'<svg class="{clase}" {CAJA} aria-hidden="true" focusable="false"><g{g}>{"".join(rutas)}</g></svg>'
@@ -104,8 +104,53 @@ CSS = """
     .tarjetas,.usos{grid-template-columns:1fr}
     .versiones{grid-template-columns:1fr 1fr}
   }
+
+  /* ===== ANIMACION =====
+     Solo transform y opacity (salvo el trazo, que ya corre una sola vez).
+     Todo arranca visible sin JS: los estados iniciales cuelgan de .js, que
+     pone el <head>. .ve la pone el IntersectionObserver del final. */
+
+  /* Entrada del logo y un destello que lo recorre cada tantos segundos. El
+     destello vive en .brillo, recortado con la silueta del propio logo
+     (mask), asi que solo brilla el cromo y no el fondo. */
+  .logo-hero .marco{position:relative;max-width:760px;margin:0 auto}
+  .logo-hero .marco img{animation:entraLogo 1.1s cubic-bezier(.2,.8,.2,1) both}
+  @keyframes entraLogo{from{opacity:0;transform:scale(.88) translateY(18px)}}
+  .brillo{position:absolute;inset:0;overflow:hidden;pointer-events:none;
+    -webkit-mask:url(/assets/logo-lg.webp) center/100% 100% no-repeat;mask:url(/assets/logo-lg.webp) center/100% 100% no-repeat}
+  .brillo::before{content:"";position:absolute;top:-10%;bottom:-10%;left:-45%;width:32%;
+    background:linear-gradient(100deg,transparent,rgba(255,255,255,.9),transparent);
+    transform:translateX(0) skewX(-16deg);animation:barre 6s ease-in-out 1.2s infinite}
+  @keyframes barre{0%{transform:translateX(0) skewX(-16deg)}30%,100%{transform:translateX(520%) skewX(-16deg)}}
+  .logo-hero figure::before{animation:respiraGlow 5s ease-in-out infinite}
+  @keyframes respiraGlow{50%{opacity:.6}}
+
+  /* Aparecer al hacer scroll, escalonado con --i. */
+  .js .rv{opacity:0;transform:translateY(26px)}
+  .js .rv.ve{opacity:1;transform:none;transition:opacity .7s ease,transform .7s cubic-bezier(.2,.8,.2,1);
+    transition-delay:calc(var(--i,0) * 110ms)}
+  .tiempo li.ve::before{animation:rombo .5s cubic-bezier(.2,.9,.3,1.6) both;animation-delay:calc(var(--i,0) * 110ms + .2s)}
+  @keyframes rombo{from{transform:rotate(45deg) scale(0)}}
+
+  /* El logo se arma letra por letra: cada una cae a su lugar. */
+  .js .letras path{opacity:0;transform:translateY(-46px) rotate(-8deg);transform-box:fill-box;transform-origin:center}
+  .js .letras.ve path{animation:arma .75s cubic-bezier(.2,.9,.3,1.25) forwards;animation-delay:calc(var(--i) * 120ms)}
+  @keyframes arma{to{opacity:1;transform:none}}
+
+  /* Brillo lento sobre las muestras de cromo y degradado. */
+  .muestra.brilla{overflow:hidden}
+  .muestra.brilla::after{content:"";position:absolute;top:0;bottom:0;left:-50%;width:40%;
+    background:linear-gradient(100deg,transparent,rgba(255,255,255,.55),transparent);
+    transform:translateX(0) skewX(-16deg);animation:barre 4.5s ease-in-out infinite}
+  .tarjeta:nth-child(3) .muestra.brilla::after{animation-delay:1.4s}
+
+  .versiones .caja{transition:transform .25s cubic-bezier(.2,.8,.2,1)}
+  .versiones figure:hover .caja{transform:translateY(-6px) rotate(-1.5deg)}
+
   @media(prefers-reduced-motion:reduce){
     .js .trazo-caso path{stroke-dasharray:none;animation:none}
+    .logo-hero .marco img,.brillo::before,.logo-hero figure::before,.muestra.brilla::after,.tiempo li.ve::before{animation:none}
+    .js .rv,.js .letras path{opacity:1;transform:none;transition:none;animation:none}
   }
 """
 
@@ -202,13 +247,13 @@ T = {
 
 
 def pagina(t):
-    tiempo = ''.join(f'<li><b>{a}</b>{b}</li>' for a, b in t['tiempo'])
+    tiempo = ''.join(f'<li class="rv" style="--i:{i}"><b>{a}</b>{b}</li>' for i, (a, b) in enumerate(t['tiempo']))
     muestras = [
         f'<div class="muestra">{logo(trazo="#A96BFF", grosor=3)}<span class="arco"></span></div>',
-        f'<div class="muestra" style="background:{CROMO}"></div>',
-        f'<div class="muestra" style="background:{THANOS}"></div>',
+        f'<div class="muestra brilla" style="background:{CROMO}"></div>',
+        f'<div class="muestra brilla" style="background:{THANOS}"></div>',
     ]
-    tarjetas = ''.join(f'<div class="tarjeta">{m}<h3>{h}</h3><p>{p}</p></div>' for m, (h, p) in zip(muestras, t['cards']))
+    tarjetas = ''.join(f'<div class="tarjeta rv" style="--i:{i}">{m}<h3>{h}</h3><p>{p}</p></div>' for i, (m, (h, p)) in enumerate(zip(muestras, t['cards'])))
     leyenda = ''.join(f'<li><i style="background:{c}"></i>{k[0]}</li>' for k, c in zip(ORDEN, TONOS))
     cajas = [
         ('c-negro', '<img src="/assets/logo-lg-480.webp" alt="" width="480" height="270" loading="lazy">'),
@@ -216,7 +261,7 @@ def pagina(t):
         ('c-violeta', logo(relleno='#fff')),
         ('c-blanco', logo(relleno='#000')),
     ]
-    versiones = ''.join(f'<figure><div class="caja {c}">{x}</div><figcaption>{n}</figcaption></figure>' for (c, x), n in zip(cajas, t['vers']))
+    versiones = ''.join(f'<figure class="rv" style="--i:{i}"><div class="caja {c}">{x}</div><figcaption>{n}</figcaption></figure>' for i, ((c, x), n) in enumerate(zip(cajas, t['vers'])))
     otros = ''.join(f'<li><a href="{h}">{n}<span>{s}</span></a></li>' for h, n, s in t['casos'])
     p_const = ''.join(f'<p>{p}</p>' for p in t['p_const'])
     return f'''<!doctype html>
@@ -295,39 +340,39 @@ def pagina(t):
   </section>
 
   <section class="logo-hero wrap">
-    <figure><img src="/assets/logo-lg.webp" alt="{t["alt_logo"]}" width="1200" height="675"></figure>
+    <figure><div class="marco"><img src="/assets/logo-lg.webp" alt="{t["alt_logo"]}" width="1200" height="675"><span class="brillo" aria-hidden="true"></span></div></figure>
   </section>
 
   <section class="caso-cuerpo wrap">
-    <div class="caso-rol">
+    <div class="caso-rol rv">
       <h2>{t["rol_t"]}</h2>
       <p>{t["rol"]}</p>
     </div>
 
-    <h2>{t["h_nombre"]}</h2>
+    <h2 class="rv">{t["h_nombre"]}</h2>
     <ol class="tiempo">{tiempo}</ol>
 
-    <h2>{t["h_insp"]}</h2>
+    <h2 class="rv">{t["h_insp"]}</h2>
     <p>{t["p_insp"]}</p>
     <div class="tarjetas">{tarjetas}</div>
 
-    <h2>{t["h_const"]}</h2>
+    <h2 class="rv">{t["h_const"]}</h2>
     <div class="letras">{logo(tonos=TONOS)}</div>
     <ul class="leyenda" aria-hidden="true">{leyenda}</ul>
     {p_const}
 
-    <h2 style="margin-top:34px">{t["h_vers"]}</h2>
+    <h2 class="rv" style="margin-top:34px">{t["h_vers"]}</h2>
     <div class="versiones">{versiones}</div>
 
-    <h2>{t["h_mov"]}</h2>
+    <h2 class="rv">{t["h_mov"]}</h2>
     <div class="trazo-caso">{logo(clase="trazo-svg").replace("<path", '<path pathLength="1"')}</div>
     <p>{t["p_mov"]}</p>
 
-    <h2 style="margin-top:34px">{t["h_usos"]}</h2>
+    <h2 class="rv" style="margin-top:34px">{t["h_usos"]}</h2>
     <p>{t["p_usos"]}</p>
     <div class="usos">
-      <figure><img src="/assets/caso-notman/sitio.webp" alt="" width="1200" height="750" loading="lazy"><figcaption>{t["usos"][0]}</figcaption></figure>
-      <figure><img src="/assets/caso-notman/portafolio.webp" alt="" width="900" height="506" loading="lazy"><figcaption>{t["usos"][1]}</figcaption></figure>
+      <figure class="rv"><img src="/assets/caso-notman/sitio.webp" alt="" width="1200" height="750" loading="lazy"><figcaption>{t["usos"][0]}</figcaption></figure>
+      <figure class="rv" style="--i:1"><img src="/assets/caso-notman/portafolio.webp" alt="" width="900" height="506" loading="lazy"><figcaption>{t["usos"][1]}</figcaption></figure>
     </div>
   </section>
 
@@ -351,14 +396,15 @@ def pagina(t):
 {WHATSAPP[t["lang"]]}
 
 <script>
-/* Dibuja el trazo del logo cuando entra a la pantalla, una sola vez. */
+/* Pone .ve a cada bloque animado cuando entra a la pantalla, una sola vez:
+   aparecer (.rv), armar las letras (.letras) y dibujar el trazo. */
 (function(){{
-  var el = document.querySelector('.trazo-caso');
-  if (!el || !('IntersectionObserver' in window)) {{ if (el) el.classList.add('ve'); return; }}
+  var els = document.querySelectorAll('.rv, .letras, .trazo-caso');
+  if (!('IntersectionObserver' in window)) {{ els.forEach(function(el){{ el.classList.add('ve'); }}); return; }}
   var io = new IntersectionObserver(function(es){{
-    es.forEach(function(e){{ if (e.isIntersecting) {{ el.classList.add('ve'); io.disconnect(); }} }});
-  }}, {{threshold: .4}});
-  io.observe(el);
+    es.forEach(function(e){{ if (e.isIntersecting) {{ e.target.classList.add('ve'); io.unobserve(e.target); }} }});
+  }}, {{threshold: .25, rootMargin: '0px 0px -8% 0px'}});
+  els.forEach(function(el){{ io.observe(el); }});
 }})();
 </script>
 <script src="/assets/proteccion-v1.js" defer></script>
