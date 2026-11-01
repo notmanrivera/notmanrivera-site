@@ -3329,6 +3329,39 @@
     .dialog-next{animation:none;opacity:.8}
     .lede p .ch{opacity:1}
   }
+
+  /* ===== DESTACADO (franja de "Nuevo") =====
+     Anuncia contenido nuevo del sitio en una franja debajo del menu fijo.
+     Para anunciar otra cosa solo se cambian cuatro datos en el HTML de
+     #destacado: data-id (uno nuevo hace que reaparezca para quien cerro el
+     anterior), data-hasta (fecha en que deja de mostrarse sola), el href
+     (con data-href-es/en) y los textos data-es/data-en. Sale apagada
+     (hidden) y la prende el script del final solo si no ha vencido y la
+     persona no la cerro; sin JS no se ve, a proposito. Vive DENTRO de #nav
+     para quedar fija con el menu; .con-destacado empuja el hero para que
+     la franja no le tape el titulo. */
+  .destacado{display:flex;align-items:center;justify-content:center;gap:12px;
+    background:var(--rojo);color:#fff;padding:7px 46px 7px 16px;position:relative;
+    font-family:var(--ui);font-weight:900;text-transform:uppercase;font-size:.66rem;letter-spacing:.1em}
+  .destacado[hidden]{display:none}
+  .destacado a{color:#fff;text-decoration:none;display:flex;align-items:center;gap:12px;flex-wrap:wrap;justify-content:center}
+  .destacado .tag{background:#000;color:#fff;padding:3px 9px 2px;transform:skewX(-8deg);letter-spacing:.16em}
+  .destacado .ir{border-bottom:2px solid #fff;white-space:nowrap}
+  .destacado a:hover .ir{border-bottom-color:#000}
+  .destacado .cerrar{position:absolute;right:10px;top:50%;transform:translateY(-50%);
+    background:none;border:0;color:#fff;font-size:1rem;line-height:1;cursor:pointer;padding:6px 8px}
+  .destacado .cerrar:hover{color:#000}
+  .con-destacado header{padding-top:128px}
+  /* En celular, una sola linea: sin "Ver caso" (toda la franja es la liga)
+     y el texto en Inter, que a ese tamano se lee mejor que Monument. */
+  @media(max-width:640px){
+    .destacado{padding:6px 38px 6px 10px}
+    .destacado a{flex-wrap:nowrap;gap:8px;min-width:0}
+    .destacado .ir{display:none}
+    .destacado .texto{text-transform:none;letter-spacing:0;font-family:var(--body);font-weight:600;font-size:.76rem;
+      white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+    .destacado .tag{flex:none;font-size:.56rem}
+  }
 </style>
 </head>
 <body>
@@ -3403,6 +3436,16 @@
       </button>
       <button class="lang" id="langBtn">EN</button>
     </div>
+  </div>
+
+  <!-- Franja de contenido nuevo: ver .destacado en el CSS para cambiarla. -->
+  <div class="destacado" id="destacado" data-id="caso-notman" data-hasta="2026-12-01" hidden>
+    <a href="/casos/notman/" data-href-es="/casos/notman/" data-href-en="/casos/notman/en/">
+      <span class="tag" data-es="Nuevo" data-en="New">Nuevo</span>
+      <span class="texto" data-es="El logo de NotMan: un logo hecho de cómics" data-en="The NotMan mark: a logo made of comics">El logo de NotMan: un logo hecho de cómics</span>
+      <span class="ir" data-es="Ver caso →" data-en="See case →">Ver caso →</span>
+    </a>
+    <button class="cerrar" type="button" aria-label="Cerrar aviso" data-aria-es="Cerrar aviso" data-aria-en="Close notice">✕</button>
   </div>
 </nav>
 
@@ -5397,6 +5440,28 @@
   });
 </script>
 
+<script>
+/* Franja de contenido nuevo (ver .destacado en el CSS). localStorage puede
+   fallar en modo privado: sin el, la franja simplemente se muestra. */
+(function(){
+  var d = document.getElementById('destacado');
+  if (!d) return;
+  var hoy = new Date().toISOString().slice(0, 10);
+  if (d.dataset.hasta && hoy > d.dataset.hasta) return;
+  var clave = 'notman_destacado_cerrado';
+  try { if (localStorage.getItem(clave) === d.dataset.id) return; } catch (e) {}
+  d.hidden = false;
+  document.documentElement.classList.add('con-destacado');
+  d.querySelector('.cerrar').addEventListener('click', function(){
+    d.hidden = true;
+    document.documentElement.classList.remove('con-destacado');
+    try { localStorage.setItem(clave, d.dataset.id); } catch (e) {}
+  });
+  d.querySelector('a').addEventListener('click', function(){
+    if (window.gtag) gtag('event', 'destacado_click', { id: d.dataset.id });
+  });
+})();
+</script>
 <script src="/assets/proteccion-v1.js" defer></script>
 </body>
 </html>
