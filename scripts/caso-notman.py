@@ -44,7 +44,7 @@ def logo(relleno='none', trazo='none', grosor=0, clase='', tonos=None):
     return f'<svg class="{clase}" {CAJA} aria-hidden="true" focusable="false"><g{g}>{"".join(rutas)}</g></svg>'
 
 
-TONOS = ['#E50012', '#FF5A66', '#FF9AA2', '#8B3FFF', '#A96BFF', '#C9A2FF', '#6D2BD9', '#B57CFF', '#5B23B5']
+TONOS = ['#FFFFFF', '#CFCFCF', '#9E9E9E', '#E6E6E6', '#B3B3B3', '#808080', '#D9D9D9', '#A6A6A6', '#737373']
 CROMO = 'linear-gradient(180deg,#9FA3B9,#D5D9F4,#E1E5FC,#ACAFC6,#9FA3B9)'
 THANOS = 'linear-gradient(180deg,#4E88EA,#596BEA,#936AF1,#DD95F7,#F5A0F9)'
 
@@ -132,10 +132,12 @@ CSS = """
   .tiempo li.ve::before{animation:rombo .5s cubic-bezier(.2,.9,.3,1.6) both;animation-delay:calc(var(--i,0) * 110ms + .2s)}
   @keyframes rombo{from{transform:rotate(45deg) scale(0)}}
 
-  /* El logo se arma letra por letra: cada una cae a su lugar. */
-  .js .letras path{opacity:0;transform:translateY(-46px) rotate(-8deg);transform-box:fill-box;transform-origin:center}
-  .js .letras.ve path{animation:arma .75s cubic-bezier(.2,.9,.3,1.25) forwards;animation-delay:calc(var(--i) * 120ms)}
-  @keyframes arma{to{opacity:1;transform:none}}
+  /* Las letras se encienden una por una en orden de lectura, se quedan un
+     momento y se apagan juntas en ola; en loop. Solo opacidad: sin
+     deslizamiento. Arranca cuando el bloque entra a la pantalla (.ve). */
+  .js .letras path{opacity:.12}
+  .js .letras.ve path{animation:enciende 5.4s ease-in-out infinite;animation-delay:calc(var(--i) * 180ms)}
+  @keyframes enciende{0%{opacity:.12}14%{opacity:1}68%{opacity:1}86%{opacity:.12}100%{opacity:.12}}
 
   /* Brillo lento sobre las muestras de cromo y degradado. */
   .muestra.brilla{overflow:hidden}
@@ -150,7 +152,7 @@ CSS = """
   @media(prefers-reduced-motion:reduce){
     .js .trazo-caso path{stroke-dasharray:none;animation:none}
     .logo-hero .marco img,.brillo::before,.logo-hero figure::before,.muestra.brilla::after,.tiempo li.ve::before{animation:none}
-    .js .rv,.js .letras path{opacity:1;transform:none;transition:none;animation:none}
+    .js .rv,.js .letras path,.js .letras.ve path{opacity:1;transform:none;transition:none;animation:none}
   }
 """
 
