@@ -1,0 +1,573 @@
+<!doctype html>
+<html lang="es">
+<head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-KMZ6Q35TJ8"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-KMZ6Q35TJ8');
+
+  // Mismo evento de conversion que en index.html (ver ahi el comentario
+  // completo): clic en cualquier link de contacto, delegado en document.
+  document.addEventListener('click', function (e) {
+    var a = e.target.closest('a[href^="mailto:"], a.whatsapp-flotante');
+    if (!a) return;
+    gtag('event', 'contacto_click', {
+      metodo: a.href.indexOf('mailto:') === 0 ? 'email' : 'whatsapp',
+    });
+  }, true);
+</script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NotMan: un logo hecho de cómics — lettering personal | NotMan Rivera</title>
+<meta name="description" content="El logo de NotMan, proyecto personal de lettering de Rubén Rivera: de dónde viene el nombre, la inspiración en los cómics (Silver Surfer y Thanos), cómo está construido y dónde vive.">
+
+<meta property="og:title" content="NotMan: un logo hecho de cómics">
+<meta property="og:description" content="El logo de NotMan, proyecto personal de lettering de Rubén Rivera: de dónde viene el nombre, la inspiración en los cómics (Silver Surfer y Thanos), cómo está construido y dónde vive.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://notmanrivera.com/casos/notman/">
+<meta property="og:image" content="https://notmanrivera.com/assets/og-caso-notman.jpg">
+<meta property="og:locale" content="es_MX">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="NotMan: un logo hecho de cómics">
+<meta name="twitter:description" content="El logo de NotMan, proyecto personal de lettering de Rubén Rivera: de dónde viene el nombre, la inspiración en los cómics (Silver Surfer y Thanos), cómo está construido y dónde vive.">
+<meta name="twitter:image" content="https://notmanrivera.com/assets/og-caso-notman.jpg">
+<link rel="canonical" href="https://notmanrivera.com/casos/notman/">
+<link rel="alternate" hreflang="es" href="https://notmanrivera.com/casos/notman/">
+<link rel="alternate" hreflang="en" href="https://notmanrivera.com/casos/notman/en/">
+<link rel="alternate" hreflang="x-default" href="https://notmanrivera.com/casos/notman/">
+<link rel="icon" type="image/png" href="/assets/favicon.png">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<meta name="theme-color" content="#000000">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "CreativeWork",
+  "name": "NotMan: un logo hecho de cómics",
+  "url": "https://notmanrivera.com/casos/notman/",
+  "inLanguage": "es",
+  "image": "https://notmanrivera.com/assets/og-caso-notman.jpg",
+  "about": "El logo de NotMan, proyecto personal de lettering de Rubén Rivera: de dónde viene el nombre, la inspiración en los cómics (Silver Surfer y Thanos), cómo está construido y dónde vive.",
+  "creator": {
+    "@type": "Person",
+    "name": "Rubén Núñez Rivera",
+    "alternateName": "NotMan Rivera",
+    "url": "https://notmanrivera.com/"
+  }
+}
+</script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+<link rel="preload" href="/assets/kenyan-coffee.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/monument-black.woff2" as="font" type="font/woff2" crossorigin>
+
+<style>
+  @font-face{font-family:"Kenyan Coffee";src:url("/assets/kenyan-coffee.woff2") format("woff2");font-weight:400;font-style:normal;font-display:swap}
+  @font-face{font-family:"Monument Extended";src:url("/assets/monument-black.woff2") format("woff2");font-weight:900;font-style:normal;font-display:swap}
+  @font-face{font-family:"Monument Extended";src:url("/assets/monument-light.woff2") format("woff2");font-weight:300;font-style:normal;font-display:swap}
+
+  :root{
+    --ink:#000000;--ink-2:#1A1A1A;
+    --violet:#8B3FFF;--violet-hi:#A96BFF;
+    --sombra:#2b2b2b;--rojo:#E50012;
+    --paper:#FFFFFF;--muted:#A99CC4;--line:#33204f;
+    --filo:polygon(9px 0%, 100% 6px, calc(100% - 9px) 100%, 0% calc(100% - 6px));
+    --disp:"Kenyan Coffee",Impact,"Haettenschweiler","Arial Narrow Bold",sans-serif;
+    --ui:"Monument Extended","Arial Black","Helvetica Neue",sans-serif;
+    --body:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{overflow-x:hidden}
+  body{background:var(--ink);color:var(--paper);font-family:var(--body);line-height:1.65;font-size:1.05rem}
+  a{color:var(--violet-hi)}
+  .wrap{max-width:880px;margin:0 auto;padding:0 24px}
+
+  header{padding:22px 0;border-bottom:2px solid var(--line)}
+  header .wrap{display:flex;align-items:center;justify-content:space-between;gap:16px}
+  .marca-link img{display:block;height:34px;width:auto}
+  .volver{
+    font-family:var(--ui);font-weight:900;text-transform:uppercase;font-size:.72rem;
+    letter-spacing:.1em;color:var(--paper);text-decoration:none;
+  }
+  .volver:hover{color:var(--rojo)}
+  .header-links{display:flex;align-items:center;gap:18px}
+  .idioma{
+    font-family:var(--ui);font-weight:900;text-transform:uppercase;font-size:.72rem;
+    letter-spacing:.1em;color:var(--muted);text-decoration:none;
+  }
+  .idioma:hover{color:var(--paper)}
+
+  /* ===== TEXTURA AMBIENTE (CSS puro, sin librería) =====
+     Las tres piezas de abajo existen para cerrar el hueco de que estas
+     paginas se leen como un articulo generico al lado de la home. Todo
+     anima SOLO transform/opacity: el compositor las resuelve en GPU y un
+     loop infinito sale practicamente gratis. Animar background-position o
+     clip-path aqui obligaria a repintar cada cuadro -- que es justo lo que
+     tumba el scroll en movil. */
+
+  /* 1. Halftone que deriva. El mismo patron de puntos de la home, en una
+        capa fija detras de todo. El movimiento va en transform sobre el
+        pseudo-elemento, no en background-position: por eso es barato.
+        La capa se hace mas grande que la pantalla (-25%/150%) para que al
+        desplazarse no descubra un borde vacio. */
+  body::before{
+    content:"";position:fixed;left:-25%;top:-25%;width:150%;height:150%;
+    z-index:0;pointer-events:none;
+    background-image:radial-gradient(var(--line) 1px, transparent 1px);
+    background-size:7px 7px;
+    -webkit-mask-image:linear-gradient(160deg,#000 0%,transparent 55%);
+    mask-image:linear-gradient(160deg,#000 0%,transparent 55%);
+    opacity:.5;
+    animation:derivaHalftone 38s linear infinite;
+  }
+  /* 7px es exactamente un tile del patron: al recorrer esa distancia el
+     dibujo coincide consigo mismo y el loop no tiene salto visible. */
+  @keyframes derivaHalftone{
+    to{transform:translate3d(7px,7px,0)}
+  }
+  /* El contenido tiene que quedar por encima de la capa de textura. */
+  header,main,footer{position:relative;z-index:1}
+
+  /* 2. Numero gigante en contorno detras del titulo -- el recurso firma de
+        la home, que a estas paginas les faltaba por completo. Es lo que mas
+        trabajo hace de las tres, y ni siquiera se mueve.
+        ⚠️ El trazo NO puede ir en currentColor: el elemento lleva
+        color:transparent para que solo se vea el contorno, asi que
+        currentColor resolveria a transparente y el numero se pintaria
+        invisible, sin error y sin aviso (ver PROJECT.md). */
+  .caso-hero{padding-top:64px;padding-bottom:36px;position:relative}
+  .num-caso{
+    /* top positivo: con valores negativos el numero se salia por arriba de
+       .caso-hero y el borde del header lo cortaba a la mitad. */
+    position:absolute;right:8px;top:14px;z-index:-1;
+    font-variant-numeric:tabular-nums;
+    font-family:var(--ui);font-weight:900;font-size:clamp(3.4rem,13vw,9rem);
+    line-height:.9;color:transparent;
+    -webkit-text-stroke:2px var(--violet);
+    opacity:.28;transform:skewX(-6deg);
+    /* Respira: 4% de escala en 9s. Apenas se percibe conscientemente, que
+       es justo el punto -- da la sensacion de que la pagina esta viva sin
+       pedir atencion mientras alguien lee. */
+    animation:respiraNum 9s ease-in-out infinite;
+  }
+  @keyframes respiraNum{
+    50%{transform:skewX(-6deg) scale(1.04);opacity:.36}
+  }
+
+  /* 3. Barrido lento sobre la chapa roja del kicker. Un solo elemento, un
+        solo transform. Mismo gesto que el destello de los CTA de la home,
+        estirado a ritmo ambiente en vez de reaccion a un clic. */
+  .kicker{position:relative;overflow:hidden}
+  .kicker::after{
+    content:"";position:absolute;inset:0;pointer-events:none;
+    background:linear-gradient(100deg,transparent 40%,rgba(255,255,255,.32) 50%,transparent 60%);
+    transform:translateX(-100%);
+    animation:barridoKicker 6.5s ease-in-out infinite;
+  }
+  @keyframes barridoKicker{
+    /* La pausa importa: el barrido ocupa el primer 35% del ciclo y el resto
+       se queda quieto. Sin la pausa se lee como un loader, no como acento. */
+    0%,65%{transform:translateX(-100%)}
+    35%,100%{transform:translateX(100%)}
+  }
+
+  /* Las tres se apagan juntas. El sitio ya tiene 27 guardas de estas: un
+     loop continuo es exactamente lo que esta preferencia existe para
+     detener. Se apaga la ANIMACION, no el elemento -- el numero en contorno
+     y el halftone se quedan visibles, quietos. */
+  /* En movil el numero se encima con el kicker (que ahi ocupa 3 lineas) y
+     queda apretado contra el borde: deja de leerse como recurso de fondo y
+     se lee como algo mal puesto. Se retira, igual que la home endereza sus
+     placas en movil por el mismo criterio. El halftone y el barrido siguen. */
+  @media(max-width:560px){
+    .num-caso{display:none}
+  }
+
+  @media(prefers-reduced-motion:reduce){
+    body::before,.num-caso,.kicker::after{animation:none}
+    .kicker::after{opacity:0}
+  }
+  .kicker{
+    display:inline-block;font-family:var(--ui);font-weight:900;text-transform:uppercase;
+    font-size:.8rem;letter-spacing:.12em;color:#fff;background:var(--rojo);
+    padding:8px 16px;transform:skewX(-6deg);margin-bottom:22px;
+  }
+  h1{
+    font-family:var(--disp);font-weight:400;text-transform:uppercase;line-height:.95;
+    font-size:clamp(2.4rem,6vw,4rem);letter-spacing:.01em;margin-bottom:18px;
+  }
+  .dek{color:var(--muted);font-size:1.15rem;max-width:60ch}
+
+  .caso-galeria{
+    display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));
+    gap:14px;padding-top:36px;padding-bottom:56px;
+  }
+  .caso-galeria figure{position:relative}
+  .caso-galeria img{
+    width:100%;height:auto;display:block;border:2px solid var(--ink);
+    outline:1px solid var(--line);
+  }
+  .caso-galeria figcaption{
+    margin-top:8px;font-family:var(--ui);font-weight:300;text-transform:uppercase;
+    font-size:.62rem;letter-spacing:.08em;color:var(--muted);
+  }
+
+  /* ⚠️ El limite de medida va en los HIJOS, no en la seccion. Con
+     max-width aqui, el margin:0 auto que .caso-cuerpo hereda de
+     .wrap centraba la columna angosta y el cuerpo quedaba 132px
+     a la derecha del titulo, el dek y la galeria (medido). */
+  .caso-cuerpo{padding-top:20px;padding-bottom:60px}
+  .caso-cuerpo h2,.caso-cuerpo p{max-width:66ch}
+  .caso-cuerpo h2{
+    font-family:var(--disp);font-weight:400;text-transform:uppercase;
+    font-size:1.7rem;letter-spacing:.01em;margin:0 0 16px;transform:skewX(-4deg);
+    transform-origin:left;
+  }
+  .caso-cuerpo p{margin-bottom:20px;color:#e8e2f2}
+  .caso-cuerpo p:last-child{margin-bottom:0}
+
+  /* ===== BLOQUE DE AUTORIA =====
+     Estas paginas decian "como parte del equipo de X" y dejaban al lector
+     sin saber que toco el autor y que no -- que es justo la pregunta que
+     trae quien esta evaluando contratarlo. El panel la contesta antes de
+     que se la haga: va primero en el cuerpo, inmediatamente debajo del dek
+     que menciona a la agencia. Violeta porque en el sistema de color el
+     violeta es identidad y estructura; el rojo es accion y aqui no se pide
+     nada. El h2 necesita mas especificidad que .caso-cuerpo h2 (0,2,1) o
+     hereda el display de 1.7rem inclinado, que aqui no va. */
+  .caso-rol{
+    max-width:66ch;margin:0 0 34px;padding:18px 22px;
+    border:1px solid var(--line);
+    background:linear-gradient(90deg,rgba(139,63,255,.10),rgba(139,63,255,0));
+  }
+  /* ⚠️ Esto era una franja de 3px solo en el borde izquierdo. Es un patron
+     tan repetido en plantillas SaaS que se lee como generado; un hairline
+     completo mas un cuadro de acento junto al titulo dice lo mismo sin el
+     tic. El cuadro va en ::before del h2 y no en el panel, para que el
+     acento marque el ENCABEZADO y no envuelva el bloque entero. */
+  .caso-rol h2::before{
+    content:"";display:inline-block;width:8px;height:8px;
+    background:var(--violet);margin-right:9px;
+    vertical-align:.08em;
+  }
+  .caso-cuerpo .caso-rol h2{
+    font-family:var(--ui);font-weight:900;text-transform:uppercase;
+    font-size:.72rem;letter-spacing:.14em;color:var(--violet-hi);
+    margin:0 0 8px;transform:none;
+  }
+  .caso-cuerpo .caso-rol p{margin:0;font-size:1rem}
+  .caso-cuerpo strong{color:#fff;font-weight:600}
+
+  /* ===== PIEZAS EN MOVIMIENTO =====
+     El portafolio de un motion designer estaba hecho de imagenes fijas.
+     Estas son las piezas como salieron al mundo: vertical 9:16, con audio,
+     de quince a veintitres segundos. No son loops de fondo -- son contenido
+     terminado de redes, y se presentan como tal: caratula, boton de play y
+     los controles nativos del navegador una vez que arranca.
+
+     ⚠️ preload="none" es la decision de peso de toda la seccion. Sin eso,
+     entrar a la pagina costaria ~25 MB a cualquiera que pase. Asi, lo unico
+     que viaja de entrada es la caratula (~100-280 KB en webp) y el video se
+     baja solo si alguien lo pide. Por eso tambien hace falta el poster
+     explicito: sin preload el navegador no tiene un cuadro que mostrar.
+
+     El audio no se silencia. Es musica de libreria, pero va sincronizada a
+     la pieza y es parte de lo que comunica -- silenciarlas seria
+     presentarlas a medias. Arrancan solo por clic, nunca en automatico. */
+  .piezas{padding-top:8px;padding-bottom:44px}
+  .piezas h2{
+    font-family:var(--disp);font-weight:400;text-transform:uppercase;
+    font-size:1.7rem;letter-spacing:.01em;margin:0 0 16px;transform:skewX(-4deg);
+    transform-origin:left;max-width:66ch;
+  }
+  .piezas-intro{max-width:66ch;margin:0 0 26px;color:#e8e2f2}
+  .piezas-lista{
+    display:flex;flex-wrap:wrap;gap:24px;align-items:flex-start;margin:0;padding:0;
+  }
+  .pieza{margin:0;flex:1 1 280px;max-width:340px}
+  .pieza-marco{
+    position:relative;aspect-ratio:9/16;background:#0a0410;
+    border:2px solid var(--line);overflow:hidden;
+  }
+  .pieza video{
+    display:block;width:100%;height:100%;object-fit:cover;background:#0a0410;
+  }
+  .pieza-play{
+    position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+    background:rgba(10,4,16,.32);border:0;cursor:pointer;padding:0;
+    transition:background .18s;
+  }
+  .pieza-play:hover,.pieza-play:focus-visible{background:rgba(10,4,16,.12)}
+  .pieza-play span{
+    width:62px;height:62px;display:grid;place-items:center;
+    background:var(--rojo);clip-path:var(--filo);
+    box-shadow:5px 5px 0 var(--sombra);transition:transform .18s;
+  }
+  .pieza-play:hover span{transform:translate(-2px,-2px)}
+  .pieza-play svg{width:20px;height:20px;fill:#fff;margin-left:3px}
+  .pieza figcaption{
+    margin-top:10px;font-family:var(--ui);font-weight:900;text-transform:uppercase;
+    font-size:.62rem;letter-spacing:.1em;color:var(--muted);line-height:1.5;
+  }
+  .pieza figcaption b{color:var(--paper);font-weight:900;display:block}
+  @media(max-width:560px){
+    .piezas-lista{gap:20px}
+    .pieza{flex:1 1 100%;max-width:none}
+  }
+
+  .caso-cta{padding-top:48px;padding-bottom:72px;border-top:2px solid var(--line)}
+  .btn{
+    display:inline-block;font-family:var(--ui);font-weight:900;text-transform:uppercase;
+    font-size:.85rem;letter-spacing:.08em;color:#fff;background:var(--rojo);
+    padding:16px 30px;text-decoration:none;clip-path:var(--filo);
+    box-shadow:6px 6px 0 var(--sombra);transition:transform .18s,box-shadow .18s;
+  }
+  .btn:hover{transform:translate(-2px,-2px);box-shadow:8px 8px 0 var(--sombra)}
+
+  footer{padding:28px 0;border-top:2px solid var(--line);color:var(--muted);font-size:.82rem}
+  footer .wrap{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+  footer a{color:var(--muted);text-decoration:none}
+  footer a:hover{color:var(--paper)}
+
+  @media(max-width:560px){
+    .caso-hero{padding-top:44px;padding-bottom:28px}
+    .caso-galeria{grid-template-columns:repeat(auto-fill,minmax(140px,1fr))}
+  }
+
+  /* ===== WHATSAPP FLOTANTE =====
+     Portado tal cual desde index.html (mismo rombo violeta que pasa a rojo
+     al hover). Estas paginas son el aterrizaje real del trafico de Google y
+     de los correos con UTM, y hasta ahora su unica salida era un CTA hasta
+     el fondo que devolvia a la home a buscar el contacto otra vez. */
+  /* ⚠️ El tamano vive en --wa y el icono se calcula desde el (la
+     proporcion original era 20/40 = .5). Si se cambia el ancho a mano sin
+     tocar el svg, el rombo crece y el icono se queda chico en el centro.
+     46px de base: 40 quedaba por debajo del minimo de 44px para un blanco
+     tactil, asi que subirlo arregla dos cosas a la vez. 54 en escritorio,
+     donde Ruben reporto que pasaba desapercibido -- ahi no hay dedo que
+     estorbe y la pantalla sobra. */
+  .whatsapp-flotante{
+    --wa:46px;
+    position:fixed;left:22px;bottom:22px;z-index:90;
+    width:var(--wa);height:var(--wa);
+    display:flex;align-items:center;justify-content:center;
+    background:var(--violet);border:2px solid var(--violet);
+    color:#fff;text-decoration:none;
+    transform:rotate(45deg);
+    transition:background .18s,border-color .18s;
+  }
+  .whatsapp-flotante:hover,.whatsapp-flotante:focus-visible{
+    background:var(--rojo);border-color:var(--rojo);
+  }
+  .whatsapp-flotante svg{width:calc(var(--wa) * .5);height:calc(var(--wa) * .5);transform:rotate(-45deg)}
+  @media(min-width:900px){.whatsapp-flotante{--wa:54px}}
+  /* ⚠️ Este bloque tenia width/height y el svg en pixeles fijos, por fuera
+     de --wa: al subir el tamano base el rombo seguia midiendo 34px aqui y
+     nadie lo avisaba. Ahora solo mueve --wa, que arrastra al icono solo.
+     44px es el minimo de blanco tactil; a 34 el boton era mas chico que la
+     yema de un dedo justo en el dispositivo donde se toca. */
+  @media(max-width:640px){
+    .whatsapp-flotante{left:14px;bottom:14px;--wa:44px}
+  }
+  @media(prefers-reduced-motion:reduce){
+    .whatsapp-flotante{transition:none}
+  }
+
+  /* ===== LOS OTROS DOS CASOS =====
+     Sin esto la pagina es un callejon sin salida: quien termina de leer un
+     caso no tiene forma de ver otro sin volver a la home. Cada tarjeta lleva
+     el filo diagonal (--filo) y el hover blanco que ya son el lenguaje del
+     sitio, para que no se lean como un modulo prestado. */
+  .casos-otros{padding-top:44px;padding-bottom:8px;border-top:2px solid var(--line)}
+  .casos-otros h2{
+    font-family:var(--ui);font-weight:900;text-transform:uppercase;
+    font-size:.72rem;letter-spacing:.12em;color:var(--muted);margin-bottom:18px;
+  }
+  .casos-otros ul{list-style:none;display:grid;gap:12px;grid-template-columns:1fr 1fr}
+  .casos-otros a{
+    display:block;padding:16px 20px;text-decoration:none;
+    background:var(--ink-2);clip-path:var(--filo);
+    color:var(--paper);font-family:var(--disp);text-transform:uppercase;
+    font-size:1.35rem;line-height:1.1;letter-spacing:.01em;
+    transition:background .18s,color .18s;
+  }
+  /* Segunda linea diminuta bajo la etiqueta: el mismo recurso que sostiene
+     las placas del menu de pantalla completa en la home (ver PROJECT.md,
+     "Segunda linea diminuta"). Sin ella la tarjeta se ve vacia. */
+  .casos-otros a span{
+    display:block;margin-top:6px;
+    font-family:var(--ui);font-weight:300;text-transform:uppercase;
+    font-size:.6rem;letter-spacing:.08em;line-height:1.4;color:var(--muted);
+  }
+  .casos-otros a:hover,.casos-otros a:focus-visible{background:var(--paper);color:var(--ink)}
+  .casos-otros a:hover span,.casos-otros a:focus-visible span{color:var(--ink)}
+  @media(max-width:560px){
+    .casos-otros ul{grid-template-columns:1fr}
+  }
+
+  /* ===== CASO NOTMAN =====
+     Versión corta del manual de identidad. Lo propio de este caso: el logo
+     grande con su brillo violeta, la línea del tiempo, las tres tarjetas de
+     inspiración, el logo por letras, las versiones y el trazo animado. */
+  .logo-hero{padding-bottom:40px}
+  .logo-hero figure{position:relative;padding:28px 0}
+  .logo-hero figure::before{
+    content:"";position:absolute;inset:8% 10%;z-index:-1;
+    background:radial-gradient(ellipse at center,rgba(139,63,255,.42),transparent 68%);
+  }
+  .logo-hero img{display:block;width:100%;max-width:760px;height:auto;margin:0 auto}
+  .tiempo{list-style:none;margin:6px 0 34px;padding:0 0 0 22px;border-left:2px solid var(--violet);max-width:66ch}
+  .tiempo li{position:relative;margin-bottom:16px;color:#e8e2f2}
+  .tiempo li::before{
+    content:"";position:absolute;left:-29px;top:.45em;width:11px;height:11px;
+    background:var(--rojo);transform:rotate(45deg);
+  }
+  .tiempo b{
+    display:block;font-family:var(--ui);font-weight:900;text-transform:uppercase;
+    font-size:.72rem;letter-spacing:.12em;color:#fff;
+  }
+  .tarjetas{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:4px 0 38px}
+  .tarjeta{border:1px solid var(--line);background:var(--ink-2);padding:14px}
+  .tarjeta .muestra{height:120px;border:1px solid var(--line);margin-bottom:12px;display:flex;align-items:center;justify-content:center;background:#000;position:relative}
+  .tarjeta .muestra svg{width:82%;height:auto}
+  .tarjeta .arco{position:absolute;left:8%;right:8%;bottom:10px;height:30px;border-top:3px dashed var(--rojo);border-radius:50% 50% 0 0}
+  .tarjeta h3{font-family:var(--ui);font-weight:900;text-transform:uppercase;font-size:.72rem;letter-spacing:.12em;margin-bottom:6px}
+  .tarjeta p{font-size:.92rem;color:#d9d2e8;margin:0}
+  .letras{margin:6px 0 14px}
+  .letras svg{display:block;width:100%;max-width:720px;height:auto}
+  .leyenda{display:flex;flex-wrap:wrap;gap:10px;margin:0 0 26px;padding:0;list-style:none}
+  .leyenda li{display:flex;align-items:center;gap:5px;font-family:var(--ui);font-weight:900;font-size:.7rem}
+  .leyenda i{width:13px;height:13px;display:inline-block}
+  .versiones{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:6px 0 38px}
+  .versiones figure{margin:0}
+  .versiones .caja{height:120px;display:flex;align-items:center;justify-content:center;padding:14px;border:1px solid var(--line)}
+  .versiones .caja img,.versiones .caja svg{width:100%;height:auto}
+  .versiones figcaption{margin-top:8px;font-family:var(--ui);font-weight:300;text-transform:uppercase;font-size:.62rem;letter-spacing:.08em;color:var(--muted)}
+  .c-negro{background:#000}.c-oscuro{background:#0b0416}.c-violeta{background:#4A1391}.c-blanco{background:#fff}
+  /* El trazo se dibuja una vez cuando entra a la pantalla (clase .ve, la pone
+     el script de abajo). Sin JS o con movimiento reducido se ve completo. */
+  .trazo-caso{margin:6px 0 10px;max-width:720px}
+  .trazo-caso svg{display:block;width:100%;height:auto}
+  .trazo-caso path{fill:none;stroke:var(--violet-hi);stroke-width:2.4;stroke-linecap:round}
+  .js .trazo-caso path{stroke-dasharray:1;stroke-dashoffset:1}
+  .js .trazo-caso.ve path{animation:dibuja 1.6s cubic-bezier(.5,0,.2,1) forwards}
+  @keyframes dibuja{to{stroke-dashoffset:0}}
+  .usos{display:grid;grid-template-columns:1.4fr 1fr;gap:14px;margin:6px 0 10px}
+  .usos figure{margin:0}
+  .usos img{display:block;width:100%;height:auto;border:1px solid var(--line)}
+  .usos figcaption{margin-top:8px;font-family:var(--ui);font-weight:300;text-transform:uppercase;font-size:.62rem;letter-spacing:.08em;color:var(--muted)}
+  @media(max-width:700px){
+    .tarjetas,.usos{grid-template-columns:1fr}
+    .versiones{grid-template-columns:1fr 1fr}
+  }
+  @media(prefers-reduced-motion:reduce){
+    .js .trazo-caso path{stroke-dasharray:none;animation:none}
+  }
+</style>
+<script>document.documentElement.classList.add('js')</script>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <a class="marca-link" href="/" aria-label="NotMan Rivera">
+      <img src="/assets/logo.webp" alt="NotMan" width="120" height="67">
+    </a>
+    <nav class="header-links">
+      <a class="idioma" href="/casos/notman/en/">EN</a>
+      <a class="volver" href="/#trabajo">← Ver todo el trabajo</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <section class="caso-hero wrap">
+    <span class="num-caso" aria-hidden="true">05</span>
+    <span class="kicker">Proyecto personal · Lettering</span>
+    <h1>NotMan: un logo hecho de cómics</h1>
+    <p class="dek">Mi propia marca, dibujada letra por letra. Dice THE NOTMAN: nueve letras trabadas en un solo bloque que se sienta sobre una curva, con el acabado cromado de Silver Surfer.</p>
+  </section>
+
+  <section class="logo-hero wrap">
+    <figure><img src="/assets/logo-lg.webp" alt="Logo de NotMan: THE NOTMAN en lettering cromado" width="1200" height="675"></figure>
+  </section>
+
+  <section class="caso-cuerpo wrap">
+    <div class="caso-rol">
+      <h2>Mi rol</h2>
+      <p>Todo: concepto, bocetos a lápiz, lettering, vectorización y acabado. Es un proyecto personal, sin cliente: el logo con el que firmo mi trabajo.</p>
+    </div>
+
+    <h2>El nombre llegó antes que el logo</h2>
+    <ol class="tiempo"><li><b>En la prepa</b>Era fanático de Anthrax, y la mascota de la banda se llama NotMan.</li><li><b>En Facebook</b>Me puse “NotMan” de apellido y la gente me empezó a ubicar así.</li><li><b>En mi trabajo</b>Empecé a firmar mis piezas como NotMan.</li><li><b>Por ahí de 2020</b>Le agregué “The”, como se llaman los personajes de cómics, y dibujé el logo.</li></ol>
+
+    <h2>Todo sale de los cómics</h2>
+    <p>Del nombre para adelante, cada decisión visual viene de los cómics, de los que soy muy fan.</p>
+    <div class="tarjetas"><div class="tarjeta"><div class="muestra"><svg class="" viewBox="0 0 945 520" aria-hidden="true" focusable="false"><g fill="none" stroke="#A96BFF" stroke-width="3"><path d="M941,0c2.6,17.4-3,38.8-7.5,57.5l-43.8,10.4c-38.1,7.6-75.9,13.8-114.8,19.1-87.2,11.9-174.1,20.7-261.9,27-31.5,2.3-61.7,3.4-93.1,3.9-45.8.6-106.8-.8-149-15-13.3-4.5-31.8-14-32.8-27.1-1-13.5,14.1-20.4,2.1-25.6-11.4-2.6-22.4-3.5-34.5-3.4-27.3.2-53.9,3.2-81.6,6.8-37.6,114.3-36.3,238.2,16.3,347.6,12.3,25.7,26.7,49.5,44.5,71.5s1.9,2.8,1.9,3.8-2.2,2.4-3.7,2.9c-24.1,7.8-45.6,20.1-66.5,34.4s-4.6,1.6-5.1.3c-21.9-46.6-37.2-95.4-46.8-146.2-18.8-99.7-16.4-208,5-308.5-21.7,3-42.4,7.7-63.6,12.9-2.1.5-4.8.3-6.4-.3V27C78.4,11.3,158.7,5.8,238.9,11.7s42.8,4.3,64,9.2,21.4,7.5,21.2,14.6c-.1,6-8.3,9.2-16.2,16.7s-6.1,8.4-4.5,12.3c3.8,9.4,37.5,11.5,52.5,11.6,87.7.4,190.2-11.1,277.9-23.3,101.6-14.2,202.3-32,302.1-52.3l4.9-.5Z"/><path d="M299.3,129.4c-4.2,12.6-7.8,23.1-10.5,35.5-9.5,42.4-9.3,85.6-.4,128.8-19.4,1.1-36.4,4.9-54.3,10.6-4.8-5.9-7.3-12.7-9.8-19.7-4.4-16.1-6.9-31.7-8.4-48.9h-24c-.4,26.4,5.5,51,16.3,75.6-22.4,6-42.8,12.4-63.6,20s-3.9-.2-4.8-2c-25.8-72.3-27.2-151.7-9.6-226.2,2.9-12.1,6.3-22.8,10.3-34.8,11.8-2.5,22.6-3.8,34.4-4.9,16.6-.7,32.2-.7,49.1-.3.8,1.5,1.2,3.2,1.3,4.8-7.6,14-13,27.5-17.9,42.6-9.9,31.6-15.7,63.2-19,96.9h26c-1.1-37,6.6-72.9,17.5-107.6.4-1.1,1.9-2.9,2.9-2.9s2.8,1.2,3.4,2.1c13.5,18,35.7,25.4,58.1,26.8,1.3,0,3.7,2.1,3.2,3.7Z"/><path d="M351,244.2l-12.4,1.9v11.5c27.4-5.5,52.6-5.2,80.4-4.5,1.8,0,4.5,2.6,4.5,4.2v21.3c0,2.9-2.4,4.8-5.5,4.7-37.3-1.9-74,2.4-109.8,12.7s-3.7.5-4.6-.2-2-2.9-2.3-4.2c-10.9-49.8-1.2-109.9,11.1-159.3.8-3.2,3.3-4.4,6.2-4,39.6,5.3,78.5,4.6,118.4,2.8s3.4.4,4.2,1.2,1.4,3.6,1.1,4.8l-5.9,23.1c-.3,1.3-3,3.6-4.4,3.7-29.9,3.4-55.5,5.8-85.9,1.6v14s9.3-1.1,9.3-1.1c1.5-.2,4.2,2.7,4,4.4l-4.2,57.1c-.1,1.8-2.5,3.9-4.1,4.1Z"/><path d="M945,515v5s-5,0-5,0l-1.7-1.4-57.9-15.9-20.3-26.8-28.3-48.8-42.9-89.5c2.4,18.1,6.3,34.4,10.7,51.8,7.5,29.5,16,57.7,25.3,86.7s-1.4,4.2-2.7,3.8l-34.3-10.3c-21.6-56.8-32-119-35.3-180.2-3.3-61.1-.3-121.7,9.3-182.6l50.3-7c1.6-.2,3.2,2.3,3,4.1-4.4,74.6,0,154.6,20.4,226.5,6.7,23.7,14.4,46.4,26.9,68.1-7.2-71.5-9.8-140.7-5.8-211.2,1.9-32.5,5-63.9,10.8-96l55.6-11.6c1.6-.3,3.4,2.4,2.9,4.2-27.1,117.3-29.2,244.3-1.9,361.8,5.6,24.1,12.2,46.8,21.1,69.1Z"/><path d="M457.3,415c-36.2.8-70.6,4.7-105.9,10.2-6.2-9.7-11.2-18.8-15.7-29-12.8-28.9-22.5-58.1-31.3-89.2,39.5-9.4,82.5-10.8,122.1-8.7,7.1,39.6,19.3,76.1,33.4,113,.5,1.3-.7,3.8-2.6,3.8ZM396,383.2c1.7-.4,4-2.3,3.3-4.1-5.9-15.9-10.3-30.9-13.8-47.7-7-.2-13.4,1.2-19.6,4.7l5.9,24.1c2.3,9.3,6.1,17.8,11.1,25.9l13.1-2.8Z"/><path data-name="T" d="M504.9,415.5l-31.6-.4c-24.6-54-36.1-116.5-38.8-176-21.2-.3-40.9.7-61.5,2.4-1.9-.2-3.6-1-4.6-2.3l4.4-57.5,135.2-8c3-.2,2.4,3.7,2.3,5.4-1.5,18.7.4,36.5,2.7,55.1.2,1.7-1.2,4.1-2.8,3.9-12.7-.9-24.1-.7-36.3.5.4,23.4,3.1,44.8,7.4,67.3,6.9,36.1,16.5,70.7,28.3,105.5.3.9.3,3-.1,3.7s-2.8.5-4.6.5Z"/><path d="M551.8,362.7l-23.2-25.2c6.2,27.7,14.5,52.8,23,78.9.3.9.3,3-.2,3.7s-2.8.7-4.1.6l-22-1.9c-21-51.8-32.1-108.2-37.9-163.6,3-5.9,15.3-4.4,24.6-3.2,8.2,21.2,17.1,44.5,31.9,59.9-21-42.7-25.2-92.9-23.8-139.5,21.4-2.7,41.7-3.3,62.9-3.3,18,0,35.5.6,53.5,4.8-5.6,21.8-8.8,42.3-9.9,64-3.2,63.2,6.4,129.3,22.1,190.5.3,1.3.2,3.8-.7,4.2s-3,.1-4.3-.2c-8.4-2.5-16.4-3.1-25.7-3.4-17.5-43.5-26.4-98.2-30.6-145.1l-3.9-44c-4.3,45-1.3,90.1,5.6,135,.4,2.8,0,5.3-1.2,7s-5.7,3.3-7.9,2.2c-10.6-5.5-20-12.2-28.3-21.2Z"/><path d="M694.4,445.2l-25.7-6c-1.4-.3-3.6-2.2-4.1-3.8-9.6-31-16.2-61.8-19.9-94.2-6.8-60.4-5.4-120.9,4.6-180.9-65.1-10.2-131.8-5.5-196.1,2.5-3-.2-5.1-2.9-4.4-5.7l5-22.5c.3-1.5,2.6-3.6,4.3-3.6,95,.5,189.8-8.1,283.3-22.5,1.6-.2,3.9,0,4.8.8s1.7,3.3,1.4,5.2c-12.4,77.8-13.9,156.5-3,234.8,5.1,36.8,12.7,72.4,24.5,107.5.6,1.8.7,4.2.2,5.5s-3.3,2.5-4.5,2.1l-34.8-10.1c-10.2-20.7-16.3-42-20.5-64.7-7.4-39.7-9.4-79-8.5-120.2l-23-1.6c-2.5,55.3,2.5,119.1,22.9,170.3.7,1.9.8,4.7-.2,5.9-1.4,1.6-3.9,1.7-6.2,1.1ZM699.8,248.9l-.8-16.9c.5-15.3,2.8-29.5,5.7-44.8-5.3-1.6-11-1.4-16.8-.3-5.2,20.2-9,40.3-8.3,60.7,7.2-.6,13.8,0,20.2,1.3Z"/><path data-name="N" d="M266.2,444.8c-21.8,6.3-41.5,12.9-62.2,21.8-27.3-34.7-46.1-77.8-59.5-119.4,4.2-3.9,8.4-6.2,13.3-8.5,15.7-5.7,31.6-9.7,48.7-12.5,8.6,27.4,27,49.6,53.9,60.6-8.8-22.8-15.7-44-22.3-66.8,2.4-2.4,4.8-3.7,7.8-5.2,14.5-4.6,29.5-7.4,44.9-8.3,2,11.9,4.2,22,7.9,32.7,9.8,28.3,21.9,54.9,34.9,82s.2,3.9-.7,5c-15,1.9-29.6,5.6-43.9,11.5-13.9-5.8-24.7-13.9-37.6-22.2,4.3,9.5,9.9,16.9,16.1,24.9s-.1,3.9-1.4,4.2Z"/></g></svg><span class="arco"></span></div><h3>La forma</h3><p>Bocetos a lápiz buscando una palabra que se sentara sobre una curva, como los logos retro de Silver Surfer.</p></div><div class="tarjeta"><div class="muestra" style="background:linear-gradient(180deg,#9FA3B9,#D5D9F4,#E1E5FC,#ACAFC6,#9FA3B9)"></div><h3>El cromo</h3><p>El acabado principal viene directo de Silver Surfer: metálico, frío, con la luz en el centro.</p></div><div class="tarjeta"><div class="muestra" style="background:linear-gradient(180deg,#4E88EA,#596BEA,#936AF1,#DD95F7,#F5A0F9)"></div><h3>El degradado</h3><p>La versión secundaria está basada en Thanos y en mi color favorito: ese tono de morado.</p></div></div>
+
+    <h2>Nueve letras, un solo bloque</h2>
+    <div class="letras"><svg class="" viewBox="0 0 945 520" aria-hidden="true" focusable="false"><g><path fill="#E50012" stroke="#000" stroke-width="2" d="M941,0c2.6,17.4-3,38.8-7.5,57.5l-43.8,10.4c-38.1,7.6-75.9,13.8-114.8,19.1-87.2,11.9-174.1,20.7-261.9,27-31.5,2.3-61.7,3.4-93.1,3.9-45.8.6-106.8-.8-149-15-13.3-4.5-31.8-14-32.8-27.1-1-13.5,14.1-20.4,2.1-25.6-11.4-2.6-22.4-3.5-34.5-3.4-27.3.2-53.9,3.2-81.6,6.8-37.6,114.3-36.3,238.2,16.3,347.6,12.3,25.7,26.7,49.5,44.5,71.5s1.9,2.8,1.9,3.8-2.2,2.4-3.7,2.9c-24.1,7.8-45.6,20.1-66.5,34.4s-4.6,1.6-5.1.3c-21.9-46.6-37.2-95.4-46.8-146.2-18.8-99.7-16.4-208,5-308.5-21.7,3-42.4,7.7-63.6,12.9-2.1.5-4.8.3-6.4-.3V27C78.4,11.3,158.7,5.8,238.9,11.7s42.8,4.3,64,9.2,21.4,7.5,21.2,14.6c-.1,6-8.3,9.2-16.2,16.7s-6.1,8.4-4.5,12.3c3.8,9.4,37.5,11.5,52.5,11.6,87.7.4,190.2-11.1,277.9-23.3,101.6-14.2,202.3-32,302.1-52.3l4.9-.5Z"/><path fill="#FF5A66" stroke="#000" stroke-width="2" d="M299.3,129.4c-4.2,12.6-7.8,23.1-10.5,35.5-9.5,42.4-9.3,85.6-.4,128.8-19.4,1.1-36.4,4.9-54.3,10.6-4.8-5.9-7.3-12.7-9.8-19.7-4.4-16.1-6.9-31.7-8.4-48.9h-24c-.4,26.4,5.5,51,16.3,75.6-22.4,6-42.8,12.4-63.6,20s-3.9-.2-4.8-2c-25.8-72.3-27.2-151.7-9.6-226.2,2.9-12.1,6.3-22.8,10.3-34.8,11.8-2.5,22.6-3.8,34.4-4.9,16.6-.7,32.2-.7,49.1-.3.8,1.5,1.2,3.2,1.3,4.8-7.6,14-13,27.5-17.9,42.6-9.9,31.6-15.7,63.2-19,96.9h26c-1.1-37,6.6-72.9,17.5-107.6.4-1.1,1.9-2.9,2.9-2.9s2.8,1.2,3.4,2.1c13.5,18,35.7,25.4,58.1,26.8,1.3,0,3.7,2.1,3.2,3.7Z"/><path fill="#FF9AA2" stroke="#000" stroke-width="2" d="M351,244.2l-12.4,1.9v11.5c27.4-5.5,52.6-5.2,80.4-4.5,1.8,0,4.5,2.6,4.5,4.2v21.3c0,2.9-2.4,4.8-5.5,4.7-37.3-1.9-74,2.4-109.8,12.7s-3.7.5-4.6-.2-2-2.9-2.3-4.2c-10.9-49.8-1.2-109.9,11.1-159.3.8-3.2,3.3-4.4,6.2-4,39.6,5.3,78.5,4.6,118.4,2.8s3.4.4,4.2,1.2,1.4,3.6,1.1,4.8l-5.9,23.1c-.3,1.3-3,3.6-4.4,3.7-29.9,3.4-55.5,5.8-85.9,1.6v14s9.3-1.1,9.3-1.1c1.5-.2,4.2,2.7,4,4.4l-4.2,57.1c-.1,1.8-2.5,3.9-4.1,4.1Z"/><path fill="#8B3FFF" stroke="#000" stroke-width="2" d="M945,515v5s-5,0-5,0l-1.7-1.4-57.9-15.9-20.3-26.8-28.3-48.8-42.9-89.5c2.4,18.1,6.3,34.4,10.7,51.8,7.5,29.5,16,57.7,25.3,86.7s-1.4,4.2-2.7,3.8l-34.3-10.3c-21.6-56.8-32-119-35.3-180.2-3.3-61.1-.3-121.7,9.3-182.6l50.3-7c1.6-.2,3.2,2.3,3,4.1-4.4,74.6,0,154.6,20.4,226.5,6.7,23.7,14.4,46.4,26.9,68.1-7.2-71.5-9.8-140.7-5.8-211.2,1.9-32.5,5-63.9,10.8-96l55.6-11.6c1.6-.3,3.4,2.4,2.9,4.2-27.1,117.3-29.2,244.3-1.9,361.8,5.6,24.1,12.2,46.8,21.1,69.1Z"/><path fill="#A96BFF" stroke="#000" stroke-width="2" d="M457.3,415c-36.2.8-70.6,4.7-105.9,10.2-6.2-9.7-11.2-18.8-15.7-29-12.8-28.9-22.5-58.1-31.3-89.2,39.5-9.4,82.5-10.8,122.1-8.7,7.1,39.6,19.3,76.1,33.4,113,.5,1.3-.7,3.8-2.6,3.8ZM396,383.2c1.7-.4,4-2.3,3.3-4.1-5.9-15.9-10.3-30.9-13.8-47.7-7-.2-13.4,1.2-19.6,4.7l5.9,24.1c2.3,9.3,6.1,17.8,11.1,25.9l13.1-2.8Z"/><path fill="#C9A2FF" stroke="#000" stroke-width="2" data-name="T" d="M504.9,415.5l-31.6-.4c-24.6-54-36.1-116.5-38.8-176-21.2-.3-40.9.7-61.5,2.4-1.9-.2-3.6-1-4.6-2.3l4.4-57.5,135.2-8c3-.2,2.4,3.7,2.3,5.4-1.5,18.7.4,36.5,2.7,55.1.2,1.7-1.2,4.1-2.8,3.9-12.7-.9-24.1-.7-36.3.5.4,23.4,3.1,44.8,7.4,67.3,6.9,36.1,16.5,70.7,28.3,105.5.3.9.3,3-.1,3.7s-2.8.5-4.6.5Z"/><path fill="#6D2BD9" stroke="#000" stroke-width="2" d="M551.8,362.7l-23.2-25.2c6.2,27.7,14.5,52.8,23,78.9.3.9.3,3-.2,3.7s-2.8.7-4.1.6l-22-1.9c-21-51.8-32.1-108.2-37.9-163.6,3-5.9,15.3-4.4,24.6-3.2,8.2,21.2,17.1,44.5,31.9,59.9-21-42.7-25.2-92.9-23.8-139.5,21.4-2.7,41.7-3.3,62.9-3.3,18,0,35.5.6,53.5,4.8-5.6,21.8-8.8,42.3-9.9,64-3.2,63.2,6.4,129.3,22.1,190.5.3,1.3.2,3.8-.7,4.2s-3,.1-4.3-.2c-8.4-2.5-16.4-3.1-25.7-3.4-17.5-43.5-26.4-98.2-30.6-145.1l-3.9-44c-4.3,45-1.3,90.1,5.6,135,.4,2.8,0,5.3-1.2,7s-5.7,3.3-7.9,2.2c-10.6-5.5-20-12.2-28.3-21.2Z"/><path fill="#B57CFF" stroke="#000" stroke-width="2" d="M694.4,445.2l-25.7-6c-1.4-.3-3.6-2.2-4.1-3.8-9.6-31-16.2-61.8-19.9-94.2-6.8-60.4-5.4-120.9,4.6-180.9-65.1-10.2-131.8-5.5-196.1,2.5-3-.2-5.1-2.9-4.4-5.7l5-22.5c.3-1.5,2.6-3.6,4.3-3.6,95,.5,189.8-8.1,283.3-22.5,1.6-.2,3.9,0,4.8.8s1.7,3.3,1.4,5.2c-12.4,77.8-13.9,156.5-3,234.8,5.1,36.8,12.7,72.4,24.5,107.5.6,1.8.7,4.2.2,5.5s-3.3,2.5-4.5,2.1l-34.8-10.1c-10.2-20.7-16.3-42-20.5-64.7-7.4-39.7-9.4-79-8.5-120.2l-23-1.6c-2.5,55.3,2.5,119.1,22.9,170.3.7,1.9.8,4.7-.2,5.9-1.4,1.6-3.9,1.7-6.2,1.1ZM699.8,248.9l-.8-16.9c.5-15.3,2.8-29.5,5.7-44.8-5.3-1.6-11-1.4-16.8-.3-5.2,20.2-9,40.3-8.3,60.7,7.2-.6,13.8,0,20.2,1.3Z"/><path fill="#5B23B5" stroke="#000" stroke-width="2" data-name="N" d="M266.2,444.8c-21.8,6.3-41.5,12.9-62.2,21.8-27.3-34.7-46.1-77.8-59.5-119.4,4.2-3.9,8.4-6.2,13.3-8.5,15.7-5.7,31.6-9.7,48.7-12.5,8.6,27.4,27,49.6,53.9,60.6-8.8-22.8-15.7-44-22.3-66.8,2.4-2.4,4.8-3.7,7.8-5.2,14.5-4.6,29.5-7.4,44.9-8.3,2,11.9,4.2,22,7.9,32.7,9.8,28.3,21.9,54.9,34.9,82s.2,3.9-.7,5c-15,1.9-29.6,5.6-43.9,11.5-13.9-5.8-24.7-13.9-37.6-22.2,4.3,9.5,9.9,16.9,16.1,24.9s-.1,3.9-1.4,4.2Z"/></g></svg></div>
+    <ul class="leyenda" aria-hidden="true"><li><i style="background:#E50012"></i>T</li><li><i style="background:#FF5A66"></i>H</li><li><i style="background:#FF9AA2"></i>E</li><li><i style="background:#8B3FFF"></i>N</li><li><i style="background:#A96BFF"></i>O</li><li><i style="background:#C9A2FF"></i>T</li><li><i style="background:#6D2BD9"></i>M</li><li><i style="background:#B57CFF"></i>A</li><li><i style="background:#5B23B5"></i>N</li></ul>
+    <p><strong>THE</strong> va apilado a la izquierda, dentro del espacio de la T grande; <strong>NOTMAN</strong> corre abajo y a la derecha.</p><p>El travesaño de la T barre toda la palabra: es el techo del logo y su gesto más reconocible. Cada letra es una forma propia, pero los huecos entre ellas son angostos y parejos, así que la palabra se lee como una sola pieza.</p>
+
+    <h2 style="margin-top:34px">Versiones</h2>
+    <div class="versiones"><figure><div class="caja c-negro"><img src="/assets/logo-lg-480.webp" alt="" width="480" height="270" loading="lazy"></div><figcaption>Principal · cromo</figcaption></figure><figure><div class="caja c-oscuro"><img src="/assets/logo-morado.webp" alt="" width="1200" height="675" loading="lazy"></div><figcaption>Secundaria · degradado Thanos</figcaption></figure><figure><div class="caja c-violeta"><svg class="" viewBox="0 0 945 520" aria-hidden="true" focusable="false"><g fill="#fff" stroke="none" stroke-width="0"><path d="M941,0c2.6,17.4-3,38.8-7.5,57.5l-43.8,10.4c-38.1,7.6-75.9,13.8-114.8,19.1-87.2,11.9-174.1,20.7-261.9,27-31.5,2.3-61.7,3.4-93.1,3.9-45.8.6-106.8-.8-149-15-13.3-4.5-31.8-14-32.8-27.1-1-13.5,14.1-20.4,2.1-25.6-11.4-2.6-22.4-3.5-34.5-3.4-27.3.2-53.9,3.2-81.6,6.8-37.6,114.3-36.3,238.2,16.3,347.6,12.3,25.7,26.7,49.5,44.5,71.5s1.9,2.8,1.9,3.8-2.2,2.4-3.7,2.9c-24.1,7.8-45.6,20.1-66.5,34.4s-4.6,1.6-5.1.3c-21.9-46.6-37.2-95.4-46.8-146.2-18.8-99.7-16.4-208,5-308.5-21.7,3-42.4,7.7-63.6,12.9-2.1.5-4.8.3-6.4-.3V27C78.4,11.3,158.7,5.8,238.9,11.7s42.8,4.3,64,9.2,21.4,7.5,21.2,14.6c-.1,6-8.3,9.2-16.2,16.7s-6.1,8.4-4.5,12.3c3.8,9.4,37.5,11.5,52.5,11.6,87.7.4,190.2-11.1,277.9-23.3,101.6-14.2,202.3-32,302.1-52.3l4.9-.5Z"/><path d="M299.3,129.4c-4.2,12.6-7.8,23.1-10.5,35.5-9.5,42.4-9.3,85.6-.4,128.8-19.4,1.1-36.4,4.9-54.3,10.6-4.8-5.9-7.3-12.7-9.8-19.7-4.4-16.1-6.9-31.7-8.4-48.9h-24c-.4,26.4,5.5,51,16.3,75.6-22.4,6-42.8,12.4-63.6,20s-3.9-.2-4.8-2c-25.8-72.3-27.2-151.7-9.6-226.2,2.9-12.1,6.3-22.8,10.3-34.8,11.8-2.5,22.6-3.8,34.4-4.9,16.6-.7,32.2-.7,49.1-.3.8,1.5,1.2,3.2,1.3,4.8-7.6,14-13,27.5-17.9,42.6-9.9,31.6-15.7,63.2-19,96.9h26c-1.1-37,6.6-72.9,17.5-107.6.4-1.1,1.9-2.9,2.9-2.9s2.8,1.2,3.4,2.1c13.5,18,35.7,25.4,58.1,26.8,1.3,0,3.7,2.1,3.2,3.7Z"/><path d="M351,244.2l-12.4,1.9v11.5c27.4-5.5,52.6-5.2,80.4-4.5,1.8,0,4.5,2.6,4.5,4.2v21.3c0,2.9-2.4,4.8-5.5,4.7-37.3-1.9-74,2.4-109.8,12.7s-3.7.5-4.6-.2-2-2.9-2.3-4.2c-10.9-49.8-1.2-109.9,11.1-159.3.8-3.2,3.3-4.4,6.2-4,39.6,5.3,78.5,4.6,118.4,2.8s3.4.4,4.2,1.2,1.4,3.6,1.1,4.8l-5.9,23.1c-.3,1.3-3,3.6-4.4,3.7-29.9,3.4-55.5,5.8-85.9,1.6v14s9.3-1.1,9.3-1.1c1.5-.2,4.2,2.7,4,4.4l-4.2,57.1c-.1,1.8-2.5,3.9-4.1,4.1Z"/><path d="M945,515v5s-5,0-5,0l-1.7-1.4-57.9-15.9-20.3-26.8-28.3-48.8-42.9-89.5c2.4,18.1,6.3,34.4,10.7,51.8,7.5,29.5,16,57.7,25.3,86.7s-1.4,4.2-2.7,3.8l-34.3-10.3c-21.6-56.8-32-119-35.3-180.2-3.3-61.1-.3-121.7,9.3-182.6l50.3-7c1.6-.2,3.2,2.3,3,4.1-4.4,74.6,0,154.6,20.4,226.5,6.7,23.7,14.4,46.4,26.9,68.1-7.2-71.5-9.8-140.7-5.8-211.2,1.9-32.5,5-63.9,10.8-96l55.6-11.6c1.6-.3,3.4,2.4,2.9,4.2-27.1,117.3-29.2,244.3-1.9,361.8,5.6,24.1,12.2,46.8,21.1,69.1Z"/><path d="M457.3,415c-36.2.8-70.6,4.7-105.9,10.2-6.2-9.7-11.2-18.8-15.7-29-12.8-28.9-22.5-58.1-31.3-89.2,39.5-9.4,82.5-10.8,122.1-8.7,7.1,39.6,19.3,76.1,33.4,113,.5,1.3-.7,3.8-2.6,3.8ZM396,383.2c1.7-.4,4-2.3,3.3-4.1-5.9-15.9-10.3-30.9-13.8-47.7-7-.2-13.4,1.2-19.6,4.7l5.9,24.1c2.3,9.3,6.1,17.8,11.1,25.9l13.1-2.8Z"/><path data-name="T" d="M504.9,415.5l-31.6-.4c-24.6-54-36.1-116.5-38.8-176-21.2-.3-40.9.7-61.5,2.4-1.9-.2-3.6-1-4.6-2.3l4.4-57.5,135.2-8c3-.2,2.4,3.7,2.3,5.4-1.5,18.7.4,36.5,2.7,55.1.2,1.7-1.2,4.1-2.8,3.9-12.7-.9-24.1-.7-36.3.5.4,23.4,3.1,44.8,7.4,67.3,6.9,36.1,16.5,70.7,28.3,105.5.3.9.3,3-.1,3.7s-2.8.5-4.6.5Z"/><path d="M551.8,362.7l-23.2-25.2c6.2,27.7,14.5,52.8,23,78.9.3.9.3,3-.2,3.7s-2.8.7-4.1.6l-22-1.9c-21-51.8-32.1-108.2-37.9-163.6,3-5.9,15.3-4.4,24.6-3.2,8.2,21.2,17.1,44.5,31.9,59.9-21-42.7-25.2-92.9-23.8-139.5,21.4-2.7,41.7-3.3,62.9-3.3,18,0,35.5.6,53.5,4.8-5.6,21.8-8.8,42.3-9.9,64-3.2,63.2,6.4,129.3,22.1,190.5.3,1.3.2,3.8-.7,4.2s-3,.1-4.3-.2c-8.4-2.5-16.4-3.1-25.7-3.4-17.5-43.5-26.4-98.2-30.6-145.1l-3.9-44c-4.3,45-1.3,90.1,5.6,135,.4,2.8,0,5.3-1.2,7s-5.7,3.3-7.9,2.2c-10.6-5.5-20-12.2-28.3-21.2Z"/><path d="M694.4,445.2l-25.7-6c-1.4-.3-3.6-2.2-4.1-3.8-9.6-31-16.2-61.8-19.9-94.2-6.8-60.4-5.4-120.9,4.6-180.9-65.1-10.2-131.8-5.5-196.1,2.5-3-.2-5.1-2.9-4.4-5.7l5-22.5c.3-1.5,2.6-3.6,4.3-3.6,95,.5,189.8-8.1,283.3-22.5,1.6-.2,3.9,0,4.8.8s1.7,3.3,1.4,5.2c-12.4,77.8-13.9,156.5-3,234.8,5.1,36.8,12.7,72.4,24.5,107.5.6,1.8.7,4.2.2,5.5s-3.3,2.5-4.5,2.1l-34.8-10.1c-10.2-20.7-16.3-42-20.5-64.7-7.4-39.7-9.4-79-8.5-120.2l-23-1.6c-2.5,55.3,2.5,119.1,22.9,170.3.7,1.9.8,4.7-.2,5.9-1.4,1.6-3.9,1.7-6.2,1.1ZM699.8,248.9l-.8-16.9c.5-15.3,2.8-29.5,5.7-44.8-5.3-1.6-11-1.4-16.8-.3-5.2,20.2-9,40.3-8.3,60.7,7.2-.6,13.8,0,20.2,1.3Z"/><path data-name="N" d="M266.2,444.8c-21.8,6.3-41.5,12.9-62.2,21.8-27.3-34.7-46.1-77.8-59.5-119.4,4.2-3.9,8.4-6.2,13.3-8.5,15.7-5.7,31.6-9.7,48.7-12.5,8.6,27.4,27,49.6,53.9,60.6-8.8-22.8-15.7-44-22.3-66.8,2.4-2.4,4.8-3.7,7.8-5.2,14.5-4.6,29.5-7.4,44.9-8.3,2,11.9,4.2,22,7.9,32.7,9.8,28.3,21.9,54.9,34.9,82s.2,3.9-.7,5c-15,1.9-29.6,5.6-43.9,11.5-13.9-5.8-24.7-13.9-37.6-22.2,4.3,9.5,9.9,16.9,16.1,24.9s-.1,3.9-1.4,4.2Z"/></g></svg></div><figcaption>Una tinta · blanco</figcaption></figure><figure><div class="caja c-blanco"><svg class="" viewBox="0 0 945 520" aria-hidden="true" focusable="false"><g fill="#000" stroke="none" stroke-width="0"><path d="M941,0c2.6,17.4-3,38.8-7.5,57.5l-43.8,10.4c-38.1,7.6-75.9,13.8-114.8,19.1-87.2,11.9-174.1,20.7-261.9,27-31.5,2.3-61.7,3.4-93.1,3.9-45.8.6-106.8-.8-149-15-13.3-4.5-31.8-14-32.8-27.1-1-13.5,14.1-20.4,2.1-25.6-11.4-2.6-22.4-3.5-34.5-3.4-27.3.2-53.9,3.2-81.6,6.8-37.6,114.3-36.3,238.2,16.3,347.6,12.3,25.7,26.7,49.5,44.5,71.5s1.9,2.8,1.9,3.8-2.2,2.4-3.7,2.9c-24.1,7.8-45.6,20.1-66.5,34.4s-4.6,1.6-5.1.3c-21.9-46.6-37.2-95.4-46.8-146.2-18.8-99.7-16.4-208,5-308.5-21.7,3-42.4,7.7-63.6,12.9-2.1.5-4.8.3-6.4-.3V27C78.4,11.3,158.7,5.8,238.9,11.7s42.8,4.3,64,9.2,21.4,7.5,21.2,14.6c-.1,6-8.3,9.2-16.2,16.7s-6.1,8.4-4.5,12.3c3.8,9.4,37.5,11.5,52.5,11.6,87.7.4,190.2-11.1,277.9-23.3,101.6-14.2,202.3-32,302.1-52.3l4.9-.5Z"/><path d="M299.3,129.4c-4.2,12.6-7.8,23.1-10.5,35.5-9.5,42.4-9.3,85.6-.4,128.8-19.4,1.1-36.4,4.9-54.3,10.6-4.8-5.9-7.3-12.7-9.8-19.7-4.4-16.1-6.9-31.7-8.4-48.9h-24c-.4,26.4,5.5,51,16.3,75.6-22.4,6-42.8,12.4-63.6,20s-3.9-.2-4.8-2c-25.8-72.3-27.2-151.7-9.6-226.2,2.9-12.1,6.3-22.8,10.3-34.8,11.8-2.5,22.6-3.8,34.4-4.9,16.6-.7,32.2-.7,49.1-.3.8,1.5,1.2,3.2,1.3,4.8-7.6,14-13,27.5-17.9,42.6-9.9,31.6-15.7,63.2-19,96.9h26c-1.1-37,6.6-72.9,17.5-107.6.4-1.1,1.9-2.9,2.9-2.9s2.8,1.2,3.4,2.1c13.5,18,35.7,25.4,58.1,26.8,1.3,0,3.7,2.1,3.2,3.7Z"/><path d="M351,244.2l-12.4,1.9v11.5c27.4-5.5,52.6-5.2,80.4-4.5,1.8,0,4.5,2.6,4.5,4.2v21.3c0,2.9-2.4,4.8-5.5,4.7-37.3-1.9-74,2.4-109.8,12.7s-3.7.5-4.6-.2-2-2.9-2.3-4.2c-10.9-49.8-1.2-109.9,11.1-159.3.8-3.2,3.3-4.4,6.2-4,39.6,5.3,78.5,4.6,118.4,2.8s3.4.4,4.2,1.2,1.4,3.6,1.1,4.8l-5.9,23.1c-.3,1.3-3,3.6-4.4,3.7-29.9,3.4-55.5,5.8-85.9,1.6v14s9.3-1.1,9.3-1.1c1.5-.2,4.2,2.7,4,4.4l-4.2,57.1c-.1,1.8-2.5,3.9-4.1,4.1Z"/><path d="M945,515v5s-5,0-5,0l-1.7-1.4-57.9-15.9-20.3-26.8-28.3-48.8-42.9-89.5c2.4,18.1,6.3,34.4,10.7,51.8,7.5,29.5,16,57.7,25.3,86.7s-1.4,4.2-2.7,3.8l-34.3-10.3c-21.6-56.8-32-119-35.3-180.2-3.3-61.1-.3-121.7,9.3-182.6l50.3-7c1.6-.2,3.2,2.3,3,4.1-4.4,74.6,0,154.6,20.4,226.5,6.7,23.7,14.4,46.4,26.9,68.1-7.2-71.5-9.8-140.7-5.8-211.2,1.9-32.5,5-63.9,10.8-96l55.6-11.6c1.6-.3,3.4,2.4,2.9,4.2-27.1,117.3-29.2,244.3-1.9,361.8,5.6,24.1,12.2,46.8,21.1,69.1Z"/><path d="M457.3,415c-36.2.8-70.6,4.7-105.9,10.2-6.2-9.7-11.2-18.8-15.7-29-12.8-28.9-22.5-58.1-31.3-89.2,39.5-9.4,82.5-10.8,122.1-8.7,7.1,39.6,19.3,76.1,33.4,113,.5,1.3-.7,3.8-2.6,3.8ZM396,383.2c1.7-.4,4-2.3,3.3-4.1-5.9-15.9-10.3-30.9-13.8-47.7-7-.2-13.4,1.2-19.6,4.7l5.9,24.1c2.3,9.3,6.1,17.8,11.1,25.9l13.1-2.8Z"/><path data-name="T" d="M504.9,415.5l-31.6-.4c-24.6-54-36.1-116.5-38.8-176-21.2-.3-40.9.7-61.5,2.4-1.9-.2-3.6-1-4.6-2.3l4.4-57.5,135.2-8c3-.2,2.4,3.7,2.3,5.4-1.5,18.7.4,36.5,2.7,55.1.2,1.7-1.2,4.1-2.8,3.9-12.7-.9-24.1-.7-36.3.5.4,23.4,3.1,44.8,7.4,67.3,6.9,36.1,16.5,70.7,28.3,105.5.3.9.3,3-.1,3.7s-2.8.5-4.6.5Z"/><path d="M551.8,362.7l-23.2-25.2c6.2,27.7,14.5,52.8,23,78.9.3.9.3,3-.2,3.7s-2.8.7-4.1.6l-22-1.9c-21-51.8-32.1-108.2-37.9-163.6,3-5.9,15.3-4.4,24.6-3.2,8.2,21.2,17.1,44.5,31.9,59.9-21-42.7-25.2-92.9-23.8-139.5,21.4-2.7,41.7-3.3,62.9-3.3,18,0,35.5.6,53.5,4.8-5.6,21.8-8.8,42.3-9.9,64-3.2,63.2,6.4,129.3,22.1,190.5.3,1.3.2,3.8-.7,4.2s-3,.1-4.3-.2c-8.4-2.5-16.4-3.1-25.7-3.4-17.5-43.5-26.4-98.2-30.6-145.1l-3.9-44c-4.3,45-1.3,90.1,5.6,135,.4,2.8,0,5.3-1.2,7s-5.7,3.3-7.9,2.2c-10.6-5.5-20-12.2-28.3-21.2Z"/><path d="M694.4,445.2l-25.7-6c-1.4-.3-3.6-2.2-4.1-3.8-9.6-31-16.2-61.8-19.9-94.2-6.8-60.4-5.4-120.9,4.6-180.9-65.1-10.2-131.8-5.5-196.1,2.5-3-.2-5.1-2.9-4.4-5.7l5-22.5c.3-1.5,2.6-3.6,4.3-3.6,95,.5,189.8-8.1,283.3-22.5,1.6-.2,3.9,0,4.8.8s1.7,3.3,1.4,5.2c-12.4,77.8-13.9,156.5-3,234.8,5.1,36.8,12.7,72.4,24.5,107.5.6,1.8.7,4.2.2,5.5s-3.3,2.5-4.5,2.1l-34.8-10.1c-10.2-20.7-16.3-42-20.5-64.7-7.4-39.7-9.4-79-8.5-120.2l-23-1.6c-2.5,55.3,2.5,119.1,22.9,170.3.7,1.9.8,4.7-.2,5.9-1.4,1.6-3.9,1.7-6.2,1.1ZM699.8,248.9l-.8-16.9c.5-15.3,2.8-29.5,5.7-44.8-5.3-1.6-11-1.4-16.8-.3-5.2,20.2-9,40.3-8.3,60.7,7.2-.6,13.8,0,20.2,1.3Z"/><path data-name="N" d="M266.2,444.8c-21.8,6.3-41.5,12.9-62.2,21.8-27.3-34.7-46.1-77.8-59.5-119.4,4.2-3.9,8.4-6.2,13.3-8.5,15.7-5.7,31.6-9.7,48.7-12.5,8.6,27.4,27,49.6,53.9,60.6-8.8-22.8-15.7-44-22.3-66.8,2.4-2.4,4.8-3.7,7.8-5.2,14.5-4.6,29.5-7.4,44.9-8.3,2,11.9,4.2,22,7.9,32.7,9.8,28.3,21.9,54.9,34.9,82s.2,3.9-.7,5c-15,1.9-29.6,5.6-43.9,11.5-13.9-5.8-24.7-13.9-37.6-22.2,4.3,9.5,9.9,16.9,16.1,24.9s-.1,3.9-1.4,4.2Z"/></g></svg></div><figcaption>Una tinta · negro</figcaption></figure></div>
+
+    <h2>El logo se dibuja solo</h2>
+    <div class="trazo-caso"><svg class="trazo-svg" viewBox="0 0 945 520" aria-hidden="true" focusable="false"><g fill="none" stroke="none" stroke-width="0"><path pathLength="1" d="M941,0c2.6,17.4-3,38.8-7.5,57.5l-43.8,10.4c-38.1,7.6-75.9,13.8-114.8,19.1-87.2,11.9-174.1,20.7-261.9,27-31.5,2.3-61.7,3.4-93.1,3.9-45.8.6-106.8-.8-149-15-13.3-4.5-31.8-14-32.8-27.1-1-13.5,14.1-20.4,2.1-25.6-11.4-2.6-22.4-3.5-34.5-3.4-27.3.2-53.9,3.2-81.6,6.8-37.6,114.3-36.3,238.2,16.3,347.6,12.3,25.7,26.7,49.5,44.5,71.5s1.9,2.8,1.9,3.8-2.2,2.4-3.7,2.9c-24.1,7.8-45.6,20.1-66.5,34.4s-4.6,1.6-5.1.3c-21.9-46.6-37.2-95.4-46.8-146.2-18.8-99.7-16.4-208,5-308.5-21.7,3-42.4,7.7-63.6,12.9-2.1.5-4.8.3-6.4-.3V27C78.4,11.3,158.7,5.8,238.9,11.7s42.8,4.3,64,9.2,21.4,7.5,21.2,14.6c-.1,6-8.3,9.2-16.2,16.7s-6.1,8.4-4.5,12.3c3.8,9.4,37.5,11.5,52.5,11.6,87.7.4,190.2-11.1,277.9-23.3,101.6-14.2,202.3-32,302.1-52.3l4.9-.5Z"/><path pathLength="1" d="M299.3,129.4c-4.2,12.6-7.8,23.1-10.5,35.5-9.5,42.4-9.3,85.6-.4,128.8-19.4,1.1-36.4,4.9-54.3,10.6-4.8-5.9-7.3-12.7-9.8-19.7-4.4-16.1-6.9-31.7-8.4-48.9h-24c-.4,26.4,5.5,51,16.3,75.6-22.4,6-42.8,12.4-63.6,20s-3.9-.2-4.8-2c-25.8-72.3-27.2-151.7-9.6-226.2,2.9-12.1,6.3-22.8,10.3-34.8,11.8-2.5,22.6-3.8,34.4-4.9,16.6-.7,32.2-.7,49.1-.3.8,1.5,1.2,3.2,1.3,4.8-7.6,14-13,27.5-17.9,42.6-9.9,31.6-15.7,63.2-19,96.9h26c-1.1-37,6.6-72.9,17.5-107.6.4-1.1,1.9-2.9,2.9-2.9s2.8,1.2,3.4,2.1c13.5,18,35.7,25.4,58.1,26.8,1.3,0,3.7,2.1,3.2,3.7Z"/><path pathLength="1" d="M351,244.2l-12.4,1.9v11.5c27.4-5.5,52.6-5.2,80.4-4.5,1.8,0,4.5,2.6,4.5,4.2v21.3c0,2.9-2.4,4.8-5.5,4.7-37.3-1.9-74,2.4-109.8,12.7s-3.7.5-4.6-.2-2-2.9-2.3-4.2c-10.9-49.8-1.2-109.9,11.1-159.3.8-3.2,3.3-4.4,6.2-4,39.6,5.3,78.5,4.6,118.4,2.8s3.4.4,4.2,1.2,1.4,3.6,1.1,4.8l-5.9,23.1c-.3,1.3-3,3.6-4.4,3.7-29.9,3.4-55.5,5.8-85.9,1.6v14s9.3-1.1,9.3-1.1c1.5-.2,4.2,2.7,4,4.4l-4.2,57.1c-.1,1.8-2.5,3.9-4.1,4.1Z"/><path pathLength="1" d="M945,515v5s-5,0-5,0l-1.7-1.4-57.9-15.9-20.3-26.8-28.3-48.8-42.9-89.5c2.4,18.1,6.3,34.4,10.7,51.8,7.5,29.5,16,57.7,25.3,86.7s-1.4,4.2-2.7,3.8l-34.3-10.3c-21.6-56.8-32-119-35.3-180.2-3.3-61.1-.3-121.7,9.3-182.6l50.3-7c1.6-.2,3.2,2.3,3,4.1-4.4,74.6,0,154.6,20.4,226.5,6.7,23.7,14.4,46.4,26.9,68.1-7.2-71.5-9.8-140.7-5.8-211.2,1.9-32.5,5-63.9,10.8-96l55.6-11.6c1.6-.3,3.4,2.4,2.9,4.2-27.1,117.3-29.2,244.3-1.9,361.8,5.6,24.1,12.2,46.8,21.1,69.1Z"/><path pathLength="1" d="M457.3,415c-36.2.8-70.6,4.7-105.9,10.2-6.2-9.7-11.2-18.8-15.7-29-12.8-28.9-22.5-58.1-31.3-89.2,39.5-9.4,82.5-10.8,122.1-8.7,7.1,39.6,19.3,76.1,33.4,113,.5,1.3-.7,3.8-2.6,3.8ZM396,383.2c1.7-.4,4-2.3,3.3-4.1-5.9-15.9-10.3-30.9-13.8-47.7-7-.2-13.4,1.2-19.6,4.7l5.9,24.1c2.3,9.3,6.1,17.8,11.1,25.9l13.1-2.8Z"/><path pathLength="1" data-name="T" d="M504.9,415.5l-31.6-.4c-24.6-54-36.1-116.5-38.8-176-21.2-.3-40.9.7-61.5,2.4-1.9-.2-3.6-1-4.6-2.3l4.4-57.5,135.2-8c3-.2,2.4,3.7,2.3,5.4-1.5,18.7.4,36.5,2.7,55.1.2,1.7-1.2,4.1-2.8,3.9-12.7-.9-24.1-.7-36.3.5.4,23.4,3.1,44.8,7.4,67.3,6.9,36.1,16.5,70.7,28.3,105.5.3.9.3,3-.1,3.7s-2.8.5-4.6.5Z"/><path pathLength="1" d="M551.8,362.7l-23.2-25.2c6.2,27.7,14.5,52.8,23,78.9.3.9.3,3-.2,3.7s-2.8.7-4.1.6l-22-1.9c-21-51.8-32.1-108.2-37.9-163.6,3-5.9,15.3-4.4,24.6-3.2,8.2,21.2,17.1,44.5,31.9,59.9-21-42.7-25.2-92.9-23.8-139.5,21.4-2.7,41.7-3.3,62.9-3.3,18,0,35.5.6,53.5,4.8-5.6,21.8-8.8,42.3-9.9,64-3.2,63.2,6.4,129.3,22.1,190.5.3,1.3.2,3.8-.7,4.2s-3,.1-4.3-.2c-8.4-2.5-16.4-3.1-25.7-3.4-17.5-43.5-26.4-98.2-30.6-145.1l-3.9-44c-4.3,45-1.3,90.1,5.6,135,.4,2.8,0,5.3-1.2,7s-5.7,3.3-7.9,2.2c-10.6-5.5-20-12.2-28.3-21.2Z"/><path pathLength="1" d="M694.4,445.2l-25.7-6c-1.4-.3-3.6-2.2-4.1-3.8-9.6-31-16.2-61.8-19.9-94.2-6.8-60.4-5.4-120.9,4.6-180.9-65.1-10.2-131.8-5.5-196.1,2.5-3-.2-5.1-2.9-4.4-5.7l5-22.5c.3-1.5,2.6-3.6,4.3-3.6,95,.5,189.8-8.1,283.3-22.5,1.6-.2,3.9,0,4.8.8s1.7,3.3,1.4,5.2c-12.4,77.8-13.9,156.5-3,234.8,5.1,36.8,12.7,72.4,24.5,107.5.6,1.8.7,4.2.2,5.5s-3.3,2.5-4.5,2.1l-34.8-10.1c-10.2-20.7-16.3-42-20.5-64.7-7.4-39.7-9.4-79-8.5-120.2l-23-1.6c-2.5,55.3,2.5,119.1,22.9,170.3.7,1.9.8,4.7-.2,5.9-1.4,1.6-3.9,1.7-6.2,1.1ZM699.8,248.9l-.8-16.9c.5-15.3,2.8-29.5,5.7-44.8-5.3-1.6-11-1.4-16.8-.3-5.2,20.2-9,40.3-8.3,60.7,7.2-.6,13.8,0,20.2,1.3Z"/><path pathLength="1" data-name="N" d="M266.2,444.8c-21.8,6.3-41.5,12.9-62.2,21.8-27.3-34.7-46.1-77.8-59.5-119.4,4.2-3.9,8.4-6.2,13.3-8.5,15.7-5.7,31.6-9.7,48.7-12.5,8.6,27.4,27,49.6,53.9,60.6-8.8-22.8-15.7-44-22.3-66.8,2.4-2.4,4.8-3.7,7.8-5.2,14.5-4.6,29.5-7.4,44.9-8.3,2,11.9,4.2,22,7.9,32.7,9.8,28.3,21.9,54.9,34.9,82s.2,3.9-.7,5c-15,1.9-29.6,5.6-43.9,11.5-13.9-5.8-24.7-13.9-37.6-22.2,4.3,9.5,9.9,16.9,16.1,24.9s-.1,3.9-1.4,4.2Z"/></g></svg></div>
+    <p>En la portada de mi sitio, las nueve letras se trazan en violeta, una por una, antes de que aparezca el cromo. Es el único efecto que un logo en imagen no puede dar: necesita la geometría real de cada letra.</p>
+
+    <h2 style="margin-top:34px">Dónde vive</h2>
+    <p>De este logo sale toda mi identidad: la paleta negro, violeta y rojo, el sitio, la firma de correo, el portafolio en PDF y mi foto de perfil.</p>
+    <div class="usos">
+      <figure><img src="/assets/caso-notman/sitio.webp" alt="" width="1200" height="750" loading="lazy"><figcaption>notmanrivera.com</figcaption></figure>
+      <figure><img src="/assets/caso-notman/portafolio.webp" alt="" width="900" height="506" loading="lazy"><figcaption>Portafolio en PDF</figcaption></figure>
+    </div>
+  </section>
+
+  <section class="casos-otros wrap">
+    <h2>Otros casos</h2>
+    <ul><li><a href="/casos/al-arabi-sc/">Al-Arabi SC<span>Motion graphics de matchday</span></a></li><li><a href="/casos/hugo-gonzalez/">Hugo González<span>Branding deportivo</span></a></li><li><a href="/casos/futbol-femenil/">Fútbol femenil<span>Carreras seguidas, no campañas</span></a></li><li><a href="/casos/diseno-web/">Diseño web<span>Seis industrias, un estándar</span></a></li></ul>
+  </section>
+
+  <section class="caso-cta wrap">
+    <a class="btn" href="/#contacto">¿Necesitas una identidad con personalidad? Hablemos</a>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>NotMan Rivera — Motion graphics, video y diseño web</span>
+    <span><a href="/">notmanrivera.com</a> · <a href="/aviso-de-privacidad/">Aviso de privacidad</a></span>
+  </div>
+</footer>
+
+<aside class="flotantes" aria-label="Accesos rápidos">
+<a href="https://wa.me/524421411230?text=Hola%20Rub%C3%A9n%2C%20vi%20tu%20sitio%20y%20me%20interesa%20platicar%20sobre%20un%20proyecto." target="_blank" rel="noopener" class="whatsapp-flotante" aria-label="Escríbeme por WhatsApp">
+  <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+    <path d="M17.47 14.38c-.29-.15-1.71-.85-1.98-.94-.27-.1-.46-.15-.65.14-.19.29-.75.94-.92 1.13-.17.19-.34.22-.63.07-.29-.15-1.22-.45-2.32-1.44-.86-.76-1.44-1.71-1.61-2-.17-.29-.02-.44.13-.59.13-.13.29-.34.44-.51.15-.17.19-.29.29-.48.1-.19.05-.36-.02-.51-.07-.15-.65-1.58-.9-2.16-.24-.57-.48-.5-.65-.5-.17-.01-.36-.01-.55-.01-.19 0-.5.07-.76.36-.26.29-1 .98-1 2.38 0 1.4 1.03 2.76 1.17 2.95.14.19 2.03 3.1 4.93 4.35.69.3 1.22.48 1.64.61.69.22 1.32.19 1.82.11.55-.08 1.71-.7 1.95-1.37.24-.68.24-1.26.17-1.38-.07-.12-.26-.19-.55-.34z"/>
+    <path d="M12.04 2.5c-5.26 0-9.54 4.28-9.54 9.54 0 1.68.44 3.32 1.28 4.76L2.5 21.5l4.85-1.27a9.5 9.5 0 0 0 4.69 1.25h.01c5.26 0 9.54-4.28 9.54-9.54 0-2.55-.99-4.94-2.79-6.75a9.47 9.47 0 0 0-6.76-2.69zm0 17.46h-.01a7.9 7.9 0 0 1-4.03-1.1l-.29-.17-3 .79.8-2.92-.19-.3a7.9 7.9 0 0 1-1.22-4.22c0-4.38 3.57-7.94 7.95-7.94a7.9 7.9 0 0 1 5.62 2.33 7.88 7.88 0 0 1 2.32 5.61c0 4.38-3.57 7.92-7.95 7.92z"/>
+  </svg>
+</a>
+</aside>
+
+<script>
+/* Dibuja el trazo del logo cuando entra a la pantalla, una sola vez. */
+(function(){
+  var el = document.querySelector('.trazo-caso');
+  if (!el || !('IntersectionObserver' in window)) { if (el) el.classList.add('ve'); return; }
+  var io = new IntersectionObserver(function(es){
+    es.forEach(function(e){ if (e.isIntersecting) { el.classList.add('ve'); io.disconnect(); } });
+  }, {threshold: .4});
+  io.observe(el);
+})();
+</script>
+<script src="/assets/proteccion-v1.js" defer></script>
+</body>
+</html>

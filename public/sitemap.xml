@@ -93,4 +93,16 @@
     <xhtml:link rel="alternate" hreflang="en" href="https://notmanrivera.com/aviso-de-privacidad/en/"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://notmanrivera.com/aviso-de-privacidad/"/>
   </url>
+  <url>
+    <loc>https://notmanrivera.com/casos/notman/</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://notmanrivera.com/casos/notman/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://notmanrivera.com/casos/notman/en/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://notmanrivera.com/casos/notman/"/>
+  </url>
+  <url>
+    <loc>https://notmanrivera.com/casos/notman/en/</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://notmanrivera.com/casos/notman/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://notmanrivera.com/casos/notman/en/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://notmanrivera.com/casos/notman/"/>
+  </url>
 </urlset>
