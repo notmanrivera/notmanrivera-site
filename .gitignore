@@ -14,3 +14,6 @@ scripts/cotizacion/privado.json
 
 # Portafolio en PDF generado por scripts/portafolio-pdf/render.js
 scripts/portafolio-pdf/salida/
+
+# CV generado por scripts/portafolio-pdf/cv.js (no se publica: el repo es público)
+cv/
