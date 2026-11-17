@@ -12,6 +12,9 @@
 // Con --html también deja el HTML de cada una, para revisarlo en el navegador.
 // Con --publicar copia las interactivas a public/portfolio/ (sports.pdf y
 // general.pdf), que es lo que se descarga desde notmanrivera.com/portfolio/…
+// Con --es sale la versión en español (textos en es.js, ligas a las páginas
+// en español): NotMan-Portafolio-Deportivo/-General(-Print).pdf, y con
+// --publicar van a public/portfolio/deportivo.pdf y general-es.pdf.
 //
 // Interactiva: índice con ligas internas, cada video abre el clip en el sitio
 // y el contacto se puede tocar. Impresa: sin ligas; cada caso lleva un QR a
@@ -27,12 +30,14 @@ const { chromium } = require('playwright');
 const QR = require('qrcode');
 
 const { PUB, SALIDA, SITIO, a, esc, marco: marcoBase, svgsDelLogo, aPdf } = require('./comun');
+const { traducir } = require('./es');
+const ES = process.argv.includes('--es');
 
 // UTM para saber en Analytics cuántas visitas llegan desde el PDF.
 function liga(ruta, v, medio) {
   const sep = ruta.includes('?') ? '&' : '?';
   return SITIO + ruta + sep + 'utm_source=portfolio&utm_medium=' + medio +
-    '&utm_campaign=portfolio-2026&utm_content=' + v.id;
+    '&utm_campaign=portfolio-2026&utm_content=' + v.id + (ES ? '-es' : '');
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -545,7 +550,7 @@ a.enl{border-bottom:2px solid var(--rojo)}
 async function qrs(v) {
   const rutas = ['/en/', '/casos/al-arabi-sc/en/', '/casos/hugo-gonzalez/en/', '/casos/futbol-femenil/en/', '/casos/diseno-web/en/'];
   const out = {};
-  for (const r of rutas) out[r] = await QR.toString(liga(r, v, 'print'), { type: 'svg', margin: 0, errorCorrectionLevel: 'M' });
+  for (const r of rutas) out[r] = await QR.toString(liga(ES ? r.replace(/en\/$/, '') : r, v, 'print'), { type: 'svg', margin: 0, errorCorrectionLevel: 'M' });
   return out;
 }
 
@@ -557,13 +562,15 @@ async function main() {
   for (const v of VARIANTES) {
     for (const print of [false, true]) {
       const ctx = { v, print, qr: await qrs(v), svgLinea: logo.linea, svgSolido: logo.solido };
-      const paginas = v.paginas.map((p, i) => { ctx.n = i + 1; return PAGINAS[p](ctx); });
-      const nombre = v.archivo + (print ? '-Print' : '');
-      await aPdf(navegador, nombre, paginas, CSS, { conHtml, titulo: 'NotMan · Rubén Rivera · Portfolio' });
+      const paginas = v.paginas.map((p, i) => { ctx.n = i + 1; const h = PAGINAS[p](ctx); return ES ? traducir(h) : h; });
+      const archivo = ES ? { sports: 'NotMan-Portafolio-Deportivo', general: 'NotMan-Portafolio-General' }[v.id] : v.archivo;
+      const nombre = archivo + (print ? '-Print' : '');
+      await aPdf(navegador, nombre, paginas, CSS, { conHtml, titulo: 'NotMan · Rubén Rivera · ' + (ES ? 'Portafolio' : 'Portfolio') });
       console.log('Listo: ' + nombre + '.pdf (' + v.paginas.length + ' páginas)');
       if (!print && process.argv.includes('--publicar')) {
         fs.mkdirSync(path.join(PUB, 'portfolio'), { recursive: true });
-        fs.copyFileSync(path.join(SALIDA, nombre + '.pdf'), path.join(PUB, 'portfolio', v.id + '.pdf'));
+        const destino = ES ? { sports: 'deportivo', general: 'general-es' }[v.id] : v.id;
+        fs.copyFileSync(path.join(SALIDA, nombre + '.pdf'), path.join(PUB, 'portfolio', destino + '.pdf'));
       }
     }
   }
