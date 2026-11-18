@@ -1,0 +1,34 @@
+{
+  "folio": "COT-2026-006",
+  "fecha": "2026-11-18",
+  "cliente": "Bo Agency",
+  "atencion": "Aranza Vega",
+  "proyecto": "Contenido mensual · Escuela",
+  "vigencia": "15 días",
+  "items": [
+    {
+      "titulo": "Posteos.",
+      "etiqueta": "(feed de Instagram y Facebook)",
+      "puntos": ["Diseño de posts estáticos o carruseles con la identidad de la escuela."],
+      "unidades": 8,
+      "precio": 200
+    },
+    {
+      "titulo": "Reels.",
+      "etiqueta": "(máximo 1 minuto)",
+      "puntos": ["Edición vertical 9:16 con títulos, subtítulos, transiciones y música."],
+      "unidades": 4,
+      "precio": 450
+    }
+  ],
+  "iva": 0,
+  "notas": [
+    "Precio **mensual**. El material (fotos, videos y copys) y la planeación de contenido los proporciona Bo Agency.",
+    "Entrega del contenido del mes conforme al calendario acordado. No incluye programación ni publicación."
+  ],
+  "condiciones": [
+    "Incluye dos rondas de ajustes por pieza. Cambios adicionales o de alcance se cotizan por separado.",
+    "Pago mensual: **50% al inicio del mes y 50% contra entrega del contenido.**",
+    "Precios en pesos mexicanos. No se emite factura."
+  ]
+}
